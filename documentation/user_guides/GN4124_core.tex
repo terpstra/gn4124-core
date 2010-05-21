@@ -28,7 +28,7 @@ showstringspaces=false}
 %0.3 & 26-04-2010 & Add Makefile changes\\ \hline
 0.4 & 27-04-2010 & Add Wishbone slave description\\ \hline
 0.5 & 04-05-2010 & More about Wishbone master\\ \hline
-0.6 & 04-05-2010 & Review + Linux\\ \hline
+0.6 & 18-05-2010 & Add linux informations and review\\ \hline
 \end{tabularx}
 
 \tableofcontents
@@ -119,9 +119,9 @@ In the file \verb+./src/kdrv/Linux/uio.c+, add the folowing line (with Ubuntu):
 
 This project is based on the Gennum FlexDMA IP core.
 
-Gennum IP provides a CSR interface similar to Wishbone but not totally compatible. There is no acknowledge that permit to slave to indicates normal termination of a bus cycle. There is no signal to differentiate read cycle of a wait state.
+Gennum IP provides a CSR interface similar to Wishbone but not totally compatible. There is no acknowledge that permit to slave to indicates normal termination of a bus cycle. There is no master signal that indicates a cycle.
 
-The DMA sequencer is driven with the original target controller interface. A modification of this interface implies the modification of the sequencer. A
+The DMA sequencer is driven with the original target controller interface. A modification of this interface implies the modification of the sequencer. The wishbone master is a new module. The original target controller module is kept and used to control the DMA sequencer.
 
   \subsection{Application Attachment layer modifications}
 The Application attachment layer is the main part of the Gennum core. See Figure~\ref{fig:GCWWM}. It contains DMA masters and the target controller. A Wishbone master interface is added. This new interface transforms PCIe write into Wishbone write and a PCIe read into a Wishbone 'delayed' read. 
@@ -171,14 +171,17 @@ Wishbone signals are added to the application attachment layer entity (\verb+dma
   \item\texttt{wb\_we\_o} : output;
   \item\texttt{wb\_ack\_i} : input.
 \end{itemize}     
-   This signals are also present in \verb+wbmaster+ module and replace original target interface(see \verb+tar.v+).
+   This signals are also present in \verb+wbmaster+ module and replace the original target interface(see \verb+tar.v+).
 
 \subsubsection{Wishbone master limitations}
-    Data transfers are limited to single writes and single read.
-    During a wishbone cycle, new requests are ignored.
+    Data transfers are limited to single writes and single reads.
+    During a wishbone cycle, new requests are ignored. The Wishbone signal \verb+ERR_I+ is not used.
+    
+PCI express signal acknowledge is emitted by the GN4124 chip. The user can't see if the cycle is really finished.
+    
 
 \subsubsection{Write request} 
-When a single write packet is addressed to the wishbone master, the module drive the wishbone bus signals (see figure \ref{fig:WR}). Then, the module wait for an acknowledge from a wishbone slave to terminate the cycle. During the wishbone cycle, the other PCIe requests are ignored. Wishbone cycles have a timeout of 7 clock cycles.
+When a single write packet is addressed to the wishbone master from the packet decoder, the module drives the wishbone bus signals (see figure \ref{fig:WR}). Then, the module waits for an acknowledge from a wishbone slave to terminate the cycle. During the wishbone cycle, the other PCIe requests are ignored. Wishbone cycles have a timeout of 7 clock cycles (see \verb+wbmaster.v+).
 \begin{figure}[!ht]
 	\centering
 
