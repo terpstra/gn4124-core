@@ -2,15 +2,16 @@
 
 \usepackage{tikz-timing}
 
+
 \CernDocSection{CERN BE-CO-HT}
 \CernDocType{}
 \CernDocTitle{Gennum GN4124 to Wishbone bridge }
-\CernDocEditedBy{Simon DEPREZ}
-\CernDocCheckedBy{}
-\CernDocDate{April 2010}
-\CernDocAbstract{Gennum is providing an IP core that can be used for hardware design with the chips GN412x. This documentation describes how to add a simple wishbone master to the IP and use it for a specific application.}
+\CernDocEditedBy{Simon Deprez}
+\CernDocCheckedBy{Erik van der Bij}
+\CernDocDate{May 2010}
+\CernDocAbstract{Gennum is providing an IP core that can be used for hardware designs with the PCI express chip interface GN412x. This document describes how to extend the functionality to implement a simple wishbone master and shows its use in a simple test application.}
 \lstset{
-basicstyle=\small\ttfamily,
+basicstyle=\normalsize\ttfamily,
 frame=trBL,
 morecomment=[l][\color{blue}]{--},
 backgroundcolor=\color{yellow!20},
@@ -23,10 +24,11 @@ showstringspaces=false}
 \hline \textbf{Version}&\textbf{Date}&\textbf{Notes}\\ \hline \hline
 0.1 & 10-03-2010 & Created\\ \hline
 0.2 & 01-03-2010 & First draft\\ \hline
-0.2 & 14-04-2010 & Add Wishbone master description\\ \hline
+0.2 & 14-04-2010 & Add Wishbone master description \\ \hline
 %0.3 & 26-04-2010 & Add Makefile changes\\ \hline
 0.4 & 27-04-2010 & Add Wishbone slave description\\ \hline
 0.5 & 04-05-2010 & More about Wishbone master\\ \hline
+0.6 & 04-05-2010 & Review + Linux\\ \hline
 \end{tabularx}
 
 \tableofcontents
@@ -39,9 +41,9 @@ This project aims to provide a Wishbone master generic interface for FMC\footnot
 
 The PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-carrier}{http://www.ohwr.org/projects/fmc-pci-carrier}.} will be associated with several FMC mezzanines.
 
-This file explains how to start with the GN4124 IP core. It describes the testbench environment provided by gennum (Beta version) to simulate the IP. 
+This file explains how to start with the GN4124 IP core. It describes the testbench environment provided by Gennum (Beta version) to simulate the IP. 
 
-The Wishbone master is wroten as simple as possible
+The Wishbone master is written as simple as possible
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,10 +99,19 @@ Select \verb+ GN412x RDK SW 1.3 Windows+. A linux version is existing.
 
 Edit the file \verb+C:\Program Files\GN412x_RDK\GenDiag\gendiag.ini+. The last lines contains the path of the Xilinx bitstream file :
 \begin{lstlisting}
-<path>\lambo.bit
+ <path>\lambo.bit
 \end{lstlisting}
 
 Run \verb+gendiag+.
+
+\subsection{Linux Gendiag compilation}
+Read the file \verb+./README+.
+
+In the file \verb+./src/kdrv/Linux/uio.c+, add the folowing line (with Ubuntu):
+\begin{lstlisting}
+ #include <linux/sched.h>
+\end{lstlisting}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -108,12 +119,12 @@ Run \verb+gendiag+.
 
 This project is based on the Gennum FlexDMA IP core.
 
-Gennum IP provides a CSR interface similar to Wishbone but not totally compatible. There is no signal to differentiate read cycle of a wait state. There is no acknowledge that permit to slave to indicates normal termination of a bus cycle.
+Gennum IP provides a CSR interface similar to Wishbone but not totally compatible. There is no acknowledge that permit to slave to indicates normal termination of a bus cycle. There is no signal to differentiate read cycle of a wait state.
 
-The original target controller modification is not easy because the the DMA sequencer is driven with this interface.
+The DMA sequencer is driven with the original target controller interface. A modification of this interface implies the modification of the sequencer. A
 
   \subsection{Application Attachment layer modifications}
-The Application attachment layer is the main part of the Gennum core. It contains DMA masters and the target controller. A Wishbone master interface is added. See Figure~\ref{fig:GCWWM}.
+The Application attachment layer is the main part of the Gennum core. See Figure~\ref{fig:GCWWM}. It contains DMA masters and the target controller. A Wishbone master interface is added. This new interface transforms PCIe write into Wishbone write and a PCIe read into a Wishbone 'delayed' read. 
 
 The \verb+./fpga_project/lambo/design/rtl/+ folder in the testbench environment contains all the Gennum IP files.
 
@@ -125,7 +136,7 @@ The \verb+./fpga_project/lambo/design/rtl/+ folder in the testbench environment 
 \end{figure} 
 
 
-That transforms PCIe write into Wishbone write and a PCIe read into a Wishbone 'delayed' read.
+
 
 
   
@@ -170,7 +181,7 @@ Wishbone signals are added to the application attachment layer entity (\verb+dma
 When a single write packet is addressed to the wishbone master, the module drive the wishbone bus signals (see figure \ref{fig:WR}). Then, the module wait for an acknowledge from a wishbone slave to terminate the cycle. During the wishbone cycle, the other PCIe requests are ignored. Wishbone cycles have a timeout of 7 clock cycles.
 \begin{figure}[!ht]
 	\centering
-{\large
+
 \begin{tikztimingtable}
   lclk                         & H29{C}                           \\
   pd\_csr\_sel                 & 2L 2H 10L 2H 14L                 \\
@@ -179,30 +190,32 @@ When a single write packet is addressed to the wishbone master, the module drive
   \\ % Gives vertical space
   wb\_adr\_o                   & 4D{0} 4D{A0} 10D{0} 4D{A1} 8D{0} \\
   wb\_dat\_o                   & 4D{0} 4D{D0} 10D{0} 4D{D1} 8D{0} \\
-  wb\_cyc\_o                   & 4L 4H 8L 6H 8L                   \\
+  wb\_cyc\_o                   & 4L 4H N(B) 0.1L N(C) 7.9L 6H 8L  \\
   wb\_sel\_o                   & 4D{0} 4D{F} 10D{0} 4D{F} 8D{0}   \\
   wb\_stb\_o                   & 4L 4H 10L 4H 8L                  \\
   wb\_we\_o                    & 4L 4H 10L 4H 8L                  \\
-  wb\_ack\_i                   & 6L 2H 12L 2H 8L                  \\
+  wb\_ack\_i                   & 6L 0.1H N(A) 2.4H N(D) 11.5L 2.5H 7.5L     \\
   \extracode
+  \draw[orange,semithick,->](A) .. controls +(right:0.5cm) and +(left:0.5cm) .. (B);
+  \draw[orange,semithick,->](C) .. controls +(right:0.5cm) and +(left:0.5cm) .. (D);
 \begin{pgfonlayer}{background}
 \begin{scope}[gray,semitransparent,semithick]
 \vertlines {2,4,...,29}
 \end{scope}
 \end{pgfonlayer}
 \end{tikztimingtable}
-} 
+
 	\caption{Write request}
 	\label{fig:WR}
 \end{figure} 
 
 \subsubsection{Read request} 
-The process is the same than for a write request but the write enable signal isn't put high. When the wishbone cycle is terminated, a simple read completion packet is sent to the arbiter (see figure \ref{fig:WR}).
+The process is the same as for a write request but the write enable signal isn't asserted. When the wishbone cycle is terminated, a simple read completion packet is sent to the arbiter (see figure \ref{fig:RR}).
 
 
 \begin{figure}[!ht]
 	\centering
-{\large
+
 \begin{tikztimingtable}
   lclk                         & H29{C}                           \\
   pd\_csr\_sel                 & 2L 2H 10L 2H 14L                 \\
@@ -215,7 +228,7 @@ The process is the same than for a write request but the write enable signal isn
   wb\_sel\_o                   & 4D{0} 4D{F} 22D{0}               \\
   wb\_stb\_o                   & 4L 4H 22L                        \\
   wb\_we\_o                    & 30L                              \\
-  wb\_ack\_i                   & 6L 2H 22L                        \\
+  wb\_ack\_i                   & 6L 2.5H 21.5L                    \\
   \\ % Gives vertical space
   csr\_arb\_req                & 8L 4H 18L                        \\
   arb\_csr\_gnt                & 10L 4H 16L                       \\
@@ -230,19 +243,47 @@ The process is the same than for a write request but the write enable signal isn
 \end{scope}
 \end{pgfonlayer}
 \end{tikztimingtable}
-} 
+ 
 	\caption{Read request}
 	\label{fig:RR}
 \end{figure} 
 
+\subsubsection{Wishbone datasheet} 
+
+\begin{tabularx}{\textwidth}{|X|cc|}
+\hline \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER with 8-bit granularity}\\ \hline\hline
+\multicolumn{1}{|c|}{Description} &\multicolumn{2}{c|} { Specification}                                 \\ \hline
+General description                &\multicolumn{2}{l|} { Wishbone master controlled by PCI express}     \\ \hline
+Supported cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ \hline
+Data port, size:                   &\multicolumn{2}{l|} { 32-bit}                                        \\
+Data port, granularity:            &\multicolumn{2}{l|} { 8-bit}                                         \\
+Data port, maximum operand size    &\multicolumn{2}{l|} { 32-bit}                                        \\
+Data transfer ordering:            &\multicolumn{2}{l|} { Big endian and/or little endian}               \\
+%Data transfer sequencing:          &\multicolumn{2}{l|} { Undefined}                                     \\ \hline
+Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz (Gennum IP local clock)}               \\ \hline
+\multirow{8}{6cm}{Supported signal list and cross reference to equivalent WISHBONE signals}
+&  Signal Name   & WISHBONE Equiv.                                                                        \\ %\hline
+&  CLK\_O        &  CLK\_I                                                                                \\ %\hline
+&  CYC\_O        &  CYC\_O                                                                                \\ %\hline
+&  STB\_O        &  STB\_O                                                                                \\ %\hline
+&  ADR\_O(10..0) &  ADR\_O()                                                                              \\ %\hline
+&  DAT\_I(31..0) &  DAT\_I()                                                                              \\ %\hline
+&  DAT\_O(31..0) &  DAT\_O()                                                                              \\ %\hline
+&  WE\_O         &  WE\_O                                                                                 \\ %\hline
+&  ACK\_I        &  ACK\_I                                                                                \\ %\hline
+%Special requirements:              &\multicolumn{2}{p{8cm}||} { }                                         \\ 
+\hline
+
+
+\end{tabularx}
 
 \clearpage   
   \subsection{Wishbone slave}  
-A Wishbone slave module (\verb+wb_debug.vhd+) was generated with the CERN\verb+wbgen2+\footnote{See \href{http://www.ohwr.org/projects/wishbone-gen}{Wishbone slave generator}.} script with 3 registers of 8 bits for tests.
+A Wishbone slave module (\verb+wb_debug.vhd+) was generated with the CERN\verb+wbgen2+\footnote{See Wishbone slave generator: \href{http://www.ohwr.org/projects/wishbone-gen}{http://www.ohwr.org/projects/wishbone-gen}.} script with 3 registers of 8 bits for tests.
 It was connected to debug leds and buttons of the gennum kit and to the wishbone master.   
 
 The input description file for \verb+wbgen2+ is \verb+wb_debug.wb+ :
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 -- here comes our peripheral definition
 peripheral {
 -- short (human-readable) name for the peripheral.
@@ -329,6 +370,16 @@ Replace \verb+%016llX+
 by \verb+%016I64X+ 
 in the file \verb+./Test_Builder/lib/model.c+ at lines 64, 73, 288 and 298.
 
+
+	\subsubsection{Testbench with Linux}
+The names of the UNISIM library files are containing capitals letters. The Makefile uses small letter for this files.
+
+In the \verb+.\unisims\+ folder, run the command ;
+\begin{lstlisting}
+ rename 'y/A-Z/a-z/' *
+\end{lstlisting}
+
+
   \subsection{Makefile}
 Rules are added for both Wishbone master \verb+wbmaster.v+ (line 51-53) and wishbone slave \verb+wb_gpio.vhd+ (line 49-51).
 
@@ -336,7 +387,7 @@ Dependencies are added in the top module (\verb+lambo.v+, line 45) rule in the M
 	
 	
   \subsection{BFM script}
-Gennum provides a Testbench environment that emulate the local bus between the GN4124 chip and the FPGA. The Bus Functional Model is used to simulate PCI access for de FPGA system.
+Gennum provides a Testbench environment that emulates the local bus between the GN4124 chip and the FPGA. The Bus Functional Model is used to simulate PCI access for the FPGA system.
 	
 The file \verb+wbmaster_test.c+ contains a script with read and write requests for the wishbone bus.
   
@@ -364,7 +415,7 @@ In Modelsim, run the simulation :
 
 \section*{Summary}
 \addcontentsline{toc}{section}{Summary}
-The wishbone master is simple and allows single read and single write cycles of a 32 bit data.
+The modifications made to the files original from Gennum made possible to implement a Wishbone master that is simple and allows single read and single write cycles of 32 bit data.
 
 \end{document}
 

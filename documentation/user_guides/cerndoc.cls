@@ -18,6 +18,8 @@
 \RequirePackage{fancyhdr}
 \RequirePackage{tikz}
 \RequirePackage{tabularx}
+\RequirePackage{hhline}
+\RequirePackage{multirow}
 
 \RequirePackage{lastpage}
 \RequirePackage{parskip}
@@ -75,6 +77,7 @@
       \node[minimum width=17cm,minimum height=24.7cm,rectangle, rounded corners=5pt
 ,draw,color=cernblue,line width=3pt] at (current page.center){};
       \node[shift={(-6.1cm,10cm)}] at (current page.center) {\includegraphics[width=3.5cm]{logoCERN}};
+      \node[shift={(4cm,6.7cm)}] at (current page.center) {\includegraphics[width=4.3cm]{logoWBC}};
       \node[shift={(1.8cm,10cm)}] at (current page.center) {%
          \begin{minipage}[t]{13cm}
             \centering
@@ -96,20 +99,20 @@
 {\Huge\@CernDocTitle}
 
 \bigskip
-\fontsize{14}{14}\selectfont\@CernDocDate
+{\fontsize{14}{14}\selectfont\@CernDocDate}
 
 \vspace*{2cm}
 \begin{minipage}[c]{.46\linewidth}
-  \textbf{Edited by:} 
+  {\fontsize{14}{14}\selectfont\textbf{Edited by:}}
   
   \medskip
-  {\large\@CernDocEditedBy}
+  {\fontsize{16}{16}\selectfont\@CernDocEditedBy}
 \end{minipage} \hfill
 \begin{minipage}[c]{.46\linewidth}
-  \textbf{Checked by:} 
+  {\fontsize{14}{14}\selectfont\textbf{Checked by:}}
   
   \medskip
-  {\large\@CernDocCheckedBy}
+  {\fontsize{16}{16}\selectfont\@CernDocCheckedBy}
 \end{minipage}
 
 \vspace*{2cm}
@@ -118,4 +121,5 @@
 \end{abstract}
 
 \end{titlepage}
+\setcounter{page}{2}
 }
