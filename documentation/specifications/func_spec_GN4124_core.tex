@@ -1,0 +1,105 @@
+\documentclass[10pt,a4paper]{cerndoc}
+
+\CernDocSection{CERN BE-CO-HT}
+\CernDocBorderColor{10,120,10}
+
+\CernDocType{Functional Specifications}
+\CernDocTitle{Gennum GN4124 Core For FMC Projects}
+\CernDocEditedBy{Simon Deprez}
+\CernDocCheckedBy{}
+\CernDocDate{May 2010}
+\CernDocAbstract{This functional specification describes the HDL controller for Gennum GN4124 chip. This chip is used on the PCI express FMC carrier. It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
+
+\begin{document}
+  \cerntitle
+  \section*{Revision History}
+  \begin{tabularx}{\textwidth}{|p{3cm}|p{3cm}|X|}
+    \hline \textbf{Version}&\textbf{Date}&\textbf{Notes}\\ \hline \hline
+    0.1 & 21-05-2010 & Initial release\\ \hline
+
+  \end{tabularx}
+
+  \tableofcontents
+  \listoffigures
+  \clearpage
+
+  \section*{Introduction}
+  \addcontentsline{toc}{section}{Introduction}
+
+  \section{PCIe FMC carrier}
+The PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-carrier}{http://www.ohwr.org/projects/fmc-pci-carrier}.} will be associated with several FMC\footnote{See VITA FMC standard: \href{http://www.vita.com/fmc}{http://www.vita.com/fmc}.} mezzanines. 
+
+Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL configuration. The HDL code should be generic for reuse the carrier specific modules with other the FMC mezzanines. 
+
+ The communication between modules is essentially based on the Wishbone bus.
+
+
+
+
+  \section{GN4124 core for PCIe FMC carrier}
+  This core provides a Wishbone master to access control registers and read status.  The Wishbone\footnote{See \href{http://opencores.org/downloads/wbspec\_b3.pdf}{http://opencores.org/downloads/wbspec\_b3.pdf}.} bus is used for almost all communications between modules. The different soft cores are reusable.
+  
+  A simple DMA master is used for high speed data transfers of mezzanine card acquisitions.
+  
+\begin{figure}[!ht]
+	\centering
+		\includegraphics[width=13cm]{GN4124core}
+	\caption{GN4124 core for PCIe FMC carrier}
+	\label{fig:GCWWM}
+\end{figure} 
+    \subsection{GN4124 Local Bus Interface}
+    
+The GN4124 is a 4-lane PCI express to local bus bridge that is designed to work with a FPGA device to provide an high speed serial access for an application.
+    
+The GN412x PCI Express family Reference Manual\footnote{See \href{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}.} (52624-0 June 2009) describes the local bus interface at page 40.
+
+The data exchange is based on PCI express packets, but with incomplete and simplified headers.
+    
+    \subsection{DMA Interface}
+The DMA interface is composed of two Wishbone-like bus without acknowledge mechanism. One performs application to host communications and the second, the  host to application communications.
+
+
+
+For the FMCADC100M14b4cha\footnote{See the FMCADC100M14b4cha HDL specification: \href{http://www.ohwr.org/attachments/147/adc100m14b4cha.pdf}{http://www.ohwr.org/attachments/147/adc100m14b4cha.pdf}.} card, the first communication direction only is used. 
+    
+    
+    \subsection{Wishbone interface}
+    The Wishbone master transforms PCIe write into Wishbone write and a PCIe read into a Wishbone read. This Wishbone master should provide burst reads and writes.
+    
+    \begin{tabularx}{\textwidth}{|X|cc|} \hline
+      \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER with 8-bit granularity}                    \\ \hline \hline
+      \multicolumn{1}{|c|}{Description}  &\multicolumn{2}{c|} { Specification}                                 \\ \hline
+      General description                &\multicolumn{2}{l|} { Wishbone master controlled by PCI express}     \\ \hline
+      Supported cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ 
+                                         &\multicolumn{2}{l|} { MASTER, BLOCK READ/WRITE }                     \\ \hline
+      Data port, size:                   &\multicolumn{2}{l|} { 32-bit}                                        \\
+      Data port, granularity:            &\multicolumn{2}{l|} { 8-bit}                                         \\
+      Data port, maximum operand size    &\multicolumn{2}{l|} { 32-bit}                                        \\
+      Data transfer ordering:            &\multicolumn{2}{l|} { Big endian and/or little endian}               \\
+      Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz (Gennum IP local clock)}               \\ \hline
+      \multirow{8}{6cm}{Supported signal list and cross reference to equivalent WISHBONE signals}
+      &  Signal Name   & WISHBONE Equiv.                                                                       \\
+      &  CLK\_O        &  CLK\_I                                                                               \\
+      &  CYC\_O        &  CYC\_O                                                                               \\
+      &  STB\_O        &  STB\_O                                                                               \\
+      &  ADR\_O(10..0) &  ADR\_O()                                                                             \\
+      &  DAT\_I(31..0) &  DAT\_I()                                                                             \\
+      &  DAT\_O(31..0) &  DAT\_O()                                                                             \\
+      &  WE\_O         &  WE\_O                                                                                \\
+      &  ACK\_I        &  ACK\_I                                                                               \\ \hline
+	\end{tabularx}
+
+   \subsection{Interrupts}
+   The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends the MSI (Message Signaled Interrupts) to the host.
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
