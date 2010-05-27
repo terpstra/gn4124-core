@@ -41,6 +41,17 @@
 \newcommand\CernDocCheckedBy[1]{\renewcommand{\@CernDocCheckedBy}{#1}}
 \newcommand\CernDocDate[1]{\renewcommand{\@CernDocDate}{#1}}
 \newcommand\CernDocAbstract[1]{\renewcommand{\@CernDocAbstract}{#1}}
+\newcommand\CernDocLogoA[3]{\renewcommand{\@CernDocLogoA}{%
+	\node[shift={(#1)}] at (current page.center) {\includegraphics[width=#2]{#3}};
+}}
+\newcommand\CernDocLogoB[3]{\renewcommand{\@CernDocLogoB}{%
+	\node[shift={(#1)}] at (current page.center) {\includegraphics[width=#2]{#3}};
+}}
+\newcommand\CernDocLogoC[3]{\renewcommand{\@CernDocLogoC}{%
+	\node[shift={(#1)}] at (current page.center) {\includegraphics[width=#2]{#3}};
+}}
+
+\newcommand\CernDocBorderColor[1]{\definecolor{bordercolor}{RGB}{#1}}
 \newcommand{\@CernDocSection}{CERN Section}
 \newcommand{\@CernDocType}{Functional Specification for}
 \newcommand{\@CernDocTitle}{Title}
@@ -48,6 +59,10 @@
 \newcommand{\@CernDocAbstract}{. . .}
 \newcommand{\@CernDocEditedBy}{Author}
 \newcommand{\@CernDocCheckedBy}{}
+\newcommand{\@CernDocLogoA}{}
+\newcommand{\@CernDocLogoB}{}
+\newcommand{\@CernDocLogoC}{}
+\definecolor{bordercolor}{RGB}{0,20,170}
 
 \geometry{ hmargin=3.0cm, vmargin=3.8cm }	
 \graphicspath{{images/}}
@@ -73,11 +88,14 @@
 \newcommand{\cerntitle}{%
 \begin{titlepage}
 \begin{tikzpicture}[remember picture, overlay]
-    \definecolor{cernblue}{RGB}{0,20,170}
+
       \node[minimum width=17cm,minimum height=24.7cm,rectangle, rounded corners=5pt
-,draw,color=cernblue,line width=3pt] at (current page.center){};
+,draw,color=bordercolor,line width=3pt] at (current page.center){};
       \node[shift={(-6.1cm,10cm)}] at (current page.center) {\includegraphics[width=3.5cm]{logoCERN}};
-      \node[shift={(4cm,6.7cm)}] at (current page.center) {\includegraphics[width=4.3cm]{logoWBC}};
+     % \node[shift={(4cm,6.7cm)}] at (current page.center) {\includegraphics[width=4.3cm]{logoWBC}};
+     \@CernDocLogoA
+     \@CernDocLogoB
+     \@CernDocLogoC
       \node[shift={(1.8cm,10cm)}] at (current page.center) {%
          \begin{minipage}[t]{13cm}
             \centering
