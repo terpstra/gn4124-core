@@ -64,6 +64,14 @@
 \newcommand{\@CernDocLogoC}{}
 \definecolor{bordercolor}{RGB}{0,20,170}
 
+\newenvironment{packed_item}{
+\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+}{\end{itemize}}
+
+
 \geometry{ hmargin=3.0cm, vmargin=3.8cm }	
 \graphicspath{{images/}}
 \DeclareGraphicsExtensions{.jpg,.png,.pdf}

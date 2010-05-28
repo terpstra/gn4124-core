@@ -8,7 +8,7 @@
 \CernDocEditedBy{Simon Deprez}
 \CernDocCheckedBy{}
 \CernDocDate{May 2010}
-\CernDocAbstract{This functional specification describes the HDL controller for Gennum GN4124 chip. This chip is used on the PCI express FMC carrier. It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
+\CernDocAbstract{This functional specification describes the HDL controller for Gennum GN4124 chip. This chip is used on the PCI express FMC carrier (\href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}). It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
 
 \begin{document}
   \cerntitle
@@ -23,13 +23,13 @@
   \listoffigures
   \clearpage
 
-  \section*{Introduction}
-  \addcontentsline{toc}{section}{Introduction}
+%  \section*{Introduction}
+%  \addcontentsline{toc}{section}{Introduction}
 
-  \section{PCIe FMC carrier}
-The PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-carrier}{http://www.ohwr.org/projects/fmc-pci-carrier}.} will be associated with several FMC\footnote{See VITA FMC standard: \href{http://www.vita.com/fmc}{http://www.vita.com/fmc}.} mezzanines. 
+  \section{Introduction}
+The PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}.} will be associated with several FMC\footnote{See VITA FMC standard: \href{http://www.vita.com/fmc}{www.vita.com/fmc}.} mezzanines. 
 
-Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL configuration. The HDL code should be generic for reuse the carrier specific modules with other the FMC mezzanines. 
+Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL configuration. The HDL code should be generic for reusing the carrier-specific modules with the other FMC mezzanines. 
 
  The communication between modules is essentially based on the Wishbone bus.
 
@@ -49,48 +49,102 @@ Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL confi
 \end{figure} 
     \subsection{GN4124 Local Bus Interface}
     
-The GN4124 is a 4-lane PCI express to local bus bridge that is designed to work with a FPGA device to provide an high speed serial access for an application.
+The GN4124 is a 4-lane PCI express to local bus bridge that is designed to work with a FPGA device to provide a high speed serial access for an application.
     
 The GN412x PCI Express family Reference Manual\footnote{See \href{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}.} (52624-0 June 2009) describes the local bus interface at page 40.
 
-The data exchange is based on PCI express packets, but with incomplete and simplified headers.
+The data exchange is based on packets similar of PCI express packets, but the headers are different. It is not possible to send MSI (Message Signaled Interrupts) packets with this bus.
     
     \subsection{DMA Interface}
-The DMA interface is composed of two Wishbone-like bus without acknowledge mechanism. One performs application to host communications and the second, the  host to application communications.
+The DMA interface is a pipelined Wishbone bus. It performs application to host communications.
 
+The DMA engine works with a linked list so that DMAs can be chained. The first item in the list is loaded by the host on the carrier and contains a pointer to the next one, which is in host memory. The DMA engine will fetch items from host memory and perform the corresponding DMAs until one of the items is recognized as the last one though the contents of the DMAATTRIBR register (see table~\ref{tab:ddr_control}). 
 
+Each item in the list is made of the following registers: DMACSTARTR, DMAHSTARTLR, DMAHSTARTHR, DMALENR, DMANEXTLR, DMANEXTHR and DMAATTRIBR. When reading these items from the host, the DMA engine assumes a little-endian host. Big-endian hosts should shuffle data accordingly so that it is found in the same order as in a little-endian host. In addition, the DMA controller provides global DMA control and status registers.
 
-For the FMCADC100M14b4cha\footnote{See the FMCADC100M14b4cha HDL specification: \href{http://www.ohwr.org/attachments/147/adc100m14b4cha.pdf}{http://www.ohwr.org/attachments/147/adc100m14b4cha.pdf}.} card, the first communication direction only is used. 
-    
-    
+The end of a chained DMA access generates an interrupt request towards the interrupt controller (\verb+DMA_IRQ_o+ output).  
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabularx}{\textwidth}{|l|r|l|l|X|}                                                     \hline
+    \textbf{NAME}  & \textbf{OFFSET} & \textbf{MODE} & \textbf{RESET} & \textbf{DESCRIPTION}  \\ \hline \hline
+    DMACTRLR       & & R/W & & DMA engine control                                             \\ \hline
+    DMASTATR       & & RO  & & DMA engine status                                              \\ \hline
+    DMACSTARTR     & & R/W & & DMA start address in the carrier                               \\ \hline
+    DMAHSTARTLR    & & R/W & & DMA start address (low) in the host                            \\ \hline
+    DMAHSTARTHR    & & R/W & & DMA start address (high) in the host                           \\ \hline
+    DMALENR        & & R/W & & DMA read length in bytes                                       \\ \hline
+    DMANEXTLR      & & R/W & & Pointer (low) to next item in list                             \\ \hline
+    DMANEXTHR      & & R/W & & Pointer (high) to next item in list                            \\ \hline
+    DMAATTRIBR     & & R/W & & DMA endianness and control                                     \\ \hline
+  \end{tabularx}
+  \caption{Register set for the DDR RAM controller block.}
+  \label{tab:ddr_control}
+\end{table}
+
+\subsubsection{DMACTRLR}
+Writing 1 to this register starts a DMA transfer. Writing 2 aborts the ongoing transfer.
+
+\subsubsection{DMASTATR}
+This is a status register for the DMA engine. Possible contents are:
+\begin{packed_item}
+\item 0: Idle (before any DMA transfer takes place).
+\item 1: Done (after successful DMA).
+\item 2: Busy.
+\item 3: Error (following a memory access error, either on the host or on the carrier). This also produces an interrupt.
+\item 4: Aborted (after receiving an abort command in DMACTRLR).
+\end{packed_item}
+A DMA start command written into the DMACTRLR register takes this status out of Idle, Done, Error or Aborted into the Busy state.
+
+\subsubsection{DMACSTARTR}
+The DMACSTARTR register holds a byte address pointing to a location inside the DDR RAM, at which the DMA access should start. Taking into account that the DDR is a 16-bit device, only even values are allowed in DMACSTARTR.
+
+\subsubsection{DMAHSTARTLR and DMAHSTARTHR}
+Registers DMAHSTARTLR and DMAHSTARTHR select the low and high parts of the 64-bit start address for the DMA access in the host. 
+
+\subsubsection{DMALENR}
+Register DMALENR selects the length of the reading in bytes, i.e. twice the number of samples to be read by the host. This means DMALENR has to hold an even number.
+
+\subsubsection{DMANEXTLR and DMANEXTHR}
+These two registers contain the low and high parts of the 64-bit address of the next item in the linked list, in host memory.
+
+\subsubsection{DMAATTRIBR}
+This register contains several control features for the DMA engine:
+\begin{packed_item}
+\item Bits [31..16] are reserved.
+\item Bits [15..8] are used to select how many bytes the DDR controller jumps after every RAM access. A value of 2 will give interleaved samples. A value of 8 will give samples corresponding to a given channel.
+\item Bits [7..2] are reserved.
+\item Bit 1 is set to '0' for little-endian accesses and '1' for big-endian. This affects the way in which 16-bit samples can be stored in a 32-bit long word.
+\item Bit 0 is set to '1' to signal this is the last item in the linked list, '0' otherwise.
+\end{packed_item}
+
+The end of a chained DMA access generates an interrupt request towards the interrupt controller.    
     \subsection{Wishbone interface}
-    The Wishbone master transforms PCIe write into Wishbone write and a PCIe read into a Wishbone read. This Wishbone master should provide burst reads and writes.
+    The Wishbone master transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Burst reads and writes are
     
     \begin{tabularx}{\textwidth}{|X|cc|} \hline
       \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER with 8-bit granularity}                    \\ \hline \hline
       \multicolumn{1}{|c|}{Description}  &\multicolumn{2}{c|} { Specification}                                 \\ \hline
       General description                &\multicolumn{2}{l|} { Wishbone master controlled by PCI express}     \\ \hline
-      Supported cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ 
-                                         &\multicolumn{2}{l|} { MASTER, BLOCK READ/WRITE }                     \\ \hline
+      Supported cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ \hline
       Data port, size:                   &\multicolumn{2}{l|} { 32-bit}                                        \\
       Data port, granularity:            &\multicolumn{2}{l|} { 8-bit}                                         \\
       Data port, maximum operand size    &\multicolumn{2}{l|} { 32-bit}                                        \\
-      Data transfer ordering:            &\multicolumn{2}{l|} { Big endian and/or little endian}               \\
-      Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz (Gennum IP local clock)}               \\ \hline
+      Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz}                                       \\ \hline
       \multirow{8}{6cm}{Supported signal list and cross reference to equivalent WISHBONE signals}
-      &  Signal Name   & WISHBONE Equiv.                                                                       \\
-      &  CLK\_O        &  CLK\_I                                                                               \\
-      &  CYC\_O        &  CYC\_O                                                                               \\
-      &  STB\_O        &  STB\_O                                                                               \\
-      &  ADR\_O(10..0) &  ADR\_O()                                                                             \\
-      &  DAT\_I(31..0) &  DAT\_I()                                                                             \\
-      &  DAT\_O(31..0) &  DAT\_O()                                                                             \\
-      &  WE\_O         &  WE\_O                                                                                \\
-      &  ACK\_I        &  ACK\_I                                                                               \\ \hline
+      &  Signal Name       & WISHBONE Equiv.                                                                   \\
+      &  lclk              &  CLK\_I                                                                           \\
+      &  wb\_cyc\_o        &  CYC\_O                                                                           \\
+      &  wb\_stb\_o        &  STB\_O                                                                           \\
+      &  wb\_adr\_o(10..0) &  ADR\_O()                                                                         \\
+      &  wb\_dat\_i(31..0) &  DAT\_I()                                                                         \\
+      &  wb\_dat\_o(31..0) &  DAT\_O()                                                                         \\
+      &  wb\_we\_o         &  WE\_O                                                                            \\
+      &  wb\_ack\_i        &  ACK\_I                                                                           \\ \hline
 	\end{tabularx}
 
    \subsection{Interrupts}
-   The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends the MSI (Message Signaled Interrupts) to the host.
+   When the GN4124 master get an one-tick-long positive pulse on the \verb+IRQ_req_i+ input, an appropriate signal is send on the \verb+IRQ_req_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends a MSI packet (Message Signaled Interrupts) to the host.
 
 \end{document}
 
