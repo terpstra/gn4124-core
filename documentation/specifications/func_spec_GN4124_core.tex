@@ -5,9 +5,9 @@
 
 \CernDocType{Functional Specifications}
 \CernDocTitle{Gennum GN4124 Core For FMC Projects}
-\CernDocEditedBy{Simon Deprez}
-\CernDocCheckedBy{}
-\CernDocDate{May 2010}
+\CernDocEditedBy{Simon Deprez \\ Javier Serrano}
+\CernDocCheckedBy{Javier Serrano}
+\CernDocDate{June 2010}
 \CernDocAbstract{This functional specification describes the HDL controller for Gennum GN4124 chip. This chip is used on the PCI express FMC carrier (\href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}). It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
 
 \begin{document}
@@ -16,6 +16,8 @@
   \begin{tabularx}{\textwidth}{|p{3cm}|p{3cm}|X|}
     \hline \textbf{Version}&\textbf{Date}&\textbf{Notes}\\ \hline \hline
     0.1 & 21-05-2010 & Initial release\\ \hline
+    0.2 & 29-05-2010 & Add DMA master specifications\\ \hline
+    0.3 & 01-06-2010 & Core diagram review + clocks\\ \hline
 
   \end{tabularx}
 
@@ -120,7 +122,9 @@ This register contains several control features for the DMA engine:
 
 The end of a chained DMA access generates an interrupt request towards the interrupt controller.    
     \subsection{Wishbone interface}
-    The Wishbone master transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Burst reads and writes are
+    The Wishbone master transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read.
+    
+    The communication speed on the Wishbone bus is controlled by the \verb+wb_clk_i+ input.
     
     \begin{tabularx}{\textwidth}{|X|cc|} \hline
       \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER with 8-bit granularity}                    \\ \hline \hline
@@ -133,7 +137,8 @@ The end of a chained DMA access generates an interrupt request towards the inter
       Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz}                                       \\ \hline
       \multirow{8}{6cm}{Supported signal list and cross reference to equivalent WISHBONE signals}
       &  Signal Name       & WISHBONE Equiv.                                                                   \\
-      &  lclk              &  CLK\_I                                                                           \\
+      &  wb\_clk\_i        &  CLK\_I                                                                           \\
+      &  wb\_rst\_i        &  RST\_I                                                                           \\
       &  wb\_cyc\_o        &  CYC\_O                                                                           \\
       &  wb\_stb\_o        &  STB\_O                                                                           \\
       &  wb\_adr\_o(10..0) &  ADR\_O()                                                                         \\
@@ -145,11 +150,13 @@ The end of a chained DMA access generates an interrupt request towards the inter
 
    \subsection{Interrupts}
    When the GN4124 master get an one-tick-long positive pulse on the \verb+IRQ_req_i+ input, an appropriate signal is send on the \verb+IRQ_req_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends a MSI packet (Message Signaled Interrupts) to the host.
+   
+   At the end of a chained DMA acces, the DMA master send a one-tick-long (\verb+sys_clk+) interrupt signal on the \verb+DMA_IRQ_o+ output toward the interrupt controller.
+   
+   The \verb+sys_clk_i+ input is the reference for the interrupt pulses.
+   
 
 \end{document}
-
-
-
 
 
 
