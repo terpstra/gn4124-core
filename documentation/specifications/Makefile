@@ -1,20 +1,20 @@
 # Makefile for Latex work
 
-TEXFILE = func_spec_GN4124_core.tex
-DIAGRAMS = GN4124core.svg
+TEXFILE= func_spec_GN4124_core.tex
+DIAGRAMS= images/GN4124core_arch.svg images/GN4124core.svg
 
 .PHONY: clean view
 
-$(TEXFILE:.tex=.pdf): $(TEXFILE) images/$(DIAGRAMS:.svg=.pdf)
+$(TEXFILE:.tex=.pdf): $(TEXFILE) $(DIAGRAMS:.svg=.pdf)
 	pdflatex $(TEXFILE)
 # Not very nice hack to get references right
 	pdflatex $(TEXFILE)
 
-images/$(DIAGRAMS:.svg=.pdf): images/$(DIAGRAMS:.svg=.eps)
-	epstopdf images/$(DIAGRAMS:.svg=.eps)
+%.pdf: %.eps
+	epstopdf $<
 
-images/$(DIAGRAMS:.svg=.eps): images/$(DIAGRAMS)
-	inkscape -E images/$(DIAGRAMS:.svg=.eps) images/$(DIAGRAMS)
+%.eps: %.svg
+	inkscape -E $@ $<
 
 view: $(TEXFILE:.tex=.pdf)
 	evince $(TEXFILE:.tex=.pdf)
@@ -26,6 +26,6 @@ clean:
 	$(TEXFILE:.tex=.out) \
 	$(TEXFILE:.tex=.toc) \
 	$(TEXFILE:.tex=.pdf) \
-	images/$(DIAGRAMS:.svg=.pdf) \
-	images/$(DIAGRAMS:.svg=.eps) 
+	$(DIAGRAMS:.svg=.pdf) \
+	$(DIAGRAMS:.svg=.eps) 
 
