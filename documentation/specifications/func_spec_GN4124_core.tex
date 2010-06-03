@@ -23,6 +23,7 @@
 
   \tableofcontents
   \listoffigures
+  \listoftables
   \clearpage
 
 %  \section*{Introduction}
@@ -34,9 +35,6 @@ The PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-car
 Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL configuration. The HDL code should be generic for reusing the carrier-specific modules with the other FMC mezzanines. 
 
  The communication between modules is essentially based on the Wishbone bus.
-
-
-
 
   \section{GN4124 core for PCIe FMC carrier}
   This core provides a Wishbone master to access control registers and read status.  The Wishbone\footnote{See \href{http://opencores.org/downloads/wbspec\_b3.pdf}{http://opencores.org/downloads/wbspec\_b3.pdf}.} bus is used for almost all communications between modules. The different soft cores are reusable.
@@ -60,11 +58,11 @@ The data exchange is based on packets similar of PCI express packets, but the he
     \subsection{DMA Interface}
 The DMA interface is a pipelined Wishbone bus. It performs application to host communications.
 
-The DMA engine works with a linked list so that DMAs can be chained. The first item in the list is loaded by the host on the carrier and contains a pointer to the next one, which is in host memory. The DMA engine will fetch items from host memory and perform the corresponding DMAs until one of the items is recognized as the last one though the contents of the DMAATTRIBR register (see table~\ref{tab:ddr_control}). 
+The DMA engine works with a linked list so that DMAs can be chained. The first item in the list is loaded by the host on the carrier and contains a pointer to the next one, which is in host memory. The DMA engine will fetch items from host memory and perform the corresponding DMAs until one of the items is recognized as the last one though the contents of the DMAATTRIBR register (see table~\ref{tab:dma_control}). 
 
 Each item in the list is made of the following registers: DMACSTARTR, DMAHSTARTLR, DMAHSTARTHR, DMALENR, DMANEXTLR, DMANEXTHR and DMAATTRIBR. When reading these items from the host, the DMA engine assumes a little-endian host. Big-endian hosts should shuffle data accordingly so that it is found in the same order as in a little-endian host. In addition, the DMA controller provides global DMA control and status registers.
 
-The end of a chained DMA access generates an interrupt request towards the interrupt controller (\verb+DMA_IRQ_o+ output).  
+The end of a chained DMA access generates an interrupt request (\verb+DMA_IRQ_o+ output) towards the interrupt controller.  
 
 \begin{table}[htbp]
   \centering
@@ -80,8 +78,8 @@ The end of a chained DMA access generates an interrupt request towards the inter
     DMANEXTHR      & & R/W & & Pointer (high) to next item in list                            \\ \hline
     DMAATTRIBR     & & R/W & & DMA endianness and control                                     \\ \hline
   \end{tabularx}
-  \caption{Register set for the DDR RAM controller block.}
-  \label{tab:ddr_control}
+  \caption{Register set for the DMA controller block.}
+  \label{tab:dma_control}
 \end{table}
 
 \subsubsection{DMACTRLR}
@@ -122,10 +120,12 @@ This register contains several control features for the DMA engine:
 
 The end of a chained DMA access generates an interrupt request towards the interrupt controller.    
     \subsection{Wishbone interface}
-    The Wishbone master transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Only single word reads and writes are supported.
+    The Wishbone master (see table~\ref{tab:wb_control}) transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Only single word reads and writes are supported.
     
     The Wishbone bus is clocked by the \verb+wb_clk_i+ input.
-    
+
+\begin{table}[htbp]
+  \centering    
     \begin{tabularx}{\textwidth}{|X|cc|} \hline
       \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER with 8-bit granularity}                    \\ \hline \hline
       \multicolumn{1}{|c|}{Description}  &\multicolumn{2}{c|} { Specification}                                 \\ \hline
@@ -147,6 +147,9 @@ The end of a chained DMA access generates an interrupt request towards the inter
       &  wb\_we\_o         &  WE\_O                                                                            \\
       &  wb\_ack\_i        &  ACK\_I                                                                           \\ \hline
 	\end{tabularx}
+	\caption{Wishbone master datasheet.}
+  \label{tab:wb_control}
+\end{table}
 
    \subsection{Interrupts}
    When the GN4124 master gets a one-tick-long (\verb+sys_clk_i+) positive pulse on the \verb+IRQ_req_i+ input, a one-tick-long (GN4124 local bus clock) positive pulse is send on the \verb+IRQ_req_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends an MSI packet (Message Signaled Interrupts) to the host.

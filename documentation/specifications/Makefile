@@ -27,5 +27,5 @@ clean:
 	$(TEXFILE:.tex=.toc) \
 	$(TEXFILE:.tex=.pdf) \
 	$(DIAGRAMS:.svg=.pdf) \
-	$(DIAGRAMS:.svg=.eps) 
+#	$(DIAGRAMS:.svg=.eps) 
 
