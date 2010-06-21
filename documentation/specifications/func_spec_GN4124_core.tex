@@ -8,7 +8,7 @@
 \CernDocEditedBy{Simon Deprez}
 \CernDocCheckedBy{Javier Serrano}
 \CernDocDate{June 2010}
-\CernDocAbstract{This functional specification describes the HDL controller for Gennum GN4124 chip. This chip is used on the PCI express FMC carrier (\href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}). It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
+\CernDocAbstract{This functional specification describes the HDL controller for Gennum the GN4124 chip. This chip is used on the PCI express FMC carrier (\href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}). It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
 
 \begin{document}
   \cerntitle
@@ -32,31 +32,37 @@
   \section{Introduction}
 The PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}.} will be associated with several FMC\footnote{See VITA FMC standard: \href{http://www.vita.com/fmc}{www.vita.com/fmc}.} mezzanines. 
 
-Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL configuration. The HDL code should be generic for reusing the carrier-specific modules with the other FMC mezzanines. 
+Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL configuration. The HDL (Hardware description language) code should be generic for reusing the carrier-specific modules with the other FMC mezzanines. 
 
- The communication between modules is essentially based on the Wishbone bus.
+ The communication between modules is essentially based on the Wishbone bus. Two separates Wishbones bus are used to performs communications.
+ 
+ \begin{packed_item}
+\item 1 Wishbone master interface that transforms memory reads and memory writes from PCI express bus in Wishbone single reads and single writes. (20 MB/s -- 100 MB/s)
+\item 1 DMA master interface that preforms data transfers from local application to PCI express host. (up to 400 MB/s)
+
+\end{packed_item}
 
   \section{GN4124 core for PCIe FMC carrier}
   This core provides a Wishbone master to access control registers and read status.  The Wishbone\footnote{See \href{http://opencores.org/downloads/wbspec\_b3.pdf}{http://opencores.org/downloads/wbspec\_b3.pdf}.} bus is used for almost all communications between modules. The different soft cores are reusable.
   
-  A simple DMA master is used for high speed data transfers of mezzanine card acquisitions. This DMA master is also based on Wishbone and uses a new pipelined mode to increase  throughput.
+  A simple DMA master is used for high speed data transfers of mezzanine card acquisitions. This DMA master is also based on Wishbone and uses a new pipelined mode that was developed to increase  throughput. It is expected that it becomes part of a new version of the Wishbone specification.
   
 \begin{figure}[!ht]
 	\centering
-		\includegraphics[width=13cm]{GN4124core}
+		\includegraphics[width=13cm]{GN4124core.pdf}
 	\caption{GN4124 core for PCIe FMC carrier}
 	\label{fig:GCWWM}
 \end{figure} 
     \subsection{GN4124 Local Bus Interface}
     
-The GN4124 is a 4-lane PCI express to local bus bridge that is designed to work with a FPGA device to provide a high speed serial access for an application.
+The GN4124 is a 4-lane PCI express to local bus bridge that is designed to work with an FPGA device to provide a high speed serial access for an application.
     
 The GN412x PCI Express family Reference Manual\footnote{See \href{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}.} (52624-0 June 2009) describes the local bus interface at page 40.
 
-The data exchange is based on packets similar of PCI express packets, but the headers are different. It is not possible to send MSI (Message Signaled Interrupts) packets with this bus.
+The data exchange is based on packets similar to PCI express packets, but the headers are different. It is not possible to send MSI (Message Signaled Interrupts) packets with this bus so the interrupt request signal is 
     
     \subsection{DMA Interface}
-The DMA interface is a pipelined Wishbone bus. It performs application to host communications.
+The DMA interface is a pipelined Wishbone bus. It preforms data transfers from local application to PCI express host.
 
 The DMA engine works with a linked list so that DMAs can be chained. The first item in the list is loaded by the host on the carrier and contains a pointer to the next one, which is in host memory. The DMA engine will fetch items from host memory and perform the corresponding DMAs until one of the items is recognized as the last one though the contents of the DMAATTRIBR register (see table~\ref{tab:dma_control}). 
 
@@ -78,7 +84,7 @@ The end of a chained DMA access generates an interrupt request (\verb+DMA_IRQ_o+
     DMANEXTHR      & & R/W & & Pointer (high) to next item in list                            \\ \hline
     DMAATTRIBR     & & R/W & & DMA endianness and control                                     \\ \hline
   \end{tabularx}
-  \caption{Register set for the DMA controller block.}
+  \caption{Register set for the DMA controller block}
   \label{tab:dma_control}
 \end{table}
 
@@ -97,7 +103,7 @@ This is a status register for the DMA engine. Possible contents are:
 A DMA start command written into the DMACTRLR register takes this status out of Idle, Done, Error or Aborted into the Busy state.
 
 \subsubsection{DMACSTARTR}
-The DMACSTARTR register holds a byte address pointing to a location inside the DDR RAM, at which the DMA access should start. Taking into account that the DDR is a 16-bit device, only even values are allowed in DMACSTARTR.
+The DMACSTARTR register holds a byte address pointing to a location inside the local memory, at which the DMA access should start. Taking into account that the DDR is a 16-bit device, only even values are allowed in DMACSTARTR.
 
 \subsubsection{DMAHSTARTLR and DMAHSTARTHR}
 Registers DMAHSTARTLR and DMAHSTARTHR select the low and high parts of the 64-bit start address for the DMA access in the host. 
@@ -112,7 +118,7 @@ These two registers contain the low and high parts of the 64-bit address of the 
 This register contains several control features for the DMA engine:
 \begin{packed_item}
 \item Bits [31..16] are reserved.
-\item Bits [15..8] are used to select how many bytes the DDR controller jumps after every RAM access. A value of 2 will give interleaved samples. A value of 8 will give samples corresponding to a given channel.
+\item Bits [15..8] are used to select how many bytes the DDR controller jumps after every RAM access. %A value of 2 will give interleaved samples. A value of 8 will give samples corresponding to a given channel.
 \item Bits [7..2] are reserved.
 \item Bit 1 is set to '0' for little-endian accesses and '1' for big-endian. This affects the way in which 16-bit samples can be stored in a 32-bit long word.
 \item Bit 0 is set to '1' to signal this is the last item in the linked list, '0' otherwise.
@@ -120,19 +126,18 @@ This register contains several control features for the DMA engine:
 
 The end of a chained DMA access generates an interrupt request towards the interrupt controller.    
     \subsection{Wishbone interface}
-    The Wishbone master (see table~\ref{tab:wb_control}) transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Only single word reads and writes are supported.
+    The Wishbone master (see table~\ref{tab:wb_control}) transforms a PCIe memory write into a 32 bits Wishbone write and a PCIe memory read into a 32 bits Wishbone read. Only single word reads and writes are supported.
     
     The Wishbone bus is clocked by the \verb+wb_clk_i+ input.
 
 \begin{table}[htbp]
   \centering    
     \begin{tabularx}{\textwidth}{|X|cc|} \hline
-      \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER with 8-bit granularity}                    \\ \hline \hline
+      \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER}                    \\ \hline \hline
       \multicolumn{1}{|c|}{Description}  &\multicolumn{2}{c|} { Specification}                                 \\ \hline
       General description                &\multicolumn{2}{l|} { Wishbone master controlled by PCI express}     \\ \hline
       Supported cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ \hline
       Data port, size:                   &\multicolumn{2}{l|} { 32-bit}                                        \\
-      Data port, granularity:            &\multicolumn{2}{l|} { 8-bit}                                         \\
       Data port, maximum operand size    &\multicolumn{2}{l|} { 32-bit}                                        \\
       Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz}                                       \\ \hline
       \multirow{8}{6cm}{Supported signal list and cross reference to equivalent WISHBONE signals}
@@ -147,12 +152,12 @@ The end of a chained DMA access generates an interrupt request towards the inter
       &  wb\_we\_o         &  WE\_O                                                                            \\
       &  wb\_ack\_i        &  ACK\_I                                                                           \\ \hline
 	\end{tabularx}
-	\caption{Wishbone master datasheet.}
+	\caption{Wishbone master datasheet}
   \label{tab:wb_control}
 \end{table}
 
    \subsection{Interrupts}
-   When the GN4124 master gets a one-tick-long (\verb+sys_clk_i+) positive pulse on the \verb+IRQ_req_i+ input, a one-tick-long (GN4124 local bus clock) positive pulse is send on the \verb+IRQ_req_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends an MSI packet (Message Signaled Interrupts) to the host.
+   When the GN4124 master gets a one-tick-long (\verb+sys_clk_i+) positive pulse on the \verb+IRQ_req_i+ input, a one-tick-long (GN4124 local bus clock) positive pulse is sent on the \verb+IRQ_req_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends an MSI packet (Message Signaled Interrupts) to the host.
    
    At the end of a chained DMA acces, the DMA master sends a one-tick-long (\verb+sys_clk_i+) interrupt signal on the \verb+DMA_IRQ_o+ output toward the interrupt controller.
 

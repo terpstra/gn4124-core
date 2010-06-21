@@ -1211,18 +1211,6 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
-    <filter
-       inkscape:collect="always"
-       id="filter11684"
-       x="-0.030102049"
-       width="1.0602041"
-       y="-8.849332"
-       height="18.698664">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="0.6822835"
-         id="feGaussianBlur11686" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1231,9 +1219,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.1147515"
-     inkscape:cx="300.66144"
-     inkscape:cy="124.59569"
+     inkscape:zoom="5.9814205"
+     inkscape:cx="488.47997"
+     inkscape:cy="41.073477"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2016,5 +2004,13 @@
          y="1017.0257"
          style="font-size:10px;fill:#000000;fill-opacity:1;stroke:none"
          id="tspan7545">clock bridge</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.70866143999999998;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3137"
+       width="1.7716535"
+       height="1.7716535"
+       x="568.70081"
+       y="480.1181"
+       transform="translate(0,556.29817)" />
   </g>
 </svg>

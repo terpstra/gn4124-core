@@ -1014,7 +1014,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="279.44959"
+     inkscape:cx="139.44245"
      inkscape:cy="160.39585"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
@@ -1070,19 +1070,19 @@
      id="layer1"
      transform="translate(0,-662.59709)">
     <rect
-       style="fill:none;stroke:#000000;stroke-width:0.70866144;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="rect2858-1-8-11"
-       width="124.01575"
-       height="106.29922"
-       x="88.58268"
-       y="839.76245" />
-    <rect
-       style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#ffffd7;stroke:#000000;stroke-width:0.69999999000000002;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        id="rect2858"
        width="265.74805"
        height="318.89764"
        x="88.582672"
        y="680.3136" />
+    <rect
+       style="fill:#eae2d3;stroke:#000000;stroke-width:0.70866143999999998;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       id="rect2858-1-8-11"
+       width="124.01575"
+       height="106.29922"
+       x="88.58268"
+       y="839.76245" />
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
@@ -1126,12 +1126,12 @@
          style="font-size:12px;fill:#000000;fill-opacity:1;stroke:none"
          id="tspan3153-6-5">Wishbone Master</tspan></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#ebe7ff;stroke:#000000;stroke-width:0.69999999000000002;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        d="m 354.33071,875.19549 8.54595,-14.15934 0,7.08662 26.88712,-0.0139 0,14.17323 -26.88712,0.0139 0,7.08662 -8.54595,-14.18712 z"
        id="path4790-1"
        sodipodi:nodetypes="cccccccc" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#ebe7ff;stroke:#000000;stroke-width:0.69999999000000002;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        d="m 389.76378,751.17976 -8.54595,-14.15934 0,7.08662 -26.88712,-0.0139 0,14.17323 26.88712,0.0139 0,7.08662 8.54595,-14.18712 z"
        id="path4790-1-7"
        sodipodi:nodetypes="cccccccc" />
@@ -1147,7 +1147,7 @@
          style="font-size:12px"
          id="tspan2999">to GN4124</tspan></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#00ffff;stroke:#000000;stroke-width:0.69999999000000002;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        d="m 1.7716545,875.18161 8.5459495,-14.15934 0,7.08662 69.568954,0 0,-7.08662 8.696119,14.17323 -8.696119,14.17323 0,-7.08662 -69.568954,0 0,7.08662 -8.5459495,-14.18712 z"
        id="path4790" />
     <text
@@ -1349,7 +1349,7 @@
          style="font-size:7px"
          id="tspan4969">RX_ERROR</tspan></text>
     <rect
-       style="fill:none;stroke:#000000;stroke-width:0.70866144;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#eae2d3;stroke:#000000;stroke-width:0.70866143999999998;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        id="rect2858-1-8-11-8"
        width="124.01575"
        height="106.29922"
@@ -1383,7 +1383,7 @@
          style="font-size:14px"
          id="tspan2997-9">Interface</tspan></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#00a0ff;stroke:#000000;stroke-width:0.69999999000000002;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
        d="m 1.6095059,760.02413 8.5459491,-14.15933 0,7.08661 69.568954,0 0,-7.08662 8.696117,14.17324 -8.696117,14.17323 0,-7.08663 -69.568954,0 0,7.08663 -8.5459491,-14.18713 z"
        id="path4790-5" />
     <text

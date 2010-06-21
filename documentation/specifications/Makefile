@@ -1,7 +1,10 @@
 # Makefile for Latex work
 
 TEXFILE= func_spec_GN4124_core.tex
-DIAGRAMS= images/GN4124core_arch.svg images/GN4124core.svg
+DIAGRAMS= images/GN4124core.svg
+OTHERS= images/GN4124core_arch.svg images/GN4124core_sequencer.svg \
+        images/GN4124core.svg images/DMA_state_machine.svg \
+        images/Sequencer_state_machine.svg images/Wishbone_bus.svg
 
 .PHONY: clean view
 
@@ -16,6 +19,10 @@ $(TEXFILE:.tex=.pdf): $(TEXFILE) $(DIAGRAMS:.svg=.pdf)
 %.eps: %.svg
 	inkscape -E $@ $<
 
+%.png: %.svg
+	inkscape $< -d 120 -D -e $@
+
+
 view: $(TEXFILE:.tex=.pdf)
 	evince $(TEXFILE:.tex=.pdf)
 
@@ -27,5 +34,7 @@ clean:
 	$(TEXFILE:.tex=.toc) \
 	$(TEXFILE:.tex=.pdf) \
 	$(DIAGRAMS:.svg=.pdf) \
-#	$(DIAGRAMS:.svg=.eps) 
+	$(OTHERS:.svg=.pdf) \
+	$(OTHERS:.svg=.png) \
 
+diag: $(OTHERS:.svg=.pdf) $(OTHERS:.svg=.png)
