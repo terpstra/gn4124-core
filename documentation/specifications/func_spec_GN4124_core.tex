@@ -36,16 +36,36 @@ Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL confi
 
  The communication between modules is essentially based on the Wishbone bus. Two separates Wishbones bus are used to performs communications.
  
- \begin{packed_item}
-\item 1 Wishbone master interface that transforms memory reads and memory writes from PCI express bus in Wishbone single reads and single writes. (20 MB/s -- 100 MB/s)
-\item 1 DMA master interface that preforms data transfers from local application to PCI express host. (up to 400 MB/s)
+\begin{packed_item}
+  \item CSR Interface 
+  %\item 1 Wishbone master interface that transforms memory reads and memory writes from PCI express bus in Wishbone single reads and single writes. (20 MB/s -- 100 MB/s)
+  \begin{packed_item}
+    \item Wishbone\footnote{See \href{http://opencores.org/opencores,wishbone}{http://opencores.org/opencores,wishbone}.} Master
+  	\item 32 bit  
+  	\item Singles reads and writes
+  	\item 40 MB/s (single reads) -- 200 MB/s (single writes)
+   \end{packed_item}  
+  
+  \item DMA Interface 
+%\item 1 DMA master interface that preforms data transfers from local application to PCI express host. (up to 400 MB/s)
+  \begin{packed_item}
+    \item Pipelined Wishbone Master
+  	\item 32 bit  
+  	\item Local to PCI Express data transfer
+  	\item PCI Express to local data transfer
+  	\item Byte swapping
+latex ams math
+  	\item $\backsimeq$ 600 MB/s 
+   \end{packed_item}     
+   
+
 
 \end{packed_item}
 
   \section{GN4124 core for PCIe FMC carrier}
-  This core provides a Wishbone master to access control registers and read status.  The Wishbone\footnote{See \href{http://opencores.org/downloads/wbspec\_b3.pdf}{http://opencores.org/downloads/wbspec\_b3.pdf}.} bus is used for almost all communications between modules. The different soft cores are reusable.
+  This core provides a Wishbone master to access control registers and read status.  The Wishbone bus is used for almost all communications between modules. The different soft cores are reusable.
   
-  A simple DMA master is used for high speed data transfers of mezzanine card acquisitions. This DMA master is also based on Wishbone and uses a new pipelined mode that was developed to increase  throughput. It is expected that it becomes part of a new version of the Wishbone specification.
+  A simple DMA master is used for high speed data transfers of mezzanine card acquisitions. This DMA master is also based on Wishbone and uses a new pipelined mode that was developed to increase  throughput.
   
 \begin{figure}[!ht]
 	\centering
@@ -59,10 +79,10 @@ The GN4124 is a 4-lane PCI express to local bus bridge that is designed to work 
     
 The GN412x PCI Express family Reference Manual\footnote{See \href{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}{http://my.gennum.com/mygennum/view.php/gn4124-gullwing}.} (52624-0 June 2009) describes the local bus interface at page 40.
 
-The data exchange is based on packets similar to PCI express packets, but the headers are different. It is not possible to send MSI (Message Signaled Interrupts) packets with this bus so the interrupt request signal is 
+The data exchange is based on packets similar to PCI express packets, but the headers are different. It is not possible to send MSI (Message Signaled Interrupts) packets with this bus so the interrupt request signal is wired to a GPIO input of the GN4124 chip.
     
     \subsection{DMA Interface}
-The DMA interface is a pipelined Wishbone bus. It preforms data transfers from local application to PCI express host.
+The DMA interface is a 32 bit pipelined Wishbone bus. It preforms data transfers from local application to PCI express host.
 
 The DMA engine works with a linked list so that DMAs can be chained. The first item in the list is loaded by the host on the carrier and contains a pointer to the next one, which is in host memory. The DMA engine will fetch items from host memory and perform the corresponding DMAs until one of the items is recognized as the last one though the contents of the DMAATTRIBR register (see table~\ref{tab:dma_control}). 
 
@@ -91,6 +111,21 @@ The end of a chained DMA access generates an interrupt request (\verb+DMA_IRQ_o+
 \subsubsection{DMACTRLR}
 Writing 1 to this register starts a DMA transfer. Writing 2 aborts the ongoing transfer.
 
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{|c|c|c|c|}                                              \hline
+    Order on PCI Express & Swap Words & Swap Bytes  & Order on Wishbone bus                \\ \hline \hline
+     \multirow{4}{*}{A1 B2 C3 D4}
+                         &  0       & 0         &  A1 B2 C3 D4                         \\ \cline{2-4}
+                         &  0       & 1         &  B2 A1 D4 C3                         \\ \cline{2-4}
+                         &  1       & 0         &  C3 D4 A1 B2                         \\ \cline{2-4}
+                         &  1       & 1         &  D4 C3 B2 A1                         \\ \hline
+
+  \end{tabular}
+  \caption{Byte swapping}
+  \label{tab:dma_control}
+\end{table}
+
 \subsubsection{DMASTATR}
 This is a status register for the DMA engine. Possible contents are:
 \begin{packed_item}
@@ -103,24 +138,22 @@ This is a status register for the DMA engine. Possible contents are:
 A DMA start command written into the DMACTRLR register takes this status out of Idle, Done, Error or Aborted into the Busy state.
 
 \subsubsection{DMACSTARTR}
-The DMACSTARTR register holds a byte address pointing to a location inside the local memory, at which the DMA access should start. Taking into account that the DDR is a 16-bit device, only even values are allowed in DMACSTARTR.
+The DMACSTARTR register holds a byte address pointing to a location inside the local memory, at which the DMA access should start.
 
 \subsubsection{DMAHSTARTLR and DMAHSTARTHR}
 Registers DMAHSTARTLR and DMAHSTARTHR select the low and high parts of the 64-bit start address for the DMA access in the host. 
 
 \subsubsection{DMALENR}
-Register DMALENR selects the length of the reading in bytes, i.e. twice the number of samples to be read by the host. This means DMALENR has to hold an even number.
+Register DMALENR selects the length of the reading in bytes. This means DMALENR has to hold an even number.
 
 \subsubsection{DMANEXTLR and DMANEXTHR}
-These two registers contain the low and high parts of the 64-bit address of the next item in the linked list, in host memory.
+These two registers contain the low and high parts of the 64-bit address of the next item in the linked list, in PCI Express host memory.
 
 \subsubsection{DMAATTRIBR}
 This register contains several control features for the DMA engine:
 \begin{packed_item}
-\item Bits [31..16] are reserved.
-\item Bits [15..8] are used to select how many bytes the DDR controller jumps after every RAM access. %A value of 2 will give interleaved samples. A value of 8 will give samples corresponding to a given channel.
-\item Bits [7..2] are reserved.
-\item Bit 1 is set to '0' for little-endian accesses and '1' for big-endian. This affects the way in which 16-bit samples can be stored in a 32-bit long word.
+\item Bits [31..2] are reserved.
+\item Bit 1 is set to '0' for local to PCI Express host data transfer an '1' for PCI Express host to local data transfer.
 \item Bit 0 is set to '1' to signal this is the last item in the linked list, '0' otherwise.
 \end{packed_item}
 
@@ -136,7 +169,8 @@ The end of a chained DMA access generates an interrupt request towards the inter
       \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER}                    \\ \hline \hline
       \multicolumn{1}{|c|}{Description}  &\multicolumn{2}{c|} { Specification}                                 \\ \hline
       General description                &\multicolumn{2}{l|} { Wishbone master controlled by PCI express}     \\ \hline
-      Supported cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ \hline
+      Supported meteo
+      cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ \hline
       Data port, size:                   &\multicolumn{2}{l|} { 32-bit}                                        \\
       Data port, maximum operand size    &\multicolumn{2}{l|} { 32-bit}                                        \\
       Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz}                                       \\ \hline

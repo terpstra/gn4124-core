@@ -4,7 +4,7 @@ TEXFILE= func_spec_GN4124_core.tex
 DIAGRAMS= images/GN4124core.svg
 OTHERS= images/GN4124core_arch.svg images/GN4124core_sequencer.svg \
         images/GN4124core.svg images/DMA_state_machine.svg \
-        images/Sequencer_state_machine.svg images/Wishbone_bus.svg
+        images/Sequencer_state_machine.svg images/Wishbone_bus.svg images/FMC.svg 
 
 .PHONY: clean view
 

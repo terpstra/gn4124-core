@@ -24,6 +24,7 @@
 \RequirePackage{lastpage}
 \RequirePackage{parskip}
 \RequirePackage{listings}
+\RequirePackage{amsmath,amssymb}
 
 \RequirePackage[colorlinks=true,linkcolor=black ,urlcolor=green!60!blue]{hyperref}
 
