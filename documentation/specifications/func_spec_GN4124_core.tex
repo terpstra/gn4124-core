@@ -7,8 +7,12 @@
 \CernDocTitle{Gennum GN4124 Core For FMC Projects}
 \CernDocEditedBy{Simon Deprez}
 \CernDocCheckedBy{Javier Serrano}
-\CernDocDate{June 2010}
+\CernDocDate{July 2010}
 \CernDocAbstract{This functional specification describes the HDL controller for Gennum the GN4124 chip. This chip is used on the PCI express FMC carrier (\href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}). It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
+
+\widowpenalty 10000
+\clubpenalty 10000
+\raggedbottom
 
 \begin{document}
   \cerntitle
@@ -18,6 +22,8 @@
     0.1 & 21-05-2010 & Initial release\\ \hline
     0.2 & 29-05-2010 & Add DMA master specifications\\ \hline
     0.3 & 01-06-2010 & Core diagram review + clocks\\ \hline
+    0.4 & 28-06-2010 & Add byte swapping for DMA interface\\ \hline
+    0.5 & 06-07-2010 & Corrections after review of 25-06-10\\ \hline
 
   \end{tabularx}
 
@@ -32,17 +38,17 @@
   \section{Introduction}
 The PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-carrier}{www.ohwr.org/projects/fmc-pci-carrier}.} will be associated with several FMC\footnote{See VITA FMC standard: \href{http://www.vita.com/fmc}{www.vita.com/fmc}.} mezzanines. 
 
-Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL configuration. The HDL (Hardware description language) code should be generic for reusing the carrier-specific modules with the other FMC mezzanines. 
+Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL (Hardware description language) configuration. The HDL code should be generic for reusing the carrier-specific modules with the other FMC mezzanines. 
 
  The communication between modules is essentially based on the Wishbone bus. Two separates Wishbones bus are used to performs communications.
  
 \begin{packed_item}
-  \item CSR Interface 
+  \item CSR (Control and status register) Interface 
   %\item 1 Wishbone master interface that transforms memory reads and memory writes from PCI express bus in Wishbone single reads and single writes. (20 MB/s -- 100 MB/s)
   \begin{packed_item}
     \item Wishbone\footnote{See \href{http://opencores.org/opencores,wishbone}{http://opencores.org/opencores,wishbone}.} Master
   	\item 32 bit  
-  	\item Singles reads and writes
+  	\item Singles reads and writes 
   	\item 40 MB/s (single reads) -- 200 MB/s (single writes)
    \end{packed_item}  
   
@@ -54,8 +60,7 @@ Each FMC mezzanine used with the PCIe FMC carrier will need a specific HDL confi
   	\item Local to PCI Express data transfer
   	\item PCI Express to local data transfer
   	\item Byte swapping
-latex ams math
-  	\item $\backsimeq$ 600 MB/s 
+  	\item 600 MB/s 
    \end{packed_item}     
    
 
@@ -69,9 +74,9 @@ latex ams math
   
 \begin{figure}[!ht]
 	\centering
-		\includegraphics[width=13cm]{GN4124core.pdf}
+		\includegraphics[width=\textwidth]{GN4124core.pdf}
 	\caption{GN4124 core for PCIe FMC carrier}
-	\label{fig:GCWWM}
+	\label{fig:GN4124core}
 \end{figure} 
     \subsection{GN4124 Local Bus Interface}
     
@@ -92,44 +97,57 @@ The end of a chained DMA access generates an interrupt request (\verb+DMA_IRQ_o+
 
 \begin{table}[htbp]
   \centering
-  \begin{tabularx}{\textwidth}{|l|r|l|l|X|}                                                     \hline
+  \begin{tabularx}{\textwidth}{|l|r|l|l|X|}                                                   \hline
     \textbf{NAME}  & \textbf{OFFSET} & \textbf{MODE} & \textbf{RESET} & \textbf{DESCRIPTION}  \\ \hline \hline
     DMACTRLR       & & R/W & & DMA engine control                                             \\ \hline
     DMASTATR       & & RO  & & DMA engine status                                              \\ \hline
     DMACSTARTR     & & R/W & & DMA start address in the carrier                               \\ \hline
-    DMAHSTARTLR    & & R/W & & DMA start address (low) in the host                            \\ \hline
-    DMAHSTARTHR    & & R/W & & DMA start address (high) in the host                           \\ \hline
+    DMAHSTARTLR    & & R/W & & DMA start address (low) in the PCIe host                       \\ \hline
+    DMAHSTARTHR    & & R/W & & DMA start address (high) in the PCIe host                      \\ \hline
     DMALENR        & & R/W & & DMA read length in bytes                                       \\ \hline
-    DMANEXTLR      & & R/W & & Pointer (low) to next item in list                             \\ \hline
-    DMANEXTHR      & & R/W & & Pointer (high) to next item in list                            \\ \hline
-    DMAATTRIBR     & & R/W & & DMA endianness and control                                     \\ \hline
+    DMANEXTLR      & & R/W & & Pointer (low) to next item in list (PCIe host)                 \\ \hline
+    DMANEXTHR      & & R/W & & Pointer (high) to next item in list (PCIe host)                \\ \hline
+    DMAATTRIBR     & & R/W & & DMA chain control                                              \\ \hline
   \end{tabularx}
   \caption{Register set for the DMA controller block}
   \label{tab:dma_control}
 \end{table}
 
+
+\newpage
 \subsubsection{DMACTRLR}
-Writing 1 to this register starts a DMA transfer. Writing 2 aborts the ongoing transfer.
+%Writing 1 to this register starts a DMA transfer. Writing 2 aborts the ongoing transfer.
+\begin{packed_item}
+\item Bits [31..4] are reserved.
+\item Bits [3..2] controls byte swapping of the DMA interface(see table~\ref{tab:byte_swapping}). It works in the both DMA transfer directions:
+  \begin{packed_item}
+    \item "00" To swapping.
+    \item "X1" Swap the two bytes in the words.
+    \item "1X" Swap the two words.
+  \end{packed_item}
+\item Bit 1 is set to '1' to abort the ongoing transfer.
+\item Bit 0 is set to '1' to start a DMA transfer, '0' otherwise.
+\end{packed_item}
 
 \begin{table}[htbp]
   \centering
-  \begin{tabular}{|c|c|c|c|}                                              \hline
-    Order on PCI Express & Swap Words & Swap Bytes  & Order on Wishbone bus                \\ \hline \hline
-     \multirow{4}{*}{A1 B2 C3 D4}
-                         &  0       & 0         &  A1 B2 C3 D4                         \\ \cline{2-4}
-                         &  0       & 1         &  B2 A1 D4 C3                         \\ \cline{2-4}
-                         &  1       & 0         &  C3 D4 A1 B2                         \\ \cline{2-4}
-                         &  1       & 1         &  D4 C3 B2 A1                         \\ \hline
+  \begin{tabular}{|c|c|c|}                                                      \hline
+    Double word on PCI Express & Control bits of the swapping & Double word on Wishbone bus           \\ \hline \hline
+     \multirow{3}{*}{A1 B2 C3 D4}
+                         &  "00"         &  A1 B2 C3 D4                         \\ \cline{2-3}
+%                        &  "01"         &  B2 A1 D4 C3                         \\ \cline{2-3}
+                         &  "10"         &  C3 D4 A1 B2                         \\ \cline{2-3}
+                         &  "11"         &  D4 C3 B2 A1                         \\ \hline
 
   \end{tabular}
   \caption{Byte swapping}
-  \label{tab:dma_control}
+  \label{tab:byte_swapping}
 \end{table}
 
 \subsubsection{DMASTATR}
 This is a status register for the DMA engine. Possible contents are:
 \begin{packed_item}
-\item 0: Idle (before any DMA transfer takes place).
+\item 0: Idle (before any DMA transfer takes place and after reset).
 \item 1: Done (after successful DMA).
 \item 2: Busy.
 \item 3: Error (following a memory access error, either on the host or on the carrier). This also produces an interrupt.
@@ -141,10 +159,10 @@ A DMA start command written into the DMACTRLR register takes this status out of 
 The DMACSTARTR register holds a byte address pointing to a location inside the local memory, at which the DMA access should start.
 
 \subsubsection{DMAHSTARTLR and DMAHSTARTHR}
-Registers DMAHSTARTLR and DMAHSTARTHR select the low and high parts of the 64-bit start address for the DMA access in the host. 
+Registers DMAHSTARTLR and DMAHSTARTHR select the low and high parts of the 64-bit start address for the DMA access in the PCI Express host. 
 
 \subsubsection{DMALENR}
-Register DMALENR selects the length of the reading in bytes. This means DMALENR has to hold an even number.
+Register DMALENR selects the length of the data transfer in bytes. 
 
 \subsubsection{DMANEXTLR and DMANEXTHR}
 These two registers contain the low and high parts of the 64-bit address of the next item in the linked list, in PCI Express host memory.
@@ -153,24 +171,25 @@ These two registers contain the low and high parts of the 64-bit address of the 
 This register contains several control features for the DMA engine:
 \begin{packed_item}
 \item Bits [31..2] are reserved.
-\item Bit 1 is set to '0' for local to PCI Express host data transfer an '1' for PCI Express host to local data transfer.
+\item Bit 1: Transfer direction. This bit is set to '0' for local to PCI Express host data transfer an '1' for PCI Express host to local data transfer.
 \item Bit 0 is set to '1' to signal this is the last item in the linked list, '0' otherwise.
 \end{packed_item}
 
 The end of a chained DMA access generates an interrupt request towards the interrupt controller.    
     \subsection{Wishbone interface}
-    The Wishbone master (see table~\ref{tab:wb_control}) transforms a PCIe memory write into a 32 bits Wishbone write and a PCIe memory read into a 32 bits Wishbone read. Only single word reads and writes are supported.
+    The Wishbone master (see table~\ref{tab:wb_control}) transforms a PCIe memory write into a 32 bits Wishbone write and a PCIe memory read into a 32 bits Wishbone read. Only single reads and writes are supported.   
     
     The Wishbone bus is clocked by the \verb+wb_clk_i+ input.
+    
+    
 
 \begin{table}[htbp]
   \centering    
     \begin{tabularx}{\textwidth}{|X|cc|} \hline
-      \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER}                    \\ \hline \hline
+      \multicolumn{3}{|c|}{WISHBONE DATASHEET for the 32-bit MASTER}                                           \\ \hline \hline
       \multicolumn{1}{|c|}{Description}  &\multicolumn{2}{c|} { Specification}                                 \\ \hline
       General description                &\multicolumn{2}{l|} { Wishbone master controlled by PCI express}     \\ \hline
-      Supported meteo
-      cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ \hline
+      Supported cycles                   &\multicolumn{2}{l|} { MASTER, READ/WRITE }                           \\ \hline
       Data port, size:                   &\multicolumn{2}{l|} { 32-bit}                                        \\
       Data port, maximum operand size    &\multicolumn{2}{l|} { 32-bit}                                        \\
       Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz}                                       \\ \hline
@@ -193,7 +212,7 @@ The end of a chained DMA access generates an interrupt request towards the inter
    \subsection{Interrupts}
    When the GN4124 master gets a one-tick-long (\verb+sys_clk_i+) positive pulse on the \verb+IRQ_req_i+ input, a one-tick-long (GN4124 local bus clock) positive pulse is sent on the \verb+IRQ_req_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends an MSI packet (Message Signaled Interrupts) to the host.
    
-   At the end of a chained DMA acces, the DMA master sends a one-tick-long (\verb+sys_clk_i+) interrupt signal on the \verb+DMA_IRQ_o+ output toward the interrupt controller.
+   At the end of a chained DMA acces, the DMA master sends a one-tick-long (\verb+sys_clk_i+) interrupt signal on the \verb+DMA_IRQ_o+ output toward the interrupt controller (see figure~\ref{fig:GN4124core}). So the interrupt controller knows that the DMA master is the source of the interrupt.
 
 \end{document}
 
