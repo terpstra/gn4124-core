@@ -97,17 +97,17 @@ The end of a chained DMA access generates an interrupt request (\verb+DMA_IRQ_o+
 
 \begin{table}[htbp]
   \centering
-  \begin{tabularx}{\textwidth}{|l|r|l|l|X|}                                                   \hline
+  \begin{tabularx}{\textwidth}{|l|c|l|c|X|}                                                   \hline
     \textbf{NAME}  & \textbf{OFFSET} & \textbf{MODE} & \textbf{RESET} & \textbf{DESCRIPTION}  \\ \hline \hline
-    DMACTRLR       & & R/W & & DMA engine control                                             \\ \hline
-    DMASTATR       & & RO  & & DMA engine status                                              \\ \hline
-    DMACSTARTR     & & R/W & & DMA start address in the carrier                               \\ \hline
-    DMAHSTARTLR    & & R/W & & DMA start address (low) in the PCIe host                       \\ \hline
-    DMAHSTARTHR    & & R/W & & DMA start address (high) in the PCIe host                      \\ \hline
-    DMALENR        & & R/W & & DMA read length in bytes                                       \\ \hline
-    DMANEXTLR      & & R/W & & Pointer (low) to next item in list (PCIe host)                 \\ \hline
-    DMANEXTHR      & & R/W & & Pointer (high) to next item in list (PCIe host)                \\ \hline
-    DMAATTRIBR     & & R/W & & DMA chain control                                              \\ \hline
+    DMACTRLR       & 0x00 & R/W & 0x00000000 & DMA engine control                                       \\ \hline
+    DMASTATR       & 0x04 & RO  & 0x00000000 & DMA engine status                                              \\ \hline
+    DMACSTARTR     & 0x08 & R/W & 0x00000000 & DMA start address in the carrier                               \\ \hline
+    DMAHSTARTLR    & 0x0C & R/W & 0x00000000 & DMA start address (low) in the PCIe host                       \\ \hline
+    DMAHSTARTHR    & 0x10 & R/W & 0x00000000 & DMA start address (high) in the PCIe host                      \\ \hline
+    DMALENR        & 0x14 & R/W & 0x00000000 & DMA read length in bytes                                       \\ \hline
+    DMANEXTLR      & 0x18 & R/W & 0x00000000 & Pointer (low) to next item in list                             \\ \hline
+    DMANEXTHR      & 0x1C & R/W & 0x00000000 & Pointer (high) to next item in list                            \\ \hline
+    DMAATTRIBR     & 0x20 & R/W & 0x00000000 & DMA chain control                                              \\ \hline
   \end{tabularx}
   \caption{Register set for the DMA controller block}
   \label{tab:dma_control}
@@ -133,9 +133,9 @@ The end of a chained DMA access generates an interrupt request (\verb+DMA_IRQ_o+
   \centering
   \begin{tabular}{|c|c|c|}                                                      \hline
     Double word on PCI Express & Control bits of the swapping & Double word on Wishbone bus           \\ \hline \hline
-     \multirow{3}{*}{A1 B2 C3 D4}
+     \multirow{4}{*}{A1 B2 C3 D4}
                          &  "00"         &  A1 B2 C3 D4                         \\ \cline{2-3}
-%                        &  "01"         &  B2 A1 D4 C3                         \\ \cline{2-3}
+                         &  "01"         &  B2 A1 D4 C3                         \\ \cline{2-3}
                          &  "10"         &  C3 D4 A1 B2                         \\ \cline{2-3}
                          &  "11"         &  D4 C3 B2 A1                         \\ \hline
 
