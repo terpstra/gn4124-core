@@ -3,7 +3,7 @@
 \CernDocSection{CERN BE-CO-HT}
 \CernDocBorderColor{150,0,0}
 
-\CernDocType{Technical Specifications}
+\CernDocType{Technical Specification}
 \CernDocTitle{Gennum GN4124 Core For FMC Projects}
 \CernDocEditedBy{Simon Deprez}
 \CernDocCheckedBy{}
@@ -55,7 +55,7 @@ The structure of this cores and some signals names are based on Gennum cores \em
 \end{packed_item}
 
 \section{Wishbone master}
-  The Wishbone master implements a master for the Wishbone interconnection bus. It transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Only single word reads and writes are supported. PCI express burst are divided in sigle reads and writes.
+  The Wishbone master implements a master for the Wishbone interconnection bus. It transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Only single word reads and writes are supported. PCI express burst are divided in single reads and writes.
   
   Data are coming from the packet decoder. Wishbone signals are generated and the master waits for an acknowledge. The incoming requests are saved in a FIFO. The FIFO depth is 16. The Wishbone master is allowing the GN4124 chip to send a request only if the FIFO is empty. The latency of the transfer between the GN4124 chip and the Wishbone master makes this FIFO necessary.
 
@@ -74,7 +74,7 @@ The DMA controller is a Wishbone slave controlled from the PCI Express host with
 
 The transfer starts when the first bit (LSB) of the DMACTRLR register is asserted. One of the two signals, \verb+dma_ctrl_start_L2P_o+ and \verb+dma_ctrl_start_P2L_o+, is set to '1' for one clock cycle. The \verb+dma_ctrl_start_L2P_o+ signal controls the DMA L2P master that performs transfers from the carrier to the PCI Express host and the \verb+dma_ctrl_start_P2L_o+ signal controls the DMA P2L master that performs transfers from the PCI Express host to the carrier.
 
-The DMA controller waits for the \verb+dma_ctrl_done_i+ signal from one of the two DMA masters that indicates the end of the transfer. The \verb+dma_ctrl_error_i+ signal indicates the end of the transfer if an error occurs.
+The DMA controller waits for the \verb+dma_ctrl_done_i+ signal from one of the two DMA masters that indicates the end of the transfer. The \verb+dma_ctrl_error_i+ signal indicates the end of the current transfer if an error occurs.
 
 After the end of a transfer, if this transfer is not the last, the controller ask to the P2L DMA master the new item of the DMA chain. The \verb+next_item_valid_i+ signal indicates that the DMA master can read the new DMA chain item from the P2L DMA master and starts the new cycle
 
@@ -87,7 +87,7 @@ After the end of a transfer, if this transfer is not the last, the controller as
 \end{figure}
 
   \section{L2P DMA Master}
-The L2P DMA master performs data transfers from the PCI Express host to the FMC carrier. The transfer is split in small blocks of data. The length of this blocks can be configured.
+The L2P DMA master performs data transfers from the FMC carrier to the memory of the PCI Express host. The transfer is split in small blocks of data. The length of this blocks can be configured.
 
 The L2P DMA master sends a master read request on the DMA interface and waits for answer. This transfer is clocked by the \verb+sys_clk_i+ signal. The received data are stocked in a FIFO. 
 
@@ -102,18 +102,18 @@ When a block of data is in the FIFO, the DMA master sends a master write request
 \end{figure}
 
 
+
  \section{P2L DMA Master}
+The P2L DMA master performs data transfers from the PCI Express host to the FMC carrier. The transfer is split in small blocks of data. The length of this blocks can be configured.
  
- The P2L DMA master performs data transfers from the FMC carrier to the memory of the PCI Express host. The transfer is split in small blocks of data. The length of this blocks can be configured.
- 
- The P2L DMA master sends a memory read request toward the GN4124 chip and waits for the answer. This operation is clocked by the GN4124 Local Bus Clock. The received data are stocked in a FIFO. 
+The P2L DMA master sends a memory read request toward the GN4124 chip and waits for the answer. This operation is clocked by the GN4124 Local Bus Clock. The received data are stocked in a FIFO. 
  
 When a block of data is in the FIFO, the DMA master starts a master write cycle on the DMA interface of this block. This transfer is clocked by the \verb+sys_clk_i+ signal. 
  
  \begin{figure}[!ht]
 	\centering
 		\includegraphics[width=\textwidth]{GN4124core_P2L_DMA_master.pdf}
-	\caption{L2P DMA master}
+	\caption{P2L DMA master}
 	\label{fig:GN4124core_p2l_dma_master}
 \end{figure}
  
