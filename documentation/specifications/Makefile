@@ -1,17 +1,32 @@
 # Makefile for Latex work
 
-TEXFILE= func_spec_GN4124_core.tex
-DIAGRAMS= images/GN4124core.svg
-OTHERS= images/GN4124core_arch.svg images/GN4124core_sequencer.svg \
-        images/GN4124core.svg images/DMA_state_machine.svg \
-        images/Sequencer_state_machine.svg images/Wishbone_bus.svg images/FMC.svg 
+TEXFILE_FUNC_SPEC= func_spec_GN4124_core.tex
+TEXFILE_TECH_SPEC= tech_spec_GN4124_core.tex
+DIAG_FUNC_SPEC= images/GN4124core.svg
+DIAG_TECH_SPEC= images/GN4124core_arch.svg \
+        images/GN4124core_DMA_controller.svg images/State_Machine_DMA_controller.svg \
+        images/GN4124core_L2P_DMA_master.svg images/GN4124core_P2L_DMA_master.svg
+DIAG_ALL= images/GN4124core.svg images/GN4124core_arch.svg \
+        images/GN4124core_DMA_controller.svg images/State_Machine_DMA_controller.svg \
+        images/GN4124core_L2P_DMA_master.svg images/GN4124core_P2L_DMA_master.svg
 
 .PHONY: clean view
 
-$(TEXFILE:.tex=.pdf): $(TEXFILE) $(DIAGRAMS:.svg=.pdf)
-	pdflatex $(TEXFILE)
+all: func tech
+
+func: func_spec_GN4124_core.pdf 
+
+tech: tech_spec_GN4124_core.pdf 
+
+$(TEXFILE_FUNC_SPEC:.tex=.pdf): $(TEXFILE_FUNC_SPEC) $(DIAG_FUNC_SPEC:.svg=.pdf)
+	pdflatex $(TEXFILE_FUNC_SPEC)
 # Not very nice hack to get references right
-	pdflatex $(TEXFILE)
+	pdflatex $(TEXFILE_FUNC_SPEC)
+
+$(TEXFILE_TECH_SPEC:.tex=.pdf): $(TEXFILE_TECH_SPEC) $(DIAG_TECH_SPEC:.svg=.pdf)
+	pdflatex $(TEXFILE_TECH_SPEC)
+# Not very nice hack to get references right
+	pdflatex $(TEXFILE_TECH_SPEC)
 
 %.pdf: %.eps
 	epstopdf $<
@@ -23,18 +38,28 @@ $(TEXFILE:.tex=.pdf): $(TEXFILE) $(DIAGRAMS:.svg=.pdf)
 	inkscape $< -d 120 -D -e $@
 
 
-view: $(TEXFILE:.tex=.pdf)
-	evince $(TEXFILE:.tex=.pdf)
+view: $(TEXFILE_FUNC_SPEC:.tex=.pdf)
+	evince $(TEXFILE_FUNC_SPEC:.tex=.pdf)
 
 clean:
 	@rm -f \
-	$(TEXFILE:.tex=.aux) \
-	$(TEXFILE:.tex=.log) \
-	$(TEXFILE:.tex=.out) \
-	$(TEXFILE:.tex=.toc) \
-	$(TEXFILE:.tex=.pdf) \
-	$(DIAGRAMS:.svg=.pdf) \
-	$(OTHERS:.svg=.pdf) \
-	$(OTHERS:.svg=.png) \
+	$(TEXFILE_FUNC_SPEC:.tex=.aux) \
+	$(TEXFILE_FUNC_SPEC:.tex=.log) \
+	$(TEXFILE_FUNC_SPEC:.tex=.out) \
+	$(TEXFILE_FUNC_SPEC:.tex=.toc) \
+	$(TEXFILE_FUNC_SPEC:.tex=.lof) \
+	$(TEXFILE_FUNC_SPEC:.tex=.lot) \
+	$(TEXFILE_FUNC_SPEC:.tex=.pdf) \
+	$(TEXFILE_TECH_SPEC:.tex=.aux) \
+	$(TEXFILE_TECH_SPEC:.tex=.log) \
+	$(TEXFILE_TECH_SPEC:.tex=.out) \
+	$(TEXFILE_TECH_SPEC:.tex=.toc) \
+	$(TEXFILE_TECH_SPEC:.tex=.lof) \
+	$(TEXFILE_TECH_SPEC:.tex=.lot) \
+	$(TEXFILE_TECH_SPEC:.tex=.pdf) \
+	$(DIAG_FUNC_SPEC:.svg=.pdf) \
+	$(DIAG_TECH_SPEC:.svg=.pdf) \
+	$(DIAG_ALL:.svg=.pdf) \
+	$(DIAG_ALL:.svg=.png) \
 
-diag: $(OTHERS:.svg=.pdf) $(OTHERS:.svg=.png)
+diag: $(DIAG_ALL:.svg=.pdf) $(DIAG_ALL:.svg=.png)
