@@ -2347,6 +2347,20 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3396"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4654"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -2355,9 +2369,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.56"
-     inkscape:cx="415.77255"
-     inkscape:cy="188.12635"
+     inkscape:zoom="1.8101934"
+     inkscape:cx="458.6488"
+     inkscape:cy="183.73587"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2426,6 +2440,13 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-556.29817)">
+    <rect
+       style="fill:#ebe7ff;fill-opacity:1;stroke:none"
+       id="rect2858-3-8-2-0"
+       width="106.29919"
+       height="235.62993"
+       x="221.4567"
+       y="701.57373" />
     <rect
        style="fill:#ccfeff;fill-opacity:1;stroke:#000000;stroke-width:0.70866138;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2858-3-8-2-6"
@@ -2856,75 +2877,80 @@
     <text
        xml:space="preserve"
        style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="465.94489"
-       y="875.19574"
+       x="464.17322"
+       y="869.88086"
        id="text4792-17-2-2-9"><tspan
          sodipodi:role="line"
-         x="465.94489"
-         y="875.19574"
+         x="464.17322"
+         y="869.88086"
          style="font-size:12px"
          id="tspan2999">to DMA masters</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:7px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="476.5748"
-       y="887.59735"
+       y="880.51074"
        id="text4792-17-2-2-34-1-0-4-3"
        inkscape:transform-center-x="8.858272"
        inkscape:transform-center-y="-69.094459"><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="887.59735"
+         y="880.51074"
          style="font-size:7px"
          id="tspan4959">dma_ctrl_carrier_addr_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="896.34735"
+         y="889.26074"
          style="font-size:7px"
          id="tspan9014">dma_ctrl_host_addr_l_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="905.09735"
+         y="898.01074"
          style="font-size:7px"
          id="tspan9016">dma_ctrl_host_addr_h_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="913.84735"
+         y="906.76074"
          style="font-size:7px"
          id="tspan9018">dma_ctrl_len_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="922.59735"
+         y="915.51074"
+         style="font-size:7px"
+         id="tspan3335">dma_ctrl_byte_swap_o</tspan><tspan
+         sodipodi:role="line"
+         x="476.5748"
+         y="924.26074"
          style="font-size:7px"
          id="tspan9020" /><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="931.34735"
+         y="933.01074"
          style="font-size:7px"
          id="tspan5426">dma_ctrl_start_l2p_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="940.09735"
+         y="941.76074"
          style="font-size:7px"
          id="tspan5432">dma_ctrl_start_p2l_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="948.84735"
+         y="950.51074"
          style="font-size:7px"
          id="tspan5434">dma_ctrl_start_next_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="957.59735"
+         y="959.26074"
          style="font-size:7px"
          id="tspan4579">dma_ctrl_abort_o</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="966.34735"
+         y="968.01074"
          style="font-size:7px"
          id="tspan9024">dma_ctrl_done_i</tspan><tspan
          sodipodi:role="line"
          x="476.5748"
-         y="975.09735"
+         y="976.76074"
          style="font-size:7px"
          id="tspan9012">dma_ctrl_error_i</tspan></text>
     <flowRoot
@@ -3219,5 +3245,16 @@
        d="m 318.89764,724.60525 67.32283,0 3.54331,3.54334 0,182.48028"
        id="path4306-83-1-1"
        sodipodi:nodetypes="cccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#424242;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="225"
+       y="712.20367"
+       id="text4792-17-2-2-7-9-4-8-8"><tspan
+         sodipodi:role="line"
+         x="225"
+         y="712.20367"
+         style="font-size:10px;fill:#424242;fill-opacity:1;stroke:none"
+         id="tspan3153-6-5-9-3-5-3">REGISTERS</tspan></text>
   </g>
 </svg>

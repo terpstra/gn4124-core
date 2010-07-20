@@ -14,7 +14,7 @@
    id="svg2838"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="State_Machine_DMA_master.svg">
+   sodipodi:docname="State_Machine_DMA_controller.svg">
   <defs
      id="defs2840">
     <marker
@@ -1430,9 +1430,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.9493227"
-     inkscape:cx="303.63745"
-     inkscape:cy="108.00079"
+     inkscape:zoom="1.4746614"
+     inkscape:cx="72.178515"
+     inkscape:cy="227.6227"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -1478,7 +1478,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1589,13 +1589,13 @@
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="148.66626"
+       x="151.84009"
        y="861.11908"
        id="text2954-6-3"><tspan
          sodipodi:role="line"
          id="tspan2956-1-8"
-         x="148.66626"
-         y="861.11908">WAITS FOR THE END OF THE TRANSFER</tspan></text>
+         x="151.84009"
+         y="861.11908">WAIT FOR THE END OF THE TRANSFER</tspan></text>
     <rect
        style="fill:#eae2d3;fill-opacity:1;stroke:#000000;stroke-width:0.70866138;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3320-5-1-9"
@@ -1618,18 +1618,18 @@
        id="rect3320-5-1-8"
        width="248.03149"
        height="35.433071"
-       x="124.01578"
-       y="963.77808" />
+       x="124.01575"
+       y="963.7782" />
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="182.06714"
+       x="185.24097"
        y="985.13483"
        id="text2954-6-3-0"><tspan
          sodipodi:role="line"
          id="tspan2956-1-8-5"
-         x="182.06714"
-         y="985.13483">WAITS FOR THE NEW ITEM</tspan></text>
+         x="185.24097"
+         y="985.13483">WAIT FOR THE NEW ITEM</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.7086615;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Lend-2-0-8-40)"
        d="m 248.08268,768.89643 -0.0512,17.71654"
@@ -1742,28 +1742,28 @@
          style="font-size:8px"
          id="tspan12829-15-3">dma_ctrl_error_i = '1'</tspan></text>
     <rect
-       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866144;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866141999999999;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.83464567000000001, 2.83464567000000001;stroke-dashoffset:0"
        id="rect12916"
        width="42.51968"
        height="17.716536"
        x="138.18898"
        y="715.7467" />
     <rect
-       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866156;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866156000000002;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.83464622000000022, 2.83464622000000022;stroke-dashoffset:0"
        id="rect12916-5"
        width="46.063004"
        height="17.716536"
        x="194.8819"
        y="715.7467" />
     <rect
-       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866156;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866156000000002;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.83464622000000022, 2.83464622000000022;stroke-dashoffset:0"
        id="rect12916-5-2"
        width="46.063004"
        height="17.716536"
        x="255.11812"
        y="715.7467" />
     <rect
-       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866156;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#f9fbdd;fill-opacity:1;stroke:#000000;stroke-width:0.70866156000000002;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.83464622000000022, 2.83464622000000022;stroke-dashoffset:0"
        id="rect12916-5-1"
        width="42.519707"
        height="17.716461"
@@ -1851,7 +1851,7 @@
            height="579.11603"
            x="515.37256"
            y="-63.221588" /></flowRegion><flowPara
-         id="flowPara13139"></flowPara></flowRoot>    <flowRoot
+         id="flowPara13139" /></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot13141"
        style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Bitstream Vera Sans;font-style:normal;font-weight:normal;font-size:9"><flowRegion
@@ -1861,7 +1861,7 @@
            height="402.80435"
            x="553.34735"
            y="-52.371639" /></flowRegion><flowPara
-         id="flowPara13147"></flowPara></flowRoot>    <text
+         id="flowPara13147" /></flowRoot>    <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="189.8741"

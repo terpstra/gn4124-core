@@ -144,7 +144,7 @@
 
 \vspace*{2cm}
 \begin{abstract}
-	\noindent\@CernDocAbstract
+	\noindent{\normalsize\@CernDocAbstract}
 \end{abstract}
 
 \end{titlepage}
