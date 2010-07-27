@@ -33,7 +33,7 @@ The functional specification\footnote{See \href{http://svn.ohwr.org/gn4124-core/
 This specification describes how the core works internally. For each internal block, we give a summary description of its function. Figure \ref{fig:GN4124core_arch} show the core with all main blocks. 
 
 
-The structure of this cores and some signals names are based on the Gennum cores \emph{Lambo} and \emph{Lotus}. 
+
 
 \begin{figure}[!ht]
   \centering
@@ -41,6 +41,9 @@ The structure of this cores and some signals names are based on the Gennum cores
   \caption{GN4124 core for PCIe FMC carrier}
   \label{fig:GN4124core_arch}
 \end{figure}
+
+The structure of this cores and some signals names are based on the Gennum cores \emph{Lambo} and \emph{Lotus}. 
+The VHDL guidelines\footnote{See \href{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}.} describes the rules used for writing the HDL code and the signals naming conventions.
 
   \section{De-multiplexer}
   This block takes the double data rate 16-bit P2L (PCI Express to Local Bus direction) bus from the GN4124 device and converts it to a single data rate 32-bit bus for use inside the GN4124 core.
@@ -63,7 +66,13 @@ The structure of this cores and some signals names are based on the Gennum cores
 \section{Wishbone master}
   The Wishbone master implements a master for the Wishbone interconnection bus. It transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Only single word reads and writes are supported on the Wishbone interface. 
   
-  Data are coming from the packet decoder. Wishbone signals are generated and the master waits for an acknowledge. Write cycles are queued up at full local bus speed into a small FIFO (16 words deep) so that the write cycles can be played out at the Wishbone bus speed. In order to prevent the FIFO from overflowing due to too many writes coming from the host, the \verb+p_wr_rdy_o+ signal is de-asserted to the GN4124 whenever the FIFO is not empty.
+  Data are coming from the packet decoder. Wishbone signals are generated and the master waits for an acknowledge. Write cycles are queued up at full local bus speed into a small FIFO (16 words deep) so that the write cycles can be played out at the Wishbone bus speed. In order to prevent the FIFO from overflowing due to too many writes coming from the host, the \verb+p_wr_rdy_o+ signal is de-asserted to the GN4124 whenever the FIFO is not empty. 
+  
+  The \verb+p_wr_rdy_o+ signal prevents write requests from the PCI Express bus to the Wishbone configuration interface. The read completions of the P2L DMA transfers are not slowed down.
+  
+  
+  
+  
 
 \section{DMA Engine}
 
@@ -105,10 +114,10 @@ After the end of a transfer, if this transfer is not the last, the controller as
 
 
 %\begin{figure}[!ht]
-%	\centering
-%		\includegraphics[width=0.8\textwidth]{State_Machine_DMA_controller_0.pdf}
-%	\caption{DMA controller status}
-%	\label{fig:GN4124core_dma_ctrl_status}
+%  \centering
+%    \includegraphics[width=0.8\textwidth]{State_Machine_DMA_controller_0.pdf}
+%  \caption{DMA controller status}
+%  \label{fig:GN4124core_dma_ctrl_status}
 %\end{figure}
 
 \begin{figure}[!ht]
@@ -121,9 +130,9 @@ After the end of a transfer, if this transfer is not the last, the controller as
 
 
   \subsection{L2P DMA Master}
-The L2P DMA master (See figure \ref{fig:GN4124core_l2p_dma_master}) performs data transfers from the FMC carrier to the memory of the PCI Express host. The maximal length of the transfer is 4096 bytes.
+The L2P DMA master (See figure \ref{fig:GN4124core_l2p_dma_master}) performs data transfers from the FMC carrier to the memory of the PCI Express host. The transfer is split in blocks of data with a maximal length of 4096 bytes. This is the maximal length of transfers allowed by the GN4124 chip.
 
-The L2P DMA master sends a master read request on the DMA interface and waits for answer. This transfer is clocked by the \verb+sys_clk_i+ signal. The received data are stocked in a FIFO. 
+The L2P DMA master sends a master read request on the DMA interface and waits for answer. This transfer is clocked by the \verb+sys_clk_i+ signal. The received data are stocked in a FIFO that allows switching between clock domains.
 
 When the block of data is in the FIFO, the DMA master sends a master write request to the PCI Express host. This operation is clocked by the GN4124 Local Bus Clock. The transfer is paused if the \verb+l_wr_rdy_i+ signal from GN4124 chip is not asserted.
 
@@ -137,7 +146,7 @@ When the block of data is in the FIFO, the DMA master sends a master write reque
 \end{figure}
 
  \subsection{P2L DMA Master}
-The P2L DMA master (See figure \ref{fig:GN4124core_p2l_dma_master}) performs data transfers from the PCI Express host to the FMC carrier. The maximal length of the transfer is 4096 bytes.
+The P2L DMA master (See figure \ref{fig:GN4124core_p2l_dma_master}) performs data transfers from the PCI Express host to the FMC carrier. The transfer is split in blocks of data with a maximal length of 4096 bytes.
 
 The P2L DMA master sends a memory read request toward the GN4124 chip and waits for the answer. This operation is clocked by the GN4124 Local Bus Clock. The received data are stocked in a FIFO. 
 
@@ -160,4 +169,4 @@ The highest priority is for the Wishbone master, then for the P2L DMA master, an
 \end{document}
 
 
-
+% 

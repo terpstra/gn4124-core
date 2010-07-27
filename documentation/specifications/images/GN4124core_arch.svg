@@ -1355,6 +1355,66 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3402"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lstart-2-22"
+       style="overflow:visible">
+      <path
+         id="path3685-3-64"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(1.1,0,0,1.1,1.1,0)" />
+    </marker>
+    <inkscape:perspective
+       id="perspective3430"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lstart-2-9"
+       style="overflow:visible">
+      <path
+         id="path3685-3-0"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(1.1,0,0,1.1,1.1,0)" />
+    </marker>
+    <inkscape:perspective
+       id="perspective4700"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lstart-2-8"
+       style="overflow:visible">
+      <path
+         id="path3685-3-7"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(1.1,0,0,1.1,1.1,0)" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1363,9 +1423,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.90509668"
-     inkscape:cx="435.43872"
-     inkscape:cy="215.38707"
+     inkscape:zoom="1.28"
+     inkscape:cx="196.98513"
+     inkscape:cy="143.15784"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -1454,12 +1514,12 @@
        id="path3113"
        sodipodi:nodetypes="cc" />
     <rect
-       style="fill:#ffe5b2;fill-opacity:1;stroke:#000000;stroke-width:0.70866143999999998;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;opacity:1;"
+       style="fill:#ffe5b2;fill-opacity:1;stroke:#000000;stroke-width:0.70866144;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2858-1-8-11-8-5"
        width="70.866135"
-       height="70.866096"
+       height="106.29918"
        x="354.33072"
-       y="892.91235" />
+       y="857.47925" />
     <rect
        style="fill:#eae2d3;fill-opacity:1;stroke:#000000;stroke-width:0.70866143999999998;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;opacity:1;"
        id="rect2858-1-8-11-4"
@@ -1468,10 +1528,10 @@
        x="283.46457"
        y="892.91235" />
     <rect
-       style="fill:#ffe5b2;fill-opacity:1;stroke:#000000;stroke-width:0.70866143999999998;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;opacity:1;"
+       style="fill:#ffe5b2;fill-opacity:1;stroke:#000000;stroke-width:0.70866144;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2858-1-8-11-8-1"
        width="70.866135"
-       height="70.866096"
+       height="106.29949"
        x="354.33072"
        y="715.7467" />
     <rect
@@ -1616,8 +1676,8 @@
          style="font-size:10px;fill:#000000;fill-opacity:1;stroke:none"
          id="tspan3144">Master</tspan></text>
     <path
-       style="fill:#ebe7ff;fill-opacity:1;stroke:#000000;stroke-width:0.69999999000000002;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;opacity:1;"
-       d="m 425.19685,928.34541 8.54595,-14.15934 0,7.08662 26.88712,-0.0139 0,14.17323 -26.88712,0.0139 0,7.08662 -8.54595,-14.18712 z"
+       style="fill:#ebe7ff;fill-opacity:1;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 425.19685,884.05408 8.54595,-14.15934 0,7.08662 26.88712,-0.0139 0,14.17323 -26.88712,0.0139 0,7.08662 -8.54595,-14.18712 z"
        id="path4790-1"
        sodipodi:nodetypes="cccccccc" />
     <path
@@ -2239,5 +2299,15 @@
          y="851.94775"
          style="font-size:7px"
          id="tspan9181">and start signal</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.70866138;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow2Lstart-2);marker-end:none"
+       d="m 425.19685,804.32966 35.43308,0"
+       id="path3113-6-7-2-1"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.70866142;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow2Lstart-2);marker-end:url(#Arrow2Lend-2-0-8-77-7-4)"
+       d="m 425.19685,937.20368 35.43308,0"
+       id="path3113-6-7-2-1-6"
+       sodipodi:nodetypes="cc" />
   </g>
 </svg>

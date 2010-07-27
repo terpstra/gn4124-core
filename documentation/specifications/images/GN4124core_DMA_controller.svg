@@ -2361,6 +2361,26 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4728"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lstart-2-9"
+       style="overflow:visible">
+      <path
+         id="path3685-3-8"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(1.1,0,0,1.1,1.1,0)" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -2370,8 +2390,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.8101934"
-     inkscape:cx="458.6488"
-     inkscape:cy="183.73587"
+     inkscape:cx="356.08372"
+     inkscape:cy="180.42048"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2457,9 +2477,9 @@
        transform="scale(-1,1)" />
     <path
        style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 88.582669,795.47143 -8.54595,-14.15935 0,7.08662 -23.34381,-0.0139 0,14.17323 23.34381,0.0139 0,7.08662 8.54595,-14.18712 z"
+       d="m 88.582669,795.47143 -8.54595,-14.15935 0,7.08662 -14.485538,-0.0139 0,-7.08661 -8.858272,14.17326 8.858272,14.17319 0,-7.08661 14.485538,0.0139 0,7.08662 8.54595,-14.18712 z"
        id="path4790-1-7-0-5-4"
-       sodipodi:nodetypes="cccccccc" />
+       sodipodi:nodetypes="ccccccccccc" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
@@ -3256,5 +3276,10 @@
          y="712.20367"
          style="font-size:10px;fill:#424242;fill-opacity:1;stroke:none"
          id="tspan3153-6-5-9-3-5-3">REGISTERS</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.70866138;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow2Lstart-2);marker-end:none"
+       d="m 442.91338,965.55013 31.88977,0"
+       id="path3113-6-7-2-1"
+       sodipodi:nodetypes="cc" />
   </g>
 </svg>
