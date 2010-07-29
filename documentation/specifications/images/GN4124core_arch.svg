@@ -1424,8 +1424,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.28"
-     inkscape:cx="196.98513"
-     inkscape:cy="143.15784"
+     inkscape:cx="375.40484"
+     inkscape:cy="184.88702"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -1598,7 +1598,7 @@
        transform="translate(0,556.29738)" />
     <text
        xml:space="preserve"
-       style="font-size:7px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;opacity:1;"
+       style="font-size:7px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="35.433071"
        y="1025.7855"
        id="text4792-17-2-2-34-1-0-4-2"><tspan
@@ -1606,10 +1606,10 @@
          x="35.433071"
          y="1025.7855"
          style="font-size:7px"
-         id="tspan3029-8-5-0">irq_req_i</tspan></text>
+         id="tspan3029-8-5-0">irq_req_p1_i</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:7px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;opacity:1;"
+       style="font-size:7px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="446.4567"
        y="1025.7855"
        id="text4792-17-2-2-34-1-0-4-2-3"><tspan
@@ -1617,7 +1617,7 @@
          x="446.4567"
          y="1025.7855"
          style="font-size:7px"
-         id="tspan3029-8-5-0-5">irq_req_o</tspan></text>
+         id="tspan3029-8-5-0-5">irq_req_p1_o</tspan></text>
     <rect
        style="fill:#eae2d3;fill-opacity:1;stroke:#000000;stroke-width:0.70866138000000001;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;opacity:1;"
        id="rect2858-1-8-11-9"
@@ -1762,7 +1762,7 @@
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
-       style="font-size:7px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;opacity:1;"
+       style="font-size:7px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="34.799675"
        y="878.73969"
        id="text4792-17-2-2-34-1-0-4-2-4"><tspan
@@ -1770,7 +1770,7 @@
          x="34.799675"
          y="878.73969"
          style="font-size:7px"
-         id="tspan3029-8-5-0-3">dma_irq_o</tspan></text>
+         id="tspan3029-8-5-0-3">dma_irq_p1_o</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:9px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;opacity:1;"

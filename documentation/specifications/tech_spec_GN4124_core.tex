@@ -42,8 +42,9 @@ This specification describes how the core works internally. For each internal bl
   \label{fig:GN4124core_arch}
 \end{figure}
 
-The structure of this cores and some signals names are based on the Gennum cores \emph{Lambo} and \emph{Lotus}. 
-The VHDL guidelines\footnote{See \href{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}.} describes the rules used for writing the HDL code and the signals naming conventions.
+The structure of this cores and some signals names are based on the Gennum cores \emph{Lambo} and \emph{Lotus}.
+ 
+The VHDL guidelines\footnote{See \href{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}.} describes the rules used for writing the HDL code and the signals naming conventions. The one-tick-long pulses are named with a \verb+_p1+ suffix.
 
   \section{De-multiplexer}
   This block takes the double data rate 16-bit P2L (PCI Express to Local Bus direction) bus from the GN4124 device and converts it to a single data rate 32-bit bus for use inside the GN4124 core.

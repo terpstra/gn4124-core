@@ -2389,9 +2389,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.8101934"
-     inkscape:cx="356.08372"
-     inkscape:cy="180.42048"
+     inkscape:zoom="2.5600001"
+     inkscape:cx="257.35133"
+     inkscape:cy="174.94564"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2527,7 +2527,7 @@
          x="34.799686"
          y="940.7478"
          style="font-size:7px"
-         id="tspan3029-8-5-0-3">DMA_IRQ_o</tspan></text>
+         id="tspan3029-8-5-0-3">dma_irq_p1_o</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart)"
        d="m 0,88.582661 88.582677,0"
@@ -3100,14 +3100,9 @@
        id="text4792-17-2-2-34-1-0-4"><tspan
          sodipodi:role="line"
          x="6.7466226"
-         y="809.30811"
-         style="font-size:7px"
-         id="tspan3153-6-3-7-9-7">wb_clk_i</tspan><tspan
-         sodipodi:role="line"
-         x="6.7466226"
          y="818.05811"
          style="font-size:7px"
-         id="tspan3084">wb_rst_i</tspan><tspan
+         id="tspan3084" /><tspan
          sodipodi:role="line"
          x="6.7466226"
          y="826.80811"

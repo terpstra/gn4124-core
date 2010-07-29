@@ -93,7 +93,7 @@ The DMA engine works with a linked list so that DMAs can be chained. The first i
 
 Each item in the list is made of the following registers: DMACSTARTR, DMAHSTARTLR, DMAHSTARTHR, DMALENR, DMANEXTLR, DMANEXTHR and DMAATTRIBR. When reading these items from the host, the DMA engine assumes a little-endian host. Big-endian hosts should shuffle data accordingly so that it is found in the same order as in a little-endian host. In addition, the DMA controller provides global DMA control and status registers.
 
-The end of a chained DMA access generates an interrupt request (\verb+DMA_IRQ_o+ output) towards the interrupt controller.  
+The end of a chained DMA access generates an interrupt request (\verb+dma_irq_p1_o+ output) towards the interrupt controller.  
 
 \begin{table}[htbp]
   \centering
@@ -195,8 +195,8 @@ The end of a chained DMA access generates an interrupt request towards the inter
       Clock frequency constraints:       &\multicolumn{2}{l|} { 100 MHz}                                       \\ \hline
       \multirow{8}{6cm}{Supported signal list and cross reference to equivalent WISHBONE signals}
       &  Signal Name       & WISHBONE Equiv.                                                                   \\
-      &  wb\_clk\_i        &  CLK\_I                                                                           \\
-      &  wb\_rst\_i        &  RST\_I                                                                           \\
+      &  sys\_clk\_i       &  CLK\_I                                                                           \\
+      &  sys\_rst\_i       &  RST\_I                                                                           \\
       &  wb\_cyc\_o        &  CYC\_O                                                                           \\
       &  wb\_stb\_o        &  STB\_O                                                                           \\
       &  wb\_adr\_o(10..0) &  ADR\_O()                                                                         \\
@@ -210,9 +210,9 @@ The end of a chained DMA access generates an interrupt request towards the inter
 \end{table}
 
    \subsection{Interrupts}
-   When the GN4124 master gets a one-tick-long (\verb+sys_clk_i+) positive pulse on the \verb+IRQ_req_i+ input, a one-tick-long (GN4124 local bus clock) positive pulse is sent on the \verb+IRQ_req_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends an MSI packet (Message Signaled Interrupts) to the host.
+   When the GN4124 master gets a one-tick-long (\verb+sys_clk_i+) positive pulse on the \verb+irq_req_p1_i+ input, a one-tick-long (GN4124 local bus clock) positive pulse is sent on the \verb+irq_req_p1_o+ output to the GN4124 chip. The interrupt signal is directly wired to GN4124 chip GPIO. When configured, the chip sends an MSI packet (Message Signaled Interrupts) to the host.
    
-   At the end of a chained DMA acces, the DMA master sends a one-tick-long (\verb+sys_clk_i+) interrupt signal on the \verb+DMA_IRQ_o+ output toward the interrupt controller (see figure~\ref{fig:GN4124core}). So the interrupt controller knows that the DMA master is the source of the interrupt.
+   At the end of a chained DMA acces, the DMA master sends a one-tick-long (\verb+sys_clk_i+) interrupt signal on the \verb+dma_irq_p1_o+ output toward the interrupt controller (see figure~\ref{fig:GN4124core}). So the interrupt controller knows that the DMA master is the source of the interrupt.
 
 \end{document}
 
