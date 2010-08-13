@@ -31,55 +31,55 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity arbiter is
-	port
-	( 
-		---------------------------------------------------------
-		---------------------------------------------------------
-		-- Clock/Reset
-		--
-		clk_i             : in   STD_ULOGIC;
-		rst_i             : in   STD_ULOGIC;
-		---------------------------------------------------------
-		---------------------------------------------------------
-		-- From Wishbone master (wbm) to arbiter (arb)
-		--
-		wbm_arb_valid_i  : in  STD_ULOGIC;
-		wbm_arb_dframe_i : in  STD_ULOGIC;
-		wbm_arb_data_i   : in  STD_ULOGIC_VECTOR(31 downto 0);
-		wbm_arb_req_i    : in  STD_ULOGIC;
-		arb_wbm_gnt_o    : out STD_ULOGIC;
-		--
-		---------------------------------------------------------
-		---------------------------------------------------------
-		-- From DMA pdmuencer (pdm) to arbiter (arb)
-		--
-		pdm_arb_valid_i  : in  STD_ULOGIC;
-		pdm_arb_dframe_i : in  STD_ULOGIC;
-		pdm_arb_data_i   : in  STD_ULOGIC_VECTOR(31 downto 0);
-		pdm_arb_req_i    : in  STD_ULOGIC;
-		arb_pdm_gnt_o    : out STD_ULOGIC;
-		--
-		---------------------------------------------------------
-		---------------------------------------------------------
-		-- From P2L DMA master (ldm) to arbiter (arb)
-		--
-		ldm_arb_valid_i  : in  STD_ULOGIC;
-		ldm_arb_dframe_i : in  STD_ULOGIC;
-		ldm_arb_data_i   : in  STD_ULOGIC_VECTOR(31 downto 0);
-		ldm_arb_req_i    : in  STD_ULOGIC;
-		arb_ldm_gnt_o    : out STD_ULOGIC;
-		--
-		---------------------------------------------------------
+  port
+  ( 
+    ---------------------------------------------------------
+    ---------------------------------------------------------
+    -- Clock/Reset
+    --
+    clk_i             : in   STD_ULOGIC;
+    rst_i             : in   STD_ULOGIC;
+    ---------------------------------------------------------
+    ---------------------------------------------------------
+    -- From Wishbone master (wbm) to arbiter (arb)
+    --
+    wbm_arb_valid_i  : in  STD_ULOGIC;
+    wbm_arb_dframe_i : in  STD_ULOGIC;
+    wbm_arb_data_i   : in  STD_ULOGIC_VECTOR(31 downto 0);
+    wbm_arb_req_i    : in  STD_ULOGIC;
+    arb_wbm_gnt_o    : out STD_ULOGIC;
+    --
+    ---------------------------------------------------------
+    ---------------------------------------------------------
+    -- From DMA pdmuencer (pdm) to arbiter (arb)
+    --
+    pdm_arb_valid_i  : in  STD_ULOGIC;
+    pdm_arb_dframe_i : in  STD_ULOGIC;
+    pdm_arb_data_i   : in  STD_ULOGIC_VECTOR(31 downto 0);
+    pdm_arb_req_i    : in  STD_ULOGIC;
+    arb_pdm_gnt_o    : out STD_ULOGIC;
+    --
+    ---------------------------------------------------------
+    ---------------------------------------------------------
+    -- From P2L DMA master (ldm) to arbiter (arb)
+    --
+    ldm_arb_valid_i  : in  STD_ULOGIC;
+    ldm_arb_dframe_i : in  STD_ULOGIC;
+    ldm_arb_data_i   : in  STD_ULOGIC_VECTOR(31 downto 0);
+    ldm_arb_req_i    : in  STD_ULOGIC;
+    arb_ldm_gnt_o    : out STD_ULOGIC;
+    --
+    ---------------------------------------------------------
 
-		---------------------------------------------------------
-		-- From arbiter (arb) to serializer (ser)
-		--
-		arb_ser_valid_o  : out STD_ULOGIC;
-		arb_ser_dframe_o : out STD_ULOGIC;
-		arb_ser_data_o   : out STD_ULOGIC_VECTOR(31 downto 0)
-		--
-		---------------------------------------------------------
-	);
+    ---------------------------------------------------------
+    -- From arbiter (arb) to serializer (ser)
+    --
+    arb_ser_valid_o  : out STD_ULOGIC;
+    arb_ser_dframe_o : out STD_ULOGIC;
+    arb_ser_data_o   : out STD_ULOGIC_VECTOR(31 downto 0)
+    --
+    ---------------------------------------------------------
+  );
 end arbiter;
 
 architecture behaviour of arbiter is
@@ -121,13 +121,13 @@ begin
    -----------------------------------------------------------------------------
 
 
-	process (clk_i, rst_i)
-	begin  
-		if(rst_i = '1') then
+  process (clk_i, rst_i)
+  begin  
+    if(rst_i = '1') then
       arb_wbm_gnt <= '0';
       arb_pdm_gnt <= '0';
       arb_ldm_gnt <= '0';
-		elsif (clk_i'event and clk_i = '1') then
+    elsif (clk_i'event and clk_i = '1') then
       if (arb_req_valid = '1') then
         if (wbm_arb_req_valid = '1') then
           arb_wbm_gnt <= '1';

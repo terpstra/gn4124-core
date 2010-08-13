@@ -32,20 +32,20 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity dma_controller is
-	port
-	( 
-    LED                    : out    std_logic_vector(7 downto 0);
-		---------------------------------------------------------
-		---------------------------------------------------------
-		-- Clock/Reset
-		--
-		clk_i             : in   STD_ULOGIC;
-		rst_i             : in   STD_ULOGIC;
-		---------------------------------------------------------
-		---------------------------------------------------------
-		-- To the L2P DMA master and P2L DMA master
-		--
-		dma_ctrl_carrier_addr_o  : out  STD_LOGIC_VECTOR(31 downto 0);
+  port
+  ( 
+    DEBUG                : out    std_logic_vector(3 downto 0);
+    ---------------------------------------------------------
+    ---------------------------------------------------------
+    -- Clock/Reset
+    --
+    clk_i             : in   STD_ULOGIC;
+    rst_i             : in   STD_ULOGIC;
+    ---------------------------------------------------------
+    ---------------------------------------------------------
+    -- To the L2P DMA master and P2L DMA master
+    --
+    dma_ctrl_carrier_addr_o  : out  STD_LOGIC_VECTOR(31 downto 0);
     dma_ctrl_host_addr_h_o   : out  STD_LOGIC_VECTOR(31 downto 0);
     dma_ctrl_host_addr_l_o   : out  STD_LOGIC_VECTOR(31 downto 0);
     dma_ctrl_len_o           : out  STD_LOGIC_VECTOR(31 downto 0);
@@ -54,26 +54,26 @@ entity dma_controller is
     dma_ctrl_start_next_o    : out  STD_LOGIC;                       -- To the P2L DMA master
     dma_ctrl_done_i          : in  STD_LOGIC;   
     dma_ctrl_error_i         : in  STD_LOGIC;      
-		--
-		---------------------------------------------------------
+    --
+    ---------------------------------------------------------
 
-	  ---------------------------------------------------------
-		-- From P2L DMA MASTER
-		--
-		next_item_carrier_addr_i  : in  STD_LOGIC_VECTOR(31 downto 0);
-		next_item_host_addr_h_i   : in  STD_LOGIC_VECTOR(31 downto 0);
-		next_item_host_addr_l_i   : in  STD_LOGIC_VECTOR(31 downto 0);
-		next_item_len_i           : in  STD_LOGIC_VECTOR(31 downto 0);
-		next_item_next_l_i        : in  STD_LOGIC_VECTOR(31 downto 0);
-		next_item_next_h_i        : in  STD_LOGIC_VECTOR(31 downto 0);   
-		next_item_attrib_i        : in  STD_LOGIC_VECTOR(31 downto 0);
-		next_item_valid_i         : in  STD_LOGIC;      
-		--
-		---------------------------------------------------------
+    ---------------------------------------------------------
+    -- From P2L DMA MASTER
+    --
+    next_item_carrier_addr_i  : in  STD_LOGIC_VECTOR(31 downto 0);
+    next_item_host_addr_h_i   : in  STD_LOGIC_VECTOR(31 downto 0);
+    next_item_host_addr_l_i   : in  STD_LOGIC_VECTOR(31 downto 0);
+    next_item_len_i           : in  STD_LOGIC_VECTOR(31 downto 0);
+    next_item_next_l_i        : in  STD_LOGIC_VECTOR(31 downto 0);
+    next_item_next_h_i        : in  STD_LOGIC_VECTOR(31 downto 0);   
+    next_item_attrib_i        : in  STD_LOGIC_VECTOR(31 downto 0);
+    next_item_valid_i         : in  STD_LOGIC;      
+    --
+    ---------------------------------------------------------
 
-		---------------------------------------------------------
-		-- Wishbone Slave Interface
-		--
+    ---------------------------------------------------------
+    -- Wishbone Slave Interface
+    --
     wb_adr_i         : in   STD_LOGIC_VECTOR(3 downto 0);             -- Adress
     wb_dat_o         : out  STD_LOGIC_VECTOR(31 downto 0);            -- Data in
     wb_dat_i         : in   STD_LOGIC_VECTOR(31 downto 0);            -- Data out
@@ -82,9 +82,9 @@ entity dma_controller is
     wb_stb_i         : in   STD_LOGIC;                                -- Read or write strobe
     wb_we_i          : in   STD_LOGIC;                                -- Write
     wb_ack_o         : out  STD_LOGIC                                 -- Acknowledge
-		--
-		---------------------------------------------------------
-	);
+    --
+    ---------------------------------------------------------
+  );
 end dma_controller;
 
 architecture behaviour of dma_controller is
@@ -176,12 +176,12 @@ end component dma_controller_wb_slave;
 
     
 begin
-  LED <= dma_ctrl_reg(7 downto 0);
-
+  DEBUG(1 downto 0) <= dma_ctrl_reg(1 downto 0);
+  DEBUG(3 downto 2) <= dma_stat_reg(1 downto 0);
   dma_reset <= rst_i;
   dma_reset_n <= not dma_reset;
 
-  dma_controller_wb_slave_0 : dma_controller_wb_slave	port map (
+  dma_controller_wb_slave_0 : dma_controller_wb_slave  port map (
     rst_n_i            => dma_reset_n,
     wb_clk_i           => clk_i,
     wb_addr_i          => wb_adr_i,
@@ -219,7 +219,7 @@ begin
     dma_attrib_o       => dma_attrib,
     dma_attrib_i       => dma_attrib_reg,
     dma_attrib_load_o  => dma_attrib_load
-	);
+  );
 
   process (clk_i, rst_i)
   begin

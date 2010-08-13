@@ -33,25 +33,25 @@ Library UNISIM;
 use UNISIM.vcomponents.all;
 
 entity DDR_OUT is
-	generic
-	(
-		WIDTH   : INTEGER := 20
-	);
-	port
-	( 
-		-- Reset
-		RESET   : in   STD_ULOGIC;
-		-- Clock
-		CLKp    : in   STD_ULOGIC;
-		CLKn    : in   STD_ULOGIC;
-		-- Clock Enable
-		CE      : in   STD_ULOGIC;
-		-- Input Data
-		Dp      : in   STD_ULOGIC_VECTOR(WIDTH-1 downto 0);
-		Dn      : in   STD_ULOGIC_VECTOR(WIDTH-1 downto 0);
-		-- Output Data
-		Q       : out  STD_ULOGIC_VECTOR(WIDTH-1 downto 0)
-	);
+  generic
+  (
+    WIDTH   : INTEGER := 20
+  );
+  port
+  ( 
+    -- Reset
+    RESET   : in   STD_ULOGIC;
+    -- Clock
+    CLKp    : in   STD_ULOGIC;
+    CLKn    : in   STD_ULOGIC;
+    -- Clock Enable
+    CE      : in   STD_ULOGIC;
+    -- Input Data
+    Dp      : in   STD_ULOGIC_VECTOR(WIDTH-1 downto 0);
+    Dn      : in   STD_ULOGIC_VECTOR(WIDTH-1 downto 0);
+    -- Output Data
+    Q       : out  STD_ULOGIC_VECTOR(WIDTH-1 downto 0)
+  );
 end DDR_OUT;
 
 architecture BEHAVIOUR of DDR_OUT is
@@ -72,20 +72,20 @@ architecture BEHAVIOUR of DDR_OUT is
 begin
 
 
-	DDROUT: for i in 0 to WIDTH-1 generate
-	    U: OFDDRRSE 
-		port map
-		(
-		    Q  => Q(i),
-		    C0 => CLKn,
-		    C1 => CLKp,
-		    CE => CE,
-		    D0 => Dn(i),
-		    D1 => Dp(i),
-		    R  => RESET,
-		    S  => '0'
-		);
-	end generate;
+  DDROUT: for i in 0 to WIDTH-1 generate
+      U: OFDDRRSE 
+    port map
+    (
+        Q  => Q(i),
+        C0 => CLKn,
+        C1 => CLKp,
+        CE => CE,
+        D0 => Dn(i),
+        D1 => Dp(i),
+        R  => RESET,
+        S  => '0'
+    );
+  end generate;
 
 end BEHAVIOUR;
 

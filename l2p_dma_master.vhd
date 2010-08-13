@@ -86,17 +86,17 @@ end l2p_dma_master;
 architecture behaviour of l2p_dma_master is
 
 component fifo
-	port (
-	rst: IN std_logic;
-	wr_clk: IN std_logic;
-	rd_clk: IN std_logic;
-	din: IN std_logic_VECTOR(31 downto 0);
-	wr_en: IN std_logic;
-	rd_en: IN std_logic;
-	dout: OUT std_logic_VECTOR(31 downto 0);
-	full: OUT std_logic;
-	almost_full: OUT std_logic;
-	empty: OUT std_logic);
+  port (
+  rst: IN std_logic;
+  wr_clk: IN std_logic;
+  rd_clk: IN std_logic;
+  din: IN std_logic_VECTOR(31 downto 0);
+  wr_en: IN std_logic;
+  rd_en: IN std_logic;
+  dout: OUT std_logic_VECTOR(31 downto 0);
+  full: OUT std_logic;
+  almost_full: OUT std_logic;
+  empty: OUT std_logic);
 end component;
 
 -----------------------------------------------------------------------------
@@ -266,8 +266,9 @@ begin
                        else To_StdULogicVector(s_host_addr_h) when (l2p_dma_current_state = L2P_ADDR_H)
 
                        else To_StdULogicVector(s_host_addr_l) when (l2p_dma_current_state = L2P_ADDR_L)
+                       --else To_StdULogicVector(s_l2p_data)    when (l2p_dma_current_state = L2P_DATA
                        else To_StdULogicVector(s_l2p_data)    when (l2p_dma_current_state = L2P_DATA
-																					  or l2p_dma_current_state = L2P_DATA_LAST)
+                                            or l2p_dma_current_state = L2P_DATA_LAST)
                        else x"00000000";
 
   ldm_arb_valid_o <= '1' when (l2p_dma_current_state = L2P_HEADER
@@ -321,8 +322,10 @@ begin
         when WB_REQUEST =>
           if (l2p_dma_stall_i = '1') then
             wishbone_next_state := WB_STALL;
-          elsif(wb_data_cpt = 1) then
+          elsif(wb_data_cpt = 1 and l2p_dma_ack_i = '0') then
             wishbone_next_state := WB_LAST_ACK;
+          elsif(wb_data_cpt = 1) then
+            wishbone_next_state := IDLE;
           elsif (s_fifo_almost_full = '1') then
             wishbone_next_state := WB_FIFO_FULL;
           else
