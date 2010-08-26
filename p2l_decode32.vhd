@@ -10,7 +10,7 @@
 --
 -- date: 
 --
--- version: 0.1
+-- version: 0.0
 --
 -- description: P2L Packet Decoder - For 32 Bit Data Path Design
 -- 

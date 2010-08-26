@@ -8,7 +8,7 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 07-06-2010
+-- date: 12-08-2010
 --
 -- version: 0.1
 --
@@ -117,7 +117,7 @@ begin
    -- Strict priority arbitration scheme
    -- Highest : WBM request
    --         : LDM request
-   -- Lowest  : pdm request
+   -- Lowest  : PDM request
    -----------------------------------------------------------------------------
 
 

@@ -8,7 +8,7 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 07-06-2010
+-- date: 12-08-2010
 --
 -- version: 0.2
 --
@@ -22,8 +22,8 @@
 -- <extended description>
 --------------------------------------------------------------------------------
 -- TODO: - 
---       - Review time out
---       - Use wb_clk, wb_rst !!!
+--       - 
+--       - 
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -123,7 +123,7 @@ end component;
 -- Internal Signals 
 -----------------------------------------------------------------------------
 -- P2L Bus Tracker State Machine
-  type   wishbone_state_type is (WB_IDLE, WB_READ_REQUEST,WB_READ_WAIT_ACK, WB_READ_WAIT_PCIE, WB_READ_SEND_PCIE,
+  type   wishbone_state_type is (WB_IDLE, WB_READ_REQUEST,WB_READ_WAIT_ACK, WB_READ_SEND_PCIE,
                                        WB_WRITE_FIFO, WB_WRITE_REQUEST,WB_WRITE_WAIT_ACK);
   signal wishbone_current_state : wishbone_state_type;
   
@@ -244,18 +244,18 @@ begin
   
   --read completion header
   s_l2p_header_reg <= "000"          -->  Traffic Class
-                & '0'            -->  Reserved
-                & "0101"         -->  Read completion
-                & "000000"       -->  Reserved
-                & "00"           -->  Completion Status
-                & s_l2p_last     -->  Last completion packet
-                & "00"           -->  Reserved
-                & '0'            -->  VC
-                & s_read_cid_reg -->  CID
-                & "0000000001";  -->  Length
+                    & '0'            -->  Reserved
+                    & "0101"         -->  Read completion
+                    & "000000"       -->  Reserved
+                    & "00"           -->  Completion Status
+                    & s_l2p_last     -->  Last completion packet
+                    & "00"           -->  Reserved
+                    & '0'            -->  VC
+                    & s_read_cid_reg -->  CID
+                    & "0000000001";  -->  Length
 
 -----------------------------------------------------------------------------
--- PCIe write State Machine
+-- PCIe write State Machine (Read completion)
 -----------------------------------------------------------------------------
 
   process (gn4124_clk_i, sys_rst_i)
@@ -269,7 +269,7 @@ begin
         -- IDLE
         -----------------------------------------------------------------
         when IDLE =>
-          if(wishbone_current_state = WB_READ_WAIT_PCIE) then
+          if(wishbone_current_state = WB_READ_SEND_PCIE) then
             l2p_read_cpl_next_state := L2P_SEM;
           else
             l2p_read_cpl_next_state := IDLE;
@@ -279,7 +279,7 @@ begin
         -- IDLE
         -----------------------------------------------------------------
         when L2P_SEM =>
-          if not (wishbone_current_state = WB_READ_WAIT_PCIE) then
+          if not (wishbone_current_state = WB_READ_SEND_PCIE) then
             l2p_read_cpl_next_state := L2P_HEADER;
           else
             l2p_read_cpl_next_state := L2P_SEM;
@@ -323,7 +323,7 @@ begin
   wbm_arb_data_o <= To_StdULogicVector(s_l2p_header_reg) when l2p_read_cpl_current_state = L2P_HEADER
                else To_StdULogicVector(s_read_data_reg)   when l2p_read_cpl_current_state = L2P_DATA
 
-               else x"00000000";
+               else (others => '0');
 
   wbm_arb_valid_o <= '1' when (l2p_read_cpl_current_state = L2P_HEADER
                             or l2p_read_cpl_current_state = L2P_DATA)
@@ -346,11 +346,11 @@ begin
 
   begin
     if(sys_rst_i = '1') then
-      s_wb_timeout_cnt  <= "0000";
+      s_wb_timeout_cnt  <= (others => '0');
       s_wb_timeout      <= '0';
     elsif(sys_clk_i'event and sys_clk_i = '1') then
       if wishbone_current_state = WB_IDLE then
-        s_wb_timeout_cnt  <= "0000";
+        s_wb_timeout_cnt  <= (others => '0');
         s_wb_timeout      <= '0';
       elsif (s_wb_timeout_cnt = WBM_TIMEOUT) then
         s_wb_timeout      <= '1';
@@ -375,7 +375,7 @@ begin
         -- Wait for a Wishbone cycle
         -----------------------------------------------------------------
         when WB_IDLE =>
-          if(s_read_request = '1') then
+          if(s_read_request = '1' and l2p_read_cpl_current_state = IDLE) then
             wishbone_next_state := WB_READ_REQUEST;
           elsif(s_write_request = '1') then
             wishbone_next_state := WB_WRITE_FIFO;
@@ -420,7 +420,7 @@ begin
           if (wb_stall_i = '1' and s_wb_timeout = '0') then
             wishbone_next_state := WB_READ_REQUEST;
           elsif(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_next_state := WB_READ_WAIT_PCIE;
+            wishbone_next_state := WB_READ_SEND_PCIE;
           else
             wishbone_next_state := WB_READ_WAIT_ACK;
           end if;
@@ -430,19 +430,9 @@ begin
         -----------------------------------------------------------------
         when WB_READ_WAIT_ACK =>
           if(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_next_state := WB_READ_WAIT_PCIE;
-          else
-            wishbone_next_state := WB_READ_WAIT_ACK;
-          end if;
-
-        -----------------------------------------------------------------
-        -- Wait for the read completion machine
-        ----------------------------------------------------------------- 
-        when WB_READ_WAIT_PCIE =>
-          if (l2p_read_cpl_current_state = IDLE) then
             wishbone_next_state := WB_READ_SEND_PCIE;
           else
-            wishbone_next_state := WB_READ_WAIT_PCIE;
+            wishbone_next_state := WB_READ_WAIT_ACK;
           end if;
 
         -----------------------------------------------------------------
@@ -483,11 +473,11 @@ begin
          else "0000";
  
   wb_dat_o <= s_write_data_reg  when (wishbone_current_state = WB_WRITE_REQUEST)
-         else x"00000000";
+         else (others => '0');
 
   wb_adr_o <= s_read_addr_reg  when (wishbone_current_state = WB_READ_REQUEST)
          else s_write_addr_reg     when (wishbone_current_state = WB_WRITE_REQUEST)
-         else x"00000000";
+         else (others => '0');
 
 
 --=========================================================================--
@@ -520,8 +510,8 @@ begin
   process (sys_clk_i, sys_rst_i)
   begin
     if(sys_rst_i = '1') then
-      s_write_data_reg <= x"00000000";
-      s_write_addr_reg <= x"00000000";
+      s_write_data_reg <= (others => '0');
+      s_write_addr_reg <= (others => '0');
     elsif(sys_clk_i'event and sys_clk_i = '1') then
       if (wishbone_current_state = WB_WRITE_FIFO) then
         s_write_data_reg <= s_fifo_out(31 downto 0);
