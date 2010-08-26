@@ -10,7 +10,7 @@
 --
 -- date: 
 --
--- version: 0.1
+-- version: 0.0
 --
 -- description: Takes the DDR P2L bus and converts to SDR that is synchronous
 --              to ICLK

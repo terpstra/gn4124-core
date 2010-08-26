@@ -8,9 +8,9 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 07-07-2010
+-- date: 26-08-2010
 --
--- version: 0.1
+-- version: 0.3
 --
 -- description: 
 -- 
@@ -21,8 +21,8 @@
 -- last changes: <date> <initials> <log>
 -- <extended description>
 --------------------------------------------------------------------------------
--- TODO: - 
---       - 
+-- TODO: - P2L DMA master
+--       - Interrupt
 --       - 
 --------------------------------------------------------------------------------
 
@@ -323,8 +323,8 @@ port
     ---------------------------------------------------------
     -- Clock/Reset
     --
-    clk_i             : in   STD_ULOGIC;
-    rst_i             : in   STD_ULOGIC;
+    sys_clk_i             : in   STD_ULOGIC;
+    sys_rst_i             : in   STD_ULOGIC;
     ---------------------------------------------------------
     ---------------------------------------------------------
     -- To the L2P DMA master and P2L DMA master
@@ -380,8 +380,10 @@ component l2p_dma_master is
     ---------------------------------------------------------
     -- Clock/Reset
     --
-    clk_i                   : in   STD_ULOGIC;
-    rst_i                   : in   STD_ULOGIC;
+      sys_clk_i : in std_ulogic;
+      sys_rst_i : in std_ulogic;
+      
+      gn4124_clk_i : in std_ulogic;
     ---------------------------------------------------------
 
     ---------------------------------------------------------
@@ -425,6 +427,104 @@ component l2p_dma_master is
   );
 end component; -- l2p_dma_master
 
+-----------------------------------------------------------------------------
+component p2l_dma_master is
+-----------------------------------------------------------------------------
+  port
+    (
+	  DEBUG                : out    std_logic_vector(3 downto 0);
+      ---------------------------------------------------------
+      ---------------------------------------------------------
+      -- Clock/Reset
+      --
+      sys_clk_i : in std_ulogic;
+      sys_rst_i : in std_ulogic;
+      
+      gn4124_clk_i : in std_ulogic;
+      ---------------------------------------------------------
+
+      ---------------------------------------------------------
+      -- From the DMA controller 
+      --
+      dma_ctrl_carrier_addr_i : in  std_logic_vector(31 downto 0);
+      dma_ctrl_host_addr_h_i  : in  std_logic_vector(31 downto 0);
+      dma_ctrl_host_addr_l_i  : in  std_logic_vector(31 downto 0);
+      dma_ctrl_len_i          : in  std_logic_vector(31 downto 0);
+      dma_ctrl_start_p2l_i    : in  std_logic;
+      dma_ctrl_start_next_i   : in  std_logic;
+      dma_ctrl_done_o         : out std_logic;
+      dma_ctrl_error_o        : out std_logic;
+      --
+      ---------------------------------------------------------
+
+      ---------------------------------------------------------
+      -- From P2L Decoder (receive the read completion)
+      --
+      -- Header
+      pd_pdm_hdr_start_i  : in   STD_ULOGIC;                      -- Indicates Header start cycle 
+      pd_pdm_hdr_length_i : in   STD_ULOGIC_VECTOR(9 downto 0);   -- Latched LENGTH value from header
+      pd_pdm_hdr_cid_i    : in   STD_ULOGIC_VECTOR(1 downto 0);   -- Completion ID
+      pd_pdm_target_mrd_i : in   STD_ULOGIC;                      -- Target memory read
+      pd_pdm_target_mwr_i : in   STD_ULOGIC;                      -- Target memory write
+      pd_pdm_target_cpld_i : in   STD_ULOGIC;                      -- Target memory write
+      --
+      -- Address
+      pd_pdm_addr_start_i : in   STD_ULOGIC;                      -- Indicates Address Start 
+      pd_pdm_addr_i       : in   STD_ULOGIC_VECTOR(31 downto 0);  -- Latched Address that will increment with data
+      pd_pdm_wbm_addr_i   : in   STD_ULOGIC;                      -- Indicates that current address is for the EPI interface
+                                                                -- Can be connected to a decode of IP2L_ADDRi 
+                                                                -- or to IP2L_ADDRi(0) for BAR2
+                                                                -- or to not IP2L_ADDRi(0) for BAR0
+      --
+      -- Data
+      pd_pdm_data_valid_i    : in   STD_ULOGIC;                       -- Indicates Data is valid
+      pd_pdm_data_last_i     : in   STD_ULOGIC;                       -- Indicates end of the packet
+      pd_pdm_data_i          : in   STD_ULOGIC_VECTOR(31 downto 0);   -- Data
+      pd_pdm_be_i            : in   STD_ULOGIC_VECTOR( 3 downto 0);   -- Byte Enable for data
+      --
+      ---------------------------------------------------------
+
+      ---------------------------------------------------------
+      -- To the L2P Interface (send the DMA Master Read request)
+      --
+      pdm_arb_valid_o  : out std_ulogic;  -- Read completion signals
+      pdm_arb_dframe_o : out std_ulogic;  -- Toward the arbiter
+      pdm_arb_data_o   : out std_ulogic_vector(31 downto 0);
+      pdm_arb_req_o    : out std_ulogic;
+      arb_pdm_gnt_i    : in  std_ulogic;
+      --
+      ---------------------------------------------------------
+
+      ---------------------------------------------------------
+      -- DMA Interface (Pipelined Wishbone)
+      --
+      p2l_dma_adr_o   : out std_logic_vector(31 downto 0);  -- Adress
+      p2l_dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
+      p2l_dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
+      p2l_dma_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
+      p2l_dma_cyc_o   : out std_logic;  -- Read or write cycle
+      p2l_dma_stb_o   : out std_logic;  -- Read or write strobe
+      p2l_dma_we_o    : out std_logic;  -- Write
+      p2l_dma_ack_i   : in  std_logic;  -- Acknowledge
+      p2l_dma_stall_i : in  std_logic;   -- for pipelined Wishbone
+      --
+      ---------------------------------------------------------
+      
+      ---------------------------------------------------------
+      -- From P2L DMA MASTER
+      --
+      next_item_carrier_addr_o  : out STD_LOGIC_VECTOR(31 downto 0);
+      next_item_host_addr_h_o   : out STD_LOGIC_VECTOR(31 downto 0);
+      next_item_host_addr_l_o   : out STD_LOGIC_VECTOR(31 downto 0);
+      next_item_len_o           : out STD_LOGIC_VECTOR(31 downto 0);
+      next_item_next_l_o        : out STD_LOGIC_VECTOR(31 downto 0);
+      next_item_next_h_o        : out STD_LOGIC_VECTOR(31 downto 0);   
+      next_item_attrib_o        : out STD_LOGIC_VECTOR(31 downto 0);
+      next_item_valid_o         : out STD_LOGIC     
+      --
+      ---------------------------------------------------------
+      );
+end component; -- p2l_dma_master
 
 -----------------------------------------------------------------------------
 component arbiter is
@@ -590,15 +690,25 @@ end component; -- arbiter
   signal wb_stall_dma_ctrl       : STD_LOGIC;                                --
   signal wb_dat_s2m_dma_ctrl     : STD_LOGIC_VECTOR(31 downto 0);            --
 
-  signal dma_adr                  : STD_LOGIC_VECTOR(31 downto 0);             -- Adress
-  signal dma_dat_s2m              : STD_LOGIC_VECTOR(31 downto 0);            -- Data in
-  signal dma_dat_m2s              : STD_LOGIC_VECTOR(31 downto 0);            -- Data out
-  signal dma_sel                  : STD_LOGIC_VECTOR(3 downto 0);             -- Byte select
-  signal dma_cyc                  : STD_LOGIC;                                -- Read or write cycle
-  signal dma_stb                  : STD_LOGIC;                                -- Read or write strobe
-  signal dma_we                   : STD_LOGIC;                                -- Write
-  signal dma_ack                  : STD_LOGIC;                                -- Acknowledge
-  signal dma_stall                : STD_LOGIC;                                -- Acknowledge
+  signal l2p_dma_adr                  : STD_LOGIC_VECTOR(31 downto 0);             -- Adress
+  signal l2p_dma_dat_s2m              : STD_LOGIC_VECTOR(31 downto 0);            -- Data in
+  signal l2p_dma_dat_m2s              : STD_LOGIC_VECTOR(31 downto 0);            -- Data out
+  signal l2p_dma_sel                  : STD_LOGIC_VECTOR(3 downto 0);             -- Byte select
+  signal l2p_dma_cyc                  : STD_LOGIC;                                -- Read or write cycle
+  signal l2p_dma_stb                  : STD_LOGIC;                                -- Read or write strobe
+  signal l2p_dma_we                   : STD_LOGIC;                                -- Write
+  signal l2p_dma_ack                  : STD_LOGIC;                                -- Acknowledge
+  signal l2p_dma_stall                : STD_LOGIC;                                -- Acknowledge
+  
+  signal p2l_dma_adr                  : STD_LOGIC_VECTOR(31 downto 0);             -- Adress
+  signal p2l_dma_dat_s2m              : STD_LOGIC_VECTOR(31 downto 0);            -- Data in
+  signal p2l_dma_dat_m2s              : STD_LOGIC_VECTOR(31 downto 0);            -- Data out
+  signal p2l_dma_sel                  : STD_LOGIC_VECTOR(3 downto 0);             -- Byte select
+  signal p2l_dma_cyc                  : STD_LOGIC;                                -- Read or write cycle
+  signal p2l_dma_stb                  : STD_LOGIC;                                -- Read or write strobe
+  signal p2l_dma_we                   : STD_LOGIC;                                -- Write
+  signal p2l_dma_ack                  : STD_LOGIC;                                -- Acknowledge
+  signal p2l_dma_stall                : STD_LOGIC;                                -- Acknowledge
     --
     ---------------------------------------------------------
 
@@ -765,31 +875,31 @@ u_wbmaster32: wbmaster32
     ---------------------------------------------------------
     -- Clock/Reset
     --
-    sys_clk_i             => clk_i,
+    sys_clk_i             => sys_clk_i,
     sys_rst_i             => rst_i,
     
-    gn4124_clk_i             => clk_i,
+    gn4124_clk_i          => clk_i,
     ---------------------------------------------------------
     ---------------------------------------------------------
     -- From P2L Decoder
     --
     -- Header
-    pd_wbm_hdr_start_i  => IP2L_HDR_START,
-    pd_wbm_hdr_length_i => IP2L_HDR_LENGTH,
-    pd_wbm_hdr_cid_i    => IP2L_HDR_CID,
-    pd_wbm_target_mrd_i => IP2L_TARGET_MRD,
-    pd_wbm_target_mwr_i => IP2L_TARGET_MWR,
+    pd_wbm_hdr_start_i    => IP2L_HDR_START,
+    pd_wbm_hdr_length_i   => IP2L_HDR_LENGTH,
+    pd_wbm_hdr_cid_i      => IP2L_HDR_CID,
+    pd_wbm_target_mrd_i   => IP2L_TARGET_MRD,
+    pd_wbm_target_mwr_i   => IP2L_TARGET_MWR,
     --
     -- Address
-    pd_wbm_addr_start_i => IP2L_ADDR_START,
-    pd_wbm_addr_i       => IP2L_ADDR,
-    pd_wbm_wbm_addr_i   => IP2L_EPI_SELECT,
+    pd_wbm_addr_start_i   => IP2L_ADDR_START,
+    pd_wbm_addr_i         => IP2L_ADDR,
+    pd_wbm_wbm_addr_i     => IP2L_EPI_SELECT,
     --
     -- Data
-    pd_wbm_data_valid_i    => IP2L_D_VALID,
-    pd_wbm_data_last_i     => IP2L_D_LAST,
-    pd_wbm_data_i          => IP2L_D,
-    pd_wbm_be_i         => IP2L_BE,
+    pd_wbm_data_valid_i   => IP2L_D_VALID,
+    pd_wbm_data_last_i    => IP2L_D_LAST,
+    pd_wbm_data_i         => IP2L_D,
+    pd_wbm_be_i           => IP2L_BE,
     --
     ---------------------------------------------------------
     -- P2L Control
@@ -842,9 +952,9 @@ u_dma_controller: dma_controller
 -----------------------------------------------------------------------------
   port map
   ( 
-    DEBUG=> LED (7 downto 4),
-    clk_i                     => clk_i,
-    rst_i                     => rst_i, 
+    --DEBUG=> LED (7 downto 4),
+    sys_clk_i                     => sys_clk_i,
+    sys_rst_i                     => rst_i, 
 
     dma_ctrl_carrier_addr_o   => dma_ctrl_carrier_addr,
     dma_ctrl_host_addr_h_o    => dma_ctrl_host_addr_h,
@@ -886,8 +996,10 @@ u_l2p_dma_master: l2p_dma_master
 -----------------------------------------------------------------------------
   port map
   ( 
-    clk_i                     => clk_i,
-    rst_i                     => rst_i,
+    sys_clk_i                 => sys_clk_i,
+    sys_rst_i                 => rst_i,
+    
+    gn4124_clk_i              => clk_i,
 
     dma_ctrl_carrier_addr_i   => dma_ctrl_carrier_addr,
     dma_ctrl_host_addr_h_i    => dma_ctrl_host_addr_h,
@@ -903,31 +1015,96 @@ u_l2p_dma_master: l2p_dma_master
     ldm_arb_req_o             => ldm_arb_req,
     arb_ldm_gnt_i             => arb_ldm_gnt,
 
-    l2p_dma_adr_o             => dma_adr,
-    l2p_dma_dat_i             => dma_dat_s2m,
-    l2p_dma_dat_o             => dma_dat_m2s,
-    l2p_dma_sel_o             => dma_sel,
-    l2p_dma_cyc_o             => dma_cyc,
-    l2p_dma_stb_o             => dma_stb,
-    l2p_dma_we_o              => dma_we,
-    l2p_dma_ack_i             => dma_ack,
-    l2p_dma_stall_i           => dma_stall
+    l2p_dma_adr_o             => l2p_dma_adr,
+    l2p_dma_dat_i             => l2p_dma_dat_s2m,
+    l2p_dma_dat_o             => l2p_dma_dat_m2s,
+    l2p_dma_sel_o             => l2p_dma_sel,
+    l2p_dma_cyc_o             => l2p_dma_cyc,
+    l2p_dma_stb_o             => l2p_dma_stb,
+    l2p_dma_we_o              => l2p_dma_we,
+    l2p_dma_ack_i             => l2p_dma_ack,
+    l2p_dma_stall_i           => l2p_dma_stall
+    --
+    ---------------------------------------------------------
+  );
+  
+-----------------------------------------------------------------------------
+  u_p2l_dma_master: p2l_dma_master
+-----------------------------------------------------------------------------
+  port map
+  ( 
+  DEBUG=> LED (7 downto 4),
+    sys_clk_i                 => sys_clk_i,
+    sys_rst_i                 => rst_i,
+    
+    gn4124_clk_i              => clk_i,
+
+    dma_ctrl_carrier_addr_i   => dma_ctrl_carrier_addr,
+    dma_ctrl_host_addr_h_i    => dma_ctrl_host_addr_h,
+    dma_ctrl_host_addr_l_i    => dma_ctrl_host_addr_l,
+    dma_ctrl_len_i            => dma_ctrl_len,
+    dma_ctrl_start_p2l_i      => dma_ctrl_start_p2l,
+    dma_ctrl_start_next_i     => dma_ctrl_start_next,
+    dma_ctrl_done_o           => dma_ctrl_p2l_done,
+    dma_ctrl_error_o          => dma_ctrl_p2l_error,
+    
+    pd_pdm_hdr_start_i        => IP2L_HDR_START,
+    pd_pdm_hdr_length_i       => IP2L_HDR_LENGTH,
+    pd_pdm_hdr_cid_i          => IP2L_HDR_CID,
+    pd_pdm_target_mrd_i       => IP2L_TARGET_MRD,
+    pd_pdm_target_mwr_i       => IP2L_TARGET_MWR,
+    pd_pdm_target_cpld_i      => IP2L_MASTER_CPLD,
+   
+    pd_pdm_addr_start_i       => IP2L_ADDR_START,
+    pd_pdm_addr_i             => IP2L_ADDR,
+    pd_pdm_wbm_addr_i         => IP2L_EPI_SELECT,
+
+    pd_pdm_data_valid_i       => IP2L_D_VALID,
+    pd_pdm_data_last_i        => IP2L_D_LAST,
+    pd_pdm_data_i             => IP2L_D,
+    pd_pdm_be_i               => IP2L_BE,
+
+    pdm_arb_valid_o           => pdm_arb_valid,
+    pdm_arb_dframe_o          => pdm_arb_dframe,
+    pdm_arb_data_o            => pdm_arb_data,
+    pdm_arb_req_o             => pdm_arb_req,
+    arb_pdm_gnt_i             => arb_pdm_gnt,
+
+    p2l_dma_adr_o             => p2l_dma_adr,
+    p2l_dma_dat_i             => p2l_dma_dat_s2m,
+    p2l_dma_dat_o             => p2l_dma_dat_m2s,
+    p2l_dma_sel_o             => p2l_dma_sel,
+    p2l_dma_cyc_o             => p2l_dma_cyc,
+    p2l_dma_stb_o             => p2l_dma_stb,
+    p2l_dma_we_o              => p2l_dma_we,
+    p2l_dma_ack_i             => p2l_dma_ack,
+    p2l_dma_stall_i           => p2l_dma_stall,
+    
+    next_item_carrier_addr_o  => next_item_carrier_addr,
+    next_item_host_addr_h_o   => next_item_host_addr_h,
+    next_item_host_addr_l_o   => next_item_host_addr_l,
+    next_item_len_o           => next_item_len,
+    next_item_next_l_o        => next_item_next_l,
+    next_item_next_h_o        => next_item_next_h,
+    next_item_attrib_o        => next_item_attrib,
+    next_item_valid_o         => next_item_valid
     --
     ---------------------------------------------------------
   );
 
-    dma_adr_o         <= dma_adr;
-    dma_dat_s2m       <= dma_dat_i;
-    dma_dat_o         <= dma_dat_m2s;
-    dma_sel_o         <= dma_sel;
-    dma_cyc_o         <= dma_cyc;
-    dma_stb_o         <= dma_stb;
-    dma_we_o          <= dma_we;
-    dma_ack           <= dma_ack_i;
-    dma_stall         <= dma_stall_i;
+    dma_adr_o         <= l2p_dma_adr     or p2l_dma_adr;
+    l2p_dma_dat_s2m   <= dma_dat_i;  
+    p2l_dma_dat_s2m   <= dma_dat_i;  
+    dma_dat_o         <= l2p_dma_dat_m2s or p2l_dma_dat_m2s;
+    dma_sel_o         <= l2p_dma_sel     or p2l_dma_sel;
+    dma_cyc_o         <= l2p_dma_cyc     or p2l_dma_cyc;
+    dma_stb_o         <= l2p_dma_stb     or p2l_dma_stb;
+    dma_we_o          <= l2p_dma_we      or p2l_dma_we;
+    l2p_dma_ack       <= dma_ack_i;
+    l2p_dma_stall     <= dma_stall_i;
+    p2l_dma_ack       <= dma_ack_i;
+    p2l_dma_stall     <= dma_stall_i;
 
-dma_ctrl_p2l_done <= '0';
-dma_ctrl_p2l_error <= '0';
 
 
 -----------------------------------------------------------------------------
@@ -938,21 +1115,6 @@ dma_ctrl_p2l_error <= '0';
   rx_error_o <= '0';
   l2p_edb_o  <= '0';
   p2l_rdy_o  <= not rst_i;
-
-
---  ldm_arb_valid  <= '0';
---  ldm_arb_dframe <= '0';
---  ldm_arb_data   <= (others => '0');
---  ldm_arb_req    <= '0';
-
-
------------------------------------------------------------------------------
--- P2L DMA
------------------------------------------------------------------------------
-  pdm_arb_valid  <= '0';
-  pdm_arb_dframe <= '0';
-  pdm_arb_data   <= (others => '0');
-  pdm_arb_req    <= '0';
 
 
 
