@@ -8,9 +8,9 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 24-06-2010
+-- date: 26-08-2010
 --
--- version: 0.1
+-- version: 0.2
 --
 -- description: 
 -- 
@@ -21,8 +21,8 @@
 -- last changes: <date> <initials> <log>
 -- <extended description>
 --------------------------------------------------------------------------------
--- TODO: - 
---       - 
+-- TODO: - Interupt output
+--       - Byte swapping
 --       - 
 --------------------------------------------------------------------------------
 
@@ -39,8 +39,8 @@ entity dma_controller is
     ---------------------------------------------------------
     -- Clock/Reset
     --
-    clk_i             : in   STD_ULOGIC;
-    rst_i             : in   STD_ULOGIC;
+    sys_clk_i             : in   STD_ULOGIC;
+    sys_rst_i             : in   STD_ULOGIC;
     ---------------------------------------------------------
     ---------------------------------------------------------
     -- To the L2P DMA master and P2L DMA master
@@ -173,17 +173,18 @@ end component dma_controller_wb_slave;
   signal   dma_nexth_reg          : std_logic_vector(31 downto 0);
   signal   dma_attrib_reg         : std_logic_vector(31 downto 0);
 
-
+  type   dma_ctrl_state_type is (IDLE, DMA_START_TRANSFER, DMA_TRANSFER, DMA_START_CHAIN, DMA_CHAIN);
+  signal dma_ctrl_current_state : dma_ctrl_state_type;
     
 begin
-  DEBUG(1 downto 0) <= dma_ctrl_reg(1 downto 0);
-  DEBUG(3 downto 2) <= dma_stat_reg(1 downto 0);
-  dma_reset <= rst_i;
+ -- DEBUG(1 downto 0) <= dma_ctrl_reg(1 downto 0);
+--  DEBUG(3 downto 2) <= dma_attrib_reg(1 downto 0);
+  dma_reset <= sys_rst_i;
   dma_reset_n <= not dma_reset;
 
   dma_controller_wb_slave_0 : dma_controller_wb_slave  port map (
     rst_n_i            => dma_reset_n,
-    wb_clk_i           => clk_i,
+    wb_clk_i           => sys_clk_i,
     wb_addr_i          => wb_adr_i,
     wb_data_i          => wb_dat_i,
     wb_data_o          => wb_dat_o,
@@ -221,19 +222,19 @@ begin
     dma_attrib_load_o  => dma_attrib_load
   );
 
-  process (clk_i, rst_i)
+  process (sys_clk_i, sys_rst_i)
   begin
-    if (rst_i = '1') then                        
-      dma_ctrl_reg     <= x"00000000";
-      dma_stat_reg     <= x"00000000";
-      dma_cstart_reg   <= x"00000000";
-      dma_hstartl_reg  <= x"00000000";
-      dma_hstarth_reg  <= x"00000000";
-      dma_len_reg      <= x"00000000";
-      dma_nextl_reg    <= x"00000000";
-      dma_nexth_reg    <= x"00000000";
-      dma_attrib_reg   <= x"00000000";
-    elsif rising_edge(clk_i) then                
+    if (sys_rst_i = '1') then                        
+      dma_ctrl_reg     <= (others => '0');
+      dma_stat_reg     <= (others => '0');
+      dma_cstart_reg   <= (others => '0');
+      dma_hstartl_reg  <= (others => '0');
+      dma_hstarth_reg  <= (others => '0');
+      dma_len_reg      <= (others => '0');
+      dma_nextl_reg    <= (others => '0');
+      dma_nexth_reg    <= (others => '0');
+      dma_attrib_reg   <= (others => '0');
+    elsif rising_edge(sys_clk_i) then                
       if (dma_ctrl_load = '1') then 
         dma_ctrl_reg <= dma_ctrl;
       end if;
@@ -277,13 +278,95 @@ begin
     end if;
   end process;
 
-  dma_ctrl_carrier_addr_o  <= dma_cstart_reg;
-  dma_ctrl_host_addr_h_o   <= dma_hstarth_reg;
-  dma_ctrl_host_addr_l_o   <= dma_hstartl_reg;
-  dma_ctrl_len_o           <= dma_len_reg;
-  dma_ctrl_start_l2p_o     <= dma_ctrl_reg(0); 
-  dma_ctrl_start_p2l_o     <= '0';
-  dma_ctrl_start_next_o    <= '0';
+ 
+  
+  process (sys_clk_i, sys_rst_i)
+  variable dma_ctrl_next_state : dma_ctrl_state_type;
+  begin
+    if(sys_rst_i = '1') then
+      dma_ctrl_current_state <= IDLE;
+		DEBUG <= "1111";
+    elsif(sys_clk_i'event and sys_clk_i = '1') then
+      case dma_ctrl_current_state is
+        -----------------------------------------------------------------
+        -- IDLE
+        -----------------------------------------------------------------
+        when IDLE =>
+          if(dma_ctrl_reg(0)= '1') then
+            dma_ctrl_next_state := DMA_START_TRANSFER;
+          else
+            dma_ctrl_next_state := IDLE;
+          end if;
+          DEBUG <= "1110";
+        -----------------------------------------------------------------
+        -- DMA TRANSFER
+        -----------------------------------------------------------------
+        when DMA_START_TRANSFER =>
+          dma_ctrl_next_state := DMA_TRANSFER;
+          DEBUG <= "1101" ;  
+			 
+        when DMA_TRANSFER =>
+          if(dma_ctrl_error_i = '1') then
+            dma_ctrl_next_state := IDLE;          -- set status = error
+          elsif(dma_ctrl_done_i = '1') then      
+            if(dma_attrib_reg(0) = '1') then
+              dma_ctrl_next_state := DMA_START_CHAIN;
+            else
+              dma_ctrl_next_state := IDLE;        -- set status = done
+            end if;
+          else
+            dma_ctrl_next_state := DMA_TRANSFER;
+          end if;
+          DEBUG <= "1100" ;       
+        -----------------------------------------------------------------
+        -- Get the next item of the DMA chain
+        -----------------------------------------------------------------
+        when DMA_START_CHAIN =>
+          dma_ctrl_next_state := DMA_CHAIN;
+          DEBUG <= "1011";
+        when DMA_CHAIN =>
+          if(dma_ctrl_error_i = '1') then
+            dma_ctrl_next_state := IDLE;          -- set status = error
+          elsif (next_item_valid_i = '1') then     
+            dma_ctrl_next_state := DMA_START_TRANSFER;
+          else
+            dma_ctrl_next_state := DMA_CHAIN;
+          end if;
+			 DEBUG <= "1010";
+        -----------------------------------------------------------------
+        -- OTHERS
+        -----------------------------------------------------------------
+        when others =>
+          dma_ctrl_next_state := IDLE;
+      end case;
+      dma_ctrl_current_state <= dma_ctrl_next_state;
+    end if;
+  end process;
+  
+  dma_ctrl_carrier_addr_o  <= dma_cstart_reg  when dma_ctrl_current_state = DMA_START_TRANSFER                          
+                         else (others => '0');
+  
+  dma_ctrl_host_addr_h_o   <= dma_hstarth_reg when dma_ctrl_current_state = DMA_START_TRANSFER
+                         else dma_nexth_reg   when dma_ctrl_current_state = DMA_START_CHAIN
+                         else (others => '0');
+  
+  dma_ctrl_host_addr_l_o   <= dma_hstartl_reg when dma_ctrl_current_state = DMA_START_TRANSFER
+                         else dma_nextl_reg   when dma_ctrl_current_state = DMA_START_CHAIN
+                         else (others => '0');
+  
+  dma_ctrl_len_o           <= dma_len_reg     when dma_ctrl_current_state = DMA_START_TRANSFER
+                         else x"0000001C"     when dma_ctrl_current_state = DMA_START_CHAIN
+                         else (others => '0');
+  
+  
+  dma_ctrl_start_l2p_o     <= '1' when (dma_ctrl_current_state = DMA_START_TRANSFER and dma_attrib_reg(1) = '0') else 
+                              '0';
+                         
+  dma_ctrl_start_p2l_o     <= --'1' when (dma_ctrl_current_state = DMA_START_TRANSFER and dma_attrib_reg(1) = '1') else
+                              '0';
+  
+  dma_ctrl_start_next_o    <= '1' when (dma_ctrl_current_state = DMA_START_CHAIN) else 
+                              '0';
 
 end behaviour;
 

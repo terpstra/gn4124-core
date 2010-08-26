@@ -10,7 +10,7 @@
 --
 -- date: 
 --
--- version: 0.1
+-- version: 0.0
 --
 -- description: Generates the DDR L2P bus from SDR that is synchronous to ICLK
 -- 
