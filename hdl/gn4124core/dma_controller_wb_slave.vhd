@@ -106,7 +106,7 @@ begin
       dma_nexth_load_o <= '0';
       dma_attrib_load_o <= '0';
     elsif rising_edge(bus_clock_int) then
--- advance the ACK generator shift register
+ -- advance the ACK generator shift register
       ack_sreg(8 downto 0) <= ack_sreg(9 downto 1);
       ack_sreg(9) <= '0';
       if (ack_in_progress = '1') then

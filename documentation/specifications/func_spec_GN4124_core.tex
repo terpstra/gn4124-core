@@ -121,7 +121,7 @@ The end of a chained DMA access generates an interrupt request (\verb+dma_irq_p1
 \item Bits [31..4] are reserved.
 \item Bits [3..2] controls byte swapping of the DMA interface(see table~\ref{tab:byte_swapping}). It works in the both DMA transfer directions:
   \begin{packed_item}
-    \item "00" To swapping.
+    \item "00" No swapping.
     \item "X1" Swap the two bytes in the words.
     \item "1X" Swap the two words.
   \end{packed_item}

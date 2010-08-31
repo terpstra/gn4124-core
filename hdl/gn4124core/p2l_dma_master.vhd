@@ -8,7 +8,7 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 26-08-2010
+-- date: 31-08-2010
 --
 -- version: 0.1
 --
@@ -21,8 +21,8 @@
 -- last changes: <date> <initials> <log>
 -- <extended description>
 --------------------------------------------------------------------------------
--- TODO: - Pipelined Wishbone interface
---       - Add Byte Swapping
+-- TODO: - P2L transfer
+--       - error signal
 --       - 
 --------------------------------------------------------------------------------
 
@@ -57,6 +57,8 @@ entity p2l_dma_master is
       dma_ctrl_start_next_i   : in  std_logic;
       dma_ctrl_done_o         : out std_logic;
       dma_ctrl_error_o        : out std_logic;
+		
+		dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
       --
       ---------------------------------------------------------
 
@@ -158,7 +160,6 @@ architecture behaviour of p2l_dma_master is
   signal s_carrier_addr : std_logic_vector(31 downto 0);
   signal s_host_addr_h  : std_logic_vector(31 downto 0);
   signal s_host_addr_l  : std_logic_vector(31 downto 0);
-  signal s_len          : std_logic_vector(29 downto 0);
   signal s_start        : std_logic;
   signal s_chain        : std_logic;
 
@@ -168,10 +169,10 @@ architecture behaviour of p2l_dma_master is
   signal s_p2l_header   : std_logic_vector(31 downto 0);
   signal s_p2l_data     : std_logic_vector(31 downto 0);
   
-  signal p2l_data_cpt   : std_logic_vector(29 downto 0);
+  signal p2l_data_cpt   : std_logic_vector(9 downto 0);
   
-  signal wb_data_cpt    : std_logic_vector(29 downto 0);
-  signal wb_ack_cpt     : std_logic_vector(29 downto 0);
+  signal wb_data_cpt    : std_logic_vector(9 downto 0);
+  signal wb_ack_cpt     : std_logic_vector(9 downto 0);
   
   signal s_chain_cpt    : std_logic_vector(2 downto 0);
   
@@ -263,7 +264,7 @@ begin
                   & p2l_data_cpt(9 downto 0);   -->  Length
 
 -----------------------------------------------------------------------------
--- PCIe write State Machine
+-- PCIe read request State Machine
 -----------------------------------------------------------------------------
 
   process (gn4124_clk_i, sys_rst_i)
@@ -447,8 +448,8 @@ begin
         s_carrier_addr   <= dma_ctrl_carrier_addr_i;
         s_host_addr_h    <= dma_ctrl_host_addr_h_i;
         s_host_addr_l    <= dma_ctrl_host_addr_l_i;
-        wb_data_cpt      <= dma_ctrl_len_i(31 downto 2);
-        wb_ack_cpt       <= dma_ctrl_len_i(31 downto 2);
+        wb_data_cpt      <= dma_ctrl_len_i(11 downto 2);
+        wb_ack_cpt       <= dma_ctrl_len_i(11 downto 2);
       end if;
       if (dma_ctrl_start_next_i = '1') then
         s_chain <= '1';
