@@ -8,7 +8,7 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 26-08-2010
+-- date: 31-08-2010
 --
 -- version: 0.2
 --
@@ -21,7 +21,7 @@
 -- last changes: <date> <initials> <log>
 -- <extended description>
 --------------------------------------------------------------------------------
--- TODO: - Pipelined Wishbone interface
+-- TODO: - error signal
 --       - 
 --       - 
 --------------------------------------------------------------------------------
@@ -54,6 +54,7 @@ entity l2p_dma_master is
       dma_ctrl_start_l2p_i    : in  std_logic;
       dma_ctrl_done_o         : out std_logic;
       dma_ctrl_error_o        : out std_logic;
+		dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
       --
       ---------------------------------------------------------
 
@@ -122,15 +123,15 @@ end component;
   signal s_l2p_header   : std_logic_vector(31 downto 0);
   signal s_l2p_data     : std_logic_vector(31 downto 0);
   
-  signal l2p_data_cpt   : std_logic_vector(29 downto 0);
-  signal l2p_len_cpt    : std_logic_vector(29 downto 0);
+  signal l2p_data_cpt   : std_logic_vector(9 downto 0);
+  signal l2p_len_cpt    : std_logic_vector(9 downto 0);
   signal l2p_address_h  : std_logic_vector(31 downto 0);
   signal l2p_address_l  : std_logic_vector(31 downto 0); 
   signal l2p_len_dec    : std_logic;
   
   
-  signal wb_data_cpt    : std_logic_vector(29 downto 0);
-  signal wb_ack_cpt     : std_logic_vector(29 downto 0);
+  signal wb_data_cpt    : std_logic_vector(9 downto 0);
+  signal wb_ack_cpt     : std_logic_vector(9 downto 0);
   
   signal s_fifo_din     : std_logic_vector(31 downto 0);
   signal s_fifo_dout    : std_logic_vector(31 downto 0);
@@ -165,7 +166,7 @@ begin
         l2p_address_h    <= s_host_addr_h;
         l2p_address_l    <= s_host_addr_l;
         if (wb_data_cpt > l2p_max_payload) then
-          l2p_data_cpt   <= conv_std_logic_vector(l2p_max_payload,30);
+          l2p_data_cpt   <= conv_std_logic_vector(l2p_max_payload,10);
           l2p_len_dec  <= '1';
         else
           l2p_data_cpt   <= wb_data_cpt;
@@ -175,7 +176,7 @@ begin
       
       if (l2p_len_cpt > 0 and l2p_dma_current_state = L2P_DATA_LAST) then   -- Others blocks
         if (l2p_len_cpt > l2p_max_payload) then
-          l2p_data_cpt <= conv_std_logic_vector(l2p_max_payload,30);
+          l2p_data_cpt <= conv_std_logic_vector(l2p_max_payload,10);
           l2p_len_dec  <= '1';
         else
           l2p_data_cpt <= l2p_len_cpt;
@@ -455,8 +456,8 @@ begin
         s_carrier_addr  <= dma_ctrl_carrier_addr_i;
         s_host_addr_h   <= dma_ctrl_host_addr_h_i;
         s_host_addr_l   <= dma_ctrl_host_addr_l_i;
-        wb_data_cpt     <= dma_ctrl_len_i(31 downto 2);
-        wb_ack_cpt      <= dma_ctrl_len_i(31 downto 2);
+        wb_data_cpt     <= dma_ctrl_len_i(11 downto 2);
+        wb_ack_cpt      <= dma_ctrl_len_i(11 downto 2);
       end if;
       if (wishbone_current_state = WB_REQUEST and l2p_dma_stall_i = '0') then
         wb_data_cpt <= wb_data_cpt - 1;
@@ -495,7 +496,17 @@ begin
 --=========================================================================--
 -- FIFO block
 --=========================================================================-- 
-  s_fifo_din   <= l2p_dma_dat_i;
+  s_fifo_din   <= l2p_dma_dat_i when dma_ctrl_byte_swap_i = "00" else
+						l2p_dma_dat_i(15 downto 0)&
+						 l2p_dma_dat_i(31 downto 16) when dma_ctrl_byte_swap_i = "10" else
+                  l2p_dma_dat_i(7 downto 0)&
+						 l2p_dma_dat_i(15 downto 8)&
+						 l2p_dma_dat_i(23 downto 16)&
+						 l2p_dma_dat_i(31 downto 24) when dma_ctrl_byte_swap_i = "11" else		
+                  l2p_dma_dat_i(23 downto 16)&
+						 l2p_dma_dat_i(31 downto 24)&
+						 l2p_dma_dat_i(7 downto 0)&
+						 l2p_dma_dat_i(15 downto 8);
   s_fifo_wr_en <= l2p_dma_ack_i when wb_ack_cpt > 0
              else '0';
   s_l2p_data   <= s_fifo_dout;

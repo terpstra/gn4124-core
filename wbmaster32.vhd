@@ -113,7 +113,7 @@ component fifo_write
 	rd_clk: IN std_logic;
 	din: IN std_logic_VECTOR(63 downto 0);
 	wr_en: IN std_logic;
-	rd_en: IN std_logic;
+	rd_en: IN std_logic; 
 	dout: OUT std_logic_VECTOR(63 downto 0);
 	full: OUT std_logic;
 	empty: OUT std_logic);
