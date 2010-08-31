@@ -8,7 +8,7 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 26-08-2010
+-- date: 31-08-2010
 --
 -- version: 0.2
 --
@@ -21,8 +21,8 @@
 -- last changes: <date> <initials> <log>
 -- <extended description>
 --------------------------------------------------------------------------------
--- TODO: - Interupt output
---       - Byte swapping
+-- TODO: - Generate interrupt pulse
+--       - Status register
 --       - 
 --------------------------------------------------------------------------------
 
@@ -52,8 +52,10 @@ entity dma_controller is
     dma_ctrl_start_l2p_o     : out  STD_LOGIC;                       -- To the L2P DMA master
     dma_ctrl_start_p2l_o     : out  STD_LOGIC;                       -- To the P2L DMA master
     dma_ctrl_start_next_o    : out  STD_LOGIC;                       -- To the P2L DMA master
-    dma_ctrl_done_i          : in  STD_LOGIC;   
-    dma_ctrl_error_i         : in  STD_LOGIC;      
+    dma_ctrl_done_i          : in   STD_LOGIC;   
+    dma_ctrl_error_i         : in   STD_LOGIC;  
+
+    dma_ctrl_byte_swap_o     : out  STD_LOGIC_VECTOR(1 downto 0);   
     --
     ---------------------------------------------------------
 
@@ -367,6 +369,8 @@ begin
   
   dma_ctrl_start_next_o    <= '1' when (dma_ctrl_current_state = DMA_START_CHAIN) else 
                               '0';
+										
+  dma_ctrl_byte_swap_o    <= dma_ctrl_reg(3 downto 2);								
 
 end behaviour;
 

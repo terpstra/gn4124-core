@@ -8,7 +8,7 @@
 --
 -- author: Simon Deprez (simon.deprez@cern.ch)
 --
--- date: 26-08-2010
+-- date: 31-08-2010
 --
 -- version: 0.3
 --
@@ -336,8 +336,10 @@ port
     dma_ctrl_start_l2p_o     : out  STD_LOGIC;                       -- To the L2P DMA master
     dma_ctrl_start_p2l_o     : out  STD_LOGIC;                       -- To the P2L DMA master
     dma_ctrl_start_next_o    : out  STD_LOGIC;                       -- To the P2L DMA master
-    dma_ctrl_done_i          : in  STD_LOGIC;   
-    dma_ctrl_error_i         : in  STD_LOGIC;      
+    dma_ctrl_done_i          : in   STD_LOGIC;   
+    dma_ctrl_error_i         : in   STD_LOGIC;   
+
+	 dma_ctrl_byte_swap_o     : out  std_logic_vector(1 downto 0);	 
     --
     ---------------------------------------------------------
 
@@ -395,7 +397,9 @@ component l2p_dma_master is
     dma_ctrl_len_i          : in  STD_LOGIC_VECTOR(31 downto 0);
     dma_ctrl_start_l2p_i    : in  STD_LOGIC;       
     dma_ctrl_done_o         : out STD_LOGIC;   
-    dma_ctrl_error_o        : out STD_LOGIC;        
+    dma_ctrl_error_o        : out STD_LOGIC;  
+
+	 dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);	 
     --
     ---------------------------------------------------------
 
@@ -454,6 +458,8 @@ component p2l_dma_master is
       dma_ctrl_start_next_i   : in  std_logic;
       dma_ctrl_done_o         : out std_logic;
       dma_ctrl_error_o        : out std_logic;
+		
+      dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
       --
       ---------------------------------------------------------
 
@@ -661,13 +667,15 @@ end component; -- arbiter
   signal dma_ctrl_start_p2l      : STD_LOGIC;                       -- To the P2L DMA master
   signal dma_ctrl_start_next     : STD_LOGIC;                       -- To the P2L DMA master
 
+
   signal dma_ctrl_done           : STD_LOGIC;   
   signal dma_ctrl_error          : STD_LOGIC;    
   signal dma_ctrl_l2p_done       : STD_LOGIC;   
   signal dma_ctrl_l2p_error      : STD_LOGIC;     
   signal dma_ctrl_p2l_done       : STD_LOGIC;   
   signal dma_ctrl_p2l_error      : STD_LOGIC;       
-
+  signal dma_ctrl_byte_swap      : STD_LOGIC_VECTOR(1 downto 0); 
+  
   signal next_item_carrier_addr  : STD_LOGIC_VECTOR(31 downto 0);
   signal next_item_host_addr_h   : STD_LOGIC_VECTOR(31 downto 0);
   signal next_item_host_addr_l   : STD_LOGIC_VECTOR(31 downto 0);
@@ -965,6 +973,7 @@ u_dma_controller: dma_controller
     dma_ctrl_start_next_o     => dma_ctrl_start_next,
     dma_ctrl_done_i           => dma_ctrl_done,
     dma_ctrl_error_i          => dma_ctrl_error,
+	 dma_ctrl_byte_swap_o      => dma_ctrl_byte_swap,
 
     next_item_carrier_addr_i  => next_item_carrier_addr,
     next_item_host_addr_h_i   => next_item_host_addr_h,
@@ -1008,6 +1017,7 @@ u_l2p_dma_master: l2p_dma_master
     dma_ctrl_start_l2p_i      => dma_ctrl_start_l2p,
     dma_ctrl_done_o           => dma_ctrl_l2p_done,
     dma_ctrl_error_o          => dma_ctrl_l2p_error,
+	 dma_ctrl_byte_swap_i      => dma_ctrl_byte_swap,
 
     ldm_arb_valid_o           => ldm_arb_valid,
     ldm_arb_dframe_o          => ldm_arb_dframe,
@@ -1029,7 +1039,7 @@ u_l2p_dma_master: l2p_dma_master
   );
   
 -----------------------------------------------------------------------------
-  u_p2l_dma_master: p2l_dma_master
+u_p2l_dma_master: p2l_dma_master
 -----------------------------------------------------------------------------
   port map
   ( 
@@ -1047,6 +1057,7 @@ u_l2p_dma_master: l2p_dma_master
     dma_ctrl_start_next_i     => dma_ctrl_start_next,
     dma_ctrl_done_o           => dma_ctrl_p2l_done,
     dma_ctrl_error_o          => dma_ctrl_p2l_error,
+	 dma_ctrl_byte_swap_i      => dma_ctrl_byte_swap,
     
     pd_pdm_hdr_start_i        => IP2L_HDR_START,
     pd_pdm_hdr_length_i       => IP2L_HDR_LENGTH,
