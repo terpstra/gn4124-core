@@ -29,23 +29,21 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
---use IEEE.STD_LOGIC_ARITH.all;
---use IEEE.STD_LOGIC_UNSIGNED.all;
+use work.gn4124_core_pkg.all;
+
 
 entity dma_controller is
   port
     (
-      DEBUG                   : out std_logic_vector(3 downto 0);
-      ---------------------------------------------------------
+      DEBUG : out std_logic_vector(3 downto 0);
+
       ---------------------------------------------------------
       -- Clock/Reset
-      --
-      sys_clk_i               : in  std_logic;
-      sys_rst_i               : in  std_logic;
-      ---------------------------------------------------------
+      sys_clk_i   : in std_logic;
+      sys_rst_n_i : in std_logic;
+
       ---------------------------------------------------------
       -- To the L2P DMA master and P2L DMA master
-      --
       dma_ctrl_carrier_addr_o : out std_logic_vector(31 downto 0);
       dma_ctrl_host_addr_h_o  : out std_logic_vector(31 downto 0);
       dma_ctrl_host_addr_l_o  : out std_logic_vector(31 downto 0);
@@ -57,12 +55,9 @@ entity dma_controller is
       dma_ctrl_error_i        : in  std_logic;
 
       dma_ctrl_byte_swap_o : out std_logic_vector(1 downto 0);
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- From P2L DMA MASTER
-      --
       next_item_carrier_addr_i : in std_logic_vector(31 downto 0);
       next_item_host_addr_h_i  : in std_logic_vector(31 downto 0);
       next_item_host_addr_l_i  : in std_logic_vector(31 downto 0);
@@ -71,12 +66,9 @@ entity dma_controller is
       next_item_next_h_i       : in std_logic_vector(31 downto 0);
       next_item_attrib_i       : in std_logic_vector(31 downto 0);
       next_item_valid_i        : in std_logic;
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- Wishbone Slave Interface
-      --
       wb_adr_i : in  std_logic_vector(3 downto 0);   -- Adress
       wb_dat_o : out std_logic_vector(31 downto 0);  -- Data in
       wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data out
@@ -85,8 +77,6 @@ entity dma_controller is
       wb_stb_i : in  std_logic;                      -- Read or write strobe
       wb_we_i  : in  std_logic;                      -- Write
       wb_ack_o : out std_logic                       -- Acknowledge
-      --
-      ---------------------------------------------------------
       );
 end dma_controller;
 
@@ -143,8 +133,6 @@ architecture behaviour of dma_controller is
       );
   end component dma_controller_wb_slave;
 
-  signal dma_reset   : std_logic;
-  signal dma_reset_n : std_logic;
 
   signal dma_ctrl    : std_logic_vector(31 downto 0);
   signal dma_stat    : std_logic_vector(31 downto 0);
@@ -182,11 +170,9 @@ architecture behaviour of dma_controller is
 begin
   -- DEBUG(1 downto 0) <= dma_ctrl_reg(1 downto 0);
 --  DEBUG(3 downto 2) <= dma_attrib_reg(1 downto 0);
-  dma_reset   <= sys_rst_i;
-  dma_reset_n <= not dma_reset;
 
   dma_controller_wb_slave_0 : dma_controller_wb_slave port map (
-    rst_n_i            => dma_reset_n,
+    rst_n_i            => sys_rst_n_i,
     wb_clk_i           => sys_clk_i,
     wb_addr_i          => wb_adr_i,
     wb_data_i          => wb_dat_i,
@@ -225,9 +211,9 @@ begin
     dma_attrib_load_o  => dma_attrib_load
     );
 
-  process (sys_clk_i, sys_rst_i)
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if (sys_rst_i = '1') then
+    if (sys_rst_n_i = c_RST_ACTIVE) then
       dma_ctrl_reg    <= (others => '0');
       dma_stat_reg    <= (others => '0');
       dma_cstart_reg  <= (others => '0');
@@ -283,10 +269,10 @@ begin
 
 
 
-  process (sys_clk_i, sys_rst_i)
+  process (sys_clk_i, sys_rst_n_i)
     variable dma_ctrl_next_state : dma_ctrl_state_type;
   begin
-    if(sys_rst_i = '1') then
+    if(sys_rst_n_i = c_RST_ACTIVE) then
       dma_ctrl_current_state <= IDLE;
       DEBUG                  <= "1111";
     elsif rising_edge(sys_clk_i) then
@@ -347,29 +333,29 @@ begin
   end process;
 
   dma_ctrl_carrier_addr_o <= dma_cstart_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-                              else (others => '0');
+                             else (others => '0');
 
   dma_ctrl_host_addr_h_o <= dma_hstarth_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-                              else dma_nexth_reg when dma_ctrl_current_state = DMA_START_CHAIN
-                              else (others => '0');
+                            else dma_nexth_reg when dma_ctrl_current_state = DMA_START_CHAIN
+                            else (others => '0');
 
   dma_ctrl_host_addr_l_o <= dma_hstartl_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-                              else dma_nextl_reg when dma_ctrl_current_state = DMA_START_CHAIN
-                              else (others => '0');
+                            else dma_nextl_reg when dma_ctrl_current_state = DMA_START_CHAIN
+                            else (others => '0');
 
   dma_ctrl_len_o <= dma_len_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-                              else x"0000001C" when dma_ctrl_current_state = DMA_START_CHAIN
-                              else (others => '0');
+                    else x"0000001C" when dma_ctrl_current_state = DMA_START_CHAIN
+                    else (others => '0');
 
 
   dma_ctrl_start_l2p_o <= '1' when (dma_ctrl_current_state = DMA_START_TRANSFER and dma_attrib_reg(1) = '0') else
-                              '0';
+                          '0';
 
   dma_ctrl_start_p2l_o <=               --'1' when (dma_ctrl_current_state = DMA_START_TRANSFER and dma_attrib_reg(1) = '1') else
-                              '0';
+                                        '0';
 
   dma_ctrl_start_next_o <= '1' when (dma_ctrl_current_state = DMA_START_CHAIN) else
-                              '0';
+                           '0';
 
   dma_ctrl_byte_swap_o <= dma_ctrl_reg(3 downto 2);
 

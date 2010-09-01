@@ -29,25 +29,20 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
---use IEEE.STD_LOGIC_ARITH.all;
---use IEEE.STD_LOGIC_UNSIGNED.all;
+use work.gn4124_core_pkg.all;
+
 
 entity l2p_dma_master is
   port
     (
       ---------------------------------------------------------
-      ---------------------------------------------------------
       -- Clock/Reset
-      --
-      sys_clk_i : in std_logic;
-      sys_rst_i : in std_logic;
-
+      sys_clk_i    : in std_logic;
+      sys_rst_n_i  : in std_logic;
       gn4124_clk_i : in std_logic;
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- From the DMA controller
-      --
       dma_ctrl_carrier_addr_i : in  std_logic_vector(31 downto 0);
       dma_ctrl_host_addr_h_i  : in  std_logic_vector(31 downto 0);
       dma_ctrl_host_addr_l_i  : in  std_logic_vector(31 downto 0);
@@ -56,23 +51,17 @@ entity l2p_dma_master is
       dma_ctrl_done_o         : out std_logic;
       dma_ctrl_error_o        : out std_logic;
       dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- To the L2P Interface (send the DMA data)
-      --
       ldm_arb_valid_o  : out std_logic;  -- Read completion signals
       ldm_arb_dframe_o : out std_logic;  -- Toward the arbiter
       ldm_arb_data_o   : out std_logic_vector(31 downto 0);
       ldm_arb_req_o    : out std_logic;
       arb_ldm_gnt_i    : in  std_logic;
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- DMA Interface (Pipelined Wishbone)
-      --
       l2p_dma_adr_o   : out std_logic_vector(31 downto 0);  -- Adress
       l2p_dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
       l2p_dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
@@ -82,12 +71,12 @@ entity l2p_dma_master is
       l2p_dma_we_o    : out std_logic;                      -- Write
       l2p_dma_ack_i   : in  std_logic;                      -- Acknowledge
       l2p_dma_stall_i : in  std_logic                       -- for pipelined Wishbone
-      --
-      ---------------------------------------------------------
       );
 end l2p_dma_master;
 
+
 architecture behaviour of l2p_dma_master is
+
 
   component fifo
     port (
@@ -103,9 +92,13 @@ architecture behaviour of l2p_dma_master is
       empty       : out std_logic);
   end component;
 
+
 -----------------------------------------------------------------------------
 -- Internal Signals
 -----------------------------------------------------------------------------
+
+  signal fifo_rst : std_logic;
+
 -- L2P DMA Master State Machine
 
   constant l2p_max_payload : integer := 32;
@@ -144,16 +137,29 @@ architecture behaviour of l2p_dma_master is
 
   signal s_64b_address : std_logic;
 
+
 begin
+
+
+  ------------------------------------------------------------------------------
+  -- Active high reset for fifo
+  ------------------------------------------------------------------------------
+  gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
+    fifo_rst <= not(sys_rst_n_i);
+  end generate;
+
+  gen_fifo_rst : if c_RST_ACTIVE = '1' generate
+    fifo_rst <= sys_rst_n_i;
+  end generate;
 
 
 --=========================================================================--
 -- PCIe write block
 --=========================================================================--
-  process (gn4124_clk_i, sys_rst_i)
+  process (gn4124_clk_i, sys_rst_n_i)
     variable l2p_dma_next_state : l2p_dma_state_type;
   begin
-    if (sys_rst_i = '1') then
+    if (sys_rst_n_i = c_RST_ACTIVE) then
       l2p_len_cpt   <= (others => '0');
       l2p_data_cpt  <= (others => '0');
       l2p_address_h <= (others => '0');
@@ -218,10 +224,10 @@ begin
 -- PCIe Write State Machine
 -----------------------------------------------------------------------------
 
-  process (gn4124_clk_i, sys_rst_i)
+  process (gn4124_clk_i, sys_rst_n_i)
     variable l2p_dma_next_state : l2p_dma_state_type;
   begin
-    if(sys_rst_i = '1') then
+    if(sys_rst_n_i = c_RST_ACTIVE) then
       l2p_dma_current_state <= IDLE;
     elsif rising_edge(gn4124_clk_i) then
       case l2p_dma_current_state is
@@ -355,10 +361,10 @@ begin
 -----------------------------------------------------------------------------
 -- Wishbone master state machine
 -----------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_i)
+  process (sys_clk_i, sys_rst_n_i)
     variable wishbone_next_state : wishbone_state_type;
   begin
-    if(sys_rst_i = '1') then
+    if(sys_rst_n_i = c_RST_ACTIVE) then
       wishbone_current_state <= IDLE;
     elsif rising_edge(sys_clk_i) then
       case wishbone_current_state is
@@ -443,9 +449,9 @@ begin
     end if;
   end process;
 
-  process (sys_clk_i, sys_rst_i)
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if(sys_rst_i = '1') then
+    if(sys_rst_n_i = c_RST_ACTIVE) then
 
       wb_data_cpt    <= (others => '0');
       wb_ack_cpt     <= (others => '0');
@@ -514,7 +520,7 @@ begin
 
   u_fifo : fifo port map
     (
-      rst         => sys_rst_i,
+      rst         => fifo_rst,
       wr_clk      => sys_clk_i,
       rd_clk      => gn4124_clk_i,
       din         => s_fifo_din,

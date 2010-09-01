@@ -29,27 +29,23 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
---use IEEE.STD_LOGIC_ARITH.all;
---use IEEE.STD_LOGIC_UNSIGNED.all;
+use work.gn4124_core_pkg.all;
+
 
 entity p2l_dma_master is
   port
     (
 
-      DEBUG     : out std_logic_vector(3 downto 0);
-      ---------------------------------------------------------
+      DEBUG : out std_logic_vector(3 downto 0);
+
       ---------------------------------------------------------
       -- Clock/Reset
-      --
-      sys_clk_i : in  std_logic;
-      sys_rst_i : in  std_logic;
-
+      sys_clk_i    : in std_logic;
+      sys_rst_n_i  : in std_logic;
       gn4124_clk_i : in std_logic;
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- From the DMA controller
-      --
       dma_ctrl_carrier_addr_i : in  std_logic_vector(31 downto 0);
       dma_ctrl_host_addr_h_i  : in  std_logic_vector(31 downto 0);
       dma_ctrl_host_addr_l_i  : in  std_logic_vector(31 downto 0);
@@ -58,10 +54,7 @@ entity p2l_dma_master is
       dma_ctrl_start_next_i   : in  std_logic;
       dma_ctrl_done_o         : out std_logic;
       dma_ctrl_error_o        : out std_logic;
-
-      dma_ctrl_byte_swap_i : in std_logic_vector(1 downto 0);
-      --
-      ---------------------------------------------------------
+      dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
 
       ---------------------------------------------------------
       -- From P2L Decoder (receive the read completion)
@@ -87,23 +80,17 @@ entity p2l_dma_master is
       pd_pdm_data_last_i   : in std_logic;                      -- Indicates end of the packet
       pd_pdm_data_i        : in std_logic_vector(31 downto 0);  -- Data
       pd_pdm_be_i          : in std_logic_vector(3 downto 0);   -- Byte Enable for data
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- To the P2L Interface (send the DMA Master Read request)
-      --
       pdm_arb_valid_o  : out std_logic;  -- Read completion signals
       pdm_arb_dframe_o : out std_logic;  -- Toward the arbiter
       pdm_arb_data_o   : out std_logic_vector(31 downto 0);
       pdm_arb_req_o    : out std_logic;
       arb_pdm_gnt_i    : in  std_logic;
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- DMA Interface (Pipelined Wishbone)
-      --
       p2l_dma_adr_o   : out std_logic_vector(31 downto 0);  -- Adress
       p2l_dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
       p2l_dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
@@ -113,12 +100,9 @@ entity p2l_dma_master is
       p2l_dma_we_o    : out std_logic;                      -- Write
       p2l_dma_ack_i   : in  std_logic;                      -- Acknowledge
       p2l_dma_stall_i : in  std_logic;                      -- for pipelined Wishbone
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- From P2L DMA MASTER
-      --
       next_item_carrier_addr_o : out std_logic_vector(31 downto 0);
       next_item_host_addr_h_o  : out std_logic_vector(31 downto 0);
       next_item_host_addr_l_o  : out std_logic_vector(31 downto 0);
@@ -127,8 +111,6 @@ entity p2l_dma_master is
       next_item_next_h_o       : out std_logic_vector(31 downto 0);
       next_item_attrib_o       : out std_logic_vector(31 downto 0);
       next_item_valid_o        : out std_logic
-      --
-      ---------------------------------------------------------
       );
 end p2l_dma_master;
 
@@ -193,10 +175,10 @@ begin
 --=========================================================================--
 -- PCIe write block
 --=========================================================================--
-  process (gn4124_clk_i, sys_rst_i)
+  process (gn4124_clk_i, sys_rst_n_i)
     variable p2l_dma_next_state : p2l_dma_state_type;
   begin
-    if (sys_rst_i = '1') then
+    if (sys_rst_n_i = c_RST_ACTIVE) then
       p2l_data_cpt  <= (others => '0');
       s_chain_cpt   <= "000";
       p2l_address_h <= (others => '0');
@@ -268,10 +250,10 @@ begin
 -- PCIe read request State Machine
 -----------------------------------------------------------------------------
 
-  process (gn4124_clk_i, sys_rst_i)
+  process (gn4124_clk_i, sys_rst_n_i)
     variable p2l_dma_next_state : p2l_dma_state_type;
   begin
-    if(sys_rst_i = '1') then
+    if(sys_rst_n_i = c_RST_ACTIVE) then
       p2l_dma_current_state <= IDLE;
       DEBUG                 <= "1111";
     elsif rising_edge(gn4124_clk_i) then
@@ -379,10 +361,10 @@ begin
 -----------------------------------------------------------------------------
 -- Wishbone master state machine
 -----------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_i)
+  process (sys_clk_i, sys_rst_n_i)
     variable wishbone_next_state : wishbone_state_type;
   begin
-    if(sys_rst_i = '1') then
+    if(sys_rst_n_i = c_RST_ACTIVE) then
       wishbone_current_state <= IDLE;
     elsif rising_edge(sys_clk_i) then
       case wishbone_current_state is
@@ -434,9 +416,9 @@ begin
     end if;
   end process;
 
-  process (sys_clk_i, sys_rst_i)
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if(sys_rst_i = '1') then
+    if(sys_rst_n_i = c_RST_ACTIVE) then
 
       wb_data_cpt    <= (others => '0');
       wb_ack_cpt     <= (others => '0');
