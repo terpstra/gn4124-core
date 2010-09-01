@@ -28,8 +28,9 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.all;
+--use IEEE.STD_LOGIC_ARITH.all;
+--use IEEE.STD_LOGIC_UNSIGNED.all;
 
 entity dma_controller is
   port
@@ -39,8 +40,8 @@ entity dma_controller is
       ---------------------------------------------------------
       -- Clock/Reset
       --
-      sys_clk_i               : in  std_ulogic;
-      sys_rst_i               : in  std_ulogic;
+      sys_clk_i               : in  std_logic;
+      sys_rst_i               : in  std_logic;
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- To the L2P DMA master and P2L DMA master
@@ -288,7 +289,7 @@ begin
     if(sys_rst_i = '1') then
       dma_ctrl_current_state <= IDLE;
       DEBUG                  <= "1111";
-    elsif(sys_clk_i'event and sys_clk_i = '1') then
+    elsif rising_edge(sys_clk_i) then
       case dma_ctrl_current_state is
         -----------------------------------------------------------------
         -- IDLE
