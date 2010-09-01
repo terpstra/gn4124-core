@@ -29,10 +29,11 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
---use IEEE.STD_LOGIC_ARITH.all;
---use IEEE.STD_LOGIC_UNSIGNED.all;
---use work.lotus_pkg.all;
 use work.lotus_util.all;
+
+library UNISIM;
+use UNISIM.vcomponents.all;
+
 
 entity LOTUS is
   generic
@@ -161,17 +162,14 @@ architecture BEHAVIOUR of LOTUS is
 -----------------------------------------------------------------------------
     port
       (
-        LED : out std_logic_vector(7 downto 0);
+        LED         : out std_logic_vector(7 downto 0);
         ---------------------------------------------------------
         -- Clock/Reset from GN412x
         --      L_CLKp                 : in   std_logic;                     -- Running at 100 or 200 Mhz
         --      L_CLKn                 : in   std_logic;                     -- Running at 100 or 200 Mhz
+        sys_clk_i   : in  std_logic;
+        sys_rst_n_i : in  std_logic;
 
-        sys_clk_i : in std_logic;
-        sys_rst_i : in std_logic;
-
-        --
-        ---------------------------------------------------------
         ---------------------------------------------------------
         -- P2L Direction
         --
@@ -186,8 +184,7 @@ architecture BEHAVIOUR of LOTUS is
         p_wr_req_o   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
         p_wr_rdy_o   : out std_logic_vector(1 downto 0);   -- PCIe Write Ready
         rx_error_o   : out std_logic;                      -- Receive Error
-        --
-        ---------------------------------------------------------
+
         ---------------------------------------------------------
         -- L2P Direction
         --
@@ -204,71 +201,37 @@ architecture BEHAVIOUR of LOTUS is
         p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);   -- PCIe-to-Local Read Response Data Ready
         tx_error_i   : in  std_logic;                      -- Transmit Error
         vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Channel ready
-        --
-        ---------------------------------------------------------
+
         ---------------------------------------------------------
         -- Target Interface (Wishbone master)
-        --
-        wb_adr_o     : out std_logic_vector(31 downto 0);
-        wb_dat_i     : in  std_logic_vector(31 downto 0);  -- Data in
-        wb_dat_o     : out std_logic_vector(31 downto 0);  -- Data out
-        wb_sel_o     : out std_logic_vector(3 downto 0);   -- Byte select
-        wb_cyc_o     : out std_logic;
-        wb_stb_o     : out std_logic;
-        wb_we_o      : out std_logic;
-        wb_ack_i     : in  std_logic;
-        wb_stall_i   : in  std_logic;
-        --
-        ---------------------------------------------------------
+        wb_adr_o   : out std_logic_vector(31 downto 0);
+        wb_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
+        wb_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
+        wb_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
+        wb_cyc_o   : out std_logic;
+        wb_stb_o   : out std_logic;
+        wb_we_o    : out std_logic;
+        wb_ack_i   : in  std_logic;
+        wb_stall_i : in  std_logic;
+
         ---------------------------------------------------------
         -- L2P DMA Interface (Pipelined Wishbone master)
-        --
-        dma_adr_o    : out std_logic_vector(31 downto 0);
-        dma_dat_i    : in  std_logic_vector(31 downto 0);  -- Data in
-        dma_dat_o    : out std_logic_vector(31 downto 0);  -- Data out
-        dma_sel_o    : out std_logic_vector(3 downto 0);   -- Byte select
-        dma_cyc_o    : out std_logic;
-        dma_stb_o    : out std_logic;
-        dma_we_o     : out std_logic;
-        dma_ack_i    : in  std_logic;
-        dma_stall_i  : in  std_logic                       -- for pipelined Wishbone
-        --
-        ---------------------------------------------------------
+        dma_adr_o   : out std_logic_vector(31 downto 0);
+        dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
+        dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
+        dma_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
+        dma_cyc_o   : out std_logic;
+        dma_stb_o   : out std_logic;
+        dma_we_o    : out std_logic;
+        dma_ack_i   : in  std_logic;
+        dma_stall_i : in  std_logic                       -- for pipelined Wishbone
         );
   end component;  --  gn4124_core
-
------------------------------------------------------------------------------
---  component wb_gpio_debug is
--------------------------------------------------------------------------------
---    port (
---      wb_rst_i     : in  std_logic;
---      wb_clk_i     : in  std_logic;
---      wb_addr_i    : in  std_logic_vector(1 downto 0);
---      wb_data_i    : in  std_logic_vector(31 downto 0);
---      wb_data_o    : out std_logic_vector(31 downto 0);
---      wb_cyc_i     : in  std_logic;
---      wb_sel_i     : in  std_logic;
---      wb_stb_i     : in  std_logic;
---      wb_we_i      : in  std_logic;
---      wb_ack_o     : out std_logic;
----- Port for std_logic_vector field: 'Port output value' in reg: 'LED port'
---      gpio_led_o   : out std_logic_vector(7 downto 0);
----- Port for std_logic_vector field: 'Port input value' in reg: 'DEBUG port'
---      gpio_debug_i : in  std_logic_vector(7 downto 0);
----- Port for std_logic_vector field: 'Test register' in reg: 'Test register'
---      gpio_test_o  : out std_logic_vector(7 downto 0)
---      );
---  end component;  -- wb_gpio_debug
-
-
 
 --=============================================================================================--
 -- Internal Signals
 --=============================================================================================--
 
---=============================================================================================--
--- Clock/Reset
---=============================================================================================--
   -- Internal 1X clock operating at the same rate as LCLK
   signal ICLK  : std_logic;
   signal ICLKn : std_logic;
@@ -301,12 +264,29 @@ architecture BEHAVIOUR of LOTUS is
   signal wb_current_state : wb_state_type;
   signal wb_data_cnt      : unsigned(31 downto 0);
 
-  signal sys_clk0 : std_logic;
+  signal l_clk : std_logic;
 
   signal led0 : std_logic_vector(7 downto 0);
 
 begin
 
+  ------------------------------------------------------------------------------
+  -- System clock from gennum LCLK
+  ------------------------------------------------------------------------------
+  cmp_sysclk_buf : IBUFDS
+    generic map (
+      DIFF_TERM    => false,            -- Differential Termination
+      IBUF_LOW_PWR => true,             -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
+      IOSTANDARD   => "DEFAULT")
+    port map (
+      O  => l_clk,                      -- Buffer output
+      I  => L_CLKp,                     -- Diff_p buffer input (connect directly to top-level port)
+      IB => L_CLKn                      -- Diff_n buffer input (connect directly to top-level port)
+      );
+
+  ------------------------------------------------------------------------------
+  -- Assign static outputs
+  ------------------------------------------------------------------------------
   GS4911_CSB       <= '1';
   SER_SDHDN        <= '0';
   SER_H            <= '0';
@@ -318,22 +298,20 @@ begin
   SER_DVB_ASI      <= '0';
   GS4911_HOST_B    <= '0';
   SER_SMPTE_BYPASS <= '0';
---=============================================================================================--
---=============================================================================================--
---== Lotus Block
---=============================================================================================--
---=============================================================================================--
 
+  ------------------------------------------------------------------------------
+  -- GN4124 interface
+  ------------------------------------------------------------------------------
   u_gn4124_core : gn4124_core
     port map
     (
-      LED       => led,
+      LED         => led,
       ---------------------------------------------------------
       -- Clock/Reset from GN412x
 --      L_CLKp                 => L_CLKp,
 --      L_CLKn                 => L_CLKn,
-      sys_clk_i => sys_clk0,
-      sys_rst_i => L_RST_N,
+      sys_clk_i   => l_clk,
+      sys_rst_n_i => L_RST_N,
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -371,7 +349,6 @@ begin
 
       ---------------------------------------------------------
       -- Target Interface (Wishbone master)
-      --
       wb_adr_o   => wb_adr_o,
       wb_dat_i   => wb_dat_i,
       wb_dat_o   => wb_dat_o,
@@ -381,12 +358,9 @@ begin
       wb_we_o    => wb_we_o,
       wb_ack_i   => wb_ack_i,
       wb_stall_i => wb_stall_i,
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- L2P DMA Interface (Pipelined Wishbone master)
-      --
       dma_adr_o   => dma_adr_o,
       dma_dat_i   => dma_dat_i,
       dma_dat_o   => dma_dat_o,
@@ -396,81 +370,43 @@ begin
       dma_we_o    => dma_we_o,
       dma_ack_i   => dma_ack_i,
       dma_stall_i => dma_stall_i
-      --
-      ---------------------------------------------------------
       );
 
-
-
---  DS_RDb     <= not EPI_RDo;
---  DS_WRb     <= not EPI_WRo;
---  DS_DSb     <= not EPI_DSo;
---  DS_ADDRESS <= EPI_ADDRESSo;
---  DS_DATAi   <= To_StdULogicVector(mic_data(7 downto 0));
---  DS_DATAi   <= EPI_ADDRESSo(7 downto 0);
---  EPI_DATAi  <= DS_DATAi;
---
---  mic_data(27) <= EPI_BEo(0);
---  mic_data(26) <= DS_RDb;
---  mic_data(25) <= DS_WRb;
---  mic_data(24) <= DS_DSb;
---  mic_data(23 downto 8) <= DS_ADDRESS;
---  mic_data(7 downto 0)  <= EPI_DATAo(7 downto 0) when EPI_DATAoe = '1' else (others => 'Z');
-
-
------------------------------------------------------------------------------
--- register to test the EPI interface
------------------------------------------------------------------------------
---u_wb_gpio_debug: wb_gpio_debug
---  port map(
---        wb_rst_i       => L_RST_N,
---        wb_clk_i       => L_CLKp,
---        wb_addr_i      => wb_adr_o(1 downto 0),
---        wb_data_i      => wb_dat_o,
---        wb_data_o      => wb_dat_i,
---        wb_cyc_i       => wb_cyc_o,
---        wb_sel_i       => wb_sel_o(0),
---        wb_stb_i       => wb_stb_o,
---        wb_we_i        => wb_we_o ,
---        wb_ack_o       => wb_ack_i,
---        gpio_led_o     => LED,
---        gpio_debug_i   => DEBUG
---    );
+  ------------------------------------------------------------------------------
+  -- UNUSED local wishbone bus
+  ------------------------------------------------------------------------------
   wb_ack_i   <= '0';
   wb_stall_i <= '0';
   wb_dat_i   <= "00000000000000000000000000000000";
 
 
 
------------------------------------------------------------------------------
--- Simulation DMA Wisbbone master
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Simulation DMA Wisbbone
+  -----------------------------------------------------------------------------
 
+  -- TEST: L2P DMA interface
+  -- process (L_CLKp, L_RST_N)
+  --  variable wb_next_state : wb_state_type;
+  --begin
+  --  if(L_RST_N = '0') then
+  --  elsif rising_edge(L_CLKp) then
+  --    if (L2P_RDY = '0') then
+  --    end if;
+  --    if (L_WR_RDY(0) = '0') then
+  --    end if;
+  --    if (L_WR_RDY(1) = '0') then
+  --    end if;
+  --  end if;
+  --end process;
 
--- TEST: L2P DMA interface
-  process (L_CLKp, L_RST_N)
-    variable wb_next_state : wb_state_type;
-  begin
-    if(L_RST_N = '0') then
-      sys_clk0 <= '0';
-    elsif rising_edge(L_CLKp) then
-      sys_clk0 <= not sys_clk0;
-      if (L2P_RDY = '0') then
-      end if;
-      if (L_WR_RDY(0) = '0') then
-      end if;
-      if (L_WR_RDY(1) = '0') then
-      end if;
-    end if;
-  end process;
-
-  process (sys_clk0, L_RST_N)
+  process (l_clk, L_RST_N)
     variable wb_next_state : wb_state_type;
   begin
     if(L_RST_N = '0') then
       wb_current_state <= IDLE;
       wb_data_cnt      <= x"AB340000";
-    elsif rising_edge(sys_clk0) then
+    elsif rising_edge(l_clk) then
       case wb_current_state is
         -----------------------------------------------------------------
         -- IDLE

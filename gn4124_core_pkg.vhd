@@ -14,7 +14,7 @@ use IEEE.NUMERIC_STD.all;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 --! @brief
---! Package for components declaration
+--! Package for components declaration and core wide constants
 --------------------------------------------------------------------------------
 --! @version
 --! 0.1 | mc | 01.09.2010 | File creation and Doxygen comments
@@ -28,6 +28,13 @@ use IEEE.NUMERIC_STD.all;
 --! Package declaration
 --==============================================================================
 package gn4124_core_pkg is
+
+
+--==============================================================================
+--Components declaration
+--==============================================================================
+  constant c_RST_ACTIVE : std_logic := '0';  -- Active low reset
+
 
 --==============================================================================
 --Components declaration
@@ -147,29 +154,6 @@ package gn4124_core_pkg is
         );
   end component;  -- L2P_SER
 
------------------------------------------------------------------------------
-  component DDR_OUT
------------------------------------------------------------------------------
-    generic
-      (
-        WIDTH : integer := 20
-        );
-    port
-      (
-        -- Reset
-        RESET : in  std_logic;
-        -- Clock
-        CLKp  : in  std_logic;
-        CLKn  : in  std_logic;
-        -- Clock Enable
-        CE    : in  std_logic;
-        -- Input Data
-        Dp    : in  std_logic_vector(WIDTH-1 downto 0);
-        Dn    : in  std_logic_vector(WIDTH-1 downto 0);
-        -- Output Data
-        Q     : out std_logic_vector(WIDTH-1 downto 0)
-        );
-  end component;  -- DDR_OUT
 
 -----------------------------------------------------------------------------
   component wbmaster32 is
@@ -180,13 +164,13 @@ package gn4124_core_pkg is
         );
     port
       (
-        DEBUG     : out std_logic_vector(3 downto 0);
+        DEBUG       : out std_logic_vector(3 downto 0);
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        sys_clk_i : in  std_logic;
-        sys_rst_i : in  std_logic;
+        sys_clk_i   : in  std_logic;
+        sys_rst_n_i : in  std_logic;
 
         gn4124_clk_i        : in  std_logic;
         ---------------------------------------------------------
@@ -194,36 +178,36 @@ package gn4124_core_pkg is
         -- From P2L Decoder
         --
         -- Header
-        pd_wbm_hdr_start_i  : in  std_logic;                       -- Indicates Header start cycle
-        pd_wbm_hdr_length_i : in  std_logic_vector(9 downto 0);    -- Latched LENGTH value from header
-        pd_wbm_hdr_cid_i    : in  std_logic_vector(1 downto 0);    -- Completion ID
-        pd_wbm_target_mrd_i : in  std_logic;                       -- Target memory read
-        pd_wbm_target_mwr_i : in  std_logic;                       -- Target memory write
+        pd_wbm_hdr_start_i  : in  std_logic;                        -- Indicates Header start cycle
+        pd_wbm_hdr_length_i : in  std_logic_vector(9 downto 0);     -- Latched LENGTH value from header
+        pd_wbm_hdr_cid_i    : in  std_logic_vector(1 downto 0);     -- Completion ID
+        pd_wbm_target_mrd_i : in  std_logic;                        -- Target memory read
+        pd_wbm_target_mwr_i : in  std_logic;                        -- Target memory write
         --
         -- Address
-        pd_wbm_addr_start_i : in  std_logic;                       -- Indicates Address Start
-        pd_wbm_addr_i       : in  std_logic_vector(31 downto 0);   -- Latched Address that will increment with data
-        pd_wbm_wbm_addr_i   : in  std_logic;                       -- Indicates that current address is for the EPI interface
+        pd_wbm_addr_start_i : in  std_logic;                        -- Indicates Address Start
+        pd_wbm_addr_i       : in  std_logic_vector(31 downto 0);    -- Latched Address that will increment with data
+        pd_wbm_wbm_addr_i   : in  std_logic;                        -- Indicates that current address is for the EPI interface
                                                                     -- Can be connected to a decode of IP2L_ADDRi
                                                                     -- or to IP2L_ADDRi(0) for BAR2
                                                                     -- or to not IP2L_ADDRi(0) for BAR0
         --
         -- Data
-        pd_wbm_data_valid_i : in  std_logic;                       -- Indicates Data is valid
-        pd_wbm_data_last_i  : in  std_logic;                       -- Indicates end of the packet
-        pd_wbm_data_i       : in  std_logic_vector(31 downto 0);   -- Data
-        pd_wbm_be_i         : in  std_logic_vector(3 downto 0);    -- Byte Enable for data
+        pd_wbm_data_valid_i : in  std_logic;                        -- Indicates Data is valid
+        pd_wbm_data_last_i  : in  std_logic;                        -- Indicates end of the packet
+        pd_wbm_data_i       : in  std_logic_vector(31 downto 0);    -- Data
+        pd_wbm_be_i         : in  std_logic_vector(3 downto 0);     -- Byte Enable for data
         --
         ---------------------------------------------------------
         -- P2L Control
         --
-        p_wr_rdy_o          : out std_logic;                       -- Write buffer not empty
+        p_wr_rdy_o          : out std_logic;                        -- Write buffer not empty
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- To the L2P Interface
         --
-        wbm_arb_valid_o     : out std_logic;                       -- Read completion signals
-        wbm_arb_dframe_o    : out std_logic;                       -- Toward the arbiter
+        wbm_arb_valid_o     : out std_logic;                        -- Read completion signals
+        wbm_arb_dframe_o    : out std_logic;                        -- Toward the arbiter
         wbm_arb_data_o      : out std_logic_vector(31 downto 0);
         wbm_arb_req_o       : out std_logic;
         arb_wbm_gnt_i       : in  std_logic;
@@ -257,7 +241,7 @@ package gn4124_core_pkg is
         -- Clock/Reset
         --
         sys_clk_i               : in  std_logic;
-        sys_rst_i               : in  std_logic;
+        sys_rst_n_i             : in  std_logic;
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- To the L2P DMA master and P2L DMA master
@@ -315,8 +299,8 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        sys_clk_i : in std_logic;
-        sys_rst_i : in std_logic;
+        sys_clk_i   : in std_logic;
+        sys_rst_n_i : in std_logic;
 
         gn4124_clk_i : in std_logic;
         ---------------------------------------------------------
@@ -369,13 +353,13 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
     port
       (
-        DEBUG     : out std_logic_vector(3 downto 0);
+        DEBUG       : out std_logic_vector(3 downto 0);
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        sys_clk_i : in  std_logic;
-        sys_rst_i : in  std_logic;
+        sys_clk_i   : in  std_logic;
+        sys_rst_n_i : in  std_logic;
 
         gn4124_clk_i : in std_logic;
         ---------------------------------------------------------
@@ -411,9 +395,9 @@ package gn4124_core_pkg is
         pd_pdm_addr_start_i  : in std_logic;                      -- Indicates Address Start
         pd_pdm_addr_i        : in std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
         pd_pdm_wbm_addr_i    : in std_logic;                      -- Indicates that current address is for the EPI interface
-                                                                   -- Can be connected to a decode of IP2L_ADDRi
-                                                                   -- or to IP2L_ADDRi(0) for BAR2
-                                                                   -- or to not IP2L_ADDRi(0) for BAR0
+                                                                  -- Can be connected to a decode of IP2L_ADDRi
+                                                                  -- or to IP2L_ADDRi(0) for BAR2
+                                                                  -- or to not IP2L_ADDRi(0) for BAR0
         --
         -- Data
         pd_pdm_data_valid_i  : in std_logic;                      -- Indicates Data is valid
@@ -474,7 +458,7 @@ package gn4124_core_pkg is
       -- Clock/Reset
       --
       clk_i            : in  std_logic;
-      rst_i            : in  std_logic;
+      rst_n_i          : in  std_logic;
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- From Wishbone master (wbm) to arbiter (arb)

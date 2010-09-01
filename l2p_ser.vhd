@@ -30,8 +30,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
---use IEEE.STD_LOGIC_ARITH.all;
---use IEEE.STD_LOGIC_UNSIGNED.all;
+
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -69,6 +68,7 @@ architecture BEHAVIOUR of L2P_SER is
 -----------------------------------------------------------------------------
 -- Internal Signals
 -----------------------------------------------------------------------------
+  signal ff_rst      : std_logic;
   signal Q_DFRAME    : std_logic;
   signal Q_VALID     : std_logic;
   signal Q_DATA      : std_logic_vector(ICLK_DATA'range);
@@ -77,12 +77,24 @@ architecture BEHAVIOUR of L2P_SER is
 
 begin
 
+  ------------------------------------------------------------------------------
+  -- Active high reset for DDR FF
+  ------------------------------------------------------------------------------
+  gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
+    ff_rst <= not(IRST);
+  end generate;
+
+  gen_fifo_rst : if c_RST_ACTIVE = '1' generate
+    ff_rst <= IRST;
+  end generate;
+
+
 -----------------------------------------------------------------------------
 -- Re-allign Data tightly for the +'ve clock edge
 -----------------------------------------------------------------------------
   process (ICLKp, IRST)
   begin
-    if(IRST = '1') then
+    if(IRST = c_RST_ACTIVE) then
       Q_DFRAME <= '0';
       Q_VALID  <= '0';
       Q_DATA   <= (others => '0');
@@ -95,7 +107,7 @@ begin
 
   process (ICLKn, IRST)
   begin
-    if(IRST = '1') then
+    if(IRST = c_RST_ACTIVE) then
       L2P_VALID  <= '0';
       L2P_DFRAME <= '0';
     elsif rising_edge(ICLKn) then
@@ -104,43 +116,21 @@ begin
     end if;
   end process;
 
------------------------------------------------------------------------------
--- Data/Control/Clock Outputs
------------------------------------------------------------------------------
-  U_DDR_OUT : DDR_OUT
-    generic map
-    (
---    WIDTH => 20
-      WIDTH => 16
-      )
-    port map
-    (
-      -- Reset
-      RESET           => IRST,
-      -- Clock
-      CLKp            => ICLKp,
-      CLKn            => ICLKn,
-      -- Clock Enable
-      CE              => '1',
-      -- Input Data
---    Dp(19)          => '0',
---    Dp(18)          => '1',
-----    Dp(17)          => Q_VALID,
-----    Dp(16)          => Q_DFRAME,
-      DP(15 downto 0) => Q_DATA(31 downto 16),
---    Dn(19)          => '1',
---    Dn(18)          => '0',
-----    Dn(17)          => Q_VALID,
-----    Dn(16)          => Q_DFRAME,
-      Dn(15 downto 0) => Q_DATA(15 downto 0),
-      -- Output Data
---    Q(19)           => L2P_CLKp,
---    Q(18)           => L2P_CLKn,
-----    Q(17)           => L2P_VALID,
-----    Q(16)           => L2P_DFRAME,
-      Q(15 downto 0)  => L2P_DATA
-      );
 
+  DDROUT : for i in 0 to 15 generate
+    U : OFDDRRSE
+      port map
+      (
+        Q  => L2P_DATA(i),
+        C0 => ICLKn,
+        C1 => ICLKp,
+        CE => '1',
+        D0 => Q_DATA(i),
+        D1 => Q_DATA(i+16),
+        R  => ff_rst,
+        S  => '0'
+        );
+  end generate;
 
   L2P_CLK_BUF : OBUFDS
     port map(
