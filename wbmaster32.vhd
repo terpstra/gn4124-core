@@ -28,8 +28,9 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.all;
+--use IEEE.STD_LOGIC_ARITH.all;
+--use IEEE.STD_LOGIC_UNSIGNED.all;
 
 entity wbmaster32 is
   generic
@@ -43,48 +44,48 @@ entity wbmaster32 is
       ---------------------------------------------------------
       -- Clock/Reset
       --
-      sys_clk_i : in  std_ulogic;
-      sys_rst_i : in  std_ulogic;
+      sys_clk_i : in  std_logic;
+      sys_rst_i : in  std_logic;
 
-      gn4124_clk_i        : in  std_ulogic;
+      gn4124_clk_i        : in  std_logic;
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- From P2L Decoder
       --
       -- Header
-      pd_wbm_hdr_start_i  : in  std_ulogic;                       -- Indicates Header start cycle
-      pd_wbm_hdr_length_i : in  std_ulogic_vector(9 downto 0);    -- Latched LENGTH value from header
-      pd_wbm_hdr_cid_i    : in  std_ulogic_vector(1 downto 0);    -- Completion ID
-      pd_wbm_target_mrd_i : in  std_ulogic;                       -- Target memory read
-      pd_wbm_target_mwr_i : in  std_ulogic;                       -- Target memory write
+      pd_wbm_hdr_start_i  : in  std_logic;                        -- Indicates Header start cycle
+      pd_wbm_hdr_length_i : in  std_logic_vector(9 downto 0);     -- Latched LENGTH value from header
+      pd_wbm_hdr_cid_i    : in  std_logic_vector(1 downto 0);     -- Completion ID
+      pd_wbm_target_mrd_i : in  std_logic;                        -- Target memory read
+      pd_wbm_target_mwr_i : in  std_logic;                        -- Target memory write
       --
       -- Address
-      pd_wbm_addr_start_i : in  std_ulogic;                       -- Indicates Address Start
-      pd_wbm_addr_i       : in  std_ulogic_vector(31 downto 0);   -- Latched Address that will increment with data
-      pd_wbm_wbm_addr_i   : in  std_ulogic;                       -- Indicates that current address is for the EPI interface
+      pd_wbm_addr_start_i : in  std_logic;                        -- Indicates Address Start
+      pd_wbm_addr_i       : in  std_logic_vector(31 downto 0);    -- Latched Address that will increment with data
+      pd_wbm_wbm_addr_i   : in  std_logic;                        -- Indicates that current address is for the EPI interface
                                                                   -- Can be connected to a decode of IP2L_ADDRi
                                                                   -- or to IP2L_ADDRi(0) for BAR2
                                                                   -- or to not IP2L_ADDRi(0) for BAR0
       --
       -- Data
-      pd_wbm_data_valid_i : in  std_ulogic;                       -- Indicates Data is valid
-      pd_wbm_data_last_i  : in  std_ulogic;                       -- Indicates end of the packet
-      pd_wbm_data_i       : in  std_ulogic_vector(31 downto 0);   -- Data
-      pd_wbm_be_i         : in  std_ulogic_vector(3 downto 0);    -- Byte Enable for data
+      pd_wbm_data_valid_i : in  std_logic;                        -- Indicates Data is valid
+      pd_wbm_data_last_i  : in  std_logic;                        -- Indicates end of the packet
+      pd_wbm_data_i       : in  std_logic_vector(31 downto 0);    -- Data
+      pd_wbm_be_i         : in  std_logic_vector(3 downto 0);     -- Byte Enable for data
       --
       ---------------------------------------------------------
       -- P2L Control
       --
-      p_wr_rdy_o          : out std_ulogic;                       -- Write buffer not empty
+      p_wr_rdy_o          : out std_logic;                        -- Write buffer not empty
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- To the L2P Interface
       --
-      wbm_arb_valid_o     : out std_ulogic;                       -- Read completion signals
-      wbm_arb_dframe_o    : out std_ulogic;                       -- Toward the arbiter
-      wbm_arb_data_o      : out std_ulogic_vector(31 downto 0);
-      wbm_arb_req_o       : out std_ulogic;
-      arb_wbm_gnt_i       : in  std_ulogic;
+      wbm_arb_valid_o     : out std_logic;                        -- Read completion signals
+      wbm_arb_dframe_o    : out std_logic;                        -- Toward the arbiter
+      wbm_arb_data_o      : out std_logic_vector(31 downto 0);
+      wbm_arb_req_o       : out std_logic;
+      arb_wbm_gnt_i       : in  std_logic;
       --
       ---------------------------------------------------------
       ---------------------------------------------------------
@@ -124,7 +125,7 @@ architecture behaviour of wbmaster32 is
 -----------------------------------------------------------------------------
 -- P2L Bus Tracker State Machine
   type wishbone_state_type is (WB_IDLE, WB_READ_REQUEST, WB_READ_WAIT_ACK, WB_READ_SEND_PCIE,
-                                 WB_WRITE_FIFO, WB_WRITE_REQUEST, WB_WRITE_WAIT_ACK);
+                               WB_WRITE_FIFO, WB_WRITE_REQUEST, WB_WRITE_WAIT_ACK);
   signal wishbone_current_state : wishbone_state_type;
 
   type   l2p_read_cpl_state_type is (IDLE, L2P_SEM, L2P_HEADER, L2P_DATA);
@@ -140,9 +141,9 @@ architecture behaviour of wbmaster32 is
   signal s_p2l_rd_req_reg : std_logic;
 
   signal s_read_request_reg : std_logic;
-  signal s_read_addr_reg    : std_logic_vector(31 downto 0);
+  signal s_read_addr_reg    : unsigned(31 downto 0);
   signal s_read_cid_reg     : std_logic_vector(1 downto 0);
-  signal s_read_len_reg     : std_logic_vector(9 downto 0);
+  signal s_read_len_reg     : unsigned(9 downto 0);
   signal s_read_data_reg    : std_logic_vector(31 downto 0);
 
   signal s_l2p_header_reg : std_logic_vector(31 downto 0);
@@ -158,7 +159,7 @@ architecture behaviour of wbmaster32 is
   signal s_write_data_reg : std_logic_vector(31 downto 0);
   signal s_write_addr_reg : std_logic_vector(31 downto 0);
 
-  signal s_wb_timeout_cnt : std_logic_vector(3 downto 0);
+  signal s_wb_timeout_cnt : unsigned(3 downto 0);
   signal s_wb_timeout     : std_logic;
 
 begin
@@ -172,7 +173,7 @@ begin
   s_write_request <= not s_fifo_empty;
 
   s_l2p_last <= '1' when (s_read_len_reg(9 downto 0) = "0000000000")
-                       else '0';
+                else '0';
 
   process (sys_clk_i, sys_rst_i)
   begin
@@ -205,9 +206,9 @@ begin
         end if;
 
         if (s_p2l_rd_req_reg = '1' and not (s_p2l_len_reg = "0000000000")) then
-          s_read_addr_reg    <= s_p2l_addr_reg;
+          s_read_addr_reg    <= unsigned(s_p2l_addr_reg);
           s_read_cid_reg     <= s_p2l_cid_reg;
-          s_read_len_reg     <= s_p2l_len_reg;
+          s_read_len_reg     <= unsigned(s_p2l_len_reg);
           s_read_request_reg <= '1';
           DEBUG(1)           <= '1';
         end if;
@@ -225,15 +226,15 @@ begin
       s_p2l_header_d1  <= '0';
       s_p2l_rd_req_reg <= '0';
     else
-      if (gn4124_clk_i'event and gn4124_clk_i = '1') then
+      if rising_edge(gn4124_clk_i) then
         s_p2l_header_d1 <= pd_wbm_hdr_start_i;
 
         if (s_p2l_header_d1 = '1' and pd_wbm_addr_start_i = '1' and
             pd_wbm_target_mrd_i = '1' and pd_wbm_wbm_addr_i = '1' and
             s_p2l_rd_req_reg = '0') then
-          s_p2l_addr_reg   <= To_StdLogicVector(pd_wbm_addr_i);
-          s_p2l_cid_reg    <= To_StdLogicVector(pd_wbm_hdr_cid_i);
-          s_p2l_len_reg    <= To_StdLogicVector(pd_wbm_hdr_length_i);
+          s_p2l_addr_reg   <= pd_wbm_addr_i;
+          s_p2l_cid_reg    <= pd_wbm_hdr_cid_i;
+          s_p2l_len_reg    <= pd_wbm_hdr_length_i;
           s_p2l_rd_req_reg <= '1';
         elsif (s_read_request = '1') then
           s_p2l_rd_req_reg <= '0';
@@ -263,7 +264,7 @@ begin
   begin
     if(sys_rst_i = '1') then
       l2p_read_cpl_current_state <= IDLE;
-    elsif(gn4124_clk_i'event and gn4124_clk_i = '1') then
+    elsif rising_edge(gn4124_clk_i) then
       case l2p_read_cpl_current_state is
         -----------------------------------------------------------------
         -- IDLE
@@ -320,8 +321,8 @@ begin
   wbm_arb_req_o <= '1' when (l2p_read_cpl_current_state = L2P_HEADER)
                    else '0';
 
-  wbm_arb_data_o <= To_StdULogicVector(s_l2p_header_reg) when l2p_read_cpl_current_state = L2P_HEADER
-                    else To_StdULogicVector(s_read_data_reg) when l2p_read_cpl_current_state = L2P_DATA
+  wbm_arb_data_o <= s_l2p_header_reg when l2p_read_cpl_current_state = L2P_HEADER
+                    else s_read_data_reg when l2p_read_cpl_current_state = L2P_DATA
 
                     else (others => '0');
 
@@ -348,7 +349,7 @@ begin
     if(sys_rst_i = '1') then
       s_wb_timeout_cnt <= (others => '0');
       s_wb_timeout     <= '0';
-    elsif(sys_clk_i'event and sys_clk_i = '1') then
+    elsif rising_edge(sys_clk_i) then
       if wishbone_current_state = WB_IDLE then
         s_wb_timeout_cnt <= (others => '0');
         s_wb_timeout     <= '0';
@@ -356,7 +357,7 @@ begin
         s_wb_timeout <= '1';
       elsif (wishbone_current_state = WB_READ_REQUEST or wishbone_current_state = WB_WRITE_REQUEST or
              wishbone_current_state = WB_READ_WAIT_ACK or wishbone_current_state = WB_WRITE_WAIT_ACK) then
-        s_wb_timeout_cnt <= s_wb_timeout_cnt +1;
+        s_wb_timeout_cnt <= s_wb_timeout_cnt + 1;
       end if;
     end if;
   end process;
@@ -369,7 +370,7 @@ begin
   begin
     if(sys_rst_i = '1') then
       wishbone_current_state <= WB_IDLE;
-    elsif(sys_clk_i'event and sys_clk_i = '1') then
+    elsif rising_edge(sys_clk_i) then
       case wishbone_current_state is
         -----------------------------------------------------------------
         -- Wait for a Wishbone cycle
@@ -466,7 +467,7 @@ begin
               else '0';
 
   wb_we_o <= '1' when wishbone_current_state = WB_WRITE_REQUEST
-              else '0';
+             else '0';
 
   wb_sel_o <= "1111" when (wishbone_current_state = WB_WRITE_REQUEST
                            or wishbone_current_state = WB_READ_REQUEST)
@@ -475,7 +476,7 @@ begin
   wb_dat_o <= s_write_data_reg when (wishbone_current_state = WB_WRITE_REQUEST)
               else (others => '0');
 
-  wb_adr_o <= s_read_addr_reg when (wishbone_current_state = WB_READ_REQUEST)
+  wb_adr_o <= std_logic_vector(s_read_addr_reg) when (wishbone_current_state = WB_READ_REQUEST)
               else s_write_addr_reg when (wishbone_current_state = WB_WRITE_REQUEST)
               else (others => '0');
 
@@ -487,9 +488,9 @@ begin
   s_fifo_push <= pd_wbm_data_valid_i and pd_wbm_target_mwr_i and pd_wbm_wbm_addr_i and not s_fifo_full;
 
   s_fifo_pop <= '1' when (wishbone_current_state = WB_IDLE
-                           and s_write_request = '1'
-                           and s_read_request = '0')
-                 else '0';
+                          and s_write_request = '1'
+                          and s_read_request = '0')
+                else '0';
 
   u_fifo_write : fifo_write port map
     (
@@ -504,15 +505,15 @@ begin
       empty  => s_fifo_empty
       );
 
-  s_fifo_in(63 downto 32) <= To_StdLogicVector(pd_wbm_addr_i);
-  s_fifo_in(31 downto 0)  <= To_StdLogicVector(pd_wbm_data_i);
+  s_fifo_in(63 downto 32) <= pd_wbm_addr_i;
+  s_fifo_in(31 downto 0)  <= pd_wbm_data_i;
 
   process (sys_clk_i, sys_rst_i)
   begin
     if(sys_rst_i = '1') then
       s_write_data_reg <= (others => '0');
       s_write_addr_reg <= (others => '0');
-    elsif(sys_clk_i'event and sys_clk_i = '1') then
+    elsif rising_edge(sys_clk_i) then
       if (wishbone_current_state = WB_WRITE_FIFO) then
         s_write_data_reg <= s_fifo_out(31 downto 0);
         s_write_addr_reg <= s_fifo_out(63 downto 32);

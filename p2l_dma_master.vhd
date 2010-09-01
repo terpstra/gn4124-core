@@ -28,8 +28,9 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.all;
+--use IEEE.STD_LOGIC_ARITH.all;
+--use IEEE.STD_LOGIC_UNSIGNED.all;
 
 entity p2l_dma_master is
   port
@@ -40,10 +41,10 @@ entity p2l_dma_master is
       ---------------------------------------------------------
       -- Clock/Reset
       --
-      sys_clk_i : in  std_ulogic;
-      sys_rst_i : in  std_ulogic;
+      sys_clk_i : in  std_logic;
+      sys_rst_i : in  std_logic;
 
-      gn4124_clk_i : in std_ulogic;
+      gn4124_clk_i : in std_logic;
       ---------------------------------------------------------
 
       ---------------------------------------------------------
@@ -66,37 +67,37 @@ entity p2l_dma_master is
       -- From P2L Decoder (receive the read completion)
       --
       -- Header
-      pd_pdm_hdr_start_i   : in std_ulogic;                      -- Indicates Header start cycle
-      pd_pdm_hdr_length_i  : in std_ulogic_vector(9 downto 0);   -- Latched LENGTH value from header
-      pd_pdm_hdr_cid_i     : in std_ulogic_vector(1 downto 0);   -- Completion ID
-      pd_pdm_target_mrd_i  : in std_ulogic;                      -- Target memory read
-      pd_pdm_target_mwr_i  : in std_ulogic;                      -- Target memory write
-      pd_pdm_target_cpld_i : in std_ulogic;                      -- Target memory write
+      pd_pdm_hdr_start_i   : in std_logic;                      -- Indicates Header start cycle
+      pd_pdm_hdr_length_i  : in std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
+      pd_pdm_hdr_cid_i     : in std_logic_vector(1 downto 0);   -- Completion ID
+      pd_pdm_target_mrd_i  : in std_logic;                      -- Target memory read
+      pd_pdm_target_mwr_i  : in std_logic;                      -- Target memory write
+      pd_pdm_target_cpld_i : in std_logic;                      -- Target memory write
       --
       -- Address
-      pd_pdm_addr_start_i  : in std_ulogic;                      -- Indicates Address Start
-      pd_pdm_addr_i        : in std_ulogic_vector(31 downto 0);  -- Latched Address that will increment with data
-      pd_pdm_wbm_addr_i    : in std_ulogic;                      -- Indicates that current address is for the EPI interface
-                                                                 -- Can be connected to a decode of IP2L_ADDRi
-                                                                 -- or to IP2L_ADDRi(0) for BAR2
-                                                                 -- or to not IP2L_ADDRi(0) for BAR0
+      pd_pdm_addr_start_i  : in std_logic;                      -- Indicates Address Start
+      pd_pdm_addr_i        : in std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
+      pd_pdm_wbm_addr_i    : in std_logic;                      -- Indicates that current address is for the EPI interface
+                                                                -- Can be connected to a decode of IP2L_ADDRi
+                                                                -- or to IP2L_ADDRi(0) for BAR2
+                                                                -- or to not IP2L_ADDRi(0) for BAR0
       --
       -- Data
-      pd_pdm_data_valid_i  : in std_ulogic;                      -- Indicates Data is valid
-      pd_pdm_data_last_i   : in std_ulogic;                      -- Indicates end of the packet
-      pd_pdm_data_i        : in std_ulogic_vector(31 downto 0);  -- Data
-      pd_pdm_be_i          : in std_ulogic_vector(3 downto 0);   -- Byte Enable for data
+      pd_pdm_data_valid_i  : in std_logic;                      -- Indicates Data is valid
+      pd_pdm_data_last_i   : in std_logic;                      -- Indicates end of the packet
+      pd_pdm_data_i        : in std_logic_vector(31 downto 0);  -- Data
+      pd_pdm_be_i          : in std_logic_vector(3 downto 0);   -- Byte Enable for data
       --
       ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- To the P2L Interface (send the DMA Master Read request)
       --
-      pdm_arb_valid_o  : out std_ulogic;  -- Read completion signals
-      pdm_arb_dframe_o : out std_ulogic;  -- Toward the arbiter
-      pdm_arb_data_o   : out std_ulogic_vector(31 downto 0);
-      pdm_arb_req_o    : out std_ulogic;
-      arb_pdm_gnt_i    : in  std_ulogic;
+      pdm_arb_valid_o  : out std_logic;  -- Read completion signals
+      pdm_arb_dframe_o : out std_logic;  -- Toward the arbiter
+      pdm_arb_data_o   : out std_logic_vector(31 downto 0);
+      pdm_arb_req_o    : out std_logic;
+      arb_pdm_gnt_i    : in  std_logic;
       --
       ---------------------------------------------------------
 
@@ -169,12 +170,12 @@ architecture behaviour of p2l_dma_master is
   signal s_p2l_header : std_logic_vector(31 downto 0);
   signal s_p2l_data   : std_logic_vector(31 downto 0);
 
-  signal p2l_data_cpt : std_logic_vector(9 downto 0);
+  signal p2l_data_cpt : unsigned(9 downto 0);
 
-  signal wb_data_cpt : std_logic_vector(9 downto 0);
-  signal wb_ack_cpt  : std_logic_vector(9 downto 0);
+  signal wb_data_cpt : unsigned(9 downto 0);
+  signal wb_ack_cpt  : unsigned(9 downto 0);
 
-  signal s_chain_cpt : std_logic_vector(2 downto 0);
+  signal s_chain_cpt : unsigned(2 downto 0);
 
 --  signal s_fifo_din     : std_logic_vector(31 downto 0);
 --  signal s_fifo_dout    : std_logic_vector(31 downto 0);
@@ -208,7 +209,7 @@ begin
       next_item_next_l_o       <= (others => '0');
       next_item_next_h_o       <= (others => '0');
       next_item_attrib_o       <= (others => '0');
-    elsif (gn4124_clk_i'event and gn4124_clk_i = '1') then
+    elsif rising_edge(gn4124_clk_i) then
       if (wishbone_current_state = WB_WAIT_P2L_START and
           p2l_dma_current_state = IDLE) then
         p2l_address_h <= s_host_addr_h;
@@ -219,31 +220,31 @@ begin
 
       if (p2l_dma_current_state = P2L_DATA_WAIT and s_chain = '1' and pd_pdm_target_cpld_i = '1' and pd_pdm_hdr_start_i = '0') then
         if (s_chain_cpt = "111") then
-          next_item_carrier_addr_o <= To_StdLogicVector(pd_pdm_data_i);
+          next_item_carrier_addr_o <= pd_pdm_data_i;
           s_chain_cpt              <= "110";
         end if;
         if (s_chain_cpt = "110") then
-          next_item_host_addr_l_o <= To_StdLogicVector(pd_pdm_data_i);
+          next_item_host_addr_l_o <= pd_pdm_data_i;
           s_chain_cpt             <= "101";
         end if;
         if (s_chain_cpt = "101") then
-          next_item_host_addr_h_o <= To_StdLogicVector(pd_pdm_data_i);
+          next_item_host_addr_h_o <= pd_pdm_data_i;
           s_chain_cpt             <= "100";
         end if;
         if (s_chain_cpt = "100") then
-          next_item_len_o <= To_StdLogicVector(pd_pdm_data_i);
+          next_item_len_o <= pd_pdm_data_i;
           s_chain_cpt     <= "011";
         end if;
         if (s_chain_cpt = "011") then
-          next_item_next_l_o <= To_StdLogicVector(pd_pdm_data_i);
+          next_item_next_l_o <= pd_pdm_data_i;
           s_chain_cpt        <= "010";
         end if;
         if (s_chain_cpt = "010") then
-          next_item_next_h_o <= To_StdLogicVector(pd_pdm_data_i);
+          next_item_next_h_o <= pd_pdm_data_i;
           s_chain_cpt        <= "001";
         end if;
         if (s_chain_cpt = "001") then
-          next_item_attrib_o <= To_StdLogicVector(pd_pdm_data_i);
+          next_item_attrib_o <= pd_pdm_data_i;
         end if;
       end if;
 
@@ -252,16 +253,16 @@ begin
   s_64b_address <= '0' when p2l_address_h = x"00000000" else
                    '1';
 
-  s_p2l_header <= "000"                        -->  Traffic Class
-                  & '0'                        -->  Snoop
-                  & "000"                      -->  Memory read
-                  & s_64b_address              -->  Memory read
-                  & "1111"                     -->  LBE
-                  & "1111"                     -->  FBE
-                  & "000"                      -->  Reserved
-                  & '0'                        -->  VC
-                  & "01"                       -->  CID
-                  & p2l_data_cpt(9 downto 0);  -->  Length
+  s_p2l_header <= "000"                                          -->  Traffic Class
+                  & '0'                                          -->  Snoop
+                  & "000"                                        -->  Memory read
+                  & s_64b_address                                -->  Memory read
+                  & "1111"                                       -->  LBE
+                  & "1111"                                       -->  FBE
+                  & "000"                                        -->  Reserved
+                  & '0'                                          -->  VC
+                  & "01"                                         -->  CID
+                  & std_logic_vector(p2l_data_cpt(9 downto 0));  -->  Length
 
 -----------------------------------------------------------------------------
 -- PCIe read request State Machine
@@ -273,7 +274,7 @@ begin
     if(sys_rst_i = '1') then
       p2l_dma_current_state <= IDLE;
       DEBUG                 <= "1111";
-    elsif(gn4124_clk_i'event and gn4124_clk_i = '1') then
+    elsif rising_edge(gn4124_clk_i) then
       case p2l_dma_current_state is
         -----------------------------------------------------------------
         -- IDLE
@@ -350,9 +351,9 @@ begin
   pdm_arb_req_o <= '1' when (p2l_dma_current_state = P2L_HEADER)
                    else '0';
 
-  pdm_arb_data_o <= To_StdULogicVector(s_p2l_header) when (p2l_dma_current_state = P2L_HEADER)
-                    else To_StdULogicVector(p2l_address_h) when (p2l_dma_current_state = P2L_ADDR_H)
-                    else To_StdULogicVector(p2l_address_l) when (p2l_dma_current_state = P2L_ADDR_L)
+  pdm_arb_data_o <= s_p2l_header when (p2l_dma_current_state = P2L_HEADER)
+                    else p2l_address_h when (p2l_dma_current_state = P2L_ADDR_H)
+                    else p2l_address_l when (p2l_dma_current_state = P2L_ADDR_L)
                     else x"00000000";
 
   pdm_arb_valid_o <= '1' when (p2l_dma_current_state = P2L_HEADER
@@ -383,7 +384,7 @@ begin
   begin
     if(sys_rst_i = '1') then
       wishbone_current_state <= IDLE;
-    elsif(sys_clk_i'event and sys_clk_i = '1') then
+    elsif rising_edge(sys_clk_i) then
       case wishbone_current_state is
         -----------------------------------------------------------------
         -- Wait for a Wishbone cycle
@@ -443,13 +444,13 @@ begin
       s_host_addr_h  <= (others => '0');
       s_host_addr_l  <= (others => '0');
       s_chain        <= '0';
-    elsif (sys_clk_i'event and SYS_clk_i = '1') then
+    elsif rising_edge(sys_clk_i) then
       if (dma_ctrl_start_p2l_i = '1' or dma_ctrl_start_next_i = '1') then
         s_carrier_addr <= dma_ctrl_carrier_addr_i;
         s_host_addr_h  <= dma_ctrl_host_addr_h_i;
         s_host_addr_l  <= dma_ctrl_host_addr_l_i;
-        wb_data_cpt    <= dma_ctrl_len_i(11 downto 2);
-        wb_ack_cpt     <= dma_ctrl_len_i(11 downto 2);
+        wb_data_cpt    <= unsigned(dma_ctrl_len_i(11 downto 2));
+        wb_ack_cpt     <= unsigned(dma_ctrl_len_i(11 downto 2));
       end if;
       if (dma_ctrl_start_next_i = '1') then
         s_chain <= '1';
@@ -459,18 +460,18 @@ begin
   end process;
 
   p2l_dma_cyc_o <=                      --'1' when (wishbone_current_state = WB_REQUEST
-                   --  or wishbone_current_state = WB_LAST_ACK
-                   --  or wishbone_current_state = WB_FIFO_FULL) else
-                   '0';
+                                        --  or wishbone_current_state = WB_LAST_ACK
+                                        --  or wishbone_current_state = WB_FIFO_FULL) else
+                                        '0';
 
   p2l_dma_stb_o <=                      --'1' when wishbone_current_state = WB_REQUEST else
-                   '0';
+                                        '0';
 
   p2l_dma_sel_o <=                      --"1111" when wishbone_current_state = WB_REQUEST else
-                   "0000";
+                                        "0000";
 
   p2l_dma_adr_o <=                      --s_carrier_addr when wishbone_current_state = WB_REQUEST else
-                   (others => '0');
+                                        (others => '0');
 
   p2l_dma_we_o <= '0';
 

@@ -41,29 +41,29 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Raw unprocessed reset from the GN412x
         --
-        L_RST       : in     std_ulogic;
+        L_RST       : in     std_logic;
         ---------------------------------------------------------
         -- P2L Clock Domain
         --
         -- P2L Inputs
-        P2L_CLKp    : in     std_ulogic;
-        P2L_CLKn    : in     std_ulogic;
-        P2L_VALID   : in     std_ulogic;
-        P2L_DFRAME  : in     std_ulogic;
-        P2L_DATA    : in     std_ulogic_vector(15 downto 0);
+        P2L_CLKp    : in     std_logic;
+        P2L_CLKn    : in     std_logic;
+        P2L_VALID   : in     std_logic;
+        P2L_DFRAME  : in     std_logic;
+        P2L_DATA    : in     std_logic_vector(15 downto 0);
         --
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- ICLK Clock Domain
         --
-        IRST        : out    std_ulogic;
+        IRST        : out    std_logic;
         -- Core Logic Clock
-        ICLK        : buffer std_ulogic;
-        ICLKn       : buffer std_ulogic;
+        ICLK        : buffer std_logic;
+        ICLKn       : buffer std_logic;
         -- DeSerialized Output
-        ICLK_VALID  : out    std_ulogic;
-        ICLK_DFRAME : out    std_ulogic;
-        ICLK_DATA   : out    std_ulogic_vector(31 downto 0)
+        ICLK_VALID  : out    std_logic;
+        ICLK_DFRAME : out    std_logic;
+        ICLK_DATA   : out    std_logic_vector(31 downto 0)
         --
         ---------------------------------------------------------
         );
@@ -78,39 +78,39 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        CLK               : in  std_ulogic;
-        RST               : in  std_ulogic;
+        CLK               : in  std_logic;
+        RST               : in  std_logic;
         ---------------------------------------------------------
         -- Input from the Deserializer
         --
-        DES_P2L_VALIDi    : in  std_ulogic;
-        DES_P2L_DFRAMEi   : in  std_ulogic;
-        DES_P2L_DATAi     : in  std_ulogic_vector(31 downto 0);
+        DES_P2L_VALIDi    : in  std_logic;
+        DES_P2L_DFRAMEi   : in  std_logic;
+        DES_P2L_DATAi     : in  std_logic_vector(31 downto 0);
         --
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- Decoder Outputs
         --
         -- Header
-        IP2L_HDR_STARTo   : out std_ulogic;                      -- Indicates Header start cycle
-        IP2L_HDR_LENGTHo  : out std_ulogic_vector(9 downto 0);   -- Latched LENGTH value from header
-        IP2L_HDR_CIDo     : out std_ulogic_vector(1 downto 0);   -- Completion ID
-        IP2L_HDR_LASTo    : out std_ulogic;                      -- Indicates Last packet in a completion
-        IP2L_HDR_STATo    : out std_ulogic_vector(1 downto 0);   -- Completion Status
-        IP2L_TARGET_MRDo  : out std_ulogic;                      -- Target memory read
-        IP2L_TARGET_MWRo  : out std_ulogic;                      -- Target memory write
-        IP2L_MASTER_CPLDo : out std_ulogic;                      -- Master completion with data
-        IP2L_MASTER_CPLNo : out std_ulogic;                      -- Master completion without data
+        IP2L_HDR_STARTo   : out std_logic;                      -- Indicates Header start cycle
+        IP2L_HDR_LENGTHo  : out std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
+        IP2L_HDR_CIDo     : out std_logic_vector(1 downto 0);   -- Completion ID
+        IP2L_HDR_LASTo    : out std_logic;                      -- Indicates Last packet in a completion
+        IP2L_HDR_STATo    : out std_logic_vector(1 downto 0);   -- Completion Status
+        IP2L_TARGET_MRDo  : out std_logic;                      -- Target memory read
+        IP2L_TARGET_MWRo  : out std_logic;                      -- Target memory write
+        IP2L_MASTER_CPLDo : out std_logic;                      -- Master completion with data
+        IP2L_MASTER_CPLNo : out std_logic;                      -- Master completion without data
         --
         -- Address
-        IP2L_ADDR_STARTo  : out std_ulogic;                      -- Indicates Address Start
-        IP2L_ADDRo        : out std_ulogic_vector(31 downto 0);  -- Latched Address that will increment with data
+        IP2L_ADDR_STARTo  : out std_logic;                      -- Indicates Address Start
+        IP2L_ADDRo        : out std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
         --
         -- Data
-        IP2L_D_VALIDo     : out std_ulogic;                      -- Indicates Data is valid
-        IP2L_D_LASTo      : out std_ulogic;                      -- Indicates end of the packet
-        IP2L_Do           : out std_ulogic_vector(31 downto 0);  -- Data
-        IP2L_BEo          : out std_ulogic_vector(3 downto 0)    -- Byte Enable for data
+        IP2L_D_VALIDo     : out std_logic;                      -- Indicates Data is valid
+        IP2L_D_LASTo      : out std_logic;                      -- Indicates end of the packet
+        IP2L_Do           : out std_logic_vector(31 downto 0);  -- Data
+        IP2L_BEo          : out std_logic_vector(3 downto 0)    -- Byte Enable for data
         --
         ---------------------------------------------------------
         );
@@ -125,27 +125,51 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- ICLK Clock Domain Inputs
         --
-        ICLKp : in std_ulogic;
-        ICLKn : in std_ulogic;
-        IRST  : in std_ulogic;
+        ICLKp : in std_logic;
+        ICLKn : in std_logic;
+        IRST  : in std_logic;
 
-        ICLK_VALID  : in  std_ulogic;
-        ICLK_DFRAME : in  std_ulogic;
-        ICLK_DATA   : in  std_ulogic_vector(31 downto 0);
+        ICLK_VALID  : in  std_logic;
+        ICLK_DFRAME : in  std_logic;
+        ICLK_DATA   : in  std_logic_vector(31 downto 0);
         --
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- SER Outputs
         --
-        L2P_CLKp    : out std_ulogic;
-        L2P_CLKn    : out std_ulogic;
-        L2P_VALID   : out std_ulogic;
-        L2P_DFRAME  : out std_ulogic;
-        L2P_DATA    : out std_ulogic_vector(15 downto 0)
+        L2P_CLKp    : out std_logic;
+        L2P_CLKn    : out std_logic;
+        L2P_VALID   : out std_logic;
+        L2P_DFRAME  : out std_logic;
+        L2P_DATA    : out std_logic_vector(15 downto 0)
         --
         ---------------------------------------------------------
         );
   end component;  -- L2P_SER
+
+-----------------------------------------------------------------------------
+  component DDR_OUT
+-----------------------------------------------------------------------------
+    generic
+      (
+        WIDTH : integer := 20
+        );
+    port
+      (
+        -- Reset
+        RESET : in  std_logic;
+        -- Clock
+        CLKp  : in  std_logic;
+        CLKn  : in  std_logic;
+        -- Clock Enable
+        CE    : in  std_logic;
+        -- Input Data
+        Dp    : in  std_logic_vector(WIDTH-1 downto 0);
+        Dn    : in  std_logic_vector(WIDTH-1 downto 0);
+        -- Output Data
+        Q     : out std_logic_vector(WIDTH-1 downto 0)
+        );
+  end component;  -- DDR_OUT
 
 -----------------------------------------------------------------------------
   component wbmaster32 is
@@ -161,48 +185,48 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        sys_clk_i : in  std_ulogic;
-        sys_rst_i : in  std_ulogic;
+        sys_clk_i : in  std_logic;
+        sys_rst_i : in  std_logic;
 
-        gn4124_clk_i        : in  std_ulogic;
+        gn4124_clk_i        : in  std_logic;
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- From P2L Decoder
         --
         -- Header
-        pd_wbm_hdr_start_i  : in  std_ulogic;                       -- Indicates Header start cycle
-        pd_wbm_hdr_length_i : in  std_ulogic_vector(9 downto 0);    -- Latched LENGTH value from header
-        pd_wbm_hdr_cid_i    : in  std_ulogic_vector(1 downto 0);    -- Completion ID
-        pd_wbm_target_mrd_i : in  std_ulogic;                       -- Target memory read
-        pd_wbm_target_mwr_i : in  std_ulogic;                       -- Target memory write
+        pd_wbm_hdr_start_i  : in  std_logic;                       -- Indicates Header start cycle
+        pd_wbm_hdr_length_i : in  std_logic_vector(9 downto 0);    -- Latched LENGTH value from header
+        pd_wbm_hdr_cid_i    : in  std_logic_vector(1 downto 0);    -- Completion ID
+        pd_wbm_target_mrd_i : in  std_logic;                       -- Target memory read
+        pd_wbm_target_mwr_i : in  std_logic;                       -- Target memory write
         --
         -- Address
-        pd_wbm_addr_start_i : in  std_ulogic;                       -- Indicates Address Start
-        pd_wbm_addr_i       : in  std_ulogic_vector(31 downto 0);   -- Latched Address that will increment with data
-        pd_wbm_wbm_addr_i   : in  std_ulogic;                       -- Indicates that current address is for the EPI interface
+        pd_wbm_addr_start_i : in  std_logic;                       -- Indicates Address Start
+        pd_wbm_addr_i       : in  std_logic_vector(31 downto 0);   -- Latched Address that will increment with data
+        pd_wbm_wbm_addr_i   : in  std_logic;                       -- Indicates that current address is for the EPI interface
                                                                     -- Can be connected to a decode of IP2L_ADDRi
                                                                     -- or to IP2L_ADDRi(0) for BAR2
                                                                     -- or to not IP2L_ADDRi(0) for BAR0
         --
         -- Data
-        pd_wbm_data_valid_i : in  std_ulogic;                       -- Indicates Data is valid
-        pd_wbm_data_last_i  : in  std_ulogic;                       -- Indicates end of the packet
-        pd_wbm_data_i       : in  std_ulogic_vector(31 downto 0);   -- Data
-        pd_wbm_be_i         : in  std_ulogic_vector(3 downto 0);    -- Byte Enable for data
+        pd_wbm_data_valid_i : in  std_logic;                       -- Indicates Data is valid
+        pd_wbm_data_last_i  : in  std_logic;                       -- Indicates end of the packet
+        pd_wbm_data_i       : in  std_logic_vector(31 downto 0);   -- Data
+        pd_wbm_be_i         : in  std_logic_vector(3 downto 0);    -- Byte Enable for data
         --
         ---------------------------------------------------------
         -- P2L Control
         --
-        p_wr_rdy_o          : out std_ulogic;                       -- Write buffer not empty
+        p_wr_rdy_o          : out std_logic;                       -- Write buffer not empty
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- To the L2P Interface
         --
-        wbm_arb_valid_o     : out std_ulogic;                       -- Read completion signals
-        wbm_arb_dframe_o    : out std_ulogic;                       -- Toward the arbiter
-        wbm_arb_data_o      : out std_ulogic_vector(31 downto 0);
-        wbm_arb_req_o       : out std_ulogic;
-        arb_wbm_gnt_i       : in  std_ulogic;
+        wbm_arb_valid_o     : out std_logic;                       -- Read completion signals
+        wbm_arb_dframe_o    : out std_logic;                       -- Toward the arbiter
+        wbm_arb_data_o      : out std_logic_vector(31 downto 0);
+        wbm_arb_req_o       : out std_logic;
+        arb_wbm_gnt_i       : in  std_logic;
         --
         ---------------------------------------------------------
         ---------------------------------------------------------
@@ -232,8 +256,8 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        sys_clk_i               : in  std_ulogic;
-        sys_rst_i               : in  std_ulogic;
+        sys_clk_i               : in  std_logic;
+        sys_rst_i               : in  std_logic;
         ---------------------------------------------------------
         ---------------------------------------------------------
         -- To the L2P DMA master and P2L DMA master
@@ -291,10 +315,10 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        sys_clk_i : in std_ulogic;
-        sys_rst_i : in std_ulogic;
+        sys_clk_i : in std_logic;
+        sys_rst_i : in std_logic;
 
-        gn4124_clk_i : in std_ulogic;
+        gn4124_clk_i : in std_logic;
         ---------------------------------------------------------
 
         ---------------------------------------------------------
@@ -315,11 +339,11 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- To the L2P Interface (send the DMA data)
         --
-        ldm_arb_valid_o  : out std_ulogic;  -- Read completion signals
-        ldm_arb_dframe_o : out std_ulogic;  -- Toward the arbiter
-        ldm_arb_data_o   : out std_ulogic_vector(31 downto 0);
-        ldm_arb_req_o    : out std_ulogic;
-        arb_ldm_gnt_i    : in  std_ulogic;
+        ldm_arb_valid_o  : out std_logic;  -- Read completion signals
+        ldm_arb_dframe_o : out std_logic;  -- Toward the arbiter
+        ldm_arb_data_o   : out std_logic_vector(31 downto 0);
+        ldm_arb_req_o    : out std_logic;
+        arb_ldm_gnt_i    : in  std_logic;
         --
         ---------------------------------------------------------
 
@@ -350,10 +374,10 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Clock/Reset
         --
-        sys_clk_i : in  std_ulogic;
-        sys_rst_i : in  std_ulogic;
+        sys_clk_i : in  std_logic;
+        sys_rst_i : in  std_logic;
 
-        gn4124_clk_i : in std_ulogic;
+        gn4124_clk_i : in std_logic;
         ---------------------------------------------------------
 
         ---------------------------------------------------------
@@ -376,37 +400,37 @@ package gn4124_core_pkg is
         -- From P2L Decoder (receive the read completion)
         --
         -- Header
-        pd_pdm_hdr_start_i   : in std_ulogic;                      -- Indicates Header start cycle
-        pd_pdm_hdr_length_i  : in std_ulogic_vector(9 downto 0);   -- Latched LENGTH value from header
-        pd_pdm_hdr_cid_i     : in std_ulogic_vector(1 downto 0);   -- Completion ID
-        pd_pdm_target_mrd_i  : in std_ulogic;                      -- Target memory read
-        pd_pdm_target_mwr_i  : in std_ulogic;                      -- Target memory write
-        pd_pdm_target_cpld_i : in std_ulogic;                      -- Target memory write
+        pd_pdm_hdr_start_i   : in std_logic;                      -- Indicates Header start cycle
+        pd_pdm_hdr_length_i  : in std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
+        pd_pdm_hdr_cid_i     : in std_logic_vector(1 downto 0);   -- Completion ID
+        pd_pdm_target_mrd_i  : in std_logic;                      -- Target memory read
+        pd_pdm_target_mwr_i  : in std_logic;                      -- Target memory write
+        pd_pdm_target_cpld_i : in std_logic;                      -- Target memory write
         --
         -- Address
-        pd_pdm_addr_start_i  : in std_ulogic;                      -- Indicates Address Start
-        pd_pdm_addr_i        : in std_ulogic_vector(31 downto 0);  -- Latched Address that will increment with data
-        pd_pdm_wbm_addr_i    : in std_ulogic;                      -- Indicates that current address is for the EPI interface
+        pd_pdm_addr_start_i  : in std_logic;                      -- Indicates Address Start
+        pd_pdm_addr_i        : in std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
+        pd_pdm_wbm_addr_i    : in std_logic;                      -- Indicates that current address is for the EPI interface
                                                                    -- Can be connected to a decode of IP2L_ADDRi
                                                                    -- or to IP2L_ADDRi(0) for BAR2
                                                                    -- or to not IP2L_ADDRi(0) for BAR0
         --
         -- Data
-        pd_pdm_data_valid_i  : in std_ulogic;                      -- Indicates Data is valid
-        pd_pdm_data_last_i   : in std_ulogic;                      -- Indicates end of the packet
-        pd_pdm_data_i        : in std_ulogic_vector(31 downto 0);  -- Data
-        pd_pdm_be_i          : in std_ulogic_vector(3 downto 0);   -- Byte Enable for data
+        pd_pdm_data_valid_i  : in std_logic;                      -- Indicates Data is valid
+        pd_pdm_data_last_i   : in std_logic;                      -- Indicates end of the packet
+        pd_pdm_data_i        : in std_logic_vector(31 downto 0);  -- Data
+        pd_pdm_be_i          : in std_logic_vector(3 downto 0);   -- Byte Enable for data
         --
         ---------------------------------------------------------
 
         ---------------------------------------------------------
         -- To the L2P Interface (send the DMA Master Read request)
         --
-        pdm_arb_valid_o  : out std_ulogic;  -- Read completion signals
-        pdm_arb_dframe_o : out std_ulogic;  -- Toward the arbiter
-        pdm_arb_data_o   : out std_ulogic_vector(31 downto 0);
-        pdm_arb_req_o    : out std_ulogic;
-        arb_pdm_gnt_i    : in  std_ulogic;
+        pdm_arb_valid_o  : out std_logic;  -- Read completion signals
+        pdm_arb_dframe_o : out std_logic;  -- Toward the arbiter
+        pdm_arb_data_o   : out std_logic_vector(31 downto 0);
+        pdm_arb_req_o    : out std_logic;
+        arb_pdm_gnt_i    : in  std_logic;
         --
         ---------------------------------------------------------
 
@@ -449,49 +473,49 @@ package gn4124_core_pkg is
       ---------------------------------------------------------
       -- Clock/Reset
       --
-      clk_i            : in  std_ulogic;
-      rst_i            : in  std_ulogic;
+      clk_i            : in  std_logic;
+      rst_i            : in  std_logic;
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- From Wishbone master (wbm) to arbiter (arb)
       --
-      wbm_arb_valid_i  : in  std_ulogic;
-      wbm_arb_dframe_i : in  std_ulogic;
-      wbm_arb_data_i   : in  std_ulogic_vector(31 downto 0);
-      wbm_arb_req_i    : in  std_ulogic;
-      arb_wbm_gnt_o    : out std_ulogic;
+      wbm_arb_valid_i  : in  std_logic;
+      wbm_arb_dframe_i : in  std_logic;
+      wbm_arb_data_i   : in  std_logic_vector(31 downto 0);
+      wbm_arb_req_i    : in  std_logic;
+      arb_wbm_gnt_o    : out std_logic;
       --
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- From DMA controller (pdm) to arbiter (arb)
       --
-      pdm_arb_valid_i  : in  std_ulogic;
-      pdm_arb_dframe_i : in  std_ulogic;
-      pdm_arb_data_i   : in  std_ulogic_vector(31 downto 0);
-      pdm_arb_req_i    : in  std_ulogic;
-      arb_pdm_gnt_o    : out std_ulogic;
+      pdm_arb_valid_i  : in  std_logic;
+      pdm_arb_dframe_i : in  std_logic;
+      pdm_arb_data_i   : in  std_logic_vector(31 downto 0);
+      pdm_arb_req_i    : in  std_logic;
+      arb_pdm_gnt_o    : out std_logic;
       --
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- From P2L DMA master (ldm) to arbiter (arb)
       --
-      ldm_arb_valid_i  : in  std_ulogic;
-      ldm_arb_dframe_i : in  std_ulogic;
-      ldm_arb_data_i   : in  std_ulogic_vector(31 downto 0);
-      ldm_arb_req_i    : in  std_ulogic;
-      arb_ldm_gnt_o    : out std_ulogic;
+      ldm_arb_valid_i  : in  std_logic;
+      ldm_arb_dframe_i : in  std_logic;
+      ldm_arb_data_i   : in  std_logic_vector(31 downto 0);
+      ldm_arb_req_i    : in  std_logic;
+      arb_ldm_gnt_o    : out std_logic;
       --
       ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- From arbiter (arb) to serializer (ser)
       --
-      arb_ser_valid_o  : out std_ulogic;
-      arb_ser_dframe_o : out std_ulogic;
-      arb_ser_data_o   : out std_ulogic_vector(31 downto 0)
+      arb_ser_valid_o  : out std_logic;
+      arb_ser_dframe_o : out std_logic;
+      arb_ser_data_o   : out std_logic_vector(31 downto 0)
       --
       ---------------------------------------------------------
       );
-  end component;        -- arbiter
+  end component;  -- arbiter
 
 end gn4124_core_pkg;
