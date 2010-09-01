@@ -1,69 +1,69 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.STD_LOGIC_1164.all;
+use IEEE.STD_LOGIC_ARITH.all;
+use IEEE.STD_LOGIC_UNSIGNED.all;
 
 
 package LOTUS_UTIL is
-  function to_mvl ( b: in boolean ) return STD_ULOGIC;
-  function to_mvl ( i: in integer ) return STD_ULOGIC;
-  function "and"(l: STD_ULOGIC_VECTOR; r: STD_ULOGIC) return STD_ULOGIC_VECTOR;
-  function "and"(l: STD_ULOGIC; r: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR;
-  function "and"(l: STD_ULOGIC_VECTOR; r: BOOLEAN) return STD_ULOGIC_VECTOR;
-  function "and"(l: BOOLEAN; r: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR;
-  function "and"(l: BOOLEAN; r: STD_ULOGIC) return STD_ULOGIC;
-  function "and"(l: STD_ULOGIC; r: BOOLEAN) return STD_ULOGIC;
-  function exp(input: STD_ULOGIC; num_bits: integer) return STD_ULOGIC_VECTOR;
-  function exp(input: STD_ULOGIC_VECTOR; num_bits: integer) return STD_ULOGIC_VECTOR;
-  function "+"(l: STD_ULOGIC_VECTOR; r: STD_ULOGIC) return STD_ULOGIC_VECTOR;
-  function "+"(l: STD_ULOGIC_VECTOR; r: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR;
-  function "-"(l: STD_ULOGIC_VECTOR; r: STD_ULOGIC) return STD_ULOGIC_VECTOR;
-  function "-"(l: STD_ULOGIC_VECTOR; r: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR;
-  function and_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC;
-  function nand_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC;
-  function or_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC;
-  function nor_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC;
-  function xor_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC;
-  function xnor_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC;
-  function maximum ( arg1, arg2 : INTEGER) return INTEGER;
-  function minimum ( arg1, arg2 : INTEGER) return INTEGER;
+  function to_mvl (b           : in boolean) return std_ulogic;
+  function to_mvl (i           : in integer) return std_ulogic;
+  function "and"(l             :    std_ulogic_vector; r : std_ulogic) return std_ulogic_vector;
+  function "and"(l             :    std_ulogic; r : std_ulogic_vector) return std_ulogic_vector;
+  function "and"(l             :    std_ulogic_vector; r : boolean) return std_ulogic_vector;
+  function "and"(l             :    boolean; r : std_ulogic_vector) return std_ulogic_vector;
+  function "and"(l             :    boolean; r : std_ulogic) return std_ulogic;
+  function "and"(l             :    std_ulogic; r : boolean) return std_ulogic;
+  function exp(input           :    std_ulogic; num_bits : integer) return std_ulogic_vector;
+  function exp(input           :    std_ulogic_vector; num_bits : integer) return std_ulogic_vector;
+  function "+"(l               :    std_ulogic_vector; r : std_ulogic) return std_ulogic_vector;
+  function "+"(l               :    std_ulogic_vector; r : std_ulogic_vector) return std_ulogic_vector;
+  function "-"(l               :    std_ulogic_vector; r : std_ulogic) return std_ulogic_vector;
+  function "-"(l               :    std_ulogic_vector; r : std_ulogic_vector) return std_ulogic_vector;
+  function and_reduce(ARG      :    std_ulogic_vector) return std_ulogic;
+  function nand_reduce(ARG     :    std_ulogic_vector) return std_ulogic;
+  function or_reduce(ARG       :    std_ulogic_vector) return std_ulogic;
+  function nor_reduce(ARG      :    std_ulogic_vector) return std_ulogic;
+  function xor_reduce(ARG      :    std_ulogic_vector) return std_ulogic;
+  function xnor_reduce(ARG     :    std_ulogic_vector) return std_ulogic;
+  function maximum (arg1, arg2 :    integer) return integer;
+  function minimum (arg1, arg2 :    integer) return integer;
 --  function log2(A: in integer) return integer;
-    -------------------------------------------------------------------
-    -- Declaration of Synthesis directive attributes
-    -------------------------------------------------------------------
-    ATTRIBUTE synthesis_return : string ;
+  -------------------------------------------------------------------
+  -- Declaration of Synthesis directive attributes
+  -------------------------------------------------------------------
+  attribute synthesis_return   :    string;
 
 end LOTUS_UTIL;
 
 package body LOTUS_UTIL is
 
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function to_mvl ( b: in boolean ) return STD_ULOGIC is
+  function to_mvl (b : in boolean) return std_ulogic is
   begin
-    if ( b = TRUE ) then
-      return( '1' );
+    if (b = true) then
+      return('1');
     else
-      return( '0' );
+      return('0');
     end if;
   end to_mvl;
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function to_mvl ( i: in integer ) return STD_ULOGIC is
+  function to_mvl (i : in integer) return std_ulogic is
   begin
-    if ( i = 1 ) then
-      return( '1' );
+    if (i = 1) then
+      return('1');
     else
-      return( '0' );
+      return('0');
     end if;
   end to_mvl;
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function "and"(l: STD_ULOGIC; r: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR is
-  variable rr: STD_ULOGIC_vector(r'range);
+  function "and"(l : std_ulogic; r : std_ulogic_vector) return std_ulogic_vector is
+    variable rr : std_ulogic_vector(r'range);
   begin
     if (l = '1') then
       rr := r;
@@ -73,10 +73,10 @@ package body LOTUS_UTIL is
     return(rr);
   end;
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function "and"(l: STD_ULOGIC_VECTOR; r: STD_ULOGIC) return STD_ULOGIC_VECTOR is
-  variable ll: STD_ULOGIC_vector(l'range);
+  function "and"(l : std_ulogic_vector; r : std_ulogic) return std_ulogic_vector is
+    variable ll : std_ulogic_vector(l'range);
   begin
     if (r = '1') then
       ll := l;
@@ -86,10 +86,10 @@ package body LOTUS_UTIL is
     return(ll);
   end;
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function "and"(l: BOOLEAN; r: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR is
-  variable rr: STD_ULOGIC_vector(r'range);
+  function "and"(l : boolean; r : std_ulogic_vector) return std_ulogic_vector is
+    variable rr : std_ulogic_vector(r'range);
   begin
     if (l) then
       rr := r;
@@ -99,10 +99,10 @@ package body LOTUS_UTIL is
     return(rr);
   end;
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function "and"(l: STD_ULOGIC_VECTOR; r: BOOLEAN) return STD_ULOGIC_VECTOR is
-  variable ll: STD_ULOGIC_vector(l'range);
+  function "and"(l : std_ulogic_vector; r : boolean) return std_ulogic_vector is
+    variable ll : std_ulogic_vector(l'range);
   begin
     if (r) then
       ll := l;
@@ -112,10 +112,10 @@ package body LOTUS_UTIL is
     return(ll);
   end;
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function "and"(l: BOOLEAN; r: STD_ULOGIC) return STD_ULOGIC is
-  variable ll: STD_ULOGIC;
+  function "and"(l : boolean; r : std_ulogic) return std_ulogic is
+    variable ll : std_ulogic;
   begin
     if (l) then
       ll := r;
@@ -125,10 +125,10 @@ package body LOTUS_UTIL is
     return(ll);
   end;
 
-    --------------------------------------------------------------------
+  --------------------------------------------------------------------
 
-  function "and"(l: STD_ULOGIC; r: BOOLEAN) return STD_ULOGIC is
-  variable ll: STD_ULOGIC;
+  function "and"(l : std_ulogic; r : boolean) return std_ulogic is
+    variable ll : std_ulogic;
   begin
     if (r) then
       ll := l;
@@ -138,37 +138,37 @@ package body LOTUS_UTIL is
     return(ll);
   end;
 
-   --------------------------------------------------------------------
+  --------------------------------------------------------------------
   -- exp: Expand one bit into many
   --------------------------------------------------------------------
 
-  FUNCTION  exp(input:STD_ULOGIC; num_bits:integer) RETURN STD_ULOGIC_VECTOR IS
-  VARIABLE result:STD_ULOGIC_VECTOR(num_bits-1 DOWNTO 0);
-  BEGIN
-    FOR i in result'HIGH DOWNTO result'LOW LOOP
+  function exp(input : std_ulogic; num_bits : integer) return std_ulogic_vector is
+    variable result : std_ulogic_vector(num_bits-1 downto 0);
+  begin
+    for i in result'high downto result'low loop
       result(i) := input;
-    END LOOP;
-    RETURN result;
-  END exp;
+    end loop;
+    return result;
+  end exp;
 
   --------------------------------------------------------------------
   -- exp: Expand n bits into m bits
   --------------------------------------------------------------------
 
-  FUNCTION  exp(input:STD_ULOGIC_VECTOR; num_bits:integer) RETURN STD_ULOGIC_VECTOR IS
-  VARIABLE result:STD_ULOGIC_VECTOR(num_bits-1 DOWNTO 0);
-  BEGIN
-    result := (others => '0');
+  function exp(input : std_ulogic_vector; num_bits : integer) return std_ulogic_vector is
+    variable result : std_ulogic_vector(num_bits-1 downto 0);
+  begin
+    result                          := (others => '0');
     result(input'length-1 downto 0) := input;
-    RETURN result;
-  END exp;
+    return result;
+  end exp;
 
 
   --------------------------------------------------------------------
   -- "+" Increment function
   --------------------------------------------------------------------
-  function "+"(L: STD_ULOGIC_VECTOR; R: STD_ULOGIC) return STD_ULOGIC_VECTOR is
-  variable Q: STD_ULOGIC_VECTOR(L'range);
+  function "+"(L : std_ulogic_vector; R : std_ulogic) return std_ulogic_vector is
+    variable Q : std_ulogic_vector(L'range);
   begin
     Q := To_StdULogicVector(To_StdLogicVector(L) + R);
     return Q;
@@ -177,8 +177,8 @@ package body LOTUS_UTIL is
   --------------------------------------------------------------------
   -- "+" adder function
   --------------------------------------------------------------------
-  function "+"(L: STD_ULOGIC_VECTOR; R: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR is
-  variable Q: STD_ULOGIC_VECTOR(L'range);
+  function "+"(L : std_ulogic_vector; R : std_ulogic_vector) return std_ulogic_vector is
+    variable Q : std_ulogic_vector(L'range);
   begin
     Q := To_StdULogicVector(To_StdLogicVector(L) + To_StdLogicVector(R));
     return Q;
@@ -187,8 +187,8 @@ package body LOTUS_UTIL is
   --------------------------------------------------------------------
   -- "-" Decrement function
   --------------------------------------------------------------------
-  function "-"(L: STD_ULOGIC_VECTOR; R: STD_ULOGIC) return STD_ULOGIC_VECTOR is
-  variable Q: STD_ULOGIC_VECTOR(L'range);
+  function "-"(L : std_ulogic_vector; R : std_ulogic) return std_ulogic_vector is
+    variable Q : std_ulogic_vector(L'range);
   begin
     Q := To_StdULogicVector(To_StdLogicVector(L) - R);
     return Q;
@@ -197,8 +197,8 @@ package body LOTUS_UTIL is
   --------------------------------------------------------------------
   -- "-" subtractor function
   --------------------------------------------------------------------
-  function "-"(L: STD_ULOGIC_VECTOR; R: STD_ULOGIC_VECTOR) return STD_ULOGIC_VECTOR is
-  variable Q: STD_ULOGIC_VECTOR(L'range);
+  function "-"(L : std_ulogic_vector; R : std_ulogic_vector) return std_ulogic_vector is
+    variable Q : std_ulogic_vector(L'range);
   begin
     Q := To_StdULogicVector(To_StdLogicVector(L) - To_StdLogicVector(R));
     return Q;
@@ -207,72 +207,72 @@ package body LOTUS_UTIL is
   --------------------------------------------------------------------
   -- Reduce Functions
   --------------------------------------------------------------------
-  function and_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC is
-  variable result: STD_ULOGIC;
+  function and_reduce(ARG : std_ulogic_vector) return std_ulogic is
+    variable result : std_ulogic;
   begin
-  result := '1';
-  for i in ARG'range loop
-    result := result and ARG(i);
-  end loop;
-  return result;
+    result := '1';
+    for i in ARG'range loop
+      result := result and ARG(i);
+    end loop;
+    return result;
   end;
 
-  function nand_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC is
+  function nand_reduce(ARG : std_ulogic_vector) return std_ulogic is
   begin
-  return not and_reduce(ARG);
+    return not and_reduce(ARG);
   end;
 
-  function or_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC is
-  variable result: STD_ULOGIC;
+  function or_reduce(ARG : std_ulogic_vector) return std_ulogic is
+    variable result : std_ulogic;
   begin
-  result := '0';
-  for i in ARG'range loop
-    result := result or ARG(i);
-  end loop;
-  return result;
+    result := '0';
+    for i in ARG'range loop
+      result := result or ARG(i);
+    end loop;
+    return result;
   end;
 
-  function nor_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC is
+  function nor_reduce(ARG : std_ulogic_vector) return std_ulogic is
   begin
-  return not or_reduce(ARG);
+    return not or_reduce(ARG);
   end;
 
-  function xor_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC is
-  variable result: STD_ULOGIC;
+  function xor_reduce(ARG : std_ulogic_vector) return std_ulogic is
+    variable result : std_ulogic;
   begin
-  result := '0';
-  for i in ARG'range loop
-    result := result xor ARG(i);
-  end loop;
-  return result;
+    result := '0';
+    for i in ARG'range loop
+      result := result xor ARG(i);
+    end loop;
+    return result;
   end;
 
-  function xnor_reduce(ARG: STD_ULOGIC_VECTOR) return STD_ULOGIC is
+  function xnor_reduce(ARG : std_ulogic_vector) return std_ulogic is
   begin
-  return not xor_reduce(ARG);
+    return not xor_reduce(ARG);
   end;
 
   --------------------------------------------------------------------
   -- Some useful generic functions
   --------------------------------------------------------------------
 
-  FUNCTION maximum (arg1,arg2:INTEGER) RETURN INTEGER IS
-  BEGIN
-    IF(arg1 > arg2) THEN
-      RETURN(arg1) ;
-    ELSE
-      RETURN(arg2) ;
-    END IF;
-  END ;
+  function maximum (arg1, arg2 : integer) return integer is
+  begin
+    if(arg1 > arg2) then
+      return(arg1);
+    else
+      return(arg2);
+    end if;
+  end;
 
-  FUNCTION minimum (arg1,arg2:INTEGER) RETURN INTEGER IS
-  BEGIN
-    IF(arg1 < arg2) THEN
-      RETURN(arg1) ;
-    ELSE
-      RETURN(arg2) ;
-    END IF;
-  END ;
+  function minimum (arg1, arg2 : integer) return integer is
+  begin
+    if(arg1 < arg2) then
+      return(arg1);
+    else
+      return(arg2);
+    end if;
+  end;
 
 
   ---------------------------------------------------------------------
