@@ -12,18 +12,18 @@
 --
 -- version: 0.2
 --
--- description: Provide a pipelined Wishbone interface to performs DMA 
+-- description: Provide a pipelined Wishbone interface to performs DMA
 -- transfers from local application to PCI express host.
 --
--- dependencies: 
+-- dependencies:
 --
 --------------------------------------------------------------------------------
 -- last changes: <date> <initials> <log>
 -- <extended description>
 --------------------------------------------------------------------------------
 -- TODO: - error signal
---       - 
---       - 
+--       -
+--       -
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -40,12 +40,12 @@ entity l2p_dma_master is
       --
       sys_clk_i : in std_ulogic;
       sys_rst_i : in std_ulogic;
-      
+
       gn4124_clk_i : in std_ulogic;
       ---------------------------------------------------------
 
       ---------------------------------------------------------
-      -- From the DMA controller 
+      -- From the DMA controller
       --
       dma_ctrl_carrier_addr_i : in  std_logic_vector(31 downto 0);
       dma_ctrl_host_addr_h_i  : in  std_logic_vector(31 downto 0);
@@ -54,7 +54,7 @@ entity l2p_dma_master is
       dma_ctrl_start_l2p_i    : in  std_logic;
       dma_ctrl_done_o         : out std_logic;
       dma_ctrl_error_o        : out std_logic;
-		dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
+      dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
       --
       ---------------------------------------------------------
 
@@ -76,11 +76,11 @@ entity l2p_dma_master is
       l2p_dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
       l2p_dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
       l2p_dma_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
-      l2p_dma_cyc_o   : out std_logic;  -- Read or write cycle
-      l2p_dma_stb_o   : out std_logic;  -- Read or write strobe
-      l2p_dma_we_o    : out std_logic;  -- Write
-      l2p_dma_ack_i   : in  std_logic;  -- Acknowledge
-      l2p_dma_stall_i : in  std_logic   -- for pipelined Wishbone
+      l2p_dma_cyc_o   : out std_logic;                      -- Read or write cycle
+      l2p_dma_stb_o   : out std_logic;                      -- Read or write strobe
+      l2p_dma_we_o    : out std_logic;                      -- Write
+      l2p_dma_ack_i   : in  std_logic;                      -- Acknowledge
+      l2p_dma_stall_i : in  std_logic                       -- for pipelined Wishbone
       --
       ---------------------------------------------------------
       );
@@ -88,27 +88,27 @@ end l2p_dma_master;
 
 architecture behaviour of l2p_dma_master is
 
-component fifo
-  port (
-  rst: IN std_logic;
-  wr_clk: IN std_logic;
-  rd_clk: IN std_logic;
-  din: IN std_logic_VECTOR(31 downto 0);
-  wr_en: IN std_logic;
-  rd_en: IN std_logic;
-  dout: OUT std_logic_VECTOR(31 downto 0);
-  full: OUT std_logic;
-  almost_full: OUT std_logic;
-  empty: OUT std_logic);
-end component;
+  component fifo
+    port (
+      rst         : in  std_logic;
+      wr_clk      : in  std_logic;
+      rd_clk      : in  std_logic;
+      din         : in  std_logic_vector(31 downto 0);
+      wr_en       : in  std_logic;
+      rd_en       : in  std_logic;
+      dout        : out std_logic_vector(31 downto 0);
+      full        : out std_logic;
+      almost_full : out std_logic;
+      empty       : out std_logic);
+  end component;
 
 -----------------------------------------------------------------------------
--- Internal Signals 
+-- Internal Signals
 -----------------------------------------------------------------------------
 -- L2P DMA Master State Machine
 
   constant l2p_max_payload : integer := 32;
-  
+
   type   l2p_dma_state_type is (IDLE, WB_DATA_WAIT, L2P_HEADER, L2P_ADDR_H, L2P_ADDR_L, L2P_DATA, L2P_DATA_LAST);
   signal l2p_dma_current_state : l2p_dma_state_type;
 
@@ -119,99 +119,99 @@ end component;
   signal s_host_addr_h  : std_logic_vector(31 downto 0);
   signal s_host_addr_l  : std_logic_vector(31 downto 0);
   signal s_start        : std_logic;
-  
-  signal s_l2p_header   : std_logic_vector(31 downto 0);
-  signal s_l2p_data     : std_logic_vector(31 downto 0);
-  
-  signal l2p_data_cpt   : std_logic_vector(9 downto 0);
-  signal l2p_len_cpt    : std_logic_vector(9 downto 0);
-  signal l2p_address_h  : std_logic_vector(31 downto 0);
-  signal l2p_address_l  : std_logic_vector(31 downto 0); 
-  signal l2p_len_dec    : std_logic;
-  
-  
-  signal wb_data_cpt    : std_logic_vector(9 downto 0);
-  signal wb_ack_cpt     : std_logic_vector(9 downto 0);
-  
-  signal s_fifo_din     : std_logic_vector(31 downto 0);
-  signal s_fifo_dout    : std_logic_vector(31 downto 0);
-  signal s_fifo_wr_en   : std_logic;
-  signal s_fifo_rd_en   : std_logic;
-  signal s_fifo_empty   : std_logic;
-  signal s_fifo_full    : std_logic;
+
+  signal s_l2p_header : std_logic_vector(31 downto 0);
+  signal s_l2p_data   : std_logic_vector(31 downto 0);
+
+  signal l2p_data_cpt  : std_logic_vector(9 downto 0);
+  signal l2p_len_cpt   : std_logic_vector(9 downto 0);
+  signal l2p_address_h : std_logic_vector(31 downto 0);
+  signal l2p_address_l : std_logic_vector(31 downto 0);
+  signal l2p_len_dec   : std_logic;
+
+
+  signal wb_data_cpt : std_logic_vector(9 downto 0);
+  signal wb_ack_cpt  : std_logic_vector(9 downto 0);
+
+  signal s_fifo_din         : std_logic_vector(31 downto 0);
+  signal s_fifo_dout        : std_logic_vector(31 downto 0);
+  signal s_fifo_wr_en       : std_logic;
+  signal s_fifo_rd_en       : std_logic;
+  signal s_fifo_empty       : std_logic;
+  signal s_fifo_full        : std_logic;
   signal s_fifo_almost_full : std_logic;
-  
-  signal s_64b_address   : std_logic;
+
+  signal s_64b_address : std_logic;
 
 begin
 
 
 --=========================================================================--
 -- PCIe write block
---=========================================================================-- 
+--=========================================================================--
   process (gn4124_clk_i, sys_rst_i)
     variable l2p_dma_next_state : l2p_dma_state_type;
   begin
     if (sys_rst_i = '1') then
-      l2p_len_cpt        <= (others => '0');
-      l2p_data_cpt       <= (others => '0');
-      l2p_address_h      <= (others => '0');
-      l2p_address_l      <= (others => '0');
+      l2p_len_cpt   <= (others => '0');
+      l2p_data_cpt  <= (others => '0');
+      l2p_address_h <= (others => '0');
+      l2p_address_l <= (others => '0');
 
     elsif (gn4124_clk_i'event and gn4124_clk_i = '1') then
-    
-      if (wishbone_current_state = WB_WAIT_L2P_START and                    -- First block of data
-                        l2p_dma_current_state = IDLE) then 
-        l2p_len_cpt      <= wb_data_cpt;
-        l2p_address_h    <= s_host_addr_h;
-        l2p_address_l    <= s_host_addr_l;
+
+      if (wishbone_current_state = WB_WAIT_L2P_START and  -- First block of data
+          l2p_dma_current_state = IDLE) then
+        l2p_len_cpt   <= wb_data_cpt;
+        l2p_address_h <= s_host_addr_h;
+        l2p_address_l <= s_host_addr_l;
         if (wb_data_cpt > l2p_max_payload) then
-          l2p_data_cpt   <= conv_std_logic_vector(l2p_max_payload,10);
+          l2p_data_cpt <= conv_std_logic_vector(l2p_max_payload, 10);
           l2p_len_dec  <= '1';
         else
-          l2p_data_cpt   <= wb_data_cpt;
+          l2p_data_cpt <= wb_data_cpt;
           l2p_len_dec  <= '0';
         end if;
       end if;
-      
-      if (l2p_len_cpt > 0 and l2p_dma_current_state = L2P_DATA_LAST) then   -- Others blocks
+
+      if (l2p_len_cpt > 0 and l2p_dma_current_state = L2P_DATA_LAST) then  -- Others blocks
         if (l2p_len_cpt > l2p_max_payload) then
-          l2p_data_cpt <= conv_std_logic_vector(l2p_max_payload,10);
+          l2p_data_cpt <= conv_std_logic_vector(l2p_max_payload, 10);
           l2p_len_dec  <= '1';
         else
           l2p_data_cpt <= l2p_len_cpt;
           l2p_len_dec  <= '0';
-        end if;   
-        l2p_address_l(31 downto 2) <= l2p_address_l(31 downto 2) + l2p_max_payload;       
+        end if;
+        l2p_address_l(31 downto 2) <= l2p_address_l(31 downto 2) + l2p_max_payload;
       end if;
-      
-      if (l2p_dma_current_state = L2P_ADDR_L) then   -- Others blocks
+
+      if (l2p_dma_current_state = L2P_ADDR_L) then  -- Others blocks
         if (l2p_len_dec = '1') then
           l2p_len_cpt <= l2p_len_cpt - l2p_max_payload;
         else
           l2p_len_cpt <= (others => '0');
-        end if;       
+        end if;
       end if;
-      
+
       if l2p_dma_current_state = L2P_DATA then
         l2p_data_cpt <= l2p_data_cpt - 1;
       end if;
-      
+
     end if;
   end process;
-  s_64b_address <= '0' when l2p_address_h = x"00000000" else 
+  s_64b_address <= '0' when l2p_address_h = x"00000000" else
                    '1';
 
-  s_l2p_header <= "000"                  -->  Traffic Class
-                  & '0'                  -->  Snoop
-                  & "001"                -->  Memory write
-                  & s_64b_address         -->  Memory write
-                  & "1111"               -->  LBE
-                  & "1111"               -->  FBE
-                  & "000"                -->  Reserved
-                  & '0'                  -->  VC
-                  & "00"                 -->  Reserved
-                  & l2p_data_cpt(9 downto 0);   -->  Length
+  s_l2p_header <= "000"                        -->  Traffic Class
+                  & '0'                        -->  Snoop
+                  & "001"                      -->  Memory write
+                  & s_64b_address              -->  Memory write
+                  & "1111"                     -->  LBE
+                  & "1111"                     -->  FBE
+                  & "000"                      -->  Reserved
+                  & '0'                        -->  VC
+                  & "00"                       -->  Reserved
+                  & l2p_data_cpt(9 downto 0);  -->  Length
 
 -----------------------------------------------------------------------------
 -- PCIe Write State Machine
@@ -234,9 +234,9 @@ begin
             l2p_dma_next_state := IDLE;
           end if;
 
-        -----------------------------------------------------------------
-        -- L2P HEADER
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- L2P HEADER
+          -----------------------------------------------------------------
         when L2P_HEADER =>
           if(arb_ldm_gnt_i = '1') then
             if(s_64b_address = '1') then
@@ -248,15 +248,15 @@ begin
             l2p_dma_next_state := L2P_HEADER;
           end if;
 
-        -----------------------------------------------------------------
-        -- L2P ADDRESS (63-32)
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- L2P ADDRESS (63-32)
+          -----------------------------------------------------------------
         when L2P_ADDR_H =>
           l2p_dma_next_state := L2P_ADDR_L;
 
-        -----------------------------------------------------------------
-        -- L2P ADDRESS (31-00)
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- L2P ADDRESS (31-00)
+          -----------------------------------------------------------------
         when L2P_ADDR_L =>
           if(s_fifo_empty = '1') then
             l2p_dma_next_state := WB_DATA_WAIT;
@@ -266,9 +266,9 @@ begin
             l2p_dma_next_state := L2P_DATA;
           end if;
 
-        -----------------------------------------------------------------
-        -- Wait data from the Wishbone machine
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- Wait data from the Wishbone machine
+          -----------------------------------------------------------------
         when WB_DATA_WAIT =>
           if(s_fifo_empty = '1') then
             l2p_dma_next_state := WB_DATA_WAIT;
@@ -278,9 +278,9 @@ begin
             l2p_dma_next_state := L2P_DATA;
           end if;
 
-        -----------------------------------------------------------------
-        -- L2P DATA
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- L2P DATA
+          -----------------------------------------------------------------
         when L2P_DATA =>
           if(s_fifo_empty = '1') then
             l2p_dma_next_state := WB_DATA_WAIT;
@@ -290,9 +290,9 @@ begin
             l2p_dma_next_state := L2P_DATA;
           end if;
 
-        -----------------------------------------------------------------
-        -- L2P DATA Last double word
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- L2P DATA Last double word
+          -----------------------------------------------------------------
         when L2P_DATA_LAST =>
           if(l2p_len_cpt > 0) then
             l2p_dma_next_state := L2P_HEADER;
@@ -300,51 +300,51 @@ begin
             l2p_dma_next_state := IDLE;
           end if;
 
-        -----------------------------------------------------------------
-        -- OTHERS
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- OTHERS
+          -----------------------------------------------------------------
         when others =>
           l2p_dma_next_state := IDLE;
       end case;
       l2p_dma_current_state <= l2p_dma_next_state;
     end if;
   end process;
-  
-  
+
+
 -----------------------------------------------------------------------------
 -- Bus toward arbiter
 -----------------------------------------------------------------------------
 
   ldm_arb_req_o <= '1' when (l2p_dma_current_state = L2P_HEADER)
-                       else '0';
+                   else '0';
 
   ldm_arb_data_o <= To_StdULogicVector(s_l2p_header) when (l2p_dma_current_state = L2P_HEADER)
-                       else To_StdULogicVector(l2p_address_h) when (l2p_dma_current_state = L2P_ADDR_H)
+                    else To_StdULogicVector(l2p_address_h) when (l2p_dma_current_state = L2P_ADDR_H)
 
-                       else To_StdULogicVector(l2p_address_l) when (l2p_dma_current_state = L2P_ADDR_L)
-                       else To_StdULogicVector(s_l2p_data)    when (l2p_dma_current_state = L2P_DATA
-                                            or l2p_dma_current_state = L2P_DATA_LAST)
-                       else (others => '0');
+                    else To_StdULogicVector(l2p_address_l) when (l2p_dma_current_state = L2P_ADDR_L)
+                    else To_StdULogicVector(s_l2p_data) when (l2p_dma_current_state = L2P_DATA
+                                                                 or l2p_dma_current_state = L2P_DATA_LAST)
+                    else (others => '0');
 
   ldm_arb_valid_o <= '1' when (l2p_dma_current_state = L2P_HEADER
-                                             or l2p_dma_current_state = L2P_ADDR_H
-                                             or l2p_dma_current_state = L2P_ADDR_L
-                                             or l2p_dma_current_state = L2P_DATA
-                                             or l2p_dma_current_state = L2P_DATA_LAST)
-                       else '0';
+                               or l2p_dma_current_state = L2P_ADDR_H
+                               or l2p_dma_current_state = L2P_ADDR_L
+                               or l2p_dma_current_state = L2P_DATA
+                               or l2p_dma_current_state = L2P_DATA_LAST)
+                     else '0';
 
 
   ldm_arb_dframe_o <= '1' when (l2p_dma_current_state = L2P_HEADER
-                                             or l2p_dma_current_state = L2P_ADDR_H
-                                             or l2p_dma_current_state = L2P_ADDR_L
-                                             or l2p_dma_current_state = WB_DATA_WAIT
-                                             or l2p_dma_current_state = L2P_DATA)
-                       else '0';
+                                or l2p_dma_current_state = L2P_ADDR_H
+                                or l2p_dma_current_state = L2P_ADDR_L
+                                or l2p_dma_current_state = WB_DATA_WAIT
+                                or l2p_dma_current_state = L2P_DATA)
+                      else '0';
 
   s_fifo_rd_en <= '1' when ((l2p_dma_current_state = L2P_ADDR_L
-                          or l2p_dma_current_state = WB_DATA_WAIT
-                          or l2p_dma_current_state = L2P_DATA) and not s_fifo_empty='1') 
-                      else '0';
+                             or l2p_dma_current_state = WB_DATA_WAIT
+                             or l2p_dma_current_state = L2P_DATA) and not s_fifo_empty='1')
+                  else '0';
 
 
 --=========================================================================--
@@ -365,15 +365,15 @@ begin
         -- Wait for a Wishbone cycle
         -----------------------------------------------------------------
         when IDLE =>
-          if(dma_ctrl_start_l2p_i = '1' and not (dma_ctrl_len_i(31 downto 2) = "000000000000000000000000000000" )) then
+          if(dma_ctrl_start_l2p_i = '1' and not (dma_ctrl_len_i(31 downto 2) = "000000000000000000000000000000")) then
             wishbone_next_state := WB_WAIT_L2P_START;
           else
             wishbone_next_state := IDLE;
           end if;
-          
-        -----------------------------------------------------------------
-        -- Wait L2P Write machine is ready
-        -----------------------------------------------------------------
+
+          -----------------------------------------------------------------
+          -- Wait L2P Write machine is ready
+          -----------------------------------------------------------------
         when WB_WAIT_L2P_START =>
           if not (l2p_dma_current_state = IDLE) then
             wishbone_next_state := WB_REQUEST;
@@ -381,9 +381,9 @@ begin
             wishbone_next_state := WB_WAIT_L2P_START;
           end if;
 
-        -----------------------------------------------------------------
-        -- Request on the Wishbone bus
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- Request on the Wishbone bus
+          -----------------------------------------------------------------
         when WB_REQUEST =>
           if(wb_data_cpt = 1) then
             if (l2p_dma_ack_i = '0') then
@@ -398,10 +398,10 @@ begin
           else
             wishbone_next_state := WB_REQUEST;
           end if;
-          
-        -----------------------------------------------------------------
-        -- Wait the fifo is not full
-        -----------------------------------------------------------------
+
+          -----------------------------------------------------------------
+          -- Wait the fifo is not full
+          -----------------------------------------------------------------
         when WB_FIFO_FULL =>
           if(s_fifo_almost_full = '0') then
             if(wb_data_cpt > 0) then
@@ -413,28 +413,28 @@ begin
             wishbone_next_state := WB_FIFO_FULL;
           end if;
 
-        -----------------------------------------------------------------
-        -- Wait for the last acknowledge
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- Wait for the last acknowledge
+          -----------------------------------------------------------------
         when WB_LAST_ACK =>
           if(l2p_dma_ack_i = '1') then
             wishbone_next_state := WB_WAIT_L2P_IDLE;
           else
             wishbone_next_state := WB_LAST_ACK;
           end if;
-    
-        -----------------------------------------------------------------
-        -- Wait the L2P machine is idle
-        -----------------------------------------------------------------    
+
+          -----------------------------------------------------------------
+          -- Wait the L2P machine is idle
+          -----------------------------------------------------------------
         when WB_WAIT_L2P_IDLE =>
           if (l2p_dma_current_state = IDLE) then
             wishbone_next_state := IDLE;
           else
             wishbone_next_state := WB_WAIT_L2P_IDLE;
           end if;
-        -----------------------------------------------------------------
-        -- OTHERS
-        -----------------------------------------------------------------
+          -----------------------------------------------------------------
+          -- OTHERS
+          -----------------------------------------------------------------
         when others =>
           wishbone_next_state := IDLE;
       end case;
@@ -445,85 +445,85 @@ begin
   process (sys_clk_i, sys_rst_i)
   begin
     if(sys_rst_i = '1') then
-    
-      wb_data_cpt     <= (others => '0');
-      wb_ack_cpt      <= (others => '0');
-      s_carrier_addr  <= (others => '0');
-      s_host_addr_h   <= (others => '0');
-      s_host_addr_l   <= (others => '0');
+
+      wb_data_cpt    <= (others => '0');
+      wb_ack_cpt     <= (others => '0');
+      s_carrier_addr <= (others => '0');
+      s_host_addr_h  <= (others => '0');
+      s_host_addr_l  <= (others => '0');
     elsif (sys_clk_i'event and SYS_clk_i = '1') then
       if (dma_ctrl_start_l2p_i = '1' and l2p_dma_current_state = IDLE) then
-        s_carrier_addr  <= dma_ctrl_carrier_addr_i;
-        s_host_addr_h   <= dma_ctrl_host_addr_h_i;
-        s_host_addr_l   <= dma_ctrl_host_addr_l_i;
-        wb_data_cpt     <= dma_ctrl_len_i(11 downto 2);
-        wb_ack_cpt      <= dma_ctrl_len_i(11 downto 2);
+        s_carrier_addr <= dma_ctrl_carrier_addr_i;
+        s_host_addr_h  <= dma_ctrl_host_addr_h_i;
+        s_host_addr_l  <= dma_ctrl_host_addr_l_i;
+        wb_data_cpt    <= dma_ctrl_len_i(11 downto 2);
+        wb_ack_cpt     <= dma_ctrl_len_i(11 downto 2);
       end if;
       if (wishbone_current_state = WB_REQUEST and l2p_dma_stall_i = '0') then
-        wb_data_cpt <= wb_data_cpt - 1;
+        wb_data_cpt    <= wb_data_cpt - 1;
         s_carrier_addr <= s_carrier_addr+1;
       end if;
       if (l2p_dma_ack_i = '1') then
         wb_ack_cpt <= wb_ack_cpt - 1;
-      end if;     
-      
+      end if;
+
     end if;
   end process;
-  
+
   l2p_dma_cyc_o <= '1' when (wishbone_current_state = WB_REQUEST
-                          or wishbone_current_state = WB_LAST_ACK
-                          or wishbone_current_state = WB_FIFO_FULL)
-              else '0';
+                             or wishbone_current_state = WB_LAST_ACK
+                             or wishbone_current_state = WB_FIFO_FULL)
+                   else '0';
 
   l2p_dma_stb_o <= '1' when wishbone_current_state = WB_REQUEST
-              else '0';
-              
+                   else '0';
+
   l2p_dma_sel_o <= "1111" when wishbone_current_state = WB_REQUEST
-              else "0000";
- 
+                   else "0000";
+
   l2p_dma_adr_o <= s_carrier_addr when wishbone_current_state = WB_REQUEST
-              else (others => '0');
- 
-  l2p_dma_we_o  <= '0';
-  
+                   else (others => '0');
+
+  l2p_dma_we_o <= '0';
+
   l2p_dma_dat_o <= (others => '0');
-  
-  
+
+
   dma_ctrl_done_o <= '1' when wishbone_current_state = WB_WAIT_L2P_IDLE
-              else '0';
-              
-  dma_ctrl_error_o <= '0' ;
+                     else '0';
+
+  dma_ctrl_error_o <= '0';
 --=========================================================================--
 -- FIFO block
---=========================================================================-- 
-  s_fifo_din   <= l2p_dma_dat_i when dma_ctrl_byte_swap_i = "00" else
-						l2p_dma_dat_i(15 downto 0)&
-						 l2p_dma_dat_i(31 downto 16) when dma_ctrl_byte_swap_i = "10" else
+--=========================================================================--
+  s_fifo_din       <= l2p_dma_dat_i when dma_ctrl_byte_swap_i = "00" else
+                  l2p_dma_dat_i(15 downto 0)&
+                  l2p_dma_dat_i(31 downto 16) when dma_ctrl_byte_swap_i = "10" else
                   l2p_dma_dat_i(7 downto 0)&
-						 l2p_dma_dat_i(15 downto 8)&
-						 l2p_dma_dat_i(23 downto 16)&
-						 l2p_dma_dat_i(31 downto 24) when dma_ctrl_byte_swap_i = "11" else		
+                  l2p_dma_dat_i(15 downto 8)&
                   l2p_dma_dat_i(23 downto 16)&
-						 l2p_dma_dat_i(31 downto 24)&
-						 l2p_dma_dat_i(7 downto 0)&
-						 l2p_dma_dat_i(15 downto 8);
+                  l2p_dma_dat_i(31 downto 24) when dma_ctrl_byte_swap_i = "11" else
+                  l2p_dma_dat_i(23 downto 16)&
+                  l2p_dma_dat_i(31 downto 24)&
+                  l2p_dma_dat_i(7 downto 0)&
+                  l2p_dma_dat_i(15 downto 8);
   s_fifo_wr_en <= l2p_dma_ack_i when wb_ack_cpt > 0
-             else '0';
-  s_l2p_data   <= s_fifo_dout;
-  
+                  else '0';
+  s_l2p_data <= s_fifo_dout;
+
   u_fifo : fifo port map
-  (
-    rst    => sys_rst_i,
-    wr_clk => sys_clk_i,
-    rd_clk => gn4124_clk_i,
-    din    => s_fifo_din,
-    wr_en  => s_fifo_wr_en,
-    rd_en  => s_fifo_rd_en,
-    dout   => s_fifo_dout,
-    full   => s_fifo_full,
-    almost_full   => s_fifo_almost_full,
-    empty  => s_fifo_empty
-  );
+    (
+      rst         => sys_rst_i,
+      wr_clk      => sys_clk_i,
+      rd_clk      => gn4124_clk_i,
+      din         => s_fifo_din,
+      wr_en       => s_fifo_wr_en,
+      rd_en       => s_fifo_rd_en,
+      dout        => s_fifo_dout,
+      full        => s_fifo_full,
+      almost_full => s_fifo_almost_full,
+      empty       => s_fifo_empty
+      );
 
 end behaviour;
 
