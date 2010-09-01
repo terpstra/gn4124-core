@@ -28,65 +28,55 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
---use IEEE.STD_LOGIC_ARITH.all;
---use IEEE.STD_LOGIC_UNSIGNED.all;
+use work.gn4124_core_pkg.all;
+
 
 entity arbiter is
   port
     (
       ---------------------------------------------------------
-      ---------------------------------------------------------
       -- Clock/Reset
-      --
-      clk_i            : in  std_logic;
-      rst_i            : in  std_logic;
-      ---------------------------------------------------------
+      clk_i   : in std_logic;
+      rst_n_i : in std_logic;
+
       ---------------------------------------------------------
       -- From Wishbone master (wbm) to arbiter (arb)
-      --
       wbm_arb_valid_i  : in  std_logic;
       wbm_arb_dframe_i : in  std_logic;
       wbm_arb_data_i   : in  std_logic_vector(31 downto 0);
       wbm_arb_req_i    : in  std_logic;
       arb_wbm_gnt_o    : out std_logic;
-      --
-      ---------------------------------------------------------
+
       ---------------------------------------------------------
       -- From DMA pdmuencer (pdm) to arbiter (arb)
-      --
       pdm_arb_valid_i  : in  std_logic;
       pdm_arb_dframe_i : in  std_logic;
       pdm_arb_data_i   : in  std_logic_vector(31 downto 0);
       pdm_arb_req_i    : in  std_logic;
       arb_pdm_gnt_o    : out std_logic;
-      --
-      ---------------------------------------------------------
+
       ---------------------------------------------------------
       -- From P2L DMA master (ldm) to arbiter (arb)
-      --
       ldm_arb_valid_i  : in  std_logic;
       ldm_arb_dframe_i : in  std_logic;
       ldm_arb_data_i   : in  std_logic_vector(31 downto 0);
       ldm_arb_req_i    : in  std_logic;
       arb_ldm_gnt_o    : out std_logic;
-      --
-      ---------------------------------------------------------
 
       ---------------------------------------------------------
       -- From arbiter (arb) to serializer (ser)
-      --
       arb_ser_valid_o  : out std_logic;
       arb_ser_dframe_o : out std_logic;
       arb_ser_data_o   : out std_logic_vector(31 downto 0)
-      --
-      ---------------------------------------------------------
       );
 end arbiter;
 
+
 architecture behaviour of arbiter is
-  ---------------------------------------------------------
+
+
+---------------------------------------------------------
   -- Signal declarations
-  --
   signal wbm_arb_req_valid : std_logic;
   signal pdm_arb_req_valid : std_logic;
   signal ldm_arb_req_valid : std_logic;
@@ -95,9 +85,11 @@ architecture behaviour of arbiter is
   signal arb_pdm_gnt       : std_logic;
   signal arb_ldm_gnt       : std_logic;
   signal eop               : std_logic;  -- End of packet
-  --
-  ---------------------------------------------------------
+
+
 begin
+
+
   wbm_arb_req_valid <= wbm_arb_req_i;
   pdm_arb_req_valid <= pdm_arb_req_i;
   ldm_arb_req_valid <= ldm_arb_req_i;
@@ -122,9 +114,9 @@ begin
   -----------------------------------------------------------------------------
 
 
-  process (clk_i, rst_i)
+  process (clk_i, rst_n_i)
   begin
-    if(rst_i = '1') then
+    if(rst_n_i = c_RST_ACTIVE) then
       arb_wbm_gnt <= '0';
       arb_pdm_gnt <= '0';
       arb_ldm_gnt <= '0';

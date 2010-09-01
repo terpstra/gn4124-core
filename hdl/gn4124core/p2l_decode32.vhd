@@ -29,8 +29,8 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
---use IEEE.STD_LOGIC_ARITH.all;
---use IEEE.STD_LOGIC_UNSIGNED.all;
+use work.gn4124_core_pkg.all;
+
 
 entity P2L_DECODE32 is
   port
@@ -138,7 +138,7 @@ begin
 -----------------------------------------------------------------------------
   process (CLK, RST)
   begin
-    if RST = '1' then
+    if RST = c_RST_ACTIVE then
       Q_DES_P2L_DFRAMEi <= '0';
       Q_DES_P2L_VALIDi  <= '0';
     elsif rising_edge(CLK) then
@@ -153,7 +153,7 @@ begin
 -----------------------------------------------------------------------------
   process (CLK, RST)
   begin
-    if RST = '1' then
+    if RST = c_RST_ACTIVE then
       TARGET_MRD  <= '0';
       TARGET_MWR  <= '0';
       MASTER_CPLD <= '0';
@@ -179,7 +179,7 @@ begin
 -----------------------------------------------------------------------------
   process (CLK, RST)
   begin
-    if RST = '1' then
+    if RST = c_RST_ACTIVE then
       IP2L_HDR_START  <= '0';
       IP2L_HDR_LENGTH <= (others => '0');
       IP2L_HDR_CID    <= (others => '0');
@@ -207,7 +207,7 @@ begin
 -----------------------------------------------------------------------------
   process (CLK, RST)
   begin
-    if RST = '1' then
+    if RST = c_RST_ACTIVE then
 --      CYCLE  <= '0';
       ACYCLE <= '0';
       DCYCLE <= '0';
@@ -238,7 +238,7 @@ begin
 -----------------------------------------------------------------------------
   process (CLK, RST)
   begin
-    if RST = '1' then
+    if RST = c_RST_ACTIVE then
       IP2L_D_VALID    <= '0';
       IP2L_D_LAST     <= '0';
       IP2L_D          <= (others => '0');
