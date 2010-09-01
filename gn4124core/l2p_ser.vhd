@@ -28,8 +28,10 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.all;
+use work.gn4124_core_pkg.all;
+--use IEEE.STD_LOGIC_ARITH.all;
+--use IEEE.STD_LOGIC_UNSIGNED.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -40,23 +42,23 @@ entity L2P_SER is
       ---------------------------------------------------------
       -- ICLK Clock Domain Inputs
       --
-      ICLKp : in std_ulogic;
-      ICLKn : in std_ulogic;
-      IRST  : in std_ulogic;
+      ICLKp : in std_logic;
+      ICLKn : in std_logic;
+      IRST  : in std_logic;
 
-      ICLK_VALID  : in  std_ulogic;
-      ICLK_DFRAME : in  std_ulogic;
-      ICLK_DATA   : in  std_ulogic_vector(31 downto 0);
+      ICLK_VALID  : in  std_logic;
+      ICLK_DFRAME : in  std_logic;
+      ICLK_DATA   : in  std_logic_vector(31 downto 0);
       --
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- SER Outputs
       --
-      L2P_CLKp    : out std_ulogic;
-      L2P_CLKn    : out std_ulogic;
-      L2P_VALID   : out std_ulogic;
-      L2P_DFRAME  : out std_ulogic;
-      L2P_DATA    : out std_ulogic_vector(15 downto 0)
+      L2P_CLKp    : out std_logic;
+      L2P_CLKn    : out std_logic;
+      L2P_VALID   : out std_logic;
+      L2P_DFRAME  : out std_logic;
+      L2P_DATA    : out std_logic_vector(15 downto 0)
       --
       ---------------------------------------------------------
       );
@@ -65,37 +67,13 @@ end L2P_SER;
 architecture BEHAVIOUR of L2P_SER is
 
 -----------------------------------------------------------------------------
-  component DDR_OUT
------------------------------------------------------------------------------
-    generic
-      (
-        WIDTH : integer := 20
-        );
-    port
-      (
-        -- Reset
-        RESET : in  std_ulogic;
-        -- Clock
-        CLKp  : in  std_ulogic;
-        CLKn  : in  std_ulogic;
-        -- Clock Enable
-        CE    : in  std_ulogic;
-        -- Input Data
-        Dp    : in  std_ulogic_vector(WIDTH-1 downto 0);
-        Dn    : in  std_ulogic_vector(WIDTH-1 downto 0);
-        -- Output Data
-        Q     : out std_ulogic_vector(WIDTH-1 downto 0)
-        );
-  end component;
-
-
------------------------------------------------------------------------------
 -- Internal Signals
 -----------------------------------------------------------------------------
-  signal Q_DFRAME    : std_ulogic;
-  signal Q_VALID     : std_ulogic;
-  signal Q_DATA      : std_ulogic_vector(ICLK_DATA'range);
-  signal L2P_CLK_SDR : std_ulogic;
+  signal Q_DFRAME    : std_logic;
+  signal Q_VALID     : std_logic;
+  signal Q_DATA      : std_logic_vector(ICLK_DATA'range);
+  signal L2P_CLK_SDR : std_logic;
+
 
 begin
 
@@ -108,7 +86,7 @@ begin
       Q_DFRAME <= '0';
       Q_VALID  <= '0';
       Q_DATA   <= (others => '0');
-    elsif (ICLKp'event and ICLKp = '1') then
+    elsif rising_edge(ICLKp) then
       Q_DFRAME <= ICLK_DFRAME;
       Q_VALID  <= ICLK_VALID;
       Q_DATA   <= ICLK_DATA;
@@ -120,7 +98,7 @@ begin
     if(IRST = '1') then
       L2P_VALID  <= '0';
       L2P_DFRAME <= '0';
-    elsif (ICLKn'event and ICLKn = '1') then
+    elsif rising_edge(ICLKn) then
       L2P_VALID  <= Q_VALID;
       L2P_DFRAME <= Q_DFRAME;
     end if;

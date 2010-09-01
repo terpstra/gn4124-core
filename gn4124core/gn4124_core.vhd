@@ -32,9 +32,8 @@ use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
 --use IEEE.STD_LOGIC_ARITH.all;
 --use IEEE.STD_LOGIC_UNSIGNED.all;
-
-use work.lotus_pkg.all;
-use work.lotus_util.all;
+--use work.lotus_pkg.all;
+--use work.lotus_util.all;
 
 --==============================================================================
 -- Entity declaration for GN4124 core (gn4124_core)
@@ -132,67 +131,67 @@ architecture BEHAVIOUR of gn4124_core is
 -- Clock/Reset
 -------------------------------------------------------------
   -- Internal 1X clock operating at the same rate as LCLK
-  signal clk_i   : std_ulogic;
-  signal clk_n_i : std_ulogic;
+  signal clk_i   : std_logic;
+  signal clk_n_i : std_logic;
   -- RESET for all clk_i logic
-  signal rst_i   : std_ulogic;
-  signal L_RST   : std_ulogic;
+  signal rst_i   : std_logic;
+  signal L_RST   : std_logic;
 
 
 
 -------------------------------------------------------------
 -- P2L DataPath (from deserializer to packet decoder)
 -------------------------------------------------------------
-  signal des_pd_valid  : std_ulogic;
-  signal des_pd_dframe : std_ulogic;
-  signal des_pd_data   : std_ulogic_vector(31 downto 0);
+  signal des_pd_valid  : std_logic;
+  signal des_pd_dframe : std_logic;
+  signal des_pd_data   : std_logic_vector(31 downto 0);
 
 -------------------------------------------------------------
 -- P2L DataPath (from packet decoder to Wishbone master and P2L DMA master)
 -------------------------------------------------------------
 
-  signal IP2L_HDR_START   : std_ulogic;                     -- Indicates Header start cycle
-  signal IP2L_HDR_LENGTH  : std_ulogic_vector(9 downto 0);  -- Latched LENGTH value from header
-  signal IP2L_HDR_CID     : std_ulogic_vector(1 downto 0);  -- Completion ID
-  signal IP2L_HDR_LAST    : std_ulogic;                     -- Indicates Last packet in a completion
-  signal IP2L_HDR_STAT    : std_ulogic_vector(1 downto 0);  -- Completion Status
-  signal IP2L_TARGET_MRD  : std_ulogic;
-  signal IP2L_TARGET_MWR  : std_ulogic;
-  signal IP2L_MASTER_CPLD : std_ulogic;
-  signal IP2L_MASTER_CPLN : std_ulogic;
+  signal IP2L_HDR_START   : std_logic;                     -- Indicates Header start cycle
+  signal IP2L_HDR_LENGTH  : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
+  signal IP2L_HDR_CID     : std_logic_vector(1 downto 0);  -- Completion ID
+  signal IP2L_HDR_LAST    : std_logic;                     -- Indicates Last packet in a completion
+  signal IP2L_HDR_STAT    : std_logic_vector(1 downto 0);  -- Completion Status
+  signal IP2L_TARGET_MRD  : std_logic;
+  signal IP2L_TARGET_MWR  : std_logic;
+  signal IP2L_MASTER_CPLD : std_logic;
+  signal IP2L_MASTER_CPLN : std_logic;
 
-  signal IP2L_D_VALID    : std_ulogic;                      -- Indicates Address/Data is valid
-  signal IP2L_D_LAST     : std_ulogic;                      -- Indicates end of the packet
-  signal IP2L_D          : std_ulogic_vector(31 downto 0);  -- Address/Data
-  signal IP2L_BE         : std_ulogic_vector(3 downto 0);   -- Byte Enable for data
-  signal IP2L_ADDR       : std_ulogic_vector(31 downto 0);  -- Registered and counting Address
-  signal IP2L_ADDR_START : std_ulogic;
-  signal IP2L_EPI_SELECT : std_ulogic;
+  signal IP2L_D_VALID    : std_logic;                      -- Indicates Address/Data is valid
+  signal IP2L_D_LAST     : std_logic;                      -- Indicates end of the packet
+  signal IP2L_D          : std_logic_vector(31 downto 0);  -- Address/Data
+  signal IP2L_BE         : std_logic_vector(3 downto 0);   -- Byte Enable for data
+  signal IP2L_ADDR       : std_logic_vector(31 downto 0);  -- Registered and counting Address
+  signal IP2L_ADDR_START : std_logic;
+  signal IP2L_EPI_SELECT : std_logic;
 
-  signal P_WR_RDYo : std_ulogic;
+  signal P_WR_RDYo : std_logic;
 
 -------------------------------------------------------------
 -- L2P DataPath (from arbiter to serializer)
 -------------------------------------------------------------
-  signal arb_ser_valid  : std_ulogic;
-  signal arb_ser_dframe : std_ulogic;
-  signal arb_ser_data   : std_ulogic_vector(31 downto 0);
+  signal arb_ser_valid  : std_logic;
+  signal arb_ser_dframe : std_logic;
+  signal arb_ser_data   : std_logic_vector(31 downto 0);
 
-  signal l2p_data_o_o : std_ulogic_vector(l2p_data_o'range);
+  signal l2p_data_o_o : std_logic_vector(l2p_data_o'range);
 
   -- Resync bridge controls
-  signal Il_wr_rdy_i   : std_ulogic;    -- Clocked version of L_WR_RDY from GN412x
-  signal Ip_rd_d_rdy_i : std_ulogic;    -- Clocked version of p_rd_d_rdy_i from GN412x
-  signal Il2p_rdy_i    : std_ulogic;    -- Clocked version of l2p_rdy_i from GN412x
+  signal Il_wr_rdy_i   : std_logic;     -- Clocked version of L_WR_RDY from GN412x
+  signal Ip_rd_d_rdy_i : std_logic;     -- Clocked version of p_rd_d_rdy_i from GN412x
+  signal Il2p_rdy_i    : std_logic;     -- Clocked version of l2p_rdy_i from GN412x
 
 -------------------------------------------------------------
 -- Target Controller (Wishbone master)
 -------------------------------------------------------------
-  signal wbm_arb_valid  : std_ulogic;
-  signal wbm_arb_dframe : std_ulogic;
-  signal wbm_arb_data   : std_ulogic_vector(31 downto 0);
-  signal wbm_arb_req    : std_ulogic;
-  signal arb_wbm_gnt    : std_ulogic;
+  signal wbm_arb_valid  : std_logic;
+  signal wbm_arb_dframe : std_logic;
+  signal wbm_arb_data   : std_logic_vector(31 downto 0);
+  signal wbm_arb_req    : std_logic;
+  signal arb_wbm_gnt    : std_logic;
 
 -------------------------------------------------------------
 -- DMA controller
@@ -263,22 +262,22 @@ architecture BEHAVIOUR of gn4124_core is
 -- L2P DMA master
 -------------------------------------------------------------
 
-  signal ldm_arb_req    : std_ulogic;   -- Request use of the L2P bus
-  signal arb_ldm_gnt    : std_ulogic;   -- L2P bus emits data on behalf of the L2P DMA
-  signal ldm_arb_valid  : std_ulogic;
-  signal ldm_arb_dframe : std_ulogic;
-  signal ldm_arb_data   : std_ulogic_vector(31 downto 0);
+  signal ldm_arb_req    : std_logic;    -- Request use of the L2P bus
+  signal arb_ldm_gnt    : std_logic;    -- L2P bus emits data on behalf of the L2P DMA
+  signal ldm_arb_valid  : std_logic;
+  signal ldm_arb_dframe : std_logic;
+  signal ldm_arb_data   : std_logic_vector(31 downto 0);
 
---  signal IL2P_DMA_RDY          : STD_ULOGIC; -- Clocked version of l2p_rdy_i from GN412x
+--  signal IL2P_DMA_RDY          : STD_LOGIC; -- Clocked version of l2p_rdy_i from GN412x
 
 -------------------------------------------------------------
 -- P2L DMA master
 -------------------------------------------------------------
-  signal pdm_arb_valid  : std_ulogic;
-  signal pdm_arb_dframe : std_ulogic;
-  signal pdm_arb_data   : std_ulogic_vector(31 downto 0);
-  signal pdm_arb_req    : std_ulogic;
-  signal arb_pdm_gnt    : std_ulogic;
+  signal pdm_arb_valid  : std_logic;
+  signal pdm_arb_dframe : std_logic;
+  signal pdm_arb_data   : std_logic_vector(31 downto 0);
+  signal pdm_arb_req    : std_logic;
+  signal arb_pdm_gnt    : std_logic;
 
 --==============================================================================
 -- Architecture begin (gn4124_core)
@@ -318,7 +317,7 @@ begin
       P2L_CLKn    => p2l_clk_n_i,
       P2L_VALID   => p2l_valid_i,
       P2L_DFRAME  => p2l_dframe_i,
-      P2L_DATA    => To_StdULogicVector(p2l_data_i),
+      P2L_DATA    => p2l_data_i,
       --
       ---------------------------------------------------------
       ---------------------------------------------------------
@@ -393,7 +392,7 @@ begin
       Il_wr_rdy_i   <= '0';
       Ip_rd_d_rdy_i <= '0';
       Il2p_rdy_i    <= '0';
-    elsif(clk_i'event and clk_i = '1') then
+    elsif rising_edge(clk_i) then
       Il_wr_rdy_i   <= l_wr_rdy_i(0);
       Ip_rd_d_rdy_i <= p_rd_d_rdy_i(0);
       Il2p_rdy_i    <= l2p_rdy_i;
@@ -769,7 +768,7 @@ begin
       ---------------------------------------------------------
       );
 
-  l2p_data_o <= To_StdLogicVector(l2p_data_o_o);
+  l2p_data_o <= l2p_data_o_o;
 
 
 

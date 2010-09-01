@@ -28,9 +28,10 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
-use work.lotus_pkg.all;
+use IEEE.NUMERIC_STD.all;
+--use IEEE.STD_LOGIC_ARITH.all;
+--use IEEE.STD_LOGIC_UNSIGNED.all;
+--use work.lotus_pkg.all;
 use work.lotus_util.all;
 
 entity LOTUS is
@@ -237,27 +238,27 @@ architecture BEHAVIOUR of LOTUS is
   end component;  --  gn4124_core
 
 -----------------------------------------------------------------------------
-  component wb_gpio_debug is
------------------------------------------------------------------------------
-    port (
-      wb_rst_i     : in  std_logic;
-      wb_clk_i     : in  std_logic;
-      wb_addr_i    : in  std_logic_vector(1 downto 0);
-      wb_data_i    : in  std_logic_vector(31 downto 0);
-      wb_data_o    : out std_logic_vector(31 downto 0);
-      wb_cyc_i     : in  std_logic;
-      wb_sel_i     : in  std_logic;
-      wb_stb_i     : in  std_logic;
-      wb_we_i      : in  std_logic;
-      wb_ack_o     : out std_logic;
--- Port for std_logic_vector field: 'Port output value' in reg: 'LED port'
-      gpio_led_o   : out std_logic_vector(7 downto 0);
--- Port for std_logic_vector field: 'Port input value' in reg: 'DEBUG port'
-      gpio_debug_i : in  std_logic_vector(7 downto 0);
--- Port for std_logic_vector field: 'Test register' in reg: 'Test register'
-      gpio_test_o  : out std_logic_vector(7 downto 0)
-      );
-  end component;  -- wb_gpio_debug
+--  component wb_gpio_debug is
+-------------------------------------------------------------------------------
+--    port (
+--      wb_rst_i     : in  std_logic;
+--      wb_clk_i     : in  std_logic;
+--      wb_addr_i    : in  std_logic_vector(1 downto 0);
+--      wb_data_i    : in  std_logic_vector(31 downto 0);
+--      wb_data_o    : out std_logic_vector(31 downto 0);
+--      wb_cyc_i     : in  std_logic;
+--      wb_sel_i     : in  std_logic;
+--      wb_stb_i     : in  std_logic;
+--      wb_we_i      : in  std_logic;
+--      wb_ack_o     : out std_logic;
+---- Port for std_logic_vector field: 'Port output value' in reg: 'LED port'
+--      gpio_led_o   : out std_logic_vector(7 downto 0);
+---- Port for std_logic_vector field: 'Port input value' in reg: 'DEBUG port'
+--      gpio_debug_i : in  std_logic_vector(7 downto 0);
+---- Port for std_logic_vector field: 'Test register' in reg: 'Test register'
+--      gpio_test_o  : out std_logic_vector(7 downto 0)
+--      );
+--  end component;  -- wb_gpio_debug
 
 
 
@@ -269,11 +270,11 @@ architecture BEHAVIOUR of LOTUS is
 -- Clock/Reset
 --=============================================================================================--
   -- Internal 1X clock operating at the same rate as LCLK
-  signal ICLK  : std_ulogic;
-  signal ICLKn : std_ulogic;
+  signal ICLK  : std_logic;
+  signal ICLKn : std_logic;
   -- RESET for all ICLK logic
-  signal IRST  : std_ulogic;
-  signal L_RST : std_ulogic;
+  signal IRST  : std_logic;
+  signal L_RST : std_logic;
 
   signal wb_adr_o   : std_logic_vector(31 downto 0);
   signal wb_dat_i   : std_logic_vector(31 downto 0);
@@ -298,7 +299,7 @@ architecture BEHAVIOUR of LOTUS is
 -- TEST: L2P DMA interface
   type   wb_state_type is (IDLE, ACK, ST1);
   signal wb_current_state : wb_state_type;
-  signal wb_data_cnt      : std_logic_vector(31 downto 0);
+  signal wb_data_cnt      : unsigned(31 downto 0);
 
   signal sys_clk0 : std_logic;
 
@@ -452,7 +453,7 @@ begin
   begin
     if(L_RST_N = '0') then
       sys_clk0 <= '0';
-    elsif(L_CLKp'event and L_CLKp = '1') then
+    elsif rising_edge(L_CLKp) then
       sys_clk0 <= not sys_clk0;
       if (L2P_RDY = '0') then
       end if;
@@ -469,7 +470,7 @@ begin
     if(L_RST_N = '0') then
       wb_current_state <= IDLE;
       wb_data_cnt      <= x"AB340000";
-    elsif(sys_clk0'event and sys_clk0 = '1') then
+    elsif rising_edge(sys_clk0) then
       case wb_current_state is
         -----------------------------------------------------------------
         -- IDLE
@@ -516,11 +517,11 @@ begin
                            or (wb_current_state = IDLE and wb_data_cnt(0) = '1' and dma_stb_o = '1'))
                  else '0';
 
-  dma_dat_i <= wb_data_cnt when wb_current_state = ACK
-                 else x"00000000";
+  dma_dat_i <= std_logic_vector(wb_data_cnt) when wb_current_state = ACK
+               else x"00000000";
 
   dma_ack_i <= '1' when wb_current_state = ACK
-                 else '0';
+               else '0';
 
 
 

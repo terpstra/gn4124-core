@@ -28,8 +28,10 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.all;
+use work.gn4124_core_pkg.all;
+--use IEEE.STD_LOGIC_ARITH.all;
+--use IEEE.STD_LOGIC_UNSIGNED.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -40,29 +42,29 @@ entity P2L_DES is
       ---------------------------------------------------------
       -- Raw unprocessed reset from the GN412x
       --
-      L_RST       : in     std_ulogic;
+      L_RST       : in     std_logic;
       ---------------------------------------------------------
       -- P2L Clock Domain
       --
       -- P2L Inputs
-      P2L_CLKp    : in     std_ulogic;
-      P2L_CLKn    : in     std_ulogic;
-      P2L_VALID   : in     std_ulogic;
-      P2L_DFRAME  : in     std_ulogic;
-      P2L_DATA    : in     std_ulogic_vector(15 downto 0);
+      P2L_CLKp    : in     std_logic;
+      P2L_CLKn    : in     std_logic;
+      P2L_VALID   : in     std_logic;
+      P2L_DFRAME  : in     std_logic;
+      P2L_DATA    : in     std_logic_vector(15 downto 0);
       --
       ---------------------------------------------------------
       ---------------------------------------------------------
       -- ICLK Clock Domain
       --
-      IRST        : out    std_ulogic;
+      IRST        : out    std_logic;
       -- Core Logic Clock
-      ICLK        : buffer std_ulogic;
-      ICLKn       : buffer std_ulogic;
+      ICLK        : buffer std_logic;
+      ICLKn       : buffer std_logic;
       -- DeSerialized Output
-      ICLK_VALID  : out    std_ulogic;
-      ICLK_DFRAME : out    std_ulogic;
-      ICLK_DATA   : out    std_ulogic_vector(31 downto 0)
+      ICLK_VALID  : out    std_logic;
+      ICLK_DFRAME : out    std_logic;
+      ICLK_DATA   : out    std_logic_vector(31 downto 0)
       --
       ---------------------------------------------------------
       );
@@ -70,68 +72,45 @@ end P2L_DES;
 
 architecture BEHAVIOUR of P2L_DES is
 
------------------------------------------------------------------------------
-  component DDR_IN
------------------------------------------------------------------------------
-    generic
-      (
-        WIDTH : integer := 18
-        );
-    port
-      (
-        -- Reset
-        RESET : in  std_ulogic;
-        -- Clockp
-        CLKp  : in  std_ulogic;
-        CLKn  : in  std_ulogic;
-        -- Clock Enable
-        CE    : in  std_ulogic;
-        -- Input Data
-        D     : in  std_ulogic_vector(WIDTH-1 downto 0);
-        -- Output Data
-        Qp    : out std_ulogic_vector(WIDTH-1 downto 0);
-        Qn    : out std_ulogic_vector(WIDTH-1 downto 0)
-        );
-  end component;
 
 -----------------------------------------------------------------------------
-  component IDDR2
------------------------------------------------------------------------------
-    generic
-      (
-        DDR_ALIGNMENT : string := "NONE";
-        INIT_Q0       : bit    := '0';
-        INIT_Q1       : bit    := '0';
-        SRTYPE        : string := "SYNC"
-        );
-    port
-      (
-        Q0 : out std_ulogic;
-        Q1 : out std_ulogic;
-        C0 : in  std_ulogic;
-        C1 : in  std_ulogic;
-        CE : in  std_ulogic;
-        D  : in  std_ulogic;
-        R  : in  std_ulogic;
-        S  : in  std_ulogic
-        );
-  end component;
+--  component IDDR2
+-------------------------------------------------------------------------------
+--    generic
+--      (
+--        DDR_ALIGNMENT : string := "NONE";
+--        INIT_Q0       : bit    := '0';
+--        INIT_Q1       : bit    := '0';
+--        SRTYPE        : string := "SYNC"
+--        );
+--    port
+--      (
+--        Q0 : out std_ulogic;
+--        Q1 : out std_ulogic;
+--        C0 : in  std_ulogic;
+--        C1 : in  std_ulogic;
+--        CE : in  std_ulogic;
+--        D  : in  std_ulogic;
+--        R  : in  std_ulogic;
+--        S  : in  std_ulogic
+--        );
+--  end component;
 
 -----------------------------------------------------------------------------
-  component IFDDRRSE
------------------------------------------------------------------------------
-    port
-      (
-        Q0 : out std_ulogic;
-        Q1 : out std_ulogic;
-        C0 : in  std_ulogic;
-        C1 : in  std_ulogic;
-        CE : in  std_ulogic;
-        D  : in  std_ulogic;
-        R  : in  std_ulogic;
-        S  : in  std_ulogic
-        );
-  end component;
+--  component IFDDRRSE
+-------------------------------------------------------------------------------
+--    port
+--      (
+--        Q0 : out std_ulogic;
+--        Q1 : out std_ulogic;
+--        C0 : in  std_ulogic;
+--        C1 : in  std_ulogic;
+--        CE : in  std_ulogic;
+--        D  : in  std_ulogic;
+--        R  : in  std_ulogic;
+--        S  : in  std_ulogic
+--        );
+--  end component;
 
 -----------------------------------------------------------------------------
 -- Internal Signals
@@ -140,14 +119,14 @@ architecture BEHAVIOUR of P2L_DES is
 -- Signals for the P2L_CLK domain
 -----------------------------------------------------------------------------
 --  signal P2L_RST            : STD_ULOGIC;
-  signal VALIDp, VALIDn   : std_ulogic;
-  signal DFRAMEp, DFRAMEn : std_ulogic;
-  signal DATAp, DATAn     : std_ulogic_vector(P2L_DATA'range);
-  signal P2L_DATA_SDR_L   : std_ulogic_vector(P2L_DATA'range);
-  signal P2L_DATA_SDR     : std_ulogic_vector(P2L_DATA'length*2-1 downto 0);
+  signal VALIDp, VALIDn   : std_logic;
+  signal DFRAMEp, DFRAMEn : std_logic;
+  signal DATAp, DATAn     : std_logic_vector(P2L_DATA'range);
+  signal P2L_DATA_SDR_L   : std_logic_vector(P2L_DATA'range);
+  signal P2L_DATA_SDR     : std_logic_vector(P2L_DATA'length*2-1 downto 0);
   signal ICLK_i, ICLKn_i  : std_logic;
-  signal IRST_FF          : std_ulogic;
-  signal IRSTo            : std_ulogic;
+  signal IRST_FF          : std_logic;
+  signal IRSTo            : std_logic;
 
 
 begin
@@ -158,7 +137,7 @@ begin
   begin
     if L_RST = '1' then
       IRST_FF <= '1';
-    elsif (ICLK'event and ICLK = '1') then
+    elsif rising_edge(ICLK) then
       IRST_FF <= '0';
     end if;
   end process;
@@ -278,7 +257,7 @@ begin
   begin
     if(IRSTo = '1') then
       P2L_DATA_SDR_L <= (others => '0');
-    elsif (ICLKn'event and ICLKn = '1') then
+    elsif rising_edge(ICLKn) then
       P2L_DATA_SDR_L <= DATAp;
     end if;
   end process;
@@ -294,7 +273,7 @@ begin
       ICLK_VALID  <= '0';
       ICLK_DFRAME <= '0';
       ICLK_DATA   <= (others => '0');
-    elsif (ICLK'event and ICLK = '1') then
+    elsif rising_edge(ICLK) then
       ICLK_VALID  <= VALIDp;
       ICLK_DFRAME <= DFRAMEp;
       ICLK_DATA   <= P2L_DATA_SDR;
