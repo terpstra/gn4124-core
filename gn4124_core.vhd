@@ -106,7 +106,7 @@ end gn4124_core;
 --==============================================================================
 -- Architecture declaration for GN4124 core (gn4124_core)
 --==============================================================================
-architecture BEHAVIOUR of gn4124_core is
+architecture rtl of gn4124_core is
 
 
 --==============================================================================
@@ -133,25 +133,25 @@ architecture BEHAVIOUR of gn4124_core is
 -- P2L DataPath (from packet decoder to Wishbone master and P2L DMA master)
 -------------------------------------------------------------
 
-  signal IP2L_HDR_START   : std_logic;                     -- Indicates Header start cycle
-  signal IP2L_HDR_LENGTH  : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
-  signal IP2L_HDR_CID     : std_logic_vector(1 downto 0);  -- Completion ID
-  signal IP2L_HDR_LAST    : std_logic;                     -- Indicates Last packet in a completion
-  signal IP2L_HDR_STAT    : std_logic_vector(1 downto 0);  -- Completion Status
-  signal IP2L_TARGET_MRD  : std_logic;
-  signal IP2L_TARGET_MWR  : std_logic;
-  signal IP2L_MASTER_CPLD : std_logic;
-  signal IP2L_MASTER_CPLN : std_logic;
+  signal p2l_hdr_start   : std_logic;                     -- Indicates Header start cycle
+  signal p2l_hdr_length  : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
+  signal p2l_hdr_cid     : std_logic_vector(1 downto 0);  -- Completion ID
+  signal p2l_hdr_last    : std_logic;                     -- Indicates Last packet in a completion
+  signal p2l_hdr_stat    : std_logic_vector(1 downto 0);  -- Completion Status
+  signal p2l_target_mrd  : std_logic;
+  signal p2l_target_mwr  : std_logic;
+  signal p2l_master_cpld : std_logic;
+  signal p2l_master_cpln : std_logic;
 
-  signal IP2L_D_VALID    : std_logic;                      -- Indicates Address/Data is valid
-  signal IP2L_D_LAST     : std_logic;                      -- Indicates end of the packet
-  signal IP2L_D          : std_logic_vector(31 downto 0);  -- Address/Data
-  signal IP2L_BE         : std_logic_vector(3 downto 0);   -- Byte Enable for data
-  signal IP2L_ADDR       : std_logic_vector(31 downto 0);  -- Registered and counting Address
-  signal IP2L_ADDR_START : std_logic;
-  signal IP2L_EPI_SELECT : std_logic;
+  signal p2l_d_valid    : std_logic;                      -- Indicates Address/Data is valid
+  signal p2l_d_last     : std_logic;                      -- Indicates end of the packet
+  signal p2l_d          : std_logic_vector(31 downto 0);  -- Address/Data
+  signal p2l_be         : std_logic_vector(3 downto 0);   -- Byte Enable for data
+  signal p2l_addr       : std_logic_vector(31 downto 0);  -- Registered and counting Address
+  signal p2l_addr_start : std_logic;
+  signal p2l_epi_select : std_logic;
 
-  signal P_WR_RDYo : std_logic;
+  signal p_wr_rdy : std_logic;
 
   -------------------------------------------------------------
   -- L2P DataPath (from arbiter to serializer)
@@ -274,80 +274,80 @@ begin
 --=============================================================================================--
 
 -----------------------------------------------------------------------------
--- P2L_DES: Deserialize the P2L DDR Inputs
+-- p2l_des: Deserialize the P2L DDR inputs
 -----------------------------------------------------------------------------
-  U_P2L_DES : P2L_DES
+  cmp_p2l_des : p2l_des
     port map
     (
       ---------------------------------------------------------
       -- Raw unprocessed reset from the GN412x
-      L_RST => sys_rst_n_i,
+      l_rst_i => sys_rst_n_i,
 
       ---------------------------------------------------------
       -- P2L Clock Domain
       --
       -- P2L Inputs
-      P2L_CLKp   => p2l_clk_p_i,
-      P2L_CLKn   => p2l_clk_n_i,
-      P2L_VALID  => p2l_valid_i,
-      P2L_DFRAME => p2l_dframe_i,
-      P2L_DATA   => p2l_data_i,
+      p2l_clk_p_i  => p2l_clk_p_i,
+      p2l_clk_n_i  => p2l_clk_n_i,
+      p2l_valid_i  => p2l_valid_i,
+      p2l_dframe_i => p2l_dframe_i,
+      p2l_data_i   => p2l_data_i,
 
       ---------------------------------------------------------
-      -- clk_p Clock Domain
+      -- Core Clock Domain
       --
       -- Core reset, sync'ed to core clk
-      IRST        => rst_n,
+      rst_o        => rst_n,
       -- Core Logic Clock
-      ICLK        => clk_p,
-      ICLKn       => clk_n,
+      clk_p_o      => clk_p,
+      clk_n_o      => clk_n,
       -- DeSerialized Output
-      ICLK_VALID  => des_pd_valid,
-      ICLK_DFRAME => des_pd_dframe,
-      ICLK_DATA   => des_pd_data
+      p2l_valid_o  => des_pd_valid,
+      p2l_dframe_o => des_pd_dframe,
+      p2l_data_o   => des_pd_data
       );
 
 -----------------------------------------------------------------------------
--- P2L_DECODE32: Decode the output of the P2L_DES
+-- p2l_decode32: Decode the output of the p2l_des
 -----------------------------------------------------------------------------
-  U_P2L_DECODE32 : P2L_DECODE32
+  cmp_p2l_decode32 : p2l_decode32
     port map
     (
       ---------------------------------------------------------
       -- Clock/Reset
-      CLK => clk_p,
-      RST => rst_n,
+      clk_i   => clk_p,
+      rst_n_i => rst_n,
 
       ---------------------------------------------------------
       -- Input from the Deserializer
       --
-      DES_P2L_VALIDi  => des_pd_valid,
-      DES_P2L_DFRAMEi => des_pd_dframe,
-      DES_P2L_DATAi   => des_pd_data,
+      des_p2l_valid_i  => des_pd_valid,
+      des_p2l_dframe_i => des_pd_dframe,
+      des_p2l_data_i   => des_pd_data,
 
       ---------------------------------------------------------
       -- Decoder Outputs
       --
       -- Header
-      IP2L_HDR_STARTo   => IP2L_HDR_START,
-      IP2L_HDR_LENGTHo  => IP2L_HDR_LENGTH,
-      IP2L_HDR_CIDo     => IP2L_HDR_CID,
-      IP2L_HDR_LASTo    => IP2L_HDR_LAST,
-      IP2L_HDR_STATo    => IP2L_HDR_STAT,
-      IP2L_TARGET_MRDo  => IP2L_TARGET_MRD,
-      IP2L_TARGET_MWRo  => IP2L_TARGET_MWR,
-      IP2L_MASTER_CPLDo => IP2L_MASTER_CPLD,
-      IP2L_MASTER_CPLNo => IP2L_MASTER_CPLN,
+      p2l_hdr_start_o   => p2l_hdr_start,
+      p2l_hdr_length_o  => p2l_hdr_length,
+      p2l_hdr_cid_o     => p2l_hdr_cid,
+      p2l_hdr_last_o    => p2l_hdr_last,
+      p2l_hdr_stat_o    => p2l_hdr_stat,
+      p2l_target_mrd_o  => p2l_target_mrd,
+      p2l_target_mwr_o  => p2l_target_mwr,
+      p2l_master_cpld_o => p2l_master_cpld,
+      p2l_master_cpln_o => p2l_master_cpln,
       --
       -- Address
-      IP2L_ADDR_STARTo  => IP2L_ADDR_START,
-      IP2L_ADDRo        => IP2L_ADDR,
+      p2l_addr_start_o  => p2l_addr_start,
+      p2l_addr_o        => p2l_addr,
       --
       -- Data
-      IP2L_D_VALIDo     => IP2L_D_VALID,
-      IP2L_D_LASTo      => IP2L_D_LAST,
-      IP2L_Do           => IP2L_D,
-      IP2L_BEo          => IP2L_BE
+      p2l_d_valid_o     => p2l_d_valid,
+      p2l_d_last_o      => p2l_d_last,
+      p2l_d_o           => p2l_d,
+      p2l_be_o          => p2l_be
       );
 
 
@@ -396,26 +396,26 @@ begin
       -- From P2L Decoder
       --
       -- Header
-      pd_wbm_hdr_start_i  => IP2L_HDR_START,
-      pd_wbm_hdr_length_i => IP2L_HDR_LENGTH,
-      pd_wbm_hdr_cid_i    => IP2L_HDR_CID,
-      pd_wbm_target_mrd_i => IP2L_TARGET_MRD,
-      pd_wbm_target_mwr_i => IP2L_TARGET_MWR,
+      pd_wbm_hdr_start_i  => p2l_hdr_start,
+      pd_wbm_hdr_length_i => p2l_hdr_length,
+      pd_wbm_hdr_cid_i    => p2l_hdr_cid,
+      pd_wbm_target_mrd_i => p2l_target_mrd,
+      pd_wbm_target_mwr_i => p2l_target_mwr,
       --
       -- Address
-      pd_wbm_addr_start_i => IP2L_ADDR_START,
-      pd_wbm_addr_i       => IP2L_ADDR,
-      pd_wbm_wbm_addr_i   => IP2L_EPI_SELECT,
+      pd_wbm_addr_start_i => p2l_addr_start,
+      pd_wbm_addr_i       => p2l_addr,
+      pd_wbm_wbm_addr_i   => p2l_epi_select,
       --
       -- Data
-      pd_wbm_data_valid_i => IP2L_D_VALID,
-      pd_wbm_data_last_i  => IP2L_D_LAST,
-      pd_wbm_data_i       => IP2L_D,
-      pd_wbm_be_i         => IP2L_BE,
+      pd_wbm_data_valid_i => p2l_d_valid,
+      pd_wbm_data_last_i  => p2l_d_last,
+      pd_wbm_data_i       => p2l_d,
+      pd_wbm_be_i         => p2l_be,
 
       ---------------------------------------------------------
       -- P2L Control
-      p_wr_rdy_o => P_WR_RDYo,
+      p_wr_rdy_o => p_wr_rdy,
 
       ---------------------------------------------------------
       -- To the L2P Interface
@@ -451,7 +451,7 @@ begin
 
   wb_stall_dma_ctrl <= wb_stb and not wb_ack;
 
-  IP2L_EPI_SELECT <= not IP2L_ADDR(0);
+  p2l_epi_select <= not p2l_addr(0);
 
 -----------------------------------------------------------------------------
   u_dma_controller : dma_controller
@@ -553,21 +553,21 @@ begin
       dma_ctrl_error_o        => dma_ctrl_p2l_error,
       dma_ctrl_byte_swap_i    => dma_ctrl_byte_swap,
 
-      pd_pdm_hdr_start_i   => IP2L_HDR_START,
-      pd_pdm_hdr_length_i  => IP2L_HDR_LENGTH,
-      pd_pdm_hdr_cid_i     => IP2L_HDR_CID,
-      pd_pdm_target_mrd_i  => IP2L_TARGET_MRD,
-      pd_pdm_target_mwr_i  => IP2L_TARGET_MWR,
-      pd_pdm_target_cpld_i => IP2L_MASTER_CPLD,
+      pd_pdm_hdr_start_i   => p2l_hdr_start,
+      pd_pdm_hdr_length_i  => p2l_hdr_length,
+      pd_pdm_hdr_cid_i     => p2l_hdr_cid,
+      pd_pdm_target_mrd_i  => p2l_target_mrd,
+      pd_pdm_target_mwr_i  => p2l_target_mwr,
+      pd_pdm_target_cpld_i => p2l_master_cpld,
 
-      pd_pdm_addr_start_i => IP2L_ADDR_START,
-      pd_pdm_addr_i       => IP2L_ADDR,
-      pd_pdm_wbm_addr_i   => IP2L_EPI_SELECT,
+      pd_pdm_addr_start_i => p2l_addr_start,
+      pd_pdm_addr_i       => p2l_addr,
+      pd_pdm_wbm_addr_i   => p2l_epi_select,
 
-      pd_pdm_data_valid_i => IP2L_D_VALID,
-      pd_pdm_data_last_i  => IP2L_D_LAST,
-      pd_pdm_data_i       => IP2L_D,
-      pd_pdm_be_i         => IP2L_BE,
+      pd_pdm_data_valid_i => p2l_d_valid,
+      pd_pdm_data_last_i  => p2l_d_last,
+      pd_pdm_data_i       => p2l_d,
+      pd_pdm_be_i         => p2l_be,
 
       pdm_arb_valid_o  => pdm_arb_valid,
       pdm_arb_dframe_o => pdm_arb_dframe,
@@ -614,7 +614,7 @@ begin
 -- Top Level LB Controls
 -----------------------------------------------------------------------------
 
-  p_wr_rdy_o <= P_WR_RDYo & P_WR_RDYo;
+  p_wr_rdy_o <= p_wr_rdy & p_wr_rdy;
   rx_error_o <= '0';
   l2p_edb_o  <= '0';
   p2l_rdy_o  <= rst_n;
@@ -682,38 +682,34 @@ begin
 -----------------------------------------------------------------------------
 -- L2P_SER: Generate the L2P DDR Outputs
 -----------------------------------------------------------------------------
-  U_L2P_SER : L2P_SER
+  cmp_l2p_ser : l2p_ser
     port map
     (
       ---------------------------------------------------------
       -- clk_p Clock Domain Inputs
-      ICLKp => clk_p,
-      ICLKn => clk_n,
-      IRST  => rst_n,
+      clk_p_i => clk_p,
+      clk_n_i => clk_n,
+      rst_n_i => rst_n,
 
       ---------------------------------------------------------
       -- DeSerialized Output
-      ICLK_VALID  => arb_ser_valid,
-      ICLK_DFRAME => arb_ser_dframe,
-      ICLK_DATA   => arb_ser_data,
+      l2p_valid_i  => arb_ser_valid,
+      l2p_dframe_i => arb_ser_dframe,
+      l2p_data_i   => arb_ser_data,
 
       ---------------------------------------------------------
       -- SER Outputs
       --
       -- P2L Inputs
-      L2P_CLKp   => l2p_clk_p_o,
-      L2P_CLKn   => l2p_clk_n_o,
-      L2P_VALID  => l2p_valid_o,
-      L2P_DFRAME => l2p_dframe_o,
-      L2P_DATA   => l2p_data_o_o
+      l2p_clk_p_o  => l2p_clk_p_o,
+      l2p_clk_n_o  => l2p_clk_n_o,
+      l2p_valid_o  => l2p_valid_o,
+      l2p_dframe_o => l2p_dframe_o,
+      l2p_data_o   => l2p_data_o
       );
 
-  l2p_data_o <= l2p_data_o_o;
 
-
-
-
-end BEHAVIOUR;
+end rtl;
 --==============================================================================
 -- Architecture end (gn4124_core)
 --==============================================================================
