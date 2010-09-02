@@ -41,118 +41,105 @@ package gn4124_core_pkg is
 --==============================================================================
 
 -----------------------------------------------------------------------------
-  component P2L_DES
+  component p2l_des
 -----------------------------------------------------------------------------
     port
       (
         ---------------------------------------------------------
         -- Raw unprocessed reset from the GN412x
-        --
-        L_RST       : in     std_logic;
+        l_rst_i : in std_logic;
+
         ---------------------------------------------------------
         -- P2L Clock Domain
         --
         -- P2L Inputs
-        P2L_CLKp    : in     std_logic;
-        P2L_CLKn    : in     std_logic;
-        P2L_VALID   : in     std_logic;
-        P2L_DFRAME  : in     std_logic;
-        P2L_DATA    : in     std_logic_vector(15 downto 0);
-        --
+        p2l_clk_p_i  : in std_logic;
+        p2l_clk_n_i  : in std_logic;
+        p2l_valid_i  : in std_logic;
+        p2l_dframe_i : in std_logic;
+        p2l_data_i   : in std_logic_vector(15 downto 0);
+
         ---------------------------------------------------------
-        ---------------------------------------------------------
-        -- ICLK Clock Domain
+        -- Core Clock Domain
         --
-        IRST        : out    std_logic;
+        rst_o        : out    std_logic;
         -- Core Logic Clock
-        ICLK        : buffer std_logic;
-        ICLKn       : buffer std_logic;
+        clk_p_o      : buffer std_logic;
+        clk_n_o      : buffer std_logic;
         -- DeSerialized Output
-        ICLK_VALID  : out    std_logic;
-        ICLK_DFRAME : out    std_logic;
-        ICLK_DATA   : out    std_logic_vector(31 downto 0)
-        --
-        ---------------------------------------------------------
+        p2l_valid_o  : out    std_logic;
+        p2l_dframe_o : out    std_logic;
+        p2l_data_o   : out    std_logic_vector(31 downto 0)
         );
-  end component;  -- P2L_DES
+  end component;  -- p2l_des
 
 -----------------------------------------------------------------------------
-  component P2L_DECODE32
+  component p2l_decode32
 -----------------------------------------------------------------------------
     port
       (
         ---------------------------------------------------------
-        ---------------------------------------------------------
         -- Clock/Reset
-        --
-        CLK               : in  std_logic;
-        RST               : in  std_logic;
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
+
         ---------------------------------------------------------
         -- Input from the Deserializer
-        --
-        DES_P2L_VALIDi    : in  std_logic;
-        DES_P2L_DFRAMEi   : in  std_logic;
-        DES_P2L_DATAi     : in  std_logic_vector(31 downto 0);
-        --
-        ---------------------------------------------------------
+        des_p2l_valid_i  : in std_logic;
+        des_p2l_dframe_i : in std_logic;
+        des_p2l_data_i   : in std_logic_vector(31 downto 0);
+
         ---------------------------------------------------------
         -- Decoder Outputs
         --
         -- Header
-        IP2L_HDR_STARTo   : out std_logic;                      -- Indicates Header start cycle
-        IP2L_HDR_LENGTHo  : out std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
-        IP2L_HDR_CIDo     : out std_logic_vector(1 downto 0);   -- Completion ID
-        IP2L_HDR_LASTo    : out std_logic;                      -- Indicates Last packet in a completion
-        IP2L_HDR_STATo    : out std_logic_vector(1 downto 0);   -- Completion Status
-        IP2L_TARGET_MRDo  : out std_logic;                      -- Target memory read
-        IP2L_TARGET_MWRo  : out std_logic;                      -- Target memory write
-        IP2L_MASTER_CPLDo : out std_logic;                      -- Master completion with data
-        IP2L_MASTER_CPLNo : out std_logic;                      -- Master completion without data
+        p2l_hdr_start_o   : out std_logic;                      -- Indicates Header start cycle
+        p2l_hdr_length_o  : out std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
+        p2l_hdr_cid_o     : out std_logic_vector(1 downto 0);   -- Completion ID
+        p2l_hdr_last_o    : out std_logic;                      -- Indicates Last packet in a completion
+        p2l_hdr_stat_o    : out std_logic_vector(1 downto 0);   -- Completion Status
+        p2l_target_mrd_o  : out std_logic;                      -- Target memory read
+        p2l_target_mwr_o  : out std_logic;                      -- Target memory write
+        p2l_master_cpld_o : out std_logic;                      -- Master completion with data
+        p2l_master_cpln_o : out std_logic;                      -- Master completion without data
         --
         -- Address
-        IP2L_ADDR_STARTo  : out std_logic;                      -- Indicates Address Start
-        IP2L_ADDRo        : out std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
+        p2l_addr_start_o  : out std_logic;                      -- Indicates Address Start
+        p2l_addr_o        : out std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
         --
         -- Data
-        IP2L_D_VALIDo     : out std_logic;                      -- Indicates Data is valid
-        IP2L_D_LASTo      : out std_logic;                      -- Indicates end of the packet
-        IP2L_Do           : out std_logic_vector(31 downto 0);  -- Data
-        IP2L_BEo          : out std_logic_vector(3 downto 0)    -- Byte Enable for data
-        --
-        ---------------------------------------------------------
+        p2l_d_valid_o     : out std_logic;                      -- Indicates Data is valid
+        p2l_d_last_o      : out std_logic;                      -- Indicates end of the packet
+        p2l_d_o           : out std_logic_vector(31 downto 0);  -- Data
+        p2l_be_o          : out std_logic_vector(3 downto 0)    -- Byte Enable for data
         );
-  end component;  -- P2L_DECODE32
+  end component;  -- p2l_decode32
 
 
 -----------------------------------------------------------------------------
-  component L2P_SER
+  component l2p_ser
 -----------------------------------------------------------------------------
     port
       (
         ---------------------------------------------------------
         -- ICLK Clock Domain Inputs
-        --
-        ICLKp : in std_logic;
-        ICLKn : in std_logic;
-        IRST  : in std_logic;
+        clk_p_i : in std_logic;
+        clk_n_i : in std_logic;
+        rst_n_i : in std_logic;
 
-        ICLK_VALID  : in  std_logic;
-        ICLK_DFRAME : in  std_logic;
-        ICLK_DATA   : in  std_logic_vector(31 downto 0);
-        --
-        ---------------------------------------------------------
+        l2p_valid_i  : in std_logic;
+        l2p_dframe_i : in std_logic;
+        l2p_data_i   : in std_logic_vector(31 downto 0);
+
         ---------------------------------------------------------
         -- SER Outputs
-        --
-        L2P_CLKp    : out std_logic;
-        L2P_CLKn    : out std_logic;
-        L2P_VALID   : out std_logic;
-        L2P_DFRAME  : out std_logic;
-        L2P_DATA    : out std_logic_vector(15 downto 0)
-        --
-        ---------------------------------------------------------
+        l2p_clk_p_o  : out std_logic;
+        l2p_clk_n_o  : out std_logic;
+        l2p_valid_o  : out std_logic;
+        l2p_dframe_o : out std_logic;
+        l2p_data_o   : out std_logic_vector(15 downto 0)
         );
-  end component;  -- L2P_SER
+  end component;  -- l2p_ser
 
 
 -----------------------------------------------------------------------------

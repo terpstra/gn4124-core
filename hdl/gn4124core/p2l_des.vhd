@@ -4,7 +4,7 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: P2L_DES (p2l_des.vhd)
+-- unit name: p2l_des (p2l_des.vhd)
 --
 -- author:
 --
@@ -13,7 +13,7 @@
 -- version: 0.0
 --
 -- description: Takes the DDR P2L bus and converts to SDR that is synchronous
---              to ICLK
+--              to the core clock.
 --
 -- dependencies:
 --
@@ -34,160 +34,169 @@ use work.gn4124_core_pkg.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
-entity P2L_DES is
+
+entity p2l_des is
   port
     (
       ---------------------------------------------------------
       -- Raw unprocessed reset from the GN412x
-      L_RST : in std_logic;
+      l_rst_i : in std_logic;
 
       ---------------------------------------------------------
       -- P2L Clock Domain
       --
       -- P2L Inputs
-      P2L_CLKp   : in std_logic;
-      P2L_CLKn   : in std_logic;
-      P2L_VALID  : in std_logic;
-      P2L_DFRAME : in std_logic;
-      P2L_DATA   : in std_logic_vector(15 downto 0);
+      p2l_clk_p_i  : in std_logic;
+      p2l_clk_n_i  : in std_logic;
+      p2l_valid_i  : in std_logic;
+      p2l_dframe_i : in std_logic;
+      p2l_data_i   : in std_logic_vector(15 downto 0);
 
       ---------------------------------------------------------
-      -- ICLK Clock Domain
+      -- Core Clock Domain
       --
-      IRST        : out    std_logic;
+      rst_o        : out    std_logic;
       -- Core Logic Clock
-      ICLK        : buffer std_logic;
-      ICLKn       : buffer std_logic;
+      clk_p_o      : buffer std_logic;
+      clk_n_o      : buffer std_logic;
       -- DeSerialized Output
-      ICLK_VALID  : out    std_logic;
-      ICLK_DFRAME : out    std_logic;
-      ICLK_DATA   : out    std_logic_vector(31 downto 0)
+      p2l_valid_o  : out    std_logic;
+      p2l_dframe_o : out    std_logic;
+      p2l_data_o   : out    std_logic_vector(31 downto 0)
       );
-end P2L_DES;
+end p2l_des;
 
-architecture BEHAVIOUR of P2L_DES is
+
+architecture rtl of p2l_des is
 
 
   -----------------------------------------------------------------------------
   -- Signals for the P2L_CLK domain
   -----------------------------------------------------------------------------
-  --  signal P2L_RST            : STD_ULOGIC;
-  signal ff_rst           : std_logic;
-  signal VALIDp, VALIDn   : std_logic;
-  signal DFRAMEp, DFRAMEn : std_logic;
-  signal DATAp, DATAn     : std_logic_vector(P2L_DATA'range);
-  signal P2L_DATA_SDR_L   : std_logic_vector(P2L_DATA'range);
-  signal P2L_DATA_SDR     : std_logic_vector(P2L_DATA'length*2-1 downto 0);
-  signal ICLK_i, ICLKn_i  : std_logic;
-  signal IRST_FF          : std_logic;
-  signal IRSTo            : std_logic;
+  signal ff_rst         : std_logic;
+  signal p2l_valid_p    : std_logic;
+  signal p2l_valid_n    : std_logic;
+  signal p2l_dframe_p   : std_logic;
+  signal p2l_dframe_n   : std_logic;
+  signal p2l_data_p     : std_logic_vector(p2l_data_i'range);
+  signal p2l_data_n     : std_logic_vector(p2l_data_i'range);
+  signal p2l_data_sdr_l : std_logic_vector(p2l_data_i'range);
+  signal p2l_data_sdr   : std_logic_vector(p2l_data_i'length*2-1 downto 0);
+  signal clk_p          : std_logic;
+  signal clk_n          : std_logic;
+  signal rst_reg        : std_logic;
+  signal rst_buf        : std_logic;
 
 
 begin
 
+
   -----------------------------------------------------------------------------
-  -- IRST: ICLK alligned reset
+  -- rst_o: clk_p_o alligned reset
   -----------------------------------------------------------------------------
-  process (ICLK, L_RST)
+  process (clk_p_o, l_rst_i)
   begin
-    if L_RST = c_RST_ACTIVE then
-      IRST_FF <= c_RST_ACTIVE;
-    elsif rising_edge(ICLK) then
-      IRST_FF <= not(c_RST_ACTIVE);
+    if l_rst_i = c_RST_ACTIVE then
+      rst_reg <= c_RST_ACTIVE;
+    elsif rising_edge(clk_p_o) then
+      rst_reg <= not(c_RST_ACTIVE);
     end if;
   end process;
 
 
-  U_IRST : BUFG
-    port map (I => IRST_FF,
-              O => IRSTo);
+  cmp_rst_buf : BUFG
+    port map (
+      I => rst_reg,
+      O => rst_buf);
 
-  IRST <= IRSTo;
+  rst_o <= rst_buf;
 
-  ------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
   -- Active high reset for DDR FF
   ------------------------------------------------------------------------------
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    ff_rst <= not(IRSTo);
+    ff_rst <= not(rst_buf);
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    ff_rst <= IRSTo;
+    ff_rst <= rst_buf;
   end generate;
+
 
   ------------------------------------------------------------------------------
   -- DDR FF instanciation
   ------------------------------------------------------------------------------
-  DDRFF_D : for i in P2L_DATA'range generate
+  DDRFF_D : for i in p2l_data_i'range generate
     U : IFDDRRSE
       port map
       (
-        Q0 => DATAn(i),
-        Q1 => DATAp(i),
-        C0 => ICLKn,
-        C1 => ICLK,
+        Q0 => p2l_data_n(i),
+        Q1 => p2l_data_p(i),
+        C0 => clk_n_o,
+        C1 => clk_p_o,
         CE => '1',
-        D  => P2L_DATA(i),
+        D  => p2l_data_i(i),
         R  => ff_rst,
         S  => '0'
-        );                              -- IFDDRRSE (U)
+        );
   end generate;
 
   DDRFF_F : IFDDRRSE
     port map
     (
-      Q0 => DFRAMEn,
-      Q1 => DFRAMEp,
-      C0 => ICLKn,
-      C1 => ICLK,
+      Q0 => p2l_dframe_n,
+      Q1 => p2l_dframe_p,
+      C0 => clk_n_o,
+      C1 => clk_p_o,
       CE => '1',
-      D  => P2L_DFRAME,
+      D  => p2l_dframe_i,
       R  => ff_rst,
       S  => '0'
-      );                                -- IFDDRRSE (U)
+      );
 
   DDRFF_V : IFDDRRSE
     port map
     (
-      Q0 => VALIDn,
-      Q1 => VALIDp,
-      C0 => ICLKn,
-      C1 => ICLK,
+      Q0 => p2l_valid_n,
+      Q1 => p2l_valid_p,
+      C0 => clk_n_o,
+      C1 => clk_p_o,
       CE => '1',
-      D  => P2L_VALID,
+      D  => p2l_valid_i,
       R  => ff_rst,
       S  => '0'
-      );                                -- IFDDRRSE (U)
+      );
 
 
   -----------------------------------------------------------------------------
   -- Align positive edge data to negative edge clock
   -----------------------------------------------------------------------------
-  process (ICLKn, IRSTo)
+  process (clk_n_o, rst_buf)
   begin
-    if(IRSTo = c_RST_ACTIVE) then
-      P2L_DATA_SDR_L <= (others => '0');
-    elsif rising_edge(ICLKn) then
-      P2L_DATA_SDR_L <= DATAp;
+    if(rst_buf = c_RST_ACTIVE) then
+      p2l_data_sdr_l <= (others => '0');
+    elsif rising_edge(clk_n_o) then
+      p2l_data_sdr_l <= p2l_data_p;
     end if;
   end process;
 
-  P2L_DATA_SDR <= DATAn & P2L_DATA_SDR_L;
+  p2l_data_sdr <= p2l_data_n & p2l_data_sdr_l;
 
 
   -----------------------------------------------------------------------------
   -- Final Positive Edge Clock Allignment
   -----------------------------------------------------------------------------
-  process (ICLK, IRSTo)
+  process (clk_p_o, rst_buf)
   begin
-    if(IRSTo = c_RST_ACTIVE) then
-      ICLK_VALID  <= '0';
-      ICLK_DFRAME <= '0';
-      ICLK_DATA   <= (others => '0');
-    elsif rising_edge(ICLK) then
-      ICLK_VALID  <= VALIDp;
-      ICLK_DFRAME <= DFRAMEp;
-      ICLK_DATA   <= P2L_DATA_SDR;
+    if(rst_buf = c_RST_ACTIVE) then
+      p2l_valid_o  <= '0';
+      p2l_dframe_o <= '0';
+      p2l_data_o   <= (others => '0');
+    elsif rising_edge(clk_p_o) then
+      p2l_valid_o  <= p2l_valid_p;
+      p2l_dframe_o <= p2l_dframe_p;
+      p2l_data_o   <= p2l_data_sdr;
     end if;
   end process;
 
@@ -195,29 +204,29 @@ begin
   -----------------------------------------------------------------------------
   -- The Internal Core Clock is Derived from the P2L_CLK
   -----------------------------------------------------------------------------
-  ICLK_ibuf : IBUFGDS
+  clk_p_ibuf : IBUFGDS
     port map(
-      I  => P2L_CLKp,
-      IB => P2L_CLKn,
-      O  => ICLK_i);
+      I  => p2l_clk_p_i,
+      IB => p2l_clk_n_i,
+      O  => clk_p);
 
-  ICLK_bufg : BUFG
+  clk_p_bufg : BUFG
     port map(
-      I => ICLK_i,
-      O => ICLK);
+      I => clk_p,
+      O => clk_p_o);
 
-  ICLKn_ibuf : IBUFGDS
+  clk_n_ibuf : IBUFGDS
     port map(
-      I  => P2L_CLKn,
-      IB => P2L_CLKp,
-      O  => ICLKn_i);
+      I  => p2l_clk_n_i,
+      IB => p2l_clk_p_i,
+      O  => clk_n);
 
-  ICLKn_bufg : BUFG
+  clk_n_bufg : BUFG
     port map(
-      I => ICLKn_i,
-      O => ICLKn);
+      I => clk_n,
+      O => clk_n_o);
 
 
-end BEHAVIOUR;
+end rtl;
 
 

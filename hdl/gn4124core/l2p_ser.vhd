@@ -4,7 +4,7 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: L2P_SER (l2p_ser.vhd)
+-- unit name: l2p_ser (l2p_ser.vhd)
 --
 -- author:
 --
@@ -35,44 +35,39 @@ use work.gn4124_core_pkg.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
-entity L2P_SER is
+entity l2p_ser is
   port
     (
       ---------------------------------------------------------
       -- ICLK Clock Domain Inputs
-      --
-      ICLKp : in std_logic;
-      ICLKn : in std_logic;
-      IRST  : in std_logic;
+      clk_p_i : in std_logic;
+      clk_n_i : in std_logic;
+      rst_n_i : in std_logic;
 
-      ICLK_VALID  : in  std_logic;
-      ICLK_DFRAME : in  std_logic;
-      ICLK_DATA   : in  std_logic_vector(31 downto 0);
-      --
-      ---------------------------------------------------------
+      l2p_valid_i  : in std_logic;
+      l2p_dframe_i : in std_logic;
+      l2p_data_i   : in std_logic_vector(31 downto 0);
+
       ---------------------------------------------------------
       -- SER Outputs
-      --
-      L2P_CLKp    : out std_logic;
-      L2P_CLKn    : out std_logic;
-      L2P_VALID   : out std_logic;
-      L2P_DFRAME  : out std_logic;
-      L2P_DATA    : out std_logic_vector(15 downto 0)
-      --
-      ---------------------------------------------------------
+      l2p_clk_p_o  : out std_logic;
+      l2p_clk_n_o  : out std_logic;
+      l2p_valid_o  : out std_logic;
+      l2p_dframe_o : out std_logic;
+      l2p_data_o   : out std_logic_vector(15 downto 0)
       );
-end L2P_SER;
+end l2p_ser;
 
-architecture BEHAVIOUR of L2P_SER is
+architecture rtl of l2p_ser is
 
 -----------------------------------------------------------------------------
 -- Internal Signals
 -----------------------------------------------------------------------------
   signal ff_rst      : std_logic;
-  signal Q_DFRAME    : std_logic;
-  signal Q_VALID     : std_logic;
-  signal Q_DATA      : std_logic_vector(ICLK_DATA'range);
-  signal L2P_CLK_SDR : std_logic;
+  signal dframe_d    : std_logic;
+  signal valid_d     : std_logic;
+  signal data_d      : std_logic_vector(l2p_data_i'range);
+  signal l2p_clk_sdr : std_logic;
 
 
 begin
@@ -81,38 +76,38 @@ begin
   -- Active high reset for DDR FF
   ------------------------------------------------------------------------------
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    ff_rst <= not(IRST);
+    ff_rst <= not(rst_n_i);
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    ff_rst <= IRST;
+    ff_rst <= rst_n_i;
   end generate;
 
 
 -----------------------------------------------------------------------------
 -- Re-allign Data tightly for the +'ve clock edge
 -----------------------------------------------------------------------------
-  process (ICLKp, IRST)
+  process (clk_p_i, rst_n_i)
   begin
-    if(IRST = c_RST_ACTIVE) then
-      Q_DFRAME <= '0';
-      Q_VALID  <= '0';
-      Q_DATA   <= (others => '0');
-    elsif rising_edge(ICLKp) then
-      Q_DFRAME <= ICLK_DFRAME;
-      Q_VALID  <= ICLK_VALID;
-      Q_DATA   <= ICLK_DATA;
+    if(rst_n_i = c_RST_ACTIVE) then
+      dframe_d <= '0';
+      valid_d  <= '0';
+      data_d   <= (others => '0');
+    elsif rising_edge(clk_p_i) then
+      dframe_d <= l2p_dframe_i;
+      valid_d  <= l2p_valid_i;
+      data_d   <= l2p_data_i;
     end if;
   end process;
 
-  process (ICLKn, IRST)
+  process (clk_n_i, rst_n_i)
   begin
-    if(IRST = c_RST_ACTIVE) then
-      L2P_VALID  <= '0';
-      L2P_DFRAME <= '0';
-    elsif rising_edge(ICLKn) then
-      L2P_VALID  <= Q_VALID;
-      L2P_DFRAME <= Q_DFRAME;
+    if(rst_n_i = c_RST_ACTIVE) then
+      l2p_valid_o  <= '0';
+      l2p_dframe_o <= '0';
+    elsif rising_edge(clk_n_i) then
+      l2p_valid_o  <= valid_d;
+      l2p_dframe_o <= dframe_d;
     end if;
   end process;
 
@@ -121,12 +116,12 @@ begin
     U : OFDDRRSE
       port map
       (
-        Q  => L2P_DATA(i),
-        C0 => ICLKn,
-        C1 => ICLKp,
+        Q  => l2p_data_o(i),
+        C0 => clk_n_i,
+        C1 => clk_p_i,
         CE => '1',
-        D0 => Q_DATA(i),
-        D1 => Q_DATA(i+16),
+        D0 => data_d(i),
+        D1 => data_d(i+16),
         R  => ff_rst,
         S  => '0'
         );
@@ -134,21 +129,21 @@ begin
 
   L2P_CLK_BUF : OBUFDS
     port map(
-      O  => L2P_CLKp,
-      OB => L2P_CLKn,
-      I  => L2P_CLK_SDR);
+      O  => l2p_clk_p_o,
+      OB => l2p_clk_n_o,
+      I  => l2p_clk_sdr);
 
   L2P_CLK_int : FDDRRSE
     port map(
-      Q  => L2P_CLK_SDR,
-      C0 => ICLKn,
-      C1 => ICLKp,
+      Q  => l2p_clk_sdr,
+      C0 => clk_n_i,
+      C1 => clk_p_i,
       CE => '1',
       D0 => '1',
       D1 => '0',
       R  => '0',
       S  => '0');
 
-end BEHAVIOUR;
+end rtl;
 
 
