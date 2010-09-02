@@ -31,6 +31,10 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
 
+library UNISIM;
+use UNISIM.vcomponents.all;
+
+
 --==============================================================================
 -- Entity declaration for GN4124 core (gn4124_core)
 --==============================================================================
@@ -117,10 +121,13 @@ architecture rtl of gn4124_core is
   -- Clock/Reset
   -------------------------------------------------------------
   -- Internal 1X clock operating at the same rate as LCLK
-  signal clk_p : std_logic;
-  signal clk_n : std_logic;
+  signal clk_p     : std_logic;
+  signal clk_n     : std_logic;
+  signal clk_p_buf : std_logic;
+  signal clk_n_buf : std_logic;
   -- RESET for all clk_p logic
-  signal rst_n : std_logic;
+  signal rst_reg   : std_logic;
+  signal rst_n     : std_logic;
 
 -------------------------------------------------------------
 -- P2L DataPath (from deserializer to packet decoder)
@@ -262,9 +269,51 @@ architecture rtl of gn4124_core is
 --==============================================================================
 begin
 
+
+  -----------------------------------------------------------------------------
+  -- The Internal Core Clock is Derived from the P2L_CLK
+  -----------------------------------------------------------------------------
+  clk_p_ibuf : IBUFGDS
+    port map(
+      I  => p2l_clk_p_i,
+      IB => p2l_clk_n_i,
+      O  => clk_p_buf);
+
+  clk_p_bufg : BUFG
+    port map(
+      I => clk_p_buf,
+      O => clk_p);
+
+  clk_n_ibuf : IBUFGDS
+    port map(
+      I  => p2l_clk_n_i,
+      IB => p2l_clk_p_i,
+      O  => clk_n_buf);
+
+  clk_n_bufg : BUFG
+    port map(
+      I => clk_n_buf,
+      O => clk_n);
+
+
   ------------------------------------------------------------------------------
-  -- Reset
+  -- Reset aligned to core clock
   ------------------------------------------------------------------------------
+  process (clk_p, sys_rst_n_i)
+  begin
+    if sys_rst_n_i = c_RST_ACTIVE then
+      rst_reg <= c_RST_ACTIVE;
+    elsif rising_edge(clk_p) then
+      rst_reg <= not(c_RST_ACTIVE);
+    end if;
+  end process;
+
+
+  cmp_rst_buf : BUFG
+    port map (
+      I => rst_reg,
+      O => rst_n
+      );
 
 
 --=============================================================================================--
@@ -281,14 +330,14 @@ begin
     (
       ---------------------------------------------------------
       -- Raw unprocessed reset from the GN412x
-      l_rst_i => sys_rst_n_i,
+      rst_n_i => rst_n,
+      clk_p_i => clk_p,
+      clk_n_i => clk_n,
 
       ---------------------------------------------------------
       -- P2L Clock Domain
       --
       -- P2L Inputs
-      p2l_clk_p_i  => p2l_clk_p_i,
-      p2l_clk_n_i  => p2l_clk_n_i,
       p2l_valid_i  => p2l_valid_i,
       p2l_dframe_i => p2l_dframe_i,
       p2l_data_i   => p2l_data_i,
@@ -296,11 +345,6 @@ begin
       ---------------------------------------------------------
       -- Core Clock Domain
       --
-      -- Core reset, sync'ed to core clk
-      rst_o        => rst_n,
-      -- Core Logic Clock
-      clk_p_o      => clk_p,
-      clk_n_o      => clk_n,
       -- DeSerialized Output
       p2l_valid_o  => des_pd_valid,
       p2l_dframe_o => des_pd_dframe,

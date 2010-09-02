@@ -46,15 +46,15 @@ package gn4124_core_pkg is
     port
       (
         ---------------------------------------------------------
-        -- Raw unprocessed reset from the GN412x
-        l_rst_i : in std_logic;
+        -- Reset and clock
+        rst_n_i : in std_logic;
+        clk_p_i : in std_logic;
+        clk_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- P2L Clock Domain
         --
         -- P2L Inputs
-        p2l_clk_p_i  : in std_logic;
-        p2l_clk_n_i  : in std_logic;
         p2l_valid_i  : in std_logic;
         p2l_dframe_i : in std_logic;
         p2l_data_i   : in std_logic_vector(15 downto 0);
@@ -62,14 +62,10 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- Core Clock Domain
         --
-        rst_o        : out    std_logic;
-        -- Core Logic Clock
-        clk_p_o      : buffer std_logic;
-        clk_n_o      : buffer std_logic;
         -- DeSerialized Output
-        p2l_valid_o  : out    std_logic;
-        p2l_dframe_o : out    std_logic;
-        p2l_data_o   : out    std_logic_vector(31 downto 0)
+        p2l_valid_o  : out std_logic;
+        p2l_dframe_o : out std_logic;
+        p2l_data_o   : out std_logic_vector(31 downto 0)
         );
   end component;  -- p2l_des
 

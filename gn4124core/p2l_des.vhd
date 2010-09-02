@@ -39,15 +39,15 @@ entity p2l_des is
   port
     (
       ---------------------------------------------------------
-      -- Raw unprocessed reset from the GN412x
-      l_rst_i : in std_logic;
+      -- Reset and clock
+      rst_n_i : in std_logic;
+      clk_p_i : in std_logic;
+      clk_n_i : in std_logic;
 
       ---------------------------------------------------------
       -- P2L Clock Domain
       --
       -- P2L Inputs
-      p2l_clk_p_i  : in std_logic;
-      p2l_clk_n_i  : in std_logic;
       p2l_valid_i  : in std_logic;
       p2l_dframe_i : in std_logic;
       p2l_data_i   : in std_logic_vector(15 downto 0);
@@ -55,14 +55,10 @@ entity p2l_des is
       ---------------------------------------------------------
       -- Core Clock Domain
       --
-      rst_o        : out    std_logic;
-      -- Core Logic Clock
-      clk_p_o      : buffer std_logic;
-      clk_n_o      : buffer std_logic;
       -- DeSerialized Output
-      p2l_valid_o  : out    std_logic;
-      p2l_dframe_o : out    std_logic;
-      p2l_data_o   : out    std_logic_vector(31 downto 0)
+      p2l_valid_o  : out std_logic;
+      p2l_dframe_o : out std_logic;
+      p2l_data_o   : out std_logic_vector(31 downto 0)
       );
 end p2l_des;
 
@@ -91,36 +87,18 @@ architecture rtl of p2l_des is
 begin
 
 
-  -----------------------------------------------------------------------------
-  -- rst_o: clk_p_o alligned reset
-  -----------------------------------------------------------------------------
-  process (clk_p_o, l_rst_i)
-  begin
-    if l_rst_i = c_RST_ACTIVE then
-      rst_reg <= c_RST_ACTIVE;
-    elsif rising_edge(clk_p_o) then
-      rst_reg <= not(c_RST_ACTIVE);
-    end if;
-  end process;
 
-
-  cmp_rst_buf : BUFG
-    port map (
-      I => rst_reg,
-      O => rst_buf);
-
-  rst_o <= rst_buf;
 
 
 ------------------------------------------------------------------------------
   -- Active high reset for DDR FF
   ------------------------------------------------------------------------------
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    ff_rst <= not(rst_buf);
+    ff_rst <= not(rst_n_i);
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    ff_rst <= rst_buf;
+    ff_rst <= rst_n_i;
   end generate;
 
 
@@ -133,8 +111,8 @@ begin
       (
         Q0 => p2l_data_n(i),
         Q1 => p2l_data_p(i),
-        C0 => clk_n_o,
-        C1 => clk_p_o,
+        C0 => clk_n_i,
+        C1 => clk_p_i,
         CE => '1',
         D  => p2l_data_i(i),
         R  => ff_rst,
@@ -147,8 +125,8 @@ begin
     (
       Q0 => p2l_dframe_n,
       Q1 => p2l_dframe_p,
-      C0 => clk_n_o,
-      C1 => clk_p_o,
+      C0 => clk_n_i,
+      C1 => clk_p_i,
       CE => '1',
       D  => p2l_dframe_i,
       R  => ff_rst,
@@ -160,8 +138,8 @@ begin
     (
       Q0 => p2l_valid_n,
       Q1 => p2l_valid_p,
-      C0 => clk_n_o,
-      C1 => clk_p_o,
+      C0 => clk_n_i,
+      C1 => clk_p_i,
       CE => '1',
       D  => p2l_valid_i,
       R  => ff_rst,
@@ -172,11 +150,11 @@ begin
   -----------------------------------------------------------------------------
   -- Align positive edge data to negative edge clock
   -----------------------------------------------------------------------------
-  process (clk_n_o, rst_buf)
+  process (clk_n_i, rst_n_i)
   begin
-    if(rst_buf = c_RST_ACTIVE) then
+    if(rst_n_i = c_RST_ACTIVE) then
       p2l_data_sdr_l <= (others => '0');
-    elsif rising_edge(clk_n_o) then
+    elsif rising_edge(clk_n_i) then
       p2l_data_sdr_l <= p2l_data_p;
     end if;
   end process;
@@ -187,44 +165,18 @@ begin
   -----------------------------------------------------------------------------
   -- Final Positive Edge Clock Allignment
   -----------------------------------------------------------------------------
-  process (clk_p_o, rst_buf)
+  process (clk_p_i, rst_n_i)
   begin
-    if(rst_buf = c_RST_ACTIVE) then
+    if(rst_n_i = c_RST_ACTIVE) then
       p2l_valid_o  <= '0';
       p2l_dframe_o <= '0';
       p2l_data_o   <= (others => '0');
-    elsif rising_edge(clk_p_o) then
+    elsif rising_edge(clk_p_i) then
       p2l_valid_o  <= p2l_valid_p;
       p2l_dframe_o <= p2l_dframe_p;
       p2l_data_o   <= p2l_data_sdr;
     end if;
   end process;
-
-
-  -----------------------------------------------------------------------------
-  -- The Internal Core Clock is Derived from the P2L_CLK
-  -----------------------------------------------------------------------------
-  clk_p_ibuf : IBUFGDS
-    port map(
-      I  => p2l_clk_p_i,
-      IB => p2l_clk_n_i,
-      O  => clk_p);
-
-  clk_p_bufg : BUFG
-    port map(
-      I => clk_p,
-      O => clk_p_o);
-
-  clk_n_ibuf : IBUFGDS
-    port map(
-      I  => p2l_clk_n_i,
-      IB => p2l_clk_p_i,
-      O  => clk_n);
-
-  clk_n_bufg : BUFG
-    port map(
-      I => clk_n,
-      O => clk_n_o);
 
 
 end rtl;
