@@ -464,12 +464,6 @@ begin
           else
             wishbone_next_state := WB_WRITE_WAIT_ACK;
           end if;
-          wb_cyc_o <= '1';
-          wb_stb_o <= '0';
-          wb_we_o <= '0';
-          wb_sel_o <= "0000";
-          wb_dat_o <= (others => '0');
-          wb_adr_o <= (others => '0');
 
           -----------------------------------------------------------------
           -- Read request on the Wishbone bus
@@ -498,12 +492,6 @@ begin
           else
             wishbone_next_state := WB_READ_WAIT_ACK;
           end if;
-          wb_cyc_o <= '1';
-          wb_stb_o <= '0';
-          wb_we_o <= '0';
-          wb_sel_o <= "0000";
-          wb_dat_o <= (others => '0');
-          wb_adr_o <= (others => '0');
 
           -----------------------------------------------------------------
           -- Wait for the read completion machine start
