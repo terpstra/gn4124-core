@@ -273,24 +273,24 @@ begin
   -----------------------------------------------------------------------------
   -- The Internal Core Clock is Derived from the P2L_CLK
   -----------------------------------------------------------------------------
-  clk_p_ibuf : IBUFGDS
+  CLK_ibuf : IBUFGDS
     port map(
       I  => p2l_clk_p_i,
       IB => p2l_clk_n_i,
       O  => clk_p_buf);
 
-  clk_p_bufg : BUFG
+  CLK_bufg : BUFG
     port map(
       I => clk_p_buf,
       O => clk_p);
 
-  clk_n_ibuf : IBUFGDS
+  CLKn_ibuf : IBUFGDS
     port map(
       I  => p2l_clk_n_i,
       IB => p2l_clk_p_i,
       O  => clk_n_buf);
 
-  clk_n_bufg : BUFG
+  CLKn_bufg : BUFG
     port map(
       I => clk_n_buf,
       O => clk_n);
