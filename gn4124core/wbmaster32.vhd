@@ -122,9 +122,11 @@ architecture behaviour of wbmaster32 is
   type wishbone_state_type is (WB_IDLE, WB_READ_REQUEST, WB_READ_WAIT_ACK, WB_READ_SEND_PCIE,
                                WB_WRITE_FIFO, WB_WRITE_REQUEST, WB_WRITE_WAIT_ACK);
   signal wishbone_current_state : wishbone_state_type;
+  signal wishbone_next_state : wishbone_state_type;
 
   type   l2p_read_cpl_state_type is (IDLE, L2P_SEM, L2P_HEADER, L2P_DATA);
   signal l2p_read_cpl_current_state : l2p_read_cpl_state_type;
+  signal l2p_read_cpl_next_state : l2p_read_cpl_state_type;
 
   signal s_read_request  : std_logic;   -- signal a waiting read request to the Wishbone master state machine
   signal s_write_request : std_logic;   -- signal a waiting write request to the Wishbone master state machine
@@ -267,7 +269,6 @@ begin
 -----------------------------------------------------------------------------
 
   process (gn4124_clk_i, sys_rst_n_i)
-    variable l2p_read_cpl_next_state : l2p_read_cpl_state_type;
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       l2p_read_cpl_current_state <= IDLE;
@@ -282,9 +283,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(wishbone_current_state = WB_READ_SEND_PCIE) then
-            l2p_read_cpl_next_state := L2P_SEM;
+            l2p_read_cpl_next_state <= L2P_SEM;
           else
-            l2p_read_cpl_next_state := IDLE;
+            l2p_read_cpl_next_state <= IDLE;
           end if;
           wbm_arb_req_o <= '0';
           wbm_arb_data_o <= (others => '0');
@@ -296,9 +297,9 @@ begin
           -----------------------------------------------------------------
         when L2P_SEM =>
           if not (wishbone_current_state = WB_READ_SEND_PCIE) then
-            l2p_read_cpl_next_state := L2P_HEADER;
+            l2p_read_cpl_next_state <= L2P_HEADER;
           else
-            l2p_read_cpl_next_state := L2P_SEM;
+            l2p_read_cpl_next_state <= L2P_SEM;
           end if;
           wbm_arb_req_o <= '0';
           wbm_arb_data_o <= (others => '0');
@@ -310,9 +311,9 @@ begin
           -----------------------------------------------------------------
         when L2P_HEADER =>
           if(arb_wbm_gnt_i = '1') then
-            l2p_read_cpl_next_state := L2P_DATA;
+            l2p_read_cpl_next_state <= L2P_DATA;
           else
-            l2p_read_cpl_next_state := L2P_HEADER;
+            l2p_read_cpl_next_state <= L2P_HEADER;
           end if;
           wbm_arb_req_o <= '1';
           wbm_arb_data_o <= s_l2p_header_reg;
@@ -323,7 +324,7 @@ begin
           -- L2P DATA
           -----------------------------------------------------------------
         when L2P_DATA =>
-          l2p_read_cpl_next_state := IDLE;
+          l2p_read_cpl_next_state <= IDLE;
           wbm_arb_req_o <= '0';
           wbm_arb_data_o <= s_read_data_reg;
           wbm_arb_valid_o <= '1';
@@ -333,7 +334,7 @@ begin
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          l2p_read_cpl_next_state := IDLE;
+          l2p_read_cpl_next_state <= IDLE;
           wbm_arb_req_o <= '0';
           wbm_arb_data_o <= (others => '0');
           wbm_arb_valid_o <= '0';
@@ -372,7 +373,6 @@ begin
 -- Timeout counter
 -----------------------------------------------------------------------------
   process (sys_clk_i, sys_rst_n_i)
-    variable wishbone_next_state : wishbone_state_type;
 
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
@@ -394,8 +394,6 @@ begin
 -- Wishbone master state machine
 -----------------------------------------------------------------------------
   process (sys_clk_i, sys_rst_n_i)
-    variable wishbone_next_state : wishbone_state_type;
-
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       wishbone_current_state <= WB_IDLE;
@@ -412,11 +410,11 @@ begin
         -----------------------------------------------------------------
         when WB_IDLE =>
           if(s_read_request = '1' and l2p_read_cpl_current_state = IDLE) then
-            wishbone_next_state := WB_READ_REQUEST;
+            wishbone_current_state <= WB_READ_REQUEST;
           elsif(s_write_request = '1') then
-            wishbone_next_state := WB_WRITE_FIFO;
+            wishbone_current_state <= WB_WRITE_FIFO;
           else
-            wishbone_next_state := WB_IDLE;
+            wishbone_current_state <= WB_IDLE;
           end if;
           wb_cyc_o <= '0';
           wb_stb_o <= '0';
@@ -429,7 +427,7 @@ begin
           -- Write wait fifo
           -----------------------------------------------------------------
         when WB_WRITE_FIFO =>
-          wishbone_next_state := WB_WRITE_REQUEST;
+          wishbone_current_state <= WB_WRITE_REQUEST;
           wb_cyc_o <= '0';
           wb_stb_o <= '0';
           wb_we_o <= '0';
@@ -442,11 +440,11 @@ begin
           -----------------------------------------------------------------
         when WB_WRITE_REQUEST =>
           if (wb_stall_i = '1' and s_wb_timeout = '0') then
-            wishbone_next_state := WB_WRITE_REQUEST;
+            wishbone_current_state <= WB_WRITE_REQUEST;
           elsif(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_next_state := WB_IDLE;
+            wishbone_current_state <= WB_IDLE;
           else
-            wishbone_next_state := WB_WRITE_WAIT_ACK;
+            wishbone_current_state <= WB_WRITE_WAIT_ACK;
           end if;
           wb_cyc_o <= '1';
           wb_stb_o <= '1';
@@ -460,9 +458,9 @@ begin
           -----------------------------------------------------------------
         when WB_WRITE_WAIT_ACK =>
           if(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_next_state := WB_IDLE;
+            wishbone_current_state <= WB_IDLE;
           else
-            wishbone_next_state := WB_WRITE_WAIT_ACK;
+            wishbone_current_state <= WB_WRITE_WAIT_ACK;
           end if;
 
           -----------------------------------------------------------------
@@ -470,11 +468,11 @@ begin
           -----------------------------------------------------------------
         when WB_READ_REQUEST =>
           if (wb_stall_i = '1' and s_wb_timeout = '0') then
-            wishbone_next_state := WB_READ_REQUEST;
+            wishbone_current_state <= WB_READ_REQUEST;
           elsif(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_next_state := WB_READ_SEND_PCIE;
+            wishbone_current_state <= WB_READ_SEND_PCIE;
           else
-            wishbone_next_state := WB_READ_WAIT_ACK;
+            wishbone_current_state <= WB_READ_WAIT_ACK;
           end if;
           wb_cyc_o <= '1';
           wb_stb_o <= '1';
@@ -488,9 +486,9 @@ begin
           -----------------------------------------------------------------
         when WB_READ_WAIT_ACK =>
           if(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_next_state := WB_READ_SEND_PCIE;
+            wishbone_current_state <= WB_READ_SEND_PCIE;
           else
-            wishbone_next_state := WB_READ_WAIT_ACK;
+            wishbone_current_state <= WB_READ_WAIT_ACK;
           end if;
 
           -----------------------------------------------------------------
@@ -498,9 +496,9 @@ begin
           -----------------------------------------------------------------
         when WB_READ_SEND_PCIE =>
           if (l2p_read_cpl_current_state = L2P_SEM) then
-            wishbone_next_state := WB_IDLE;
+            wishbone_current_state <= WB_IDLE;
           else
-            wishbone_next_state := WB_READ_SEND_PCIE;
+            wishbone_current_state <= WB_READ_SEND_PCIE;
           end if;
           wb_cyc_o <= '0';
           wb_stb_o <= '0';
@@ -513,7 +511,7 @@ begin
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          wishbone_next_state := WB_IDLE;
+          wishbone_current_state <= WB_IDLE;
           wb_cyc_o <= '0';
           wb_stb_o <= '0';
           wb_we_o <= '0';
@@ -522,7 +520,7 @@ begin
           wb_adr_o <= (others => '0');
 
       end case;
-      wishbone_current_state <= wishbone_next_state;
+      --wishbone_current_state <= wishbone_next_state;
     end if;
   end process;
 
