@@ -432,7 +432,7 @@ begin
 
       ---------------------------------------------------------
       -- Clock/Reset
-      sys_clk_i    => sys_clk_i,
+      sys_clk_i    => clk_p,--sys_clk_i,
       sys_rst_n_i  => rst_n,
       gn4124_clk_i => clk_p,
 
@@ -503,7 +503,7 @@ begin
     port map
     (
       --DEBUG=> LED (7 downto 4),
-      sys_clk_i   => sys_clk_i,
+      sys_clk_i   => clk_p,--sys_clk_i,
       sys_rst_n_i => rst_n,
 
       dma_ctrl_carrier_addr_o => dma_ctrl_carrier_addr,
@@ -545,7 +545,7 @@ begin
 -----------------------------------------------------------------------------
     port map
     (
-      sys_clk_i   => sys_clk_i,
+      sys_clk_i   => clk_p,--sys_clk_i,
       sys_rst_n_i => rst_n,
 
       gn4124_clk_i => clk_p,
@@ -582,7 +582,7 @@ begin
     port map
     (
       DEBUG       => LED (7 downto 4),
-      sys_clk_i   => sys_clk_i,
+      sys_clk_i   => clk_p,--sys_clk_i,
       sys_rst_n_i => rst_n,
 
       gn4124_clk_i => clk_p,
