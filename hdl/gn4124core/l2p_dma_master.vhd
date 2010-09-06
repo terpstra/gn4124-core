@@ -105,9 +105,11 @@ architecture behaviour of l2p_dma_master is
 
   type   l2p_dma_state_type is (IDLE, WB_DATA_WAIT, L2P_HEADER, L2P_ADDR_H, L2P_ADDR_L, L2P_DATA, L2P_DATA_LAST);
   signal l2p_dma_current_state : l2p_dma_state_type;
+  signal l2p_dma_next_state : l2p_dma_state_type;
 
   type   wishbone_state_type is (IDLE, WB_WAIT_L2P_START, WB_FIFO_FULL, WB_REQUEST, WB_LAST_ACK, WB_WAIT_L2P_IDLE);
   signal wishbone_current_state : wishbone_state_type;
+  signal wishbone_next_state : wishbone_state_type;
 
   signal s_carrier_addr : unsigned(31 downto 0);
   signal s_host_addr_h  : std_logic_vector(31 downto 0);
@@ -157,7 +159,6 @@ begin
 -- PCIe write block
 --=========================================================================--
   process (gn4124_clk_i, sys_rst_n_i)
-    variable l2p_dma_next_state : l2p_dma_state_type;
   begin
     if (sys_rst_n_i = c_RST_ACTIVE) then
       l2p_len_cpt   <= (others => '0');
@@ -225,7 +226,6 @@ begin
 -----------------------------------------------------------------------------
 
   process (gn4124_clk_i, sys_rst_n_i)
-    variable l2p_dma_next_state : l2p_dma_state_type;
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       l2p_dma_current_state <= IDLE;
@@ -236,9 +236,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(wishbone_current_state = WB_WAIT_L2P_START) then
-            l2p_dma_next_state := L2P_HEADER;
+            l2p_dma_next_state <= L2P_HEADER;
           else
-            l2p_dma_next_state := IDLE;
+            l2p_dma_next_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
@@ -247,30 +247,30 @@ begin
         when L2P_HEADER =>
           if(arb_ldm_gnt_i = '1') then
             if(s_64b_address = '1') then
-              l2p_dma_next_state := L2P_ADDR_H;
+              l2p_dma_next_state <= L2P_ADDR_H;
             else
-              l2p_dma_next_state := L2P_ADDR_L;
+              l2p_dma_next_state <= L2P_ADDR_L;
             end if;
           else
-            l2p_dma_next_state := L2P_HEADER;
+            l2p_dma_next_state <= L2P_HEADER;
           end if;
 
           -----------------------------------------------------------------
           -- L2P ADDRESS (63-32)
           -----------------------------------------------------------------
         when L2P_ADDR_H =>
-          l2p_dma_next_state := L2P_ADDR_L;
+          l2p_dma_next_state <= L2P_ADDR_L;
 
           -----------------------------------------------------------------
           -- L2P ADDRESS (31-00)
           -----------------------------------------------------------------
         when L2P_ADDR_L =>
           if(s_fifo_empty = '1') then
-            l2p_dma_next_state := WB_DATA_WAIT;
+            l2p_dma_next_state <= WB_DATA_WAIT;
           elsif(l2p_data_cpt = 1) then
-            l2p_dma_next_state := L2P_DATA_LAST;
+            l2p_dma_next_state <= L2P_DATA_LAST;
           else
-            l2p_dma_next_state := L2P_DATA;
+            l2p_dma_next_state <= L2P_DATA;
           end if;
 
           -----------------------------------------------------------------
@@ -278,11 +278,11 @@ begin
           -----------------------------------------------------------------
         when WB_DATA_WAIT =>
           if(s_fifo_empty = '1') then
-            l2p_dma_next_state := WB_DATA_WAIT;
+            l2p_dma_next_state <= WB_DATA_WAIT;
           elsif(l2p_data_cpt = 1) then
-            l2p_dma_next_state := L2P_DATA_LAST;
+            l2p_dma_next_state <= L2P_DATA_LAST;
           else
-            l2p_dma_next_state := L2P_DATA;
+            l2p_dma_next_state <= L2P_DATA;
           end if;
 
           -----------------------------------------------------------------
@@ -290,11 +290,11 @@ begin
           -----------------------------------------------------------------
         when L2P_DATA =>
           if(s_fifo_empty = '1') then
-            l2p_dma_next_state := WB_DATA_WAIT;
+            l2p_dma_next_state <= WB_DATA_WAIT;
           elsif(l2p_data_cpt = 2) then
-            l2p_dma_next_state := L2P_DATA_LAST;
+            l2p_dma_next_state <= L2P_DATA_LAST;
           else
-            l2p_dma_next_state := L2P_DATA;
+            l2p_dma_next_state <= L2P_DATA;
           end if;
 
           -----------------------------------------------------------------
@@ -302,16 +302,16 @@ begin
           -----------------------------------------------------------------
         when L2P_DATA_LAST =>
           if(l2p_len_cpt > 0) then
-            l2p_dma_next_state := L2P_HEADER;
+            l2p_dma_next_state <= L2P_HEADER;
           else
-            l2p_dma_next_state := IDLE;
+            l2p_dma_next_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          l2p_dma_next_state := IDLE;
+          l2p_dma_next_state <= IDLE;
       end case;
       l2p_dma_current_state <= l2p_dma_next_state;
     end if;
@@ -362,7 +362,6 @@ begin
 -- Wishbone master state machine
 -----------------------------------------------------------------------------
   process (sys_clk_i, sys_rst_n_i)
-    variable wishbone_next_state : wishbone_state_type;
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       wishbone_current_state <= IDLE;
@@ -373,9 +372,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(dma_ctrl_start_l2p_i = '1' and not (dma_ctrl_len_i(31 downto 2) = "000000000000000000000000000000")) then
-            wishbone_next_state := WB_WAIT_L2P_START;
+            wishbone_next_state <= WB_WAIT_L2P_START;
           else
-            wishbone_next_state := IDLE;
+            wishbone_next_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
@@ -383,9 +382,9 @@ begin
           -----------------------------------------------------------------
         when WB_WAIT_L2P_START =>
           if not (l2p_dma_current_state = IDLE) then
-            wishbone_next_state := WB_REQUEST;
+            wishbone_next_state <= WB_REQUEST;
           else
-            wishbone_next_state := WB_WAIT_L2P_START;
+            wishbone_next_state <= WB_WAIT_L2P_START;
           end if;
 
           -----------------------------------------------------------------
@@ -394,16 +393,16 @@ begin
         when WB_REQUEST =>
           if(wb_data_cpt = 1) then
             if (l2p_dma_ack_i = '0') then
-              wishbone_next_state := WB_LAST_ACK;
+              wishbone_next_state <= WB_LAST_ACK;
             elsif (wb_ack_cpt = 2) then
-              wishbone_next_state := WB_LAST_ACK;
+              wishbone_next_state <= WB_LAST_ACK;
             else
-              wishbone_next_state := WB_WAIT_L2P_IDLE;
+              wishbone_next_state <= WB_WAIT_L2P_IDLE;
             end if;
           elsif (s_fifo_almost_full = '1') then
-            wishbone_next_state := WB_FIFO_FULL;
+            wishbone_next_state <= WB_FIFO_FULL;
           else
-            wishbone_next_state := WB_REQUEST;
+            wishbone_next_state <= WB_REQUEST;
           end if;
 
           -----------------------------------------------------------------
@@ -412,12 +411,12 @@ begin
         when WB_FIFO_FULL =>
           if(s_fifo_almost_full = '0') then
             if(wb_data_cpt > 0) then
-              wishbone_next_state := WB_REQUEST;
+              wishbone_next_state <= WB_REQUEST;
             else
-              wishbone_next_state := WB_WAIT_L2P_IDLE;
+              wishbone_next_state <= WB_WAIT_L2P_IDLE;
             end if;
           else
-            wishbone_next_state := WB_FIFO_FULL;
+            wishbone_next_state <= WB_FIFO_FULL;
           end if;
 
           -----------------------------------------------------------------
@@ -425,9 +424,9 @@ begin
           -----------------------------------------------------------------
         when WB_LAST_ACK =>
           if(l2p_dma_ack_i = '1') then
-            wishbone_next_state := WB_WAIT_L2P_IDLE;
+            wishbone_next_state <= WB_WAIT_L2P_IDLE;
           else
-            wishbone_next_state := WB_LAST_ACK;
+            wishbone_next_state <= WB_LAST_ACK;
           end if;
 
           -----------------------------------------------------------------
@@ -435,15 +434,15 @@ begin
           -----------------------------------------------------------------
         when WB_WAIT_L2P_IDLE =>
           if (l2p_dma_current_state = IDLE) then
-            wishbone_next_state := IDLE;
+            wishbone_next_state <= IDLE;
           else
-            wishbone_next_state := WB_WAIT_L2P_IDLE;
+            wishbone_next_state <= WB_WAIT_L2P_IDLE;
           end if;
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          wishbone_next_state := IDLE;
+          wishbone_next_state <= IDLE;
       end case;
       wishbone_current_state <= wishbone_next_state;
     end if;

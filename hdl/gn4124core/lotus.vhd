@@ -262,6 +262,7 @@ architecture BEHAVIOUR of LOTUS is
 -- TEST: L2P DMA interface
   type   wb_state_type is (IDLE, ACK, ST1);
   signal wb_current_state : wb_state_type;
+  signal wb_next_state : wb_state_type;
   signal wb_data_cnt      : unsigned(31 downto 0);
 
   signal l_clk : std_logic;
@@ -401,7 +402,6 @@ begin
   --end process;
 
   process (l_clk, L_RST_N)
-    variable wb_next_state : wb_state_type;
   begin
     if(L_RST_N = '0') then
       wb_current_state <= IDLE;
@@ -413,11 +413,11 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if (dma_stb_o = '1' and wb_data_cnt(0) = '0') then
-            wb_next_state := ACK;
+            wb_next_state <= ACK;
           elsif (dma_stb_o = '1' and wb_data_cnt(0) = '1') then
-            wb_next_state := ST1;
+            wb_next_state <= ST1;
           else
-            wb_next_state := IDLE;
+            wb_next_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
@@ -426,24 +426,24 @@ begin
         when ACK =>
           wb_data_cnt <= wb_data_cnt + 1;
           if (dma_stb_o = '0') then
-            wb_next_state := IDLE;
+            wb_next_state <= IDLE;
           elsif (wb_data_cnt(0) = '0') then
-            wb_next_state := ST1;
+            wb_next_state <= ST1;
           else
-            wb_next_state := ACK;
+            wb_next_state <= ACK;
           end if;
 
           -----------------------------------------------------------------
           -- One cycle delay
           -----------------------------------------------------------------
         when ST1 =>
-          wb_next_state := ACK;
+          wb_next_state <= ACK;
 
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          wb_next_state := IDLE;
+          wb_next_state <= IDLE;
       end case;
       wb_current_state <= wb_next_state;
     end if;
