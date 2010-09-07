@@ -46,40 +46,40 @@ entity gn4124_core is
       -- Clock/Reset from GN412x
       --      L_CLKp                 : in   std_logic;                     -- Running at 100 or 200 Mhz
       --      L_CLKn                 : in   std_logic;                     -- Running at 100 or 200 Mhz
-      sys_clk_i   : in  std_logic;
+      sys_clk_o   : out std_logic;
       sys_rst_n_i : in  std_logic;
 
       ---------------------------------------------------------
       -- P2L Direction
       --
       -- Source Sync DDR related signals
-      p2l_clk_p_i  : in  std_logic;                      -- Receiver Source Synchronous Clock+
-      p2l_clk_n_i  : in  std_logic;                      -- Receiver Source Synchronous Clock-
+      p2l_clk_p_i  : in  std_logic;     -- Receiver Source Synchronous Clock+
+      p2l_clk_n_i  : in  std_logic;     -- Receiver Source Synchronous Clock-
       p2l_data_i   : in  std_logic_vector(15 downto 0);  -- Parallel receive data
-      p2l_dframe_i : in  std_logic;                      -- Receive Frame
-      p2l_valid_i  : in  std_logic;                      -- Receive Data Valid
+      p2l_dframe_i : in  std_logic;     -- Receive Frame
+      p2l_valid_i  : in  std_logic;     -- Receive Data Valid
       -- P2L Control
-      p2l_rdy_o    : out std_logic;                      -- Rx Buffer Full Flag
+      p2l_rdy_o    : out std_logic;     -- Rx Buffer Full Flag
       p_wr_req_o   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
       p_wr_rdy_o   : out std_logic_vector(1 downto 0);   -- PCIe Write Ready
-      rx_error_o   : out std_logic;                      -- Receive Error
+      rx_error_o   : out std_logic;     -- Receive Error
 
       ---------------------------------------------------------
       -- L2P Direction
       --
       -- Source Sync DDR related signals
-      l2p_clk_p_o  : out std_logic;                      -- Transmitter Source Synchronous Clock+
-      l2p_clk_n_o  : out std_logic;                      -- Transmitter Source Synchronous Clock-
+      l2p_clk_p_o  : out std_logic;  -- Transmitter Source Synchronous Clock+
+      l2p_clk_n_o  : out std_logic;  -- Transmitter Source Synchronous Clock-
       l2p_data_o   : out std_logic_vector(15 downto 0);  -- Parallel transmit data
-      l2p_dframe_o : out std_logic;                      -- Transmit Data Frame
-      l2p_valid_o  : out std_logic;                      -- Transmit Data Valid
-      l2p_edb_o    : out std_logic;                      -- Packet termination and discard
+      l2p_dframe_o : out std_logic;     -- Transmit Data Frame
+      l2p_valid_o  : out std_logic;     -- Transmit Data Valid
+      l2p_edb_o    : out std_logic;     -- Packet termination and discard
       -- L2P Control
-      l2p_rdy_i    : in  std_logic;                      -- Tx Buffer Full Flag
-      l_wr_rdy_i   : in  std_logic_vector(1 downto 0);   -- Local-to-PCIe Write
-      p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);   -- PCIe-to-Local Read Response Data Ready
-      tx_error_i   : in  std_logic;                      -- Transmit Error
-      vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Channel ready
+      l2p_rdy_i    : in  std_logic;     -- Tx Buffer Full Flag
+      l_wr_rdy_i   : in  std_logic_vector(1 downto 0);  -- Local-to-PCIe Write
+      p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);  -- PCIe-to-Local Read Response Data Ready
+      tx_error_i   : in  std_logic;     -- Transmit Error
+      vc_rdy_i     : in  std_logic_vector(1 downto 0);  -- Channel ready
 
       ---------------------------------------------------------
       -- Target Interface (Wishbone master)
@@ -103,7 +103,7 @@ entity gn4124_core is
       dma_stb_o   : out std_logic;
       dma_we_o    : out std_logic;
       dma_ack_i   : in  std_logic;
-      dma_stall_i : in  std_logic                       -- for pipelined Wishbone
+      dma_stall_i : in  std_logic       -- for pipelined Wishbone
       );
 end gn4124_core;
 
@@ -140,20 +140,20 @@ architecture rtl of gn4124_core is
 -- P2L DataPath (from packet decoder to Wishbone master and P2L DMA master)
 -------------------------------------------------------------
 
-  signal p2l_hdr_start   : std_logic;                     -- Indicates Header start cycle
+  signal p2l_hdr_start   : std_logic;   -- Indicates Header start cycle
   signal p2l_hdr_length  : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
   signal p2l_hdr_cid     : std_logic_vector(1 downto 0);  -- Completion ID
-  signal p2l_hdr_last    : std_logic;                     -- Indicates Last packet in a completion
+  signal p2l_hdr_last    : std_logic;  -- Indicates Last packet in a completion
   signal p2l_hdr_stat    : std_logic_vector(1 downto 0);  -- Completion Status
   signal p2l_target_mrd  : std_logic;
   signal p2l_target_mwr  : std_logic;
   signal p2l_master_cpld : std_logic;
   signal p2l_master_cpln : std_logic;
 
-  signal p2l_d_valid    : std_logic;                      -- Indicates Address/Data is valid
-  signal p2l_d_last     : std_logic;                      -- Indicates end of the packet
+  signal p2l_d_valid    : std_logic;    -- Indicates Address/Data is valid
+  signal p2l_d_last     : std_logic;    -- Indicates end of the packet
   signal p2l_d          : std_logic_vector(31 downto 0);  -- Address/Data
-  signal p2l_be         : std_logic_vector(3 downto 0);   -- Byte Enable for data
+  signal p2l_be         : std_logic_vector(3 downto 0);  -- Byte Enable for data
   signal p2l_addr       : std_logic_vector(31 downto 0);  -- Registered and counting Address
   signal p2l_addr_start : std_logic;
   signal p2l_epi_select : std_logic;
@@ -170,9 +170,9 @@ architecture rtl of gn4124_core is
   signal l2p_data_o_o : std_logic_vector(l2p_data_o'range);
 
   -- Resync bridge controls
-  signal Il_wr_rdy_i   : std_logic;     -- Clocked version of L_WR_RDY from GN412x
-  signal Ip_rd_d_rdy_i : std_logic;     -- Clocked version of p_rd_d_rdy_i from GN412x
-  signal Il2p_rdy_i    : std_logic;     -- Clocked version of l2p_rdy_i from GN412x
+  signal Il_wr_rdy_i   : std_logic;  -- Clocked version of L_WR_RDY from GN412x
+  signal Ip_rd_d_rdy_i : std_logic;  -- Clocked version of p_rd_d_rdy_i from GN412x
+  signal Il2p_rdy_i    : std_logic;  -- Clocked version of l2p_rdy_i from GN412x
 
   -------------------------------------------------------------
   -- Target Controller (Wishbone master)
@@ -215,12 +215,12 @@ architecture rtl of gn4124_core is
   signal wb_dat_s2m          : std_logic_vector(31 downto 0);  -- Data in
   signal wb_dat_m2s          : std_logic_vector(31 downto 0);  -- Data out
   signal wb_sel              : std_logic_vector(3 downto 0);   -- Byte select
-  signal wb_cyc              : std_logic;                      -- Read or write cycle
-  signal wb_stb              : std_logic;                      -- Read or write strobe
-  signal wb_we               : std_logic;                      -- Write
-  signal wb_ack              : std_logic;                      -- Acknowledge
+  signal wb_cyc              : std_logic;  -- Read or write cycle
+  signal wb_stb              : std_logic;  -- Read or write strobe
+  signal wb_we               : std_logic;  -- Write
+  signal wb_ack              : std_logic;  -- Acknowledge
   --signal wb_stall            : std_logic;                      -- Pipelined mode
-  signal wb_ack_dma_ctrl     : std_logic;                      --
+  signal wb_ack_dma_ctrl     : std_logic;  --
   --signal wb_stall_dma_ctrl   : std_logic;                      --
   signal wb_dat_s2m_dma_ctrl : std_logic_vector(31 downto 0);  --
 
@@ -228,27 +228,27 @@ architecture rtl of gn4124_core is
   signal l2p_dma_dat_s2m : std_logic_vector(31 downto 0);  -- Data in
   signal l2p_dma_dat_m2s : std_logic_vector(31 downto 0);  -- Data out
   signal l2p_dma_sel     : std_logic_vector(3 downto 0);   -- Byte select
-  signal l2p_dma_cyc     : std_logic;                      -- Read or write cycle
-  signal l2p_dma_stb     : std_logic;                      -- Read or write strobe
-  signal l2p_dma_we      : std_logic;                      -- Write
-  signal l2p_dma_ack     : std_logic;                      -- Acknowledge
-  signal l2p_dma_stall   : std_logic;                      -- Acknowledge
+  signal l2p_dma_cyc     : std_logic;   -- Read or write cycle
+  signal l2p_dma_stb     : std_logic;   -- Read or write strobe
+  signal l2p_dma_we      : std_logic;   -- Write
+  signal l2p_dma_ack     : std_logic;   -- Acknowledge
+  signal l2p_dma_stall   : std_logic;   -- Acknowledge
 
   signal p2l_dma_adr     : std_logic_vector(31 downto 0);  -- Adress
   signal p2l_dma_dat_s2m : std_logic_vector(31 downto 0);  -- Data in
   signal p2l_dma_dat_m2s : std_logic_vector(31 downto 0);  -- Data out
   signal p2l_dma_sel     : std_logic_vector(3 downto 0);   -- Byte select
-  signal p2l_dma_cyc     : std_logic;                      -- Read or write cycle
-  signal p2l_dma_stb     : std_logic;                      -- Read or write strobe
-  signal p2l_dma_we      : std_logic;                      -- Write
-  signal p2l_dma_ack     : std_logic;                      -- Acknowledge
-  signal p2l_dma_stall   : std_logic;                      -- Acknowledge
+  signal p2l_dma_cyc     : std_logic;   -- Read or write cycle
+  signal p2l_dma_stb     : std_logic;   -- Read or write strobe
+  signal p2l_dma_we      : std_logic;   -- Write
+  signal p2l_dma_ack     : std_logic;   -- Acknowledge
+  signal p2l_dma_stall   : std_logic;   -- Acknowledge
 
   -------------------------------------------------------------
   -- L2P DMA master
   -------------------------------------------------------------
   signal ldm_arb_req    : std_logic;    -- Request use of the L2P bus
-  signal arb_ldm_gnt    : std_logic;    -- L2P bus emits data on behalf of the L2P DMA
+  signal arb_ldm_gnt    : std_logic;  -- L2P bus emits data on behalf of the L2P DMA
   signal ldm_arb_valid  : std_logic;
   signal ldm_arb_dframe : std_logic;
   signal ldm_arb_data   : std_logic_vector(31 downto 0);
@@ -295,6 +295,8 @@ begin
       I => clk_n_buf,
       O => clk_n);
 
+  -- clock for top level -> TEST ONLY
+  sys_clk_o <= clk_p;
 
   ------------------------------------------------------------------------------
   -- Reset aligned to core clock
