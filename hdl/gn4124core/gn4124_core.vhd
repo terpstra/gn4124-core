@@ -478,8 +478,8 @@ begin
       wb_cyc_o   => wb_cyc,
       wb_stb_o   => wb_stb,
       wb_we_o    => wb_we,
-      wb_ack_i   => wb_ack,
-      wb_stall_i => wb_stall
+      wb_ack_i   => wb_ack
+      --wb_stall_i => wb_stall
       );
 
   wb_adr_o   <= wb_adr;
