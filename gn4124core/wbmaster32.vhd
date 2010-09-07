@@ -283,9 +283,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(wishbone_current_state = WB_READ_SEND_PCIE) then
-            l2p_read_cpl_next_state <= L2P_SEM;
+            l2p_read_cpl_current_state <= L2P_SEM;
           else
-            l2p_read_cpl_next_state <= IDLE;
+            l2p_read_cpl_current_state <= IDLE;
           end if;
           wbm_arb_req_o    <= '0';
           wbm_arb_data_o   <= (others => '0');
@@ -297,9 +297,9 @@ begin
           -----------------------------------------------------------------
         when L2P_SEM =>
           if not (wishbone_current_state = WB_READ_SEND_PCIE) then
-            l2p_read_cpl_next_state <= L2P_HEADER;
+            l2p_read_cpl_current_state <= L2P_HEADER;
           else
-            l2p_read_cpl_next_state <= L2P_SEM;
+            l2p_read_cpl_current_state <= L2P_SEM;
           end if;
           wbm_arb_req_o    <= '0';
           wbm_arb_data_o   <= (others => '0');
@@ -311,9 +311,9 @@ begin
           -----------------------------------------------------------------
         when L2P_HEADER =>
           if(arb_wbm_gnt_i = '1') then
-            l2p_read_cpl_next_state <= L2P_DATA;
+            l2p_read_cpl_current_state <= L2P_DATA;
           else
-            l2p_read_cpl_next_state <= L2P_HEADER;
+            l2p_read_cpl_current_state <= L2P_HEADER;
           end if;
           wbm_arb_req_o    <= '1';
           wbm_arb_data_o   <= s_l2p_header_reg;
@@ -324,7 +324,7 @@ begin
           -- L2P DATA
           -----------------------------------------------------------------
         when L2P_DATA =>
-          l2p_read_cpl_next_state <= IDLE;
+          l2p_read_cpl_current_state <= IDLE;
           wbm_arb_req_o           <= '0';
           wbm_arb_data_o          <= s_read_data_reg;
           wbm_arb_valid_o         <= '1';
@@ -334,14 +334,14 @@ begin
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          l2p_read_cpl_next_state <= IDLE;
+          l2p_read_cpl_current_state <= IDLE;
           wbm_arb_req_o           <= '0';
           wbm_arb_data_o          <= (others => '0');
           wbm_arb_valid_o         <= '0';
           wbm_arb_dframe_o        <= '0';
 
       end case;
-      l2p_read_cpl_current_state <= l2p_read_cpl_next_state;
+      --l2p_read_cpl_current_state <= l2p_read_cpl_next_state;
     end if;
   end process;
 
