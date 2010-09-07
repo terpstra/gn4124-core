@@ -83,14 +83,14 @@ begin
 -- Some internal signals assignments. For (foreseen) compatibility with other bus standards.
   wrdata_reg <= wb_data_i;
   bwsel_reg <= wb_sel_i;
-  bus_clock_int <= wb_clk_i;
+  --bus_clock_int <= wb_clk_i;
   rd_int <= wb_cyc_i and (wb_stb_i and (not wb_we_i));
   wr_int <= wb_cyc_i and (wb_stb_i and wb_we_i);
   allones <= (others => '1');
   allzeros <= (others => '0');
 -- 
 -- Main register bank access process.
-  process (bus_clock_int, rst_n_i)
+  process (wb_clk_i, rst_n_i)
   begin
     if (rst_n_i = '0') then 
       ack_sreg <= "0000000000";
@@ -105,7 +105,7 @@ begin
       dma_nextl_load_o <= '0';
       dma_nexth_load_o <= '0';
       dma_attrib_load_o <= '0';
-    elsif rising_edge(bus_clock_int) then
+    elsif rising_edge(wb_clk_i) then
  -- advance the ACK generator shift register
       ack_sreg(8 downto 0) <= ack_sreg(9 downto 1);
       ack_sreg(9) <= '0';
