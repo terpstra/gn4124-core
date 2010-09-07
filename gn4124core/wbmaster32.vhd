@@ -85,15 +85,15 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- Wishbone Interface
-      wb_adr_o   : out std_logic_vector(32-1 downto 0);  -- Adress
-      wb_dat_i   : in  std_logic_vector(31 downto 0);    -- Data in
-      wb_dat_o   : out std_logic_vector(31 downto 0);    -- Data out
-      wb_sel_o   : out std_logic_vector(3 downto 0);     -- Byte select
-      wb_cyc_o   : out std_logic;                        -- Read or write cycle
-      wb_stb_o   : out std_logic;                        -- Read or write strobe
-      wb_we_o    : out std_logic;                        -- Write
-      wb_ack_i   : in  std_logic;                        -- Acknowledge
-      wb_stall_i : in  std_logic                         -- Pipelined mode
+      wb_adr_o : out std_logic_vector(32-1 downto 0);  -- Adress
+      wb_dat_i : in  std_logic_vector(31 downto 0);    -- Data in
+      wb_dat_o : out std_logic_vector(31 downto 0);    -- Data out
+      wb_sel_o : out std_logic_vector(3 downto 0);     -- Byte select
+      wb_cyc_o : out std_logic;                        -- Read or write cycle
+      wb_stb_o : out std_logic;                        -- Read or write strobe
+      wb_we_o  : out std_logic;                        -- Write
+      wb_ack_i : in  std_logic                         -- Acknowledge
+      --wb_stall_i : in  std_logic                         -- Pipelined mode
       );
 end wbmaster32;
 
@@ -122,11 +122,11 @@ architecture behaviour of wbmaster32 is
   type wishbone_state_type is (WB_IDLE, WB_READ_REQUEST, WB_READ_WAIT_ACK, WB_READ_SEND_PCIE,
                                WB_WRITE_FIFO, WB_WRITE_REQUEST, WB_WRITE_WAIT_ACK);
   signal wishbone_current_state : wishbone_state_type;
-  signal wishbone_next_state : wishbone_state_type;
+  signal wishbone_next_state    : wishbone_state_type;
 
   type   l2p_read_cpl_state_type is (IDLE, L2P_SEM, L2P_HEADER, L2P_DATA);
   signal l2p_read_cpl_current_state : l2p_read_cpl_state_type;
-  signal l2p_read_cpl_next_state : l2p_read_cpl_state_type;
+  signal l2p_read_cpl_next_state    : l2p_read_cpl_state_type;
 
   signal s_read_request  : std_logic;   -- signal a waiting read request to the Wishbone master state machine
   signal s_write_request : std_logic;   -- signal a waiting write request to the Wishbone master state machine
@@ -180,9 +180,6 @@ begin
   s_read_request <= s_read_request_reg and not s_write_request;
 
   s_write_request <= not s_fifo_empty;
-
-  s_l2p_last <= '1' when (s_read_len_reg(9 downto 0) = "0000000000")
-                else '0';
 
   process (sys_clk_i, sys_rst_n_i)
   begin
@@ -252,6 +249,9 @@ begin
     end if;
   end process;
 
+  s_l2p_last <= '1' when (s_read_len_reg(9 downto 0) = "0000000000")
+                else '0';
+
   --read completion header
   s_l2p_header_reg <= "000"             -->  Traffic Class
                       & '0'             -->  Reserved
@@ -272,10 +272,10 @@ begin
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       l2p_read_cpl_current_state <= IDLE;
-      wbm_arb_req_o <= '0';
-      wbm_arb_data_o <= (others => '0');
-      wbm_arb_valid_o <= '0';
-      wbm_arb_dframe_o <= '0';
+      wbm_arb_req_o              <= '0';
+      wbm_arb_data_o             <= (others => '0');
+      wbm_arb_valid_o            <= '0';
+      wbm_arb_dframe_o           <= '0';
     elsif rising_edge(gn4124_clk_i) then
       case l2p_read_cpl_current_state is
         -----------------------------------------------------------------
@@ -287,9 +287,9 @@ begin
           else
             l2p_read_cpl_next_state <= IDLE;
           end if;
-          wbm_arb_req_o <= '0';
-          wbm_arb_data_o <= (others => '0');
-          wbm_arb_valid_o <= '0';
+          wbm_arb_req_o    <= '0';
+          wbm_arb_data_o   <= (others => '0');
+          wbm_arb_valid_o  <= '0';
           wbm_arb_dframe_o <= '0';
 
           -----------------------------------------------------------------
@@ -301,9 +301,9 @@ begin
           else
             l2p_read_cpl_next_state <= L2P_SEM;
           end if;
-          wbm_arb_req_o <= '0';
-          wbm_arb_data_o <= (others => '0');
-          wbm_arb_valid_o <= '0';
+          wbm_arb_req_o    <= '0';
+          wbm_arb_data_o   <= (others => '0');
+          wbm_arb_valid_o  <= '0';
           wbm_arb_dframe_o <= '0';
 
           -----------------------------------------------------------------
@@ -315,9 +315,9 @@ begin
           else
             l2p_read_cpl_next_state <= L2P_HEADER;
           end if;
-          wbm_arb_req_o <= '1';
-          wbm_arb_data_o <= s_l2p_header_reg;
-          wbm_arb_valid_o <= '1';
+          wbm_arb_req_o    <= '1';
+          wbm_arb_data_o   <= s_l2p_header_reg;
+          wbm_arb_valid_o  <= '1';
           wbm_arb_dframe_o <= '1';
 
           -----------------------------------------------------------------
@@ -325,20 +325,20 @@ begin
           -----------------------------------------------------------------
         when L2P_DATA =>
           l2p_read_cpl_next_state <= IDLE;
-          wbm_arb_req_o <= '0';
-          wbm_arb_data_o <= s_read_data_reg;
-          wbm_arb_valid_o <= '1';
-          wbm_arb_dframe_o <= '0';
+          wbm_arb_req_o           <= '0';
+          wbm_arb_data_o          <= s_read_data_reg;
+          wbm_arb_valid_o         <= '1';
+          wbm_arb_dframe_o        <= '0';
 
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
           l2p_read_cpl_next_state <= IDLE;
-          wbm_arb_req_o <= '0';
-          wbm_arb_data_o <= (others => '0');
-          wbm_arb_valid_o <= '0';
-          wbm_arb_dframe_o <= '0';
+          wbm_arb_req_o           <= '0';
+          wbm_arb_data_o          <= (others => '0');
+          wbm_arb_valid_o         <= '0';
+          wbm_arb_dframe_o        <= '0';
 
       end case;
       l2p_read_cpl_current_state <= l2p_read_cpl_next_state;
@@ -397,12 +397,12 @@ begin
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       wishbone_current_state <= WB_IDLE;
-      wb_cyc_o <= '0';
-      wb_stb_o <= '0';
-      wb_we_o <= '0';
-      wb_sel_o <= "0000";
-      wb_dat_o <= (others => '0');
-      wb_adr_o <= (others => '0');
+      wb_cyc_o               <= '0';
+      wb_stb_o               <= '0';
+      wb_we_o                <= '0';
+      wb_sel_o               <= "0000";
+      wb_dat_o               <= (others => '0');
+      wb_adr_o               <= (others => '0');
     elsif rising_edge(sys_clk_i) then
       case wishbone_current_state is
         -----------------------------------------------------------------
@@ -418,7 +418,7 @@ begin
           end if;
           wb_cyc_o <= '0';
           wb_stb_o <= '0';
-          wb_we_o <= '0';
+          wb_we_o  <= '0';
           wb_sel_o <= "0000";
           wb_dat_o <= (others => '0');
           wb_adr_o <= (others => '0');
@@ -428,27 +428,27 @@ begin
           -----------------------------------------------------------------
         when WB_WRITE_FIFO =>
           wishbone_current_state <= WB_WRITE_REQUEST;
-          wb_cyc_o <= '0';
-          wb_stb_o <= '0';
-          wb_we_o <= '0';
-          wb_sel_o <= "0000";
-          wb_dat_o <= (others => '0');
-          wb_adr_o <= (others => '0');
+          wb_cyc_o               <= '0';
+          wb_stb_o               <= '0';
+          wb_we_o                <= '0';
+          wb_sel_o               <= "0000";
+          wb_dat_o               <= (others => '0');
+          wb_adr_o               <= (others => '0');
 
           -----------------------------------------------------------------
           -- Write request on the Wishbone bus
           -----------------------------------------------------------------
         when WB_WRITE_REQUEST =>
-          if (wb_stall_i = '1' and s_wb_timeout = '0') then
-            wishbone_current_state <= WB_WRITE_REQUEST;
-          elsif(wb_ack_i = '1' or s_wb_timeout = '1') then
+          --if (wb_stall_i = '1' and s_wb_timeout = '0') then
+          --  wishbone_current_state <= WB_WRITE_REQUEST;
+          if(wb_ack_i = '1' or s_wb_timeout = '1') then
             wishbone_current_state <= WB_IDLE;
           else
             wishbone_current_state <= WB_WRITE_WAIT_ACK;
           end if;
           wb_cyc_o <= '1';
           wb_stb_o <= '1';
-          wb_we_o <= '1';
+          wb_we_o  <= '1';
           wb_sel_o <= "1111";
           wb_dat_o <= s_write_data_reg;
           wb_adr_o <= s_write_addr_reg;
@@ -467,16 +467,16 @@ begin
           -- Read request on the Wishbone bus
           -----------------------------------------------------------------
         when WB_READ_REQUEST =>
-          if (wb_stall_i = '1' and s_wb_timeout = '0') then
-            wishbone_current_state <= WB_READ_REQUEST;
-          elsif(wb_ack_i = '1' or s_wb_timeout = '1') then
+          --if (wb_stall_i = '1' and s_wb_timeout = '0') then
+          --  wishbone_current_state <= WB_READ_REQUEST;
+          if(wb_ack_i = '1' or s_wb_timeout = '1') then
             wishbone_current_state <= WB_READ_SEND_PCIE;
           else
             wishbone_current_state <= WB_READ_WAIT_ACK;
           end if;
           wb_cyc_o <= '1';
           wb_stb_o <= '1';
-          wb_we_o <= '0';
+          wb_we_o  <= '0';
           wb_sel_o <= "1111";
           wb_dat_o <= (others => '0');
           wb_adr_o <= std_logic_vector(s_read_addr_reg);
@@ -502,7 +502,7 @@ begin
           end if;
           wb_cyc_o <= '0';
           wb_stb_o <= '0';
-          wb_we_o <= '0';
+          wb_we_o  <= '0';
           wb_sel_o <= "0000";
           wb_dat_o <= (others => '0');
           wb_adr_o <= (others => '0');
@@ -512,12 +512,12 @@ begin
           -----------------------------------------------------------------
         when others =>
           wishbone_current_state <= WB_IDLE;
-          wb_cyc_o <= '0';
-          wb_stb_o <= '0';
-          wb_we_o <= '0';
-          wb_sel_o <= "0000";
-          wb_dat_o <= (others => '0');
-          wb_adr_o <= (others => '0');
+          wb_cyc_o               <= '0';
+          wb_stb_o               <= '0';
+          wb_we_o                <= '0';
+          wb_sel_o               <= "0000";
+          wb_dat_o               <= (others => '0');
+          wb_adr_o               <= (others => '0');
 
       end case;
       --wishbone_current_state <= wishbone_next_state;
