@@ -441,11 +441,11 @@ begin
         when WB_WRITE_REQUEST =>
           --if (wb_stall_i = '1' and s_wb_timeout = '0') then
           --  wishbone_current_state <= WB_WRITE_REQUEST;
-          if(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_current_state <= WB_IDLE;
-          else
-            wishbone_current_state <= WB_WRITE_WAIT_ACK;
-          end if;
+          --if(wb_ack_i = '1' or s_wb_timeout = '1') then
+          --  wishbone_current_state <= WB_IDLE;
+          --else
+          wishbone_current_state <= WB_WRITE_WAIT_ACK;
+          --end if;
           wb_cyc_o <= '1';
           wb_stb_o <= '1';
           wb_we_o  <= '1';
@@ -459,6 +459,12 @@ begin
         when WB_WRITE_WAIT_ACK =>
           if(wb_ack_i = '1' or s_wb_timeout = '1') then
             wishbone_current_state <= WB_IDLE;
+            wb_cyc_o               <= '0';
+            wb_stb_o               <= '0';
+            wb_we_o                <= '0';
+            wb_sel_o               <= "0000";
+            wb_dat_o               <= (others => '0');
+            wb_adr_o               <= (others => '0');
           else
             wishbone_current_state <= WB_WRITE_WAIT_ACK;
           end if;
@@ -469,11 +475,11 @@ begin
         when WB_READ_REQUEST =>
           --if (wb_stall_i = '1' and s_wb_timeout = '0') then
           --  wishbone_current_state <= WB_READ_REQUEST;
-          if(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_current_state <= WB_READ_SEND_PCIE;
-          else
-            wishbone_current_state <= WB_READ_WAIT_ACK;
-          end if;
+          --if(wb_ack_i = '1' or s_wb_timeout = '1') then
+          --  wishbone_current_state <= WB_READ_SEND_PCIE;
+          --else
+          wishbone_current_state <= WB_READ_WAIT_ACK;
+          --end if;
           wb_cyc_o <= '1';
           wb_stb_o <= '1';
           wb_we_o  <= '0';
@@ -487,6 +493,12 @@ begin
         when WB_READ_WAIT_ACK =>
           if(wb_ack_i = '1' or s_wb_timeout = '1') then
             wishbone_current_state <= WB_READ_SEND_PCIE;
+            wb_cyc_o               <= '0';
+            wb_stb_o               <= '0';
+            wb_we_o                <= '0';
+            wb_sel_o               <= "0000";
+            wb_dat_o               <= (others => '0');
+            wb_adr_o               <= (others => '0');
           else
             wishbone_current_state <= WB_READ_WAIT_ACK;
           end if;
