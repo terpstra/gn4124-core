@@ -204,15 +204,15 @@ architecture BEHAVIOUR of LOTUS is
 
         ---------------------------------------------------------
         -- Target Interface (Wishbone master)
-        wb_adr_o   : out std_logic_vector(31 downto 0);
-        wb_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
-        wb_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
-        wb_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
-        wb_cyc_o   : out std_logic;
-        wb_stb_o   : out std_logic;
-        wb_we_o    : out std_logic;
-        wb_ack_i   : in  std_logic;
-        wb_stall_i : in  std_logic;
+        wb_adr_o : out std_logic_vector(31 downto 0);
+        wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data in
+        wb_dat_o : out std_logic_vector(31 downto 0);  -- Data out
+        wb_sel_o : out std_logic_vector(3 downto 0);   -- Byte select
+        wb_cyc_o : out std_logic;
+        wb_stb_o : out std_logic;
+        wb_we_o  : out std_logic;
+        wb_ack_i : in  std_logic;
+        --wb_stall_i : in  std_logic;
 
         ---------------------------------------------------------
         -- L2P DMA Interface (Pipelined Wishbone master)
@@ -239,15 +239,15 @@ architecture BEHAVIOUR of LOTUS is
   signal IRST  : std_logic;
   signal L_RST : std_logic;
 
-  signal wb_adr_o   : std_logic_vector(31 downto 0);
-  signal wb_dat_i   : std_logic_vector(31 downto 0);
-  signal wb_dat_o   : std_logic_vector(31 downto 0);
-  signal wb_sel_o   : std_logic_vector(3 downto 0);
-  signal wb_cyc_o   : std_logic;
-  signal wb_stb_o   : std_logic;
-  signal wb_we_o    : std_logic;
-  signal wb_ack_i   : std_logic;
-  signal wb_stall_i : std_logic;
+  signal wb_adr_o : std_logic_vector(31 downto 0);
+  signal wb_dat_i : std_logic_vector(31 downto 0);
+  signal wb_dat_o : std_logic_vector(31 downto 0);
+  signal wb_sel_o : std_logic_vector(3 downto 0);
+  signal wb_cyc_o : std_logic;
+  signal wb_stb_o : std_logic;
+  signal wb_we_o  : std_logic;
+  signal wb_ack_i : std_logic;
+  --signal wb_stall_i : std_logic;
 
   signal dma_adr_o   : std_logic_vector(31 downto 0);
   signal dma_dat_i   : std_logic_vector(31 downto 0);
@@ -262,7 +262,7 @@ architecture BEHAVIOUR of LOTUS is
 -- TEST: L2P DMA interface
   type   wb_state_type is (IDLE, ACK, ST1);
   signal wb_current_state : wb_state_type;
-  signal wb_next_state : wb_state_type;
+  signal wb_next_state    : wb_state_type;
   signal wb_data_cnt      : unsigned(31 downto 0);
 
   signal l_clk : std_logic;
@@ -350,15 +350,15 @@ begin
 
       ---------------------------------------------------------
       -- Target Interface (Wishbone master)
-      wb_adr_o   => wb_adr_o,
-      wb_dat_i   => wb_dat_i,
-      wb_dat_o   => wb_dat_o,
-      wb_sel_o   => wb_sel_o,
-      wb_cyc_o   => wb_cyc_o,
-      wb_stb_o   => wb_stb_o,
-      wb_we_o    => wb_we_o,
-      wb_ack_i   => wb_ack_i,
-      wb_stall_i => wb_stall_i,
+      wb_adr_o => wb_adr_o,
+      wb_dat_i => wb_dat_i,
+      wb_dat_o => wb_dat_o,
+      wb_sel_o => wb_sel_o,
+      wb_cyc_o => wb_cyc_o,
+      wb_stb_o => wb_stb_o,
+      wb_we_o  => wb_we_o,
+      wb_ack_i => wb_ack_i,
+      --wb_stall_i => wb_stall_i,
 
       ---------------------------------------------------------
       -- L2P DMA Interface (Pipelined Wishbone master)
@@ -376,9 +376,9 @@ begin
   ------------------------------------------------------------------------------
   -- UNUSED local wishbone bus
   ------------------------------------------------------------------------------
-  wb_ack_i   <= '0';
-  wb_stall_i <= '0';
-  wb_dat_i   <= "00000000000000000000000000000000";
+  wb_ack_i <= '0';
+  --wb_stall_i <= '0';
+  wb_dat_i <= "00000000000000000000000000000000";
 
 
 
