@@ -403,6 +403,7 @@ begin
       wb_sel_o               <= "0000";
       wb_dat_o               <= (others => '0');
       wb_adr_o               <= (others => '0');
+      s_fifo_pop             <= '0';
     elsif rising_edge(sys_clk_i) then
       case wishbone_current_state is
         -----------------------------------------------------------------
@@ -410,30 +411,38 @@ begin
         -----------------------------------------------------------------
         when WB_IDLE =>
           if(s_read_request = '1' and l2p_read_cpl_current_state = IDLE) then
-            wishbone_current_state <= WB_READ_REQUEST;
+            wishbone_current_state <= WB_READ_WAIT_ACK;
+            wb_cyc_o               <= '1';
+            wb_stb_o               <= '1';
+            wb_we_o                <= '0';
+            wb_sel_o               <= "1111";
+            wb_dat_o               <= (others => '0');
+            wb_adr_o               <= std_logic_vector(s_read_addr_reg);
           elsif(s_write_request = '1') then
             wishbone_current_state <= WB_WRITE_FIFO;
+            s_fifo_pop             <= '1';
+            wb_cyc_o               <= '0';
+            wb_stb_o               <= '0';
+            wb_we_o                <= '0';
+            wb_sel_o               <= "0000";
+            wb_dat_o               <= (others => '0');
+            wb_adr_o               <= (others => '0');
           else
             wishbone_current_state <= WB_IDLE;
+            wb_cyc_o               <= '0';
+            wb_stb_o               <= '0';
+            wb_we_o                <= '0';
+            wb_sel_o               <= "0000";
+            wb_dat_o               <= (others => '0');
+            wb_adr_o               <= (others => '0');
           end if;
-          wb_cyc_o <= '0';
-          wb_stb_o <= '0';
-          wb_we_o  <= '0';
-          wb_sel_o <= "0000";
-          wb_dat_o <= (others => '0');
-          wb_adr_o <= (others => '0');
 
           -----------------------------------------------------------------
           -- Write wait fifo
           -----------------------------------------------------------------
         when WB_WRITE_FIFO =>
           wishbone_current_state <= WB_WRITE_REQUEST;
-          wb_cyc_o               <= '0';
-          wb_stb_o               <= '0';
-          wb_we_o                <= '0';
-          wb_sel_o               <= "0000";
-          wb_dat_o               <= (others => '0');
-          wb_adr_o               <= (others => '0');
+          s_fifo_pop             <= '0';
 
           -----------------------------------------------------------------
           -- Write request on the Wishbone bus
@@ -446,12 +455,12 @@ begin
           --else
           wishbone_current_state <= WB_WRITE_WAIT_ACK;
           --end if;
-          wb_cyc_o <= '1';
-          wb_stb_o <= '1';
-          wb_we_o  <= '1';
-          wb_sel_o <= "1111";
-          wb_dat_o <= s_write_data_reg;
-          wb_adr_o <= s_write_addr_reg;
+          wb_cyc_o               <= '1';
+          wb_stb_o               <= '1';
+          wb_we_o                <= '1';
+          wb_sel_o               <= "1111";
+          wb_dat_o               <= s_write_data_reg;
+          wb_adr_o               <= s_write_addr_reg;
 
           -----------------------------------------------------------------
           -- Wait for acknowledge (write request)
@@ -480,12 +489,6 @@ begin
           --else
           wishbone_current_state <= WB_READ_WAIT_ACK;
           --end if;
-          wb_cyc_o <= '1';
-          wb_stb_o <= '1';
-          wb_we_o  <= '0';
-          wb_sel_o <= "1111";
-          wb_dat_o <= (others => '0');
-          wb_adr_o <= std_logic_vector(s_read_addr_reg);
 
           -----------------------------------------------------------------
           -- Wait for acknowledge (read request)
@@ -501,6 +504,7 @@ begin
             wb_adr_o               <= (others => '0');
           else
             wishbone_current_state <= WB_READ_WAIT_ACK;
+            wb_adr_o               <= std_logic_vector(s_read_addr_reg);
           end if;
 
           -----------------------------------------------------------------
@@ -512,12 +516,6 @@ begin
           else
             wishbone_current_state <= WB_READ_SEND_PCIE;
           end if;
-          wb_cyc_o <= '0';
-          wb_stb_o <= '0';
-          wb_we_o  <= '0';
-          wb_sel_o <= "0000";
-          wb_dat_o <= (others => '0');
-          wb_adr_o <= (others => '0');
 
           -----------------------------------------------------------------
           -- OTHERS
@@ -567,10 +565,10 @@ begin
 
   s_fifo_push <= pd_wbm_data_valid_i and pd_wbm_target_mwr_i and pd_wbm_wbm_addr_i and not s_fifo_full;
 
-  s_fifo_pop <= '1' when (wishbone_current_state = WB_IDLE
-                          and s_write_request = '1'
-                          and s_read_request = '0')
-                else '0';
+  --s_fifo_pop <= '1' when (wishbone_current_state = WB_IDLE
+  --                        and s_write_request = '1'
+  --                        and s_read_request = '0')
+  --              else '0';
 
   u_fifo_write : fifo_write port map
     (
@@ -588,18 +586,18 @@ begin
   s_fifo_in(63 downto 32) <= pd_wbm_addr_i;
   s_fifo_in(31 downto 0)  <= pd_wbm_data_i;
 
-  process (sys_clk_i, sys_rst_n_i)
-  begin
-    if(sys_rst_n_i = c_RST_ACTIVE) then
-      s_write_data_reg <= (others => '0');
-      s_write_addr_reg <= (others => '0');
-    elsif rising_edge(sys_clk_i) then
-      if (wishbone_current_state = WB_WRITE_FIFO) then
-        s_write_data_reg <= s_fifo_out(31 downto 0);
-        s_write_addr_reg <= s_fifo_out(63 downto 32);
-      end if;
-    end if;
-  end process;
+  --process (sys_clk_i, sys_rst_n_i)
+  --begin
+  --  if(sys_rst_n_i = c_RST_ACTIVE) then
+  --    s_write_data_reg <= (others => '0');
+  --    s_write_addr_reg <= (others => '0');
+  --  elsif rising_edge(sys_clk_i) then
+  --    if (wishbone_current_state = WB_WRITE_FIFO) then
+  s_write_data_reg <= s_fifo_out(31 downto 0);
+  s_write_addr_reg <= s_fifo_out(63 downto 32);
+  --    end if;
+  --  end if;
+  --end process;
 
   p_wr_rdy_o <= s_fifo_empty;
 
