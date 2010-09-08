@@ -312,23 +312,25 @@ begin
         when L2P_HEADER =>
           if(arb_wbm_gnt_i = '1') then
             l2p_read_cpl_current_state <= L2P_DATA;
+            wbm_arb_req_o           <= '0';
+            wbm_arb_data_o          <= s_read_data_reg;
+            wbm_arb_valid_o         <= '1';
+            wbm_arb_dframe_o        <= '0';
           else
             l2p_read_cpl_current_state <= L2P_HEADER;
+            wbm_arb_req_o    <= '1';
+            wbm_arb_data_o   <= s_l2p_header_reg;
+            wbm_arb_valid_o  <= '1';
+            wbm_arb_dframe_o <= '1';
           end if;
-          wbm_arb_req_o    <= '1';
-          wbm_arb_data_o   <= s_l2p_header_reg;
-          wbm_arb_valid_o  <= '1';
-          wbm_arb_dframe_o <= '1';
 
           -----------------------------------------------------------------
           -- L2P DATA
           -----------------------------------------------------------------
         when L2P_DATA =>
           l2p_read_cpl_current_state <= IDLE;
-          wbm_arb_req_o           <= '0';
-          wbm_arb_data_o          <= s_read_data_reg;
-          wbm_arb_valid_o         <= '1';
-          wbm_arb_dframe_o        <= '0';
+          wbm_arb_data_o          <= (others => '0');
+          wbm_arb_valid_o         <= '0';
 
           -----------------------------------------------------------------
           -- OTHERS
