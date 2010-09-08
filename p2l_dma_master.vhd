@@ -202,7 +202,8 @@ begin
         s_chain_cpt   <= "111";
       end if;
 
-      if (p2l_dma_current_state = P2L_DATA_WAIT and s_chain = '1' and pd_pdm_target_cpld_i = '1' and pd_pdm_hdr_start_i = '0') then
+      if (p2l_dma_current_state = P2L_DATA_WAIT and s_chain = '1'
+          and pd_pdm_target_cpld_i = '1' and pd_pdm_hdr_start_i = '0') then
         if (s_chain_cpt = "111") then
           next_item_carrier_addr_o <= pd_pdm_data_i;
           s_chain_cpt              <= "110";
@@ -234,6 +235,7 @@ begin
 
     end if;
   end process;
+
   s_64b_address <= '0' when p2l_address_h = x"00000000" else
                    '1';
 
@@ -264,9 +266,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(wishbone_current_state = WB_WAIT_P2L_START) then
-            p2l_dma_next_state <= P2L_HEADER;
+            p2l_dma_current_state <= P2L_HEADER;
           else
-            p2l_dma_next_state <= IDLE;
+            p2l_dma_current_state <= IDLE;
           end if;
           DEBUG <= "1110";
 
@@ -276,34 +278,34 @@ begin
         when P2L_HEADER =>
           if(arb_pdm_gnt_i = '1') then
             if(s_64b_address = '1') then
-              p2l_dma_next_state <= P2L_ADDR_H;
+              p2l_dma_current_state <= P2L_ADDR_H;
             else
-              p2l_dma_next_state <= P2L_ADDR_L;
+              p2l_dma_current_state <= P2L_ADDR_L;
             end if;
           else
-            p2l_dma_next_state <= P2L_HEADER;
+            p2l_dma_current_state <= P2L_HEADER;
           end if;
           DEBUG <= "1101";
           -----------------------------------------------------------------
           -- P2L ADDRESS (63-32)
           -----------------------------------------------------------------
         when P2L_ADDR_H =>
-          p2l_dma_next_state <= P2L_ADDR_L;
+          p2l_dma_current_state <= P2L_ADDR_L;
           DEBUG              <= "1100";
           -----------------------------------------------------------------
           -- P2L ADDRESS (31-00)
           -----------------------------------------------------------------
         when P2L_ADDR_L =>
-          p2l_dma_next_state <= P2L_DATA_WAIT;
+          p2l_dma_current_state <= P2L_DATA_WAIT;
           DEBUG              <= "1011";
           -----------------------------------------------------------------
           -- Wait for all the data
           -----------------------------------------------------------------
         when P2L_DATA_WAIT =>
           if(s_chain_cpt = "001") then
-            p2l_dma_next_state <= P2L_WAIT_WB_IDLE;
+            p2l_dma_current_state <= P2L_WAIT_WB_IDLE;
           else
-            p2l_dma_next_state <= P2L_DATA_WAIT;
+            p2l_dma_current_state <= P2L_DATA_WAIT;
           end if;
           DEBUG <= "1010";
           -----------------------------------------------------------------
@@ -311,18 +313,18 @@ begin
           -----------------------------------------------------------------
         when P2L_WAIT_WB_IDLE =>
           if (wishbone_current_state = IDLE) then
-            p2l_dma_next_state <= IDLE;
+            p2l_dma_current_state <= IDLE;
           else
-            p2l_dma_next_state <= P2L_WAIT_WB_IDLE;
+            p2l_dma_current_state <= P2L_WAIT_WB_IDLE;
           end if;
           DEBUG <= "1001";
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          p2l_dma_next_state <= IDLE;
+          p2l_dma_current_state <= IDLE;
       end case;
-      p2l_dma_current_state <= p2l_dma_next_state;
+      --p2l_dma_current_state <= p2l_dma_next_state;
     end if;
   end process;
 
@@ -373,9 +375,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(dma_ctrl_start_next_i = '1') then
-            wishbone_next_state <= WB_WAIT_P2L_START;
+            wishbone_current_state <= WB_WAIT_P2L_START;
           else
-            wishbone_next_state <= IDLE;
+            wishbone_current_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
@@ -384,10 +386,10 @@ begin
         when WB_WAIT_P2L_START =>
           if not (p2l_dma_current_state = IDLE) then
             if (s_chain = '1') then
-              wishbone_next_state <= WB_GET_CHAIN;
+              wishbone_current_state <= WB_GET_CHAIN;
             end if;
           else
-            wishbone_next_state <= WB_WAIT_P2L_START;
+            wishbone_current_state <= WB_WAIT_P2L_START;
           end if;
 
           -----------------------------------------------------------------
@@ -395,24 +397,24 @@ begin
           -----------------------------------------------------------------
         when WB_GET_CHAIN =>
           if(p2l_dma_current_state = P2L_WAIT_WB_IDLE) then
-            wishbone_next_state <= WB_SEND_NEXT_ITEM_VALID;
+            wishbone_current_state <= WB_SEND_NEXT_ITEM_VALID;
           else
-            wishbone_next_state <= WB_GET_CHAIN;
+            wishbone_current_state <= WB_GET_CHAIN;
           end if;
 
           -----------------------------------------------------------------
           -- Request on the Wishbone bus
           -----------------------------------------------------------------
         when WB_SEND_NEXT_ITEM_VALID =>
-          wishbone_next_state <= IDLE;
+          wishbone_current_state <= IDLE;
 
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          wishbone_next_state <= IDLE;
+          wishbone_current_state <= IDLE;
       end case;
-      wishbone_current_state <= wishbone_next_state;
+      --wishbone_current_state <= wishbone_next_state;
     end if;
   end process;
 
