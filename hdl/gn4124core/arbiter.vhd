@@ -112,8 +112,6 @@ begin
   --         : LDM request
   -- Lowest  : PDM request
   -----------------------------------------------------------------------------
-
-
   process (clk_i, rst_n_i)
   begin
     if(rst_n_i = c_RST_ACTIVE) then
@@ -147,17 +145,44 @@ begin
     end if;
   end process;
 
-  arb_ser_valid_o <= wbm_arb_valid_i when (arb_wbm_gnt = '1') else
-                     pdm_arb_valid_i when (arb_pdm_gnt = '1') else
-                     ldm_arb_valid_i when (arb_ldm_gnt = '1') else '0';
+  process (clk_i, rst_n_i)
+  begin
+    if rst_n_i = '0' then
+      arb_ser_valid_o  <= '0';
+      arb_ser_dframe_o <= '0';
+      arb_ser_data_o   <= (others => '0');
+    elsif rising_edge(clk_i) then
+      if arb_wbm_gnt = '1' then
+        arb_ser_valid_o  <= wbm_arb_valid_i;
+        arb_ser_dframe_o <= wbm_arb_dframe_i;
+        arb_ser_data_o   <= wbm_arb_data_i;
+      elsif arb_pdm_gnt = '1' then
+        arb_ser_valid_o  <= pdm_arb_valid_i;
+        arb_ser_dframe_o <= pdm_arb_dframe_i;
+        arb_ser_data_o   <= pdm_arb_data_i;
+      elsif arb_ldm_gnt = '1' then
+        arb_ser_valid_o  <= ldm_arb_valid_i;
+        arb_ser_dframe_o <= ldm_arb_dframe_i;
+        arb_ser_data_o   <= ldm_arb_data_i;
+      else
+        arb_ser_valid_o  <= '0';
+        arb_ser_dframe_o <= '0';
+        arb_ser_data_o   <= (others => '0');
+      end if;
+    end if;
+  end process;
 
-  arb_ser_dframe_o <= wbm_arb_dframe_i when (arb_wbm_gnt = '1') else
-                      pdm_arb_dframe_i when (arb_pdm_gnt = '1') else
-                      ldm_arb_dframe_i when (arb_ldm_gnt = '1') else '0';
+  --arb_ser_valid_o <= wbm_arb_valid_i when (arb_wbm_gnt = '1') else
+  --                   pdm_arb_valid_i when (arb_pdm_gnt = '1') else
+  --                   ldm_arb_valid_i when (arb_ldm_gnt = '1') else '0';
 
-  arb_ser_data_o <= wbm_arb_data_i when (arb_wbm_gnt = '1') else
-                    pdm_arb_data_i when (arb_pdm_gnt = '1') else
-                    ldm_arb_data_i when (arb_ldm_gnt = '1') else x"00000000";
+  --arb_ser_dframe_o <= wbm_arb_dframe_i when (arb_wbm_gnt = '1') else
+  --                    pdm_arb_dframe_i when (arb_pdm_gnt = '1') else
+  --                    ldm_arb_dframe_i when (arb_ldm_gnt = '1') else '0';
+
+  --arb_ser_data_o <= wbm_arb_data_i when (arb_wbm_gnt = '1') else
+  --                  pdm_arb_data_i when (arb_pdm_gnt = '1') else
+  --                  ldm_arb_data_i when (arb_ldm_gnt = '1') else x"00000000";
 
   arb_wbm_gnt_o <= arb_wbm_gnt;
   arb_pdm_gnt_o <= arb_pdm_gnt;

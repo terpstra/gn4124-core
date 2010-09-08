@@ -274,16 +274,16 @@ begin
   ------------------------------------------------------------------------------
   -- System clock from gennum LCLK
   ------------------------------------------------------------------------------
---  cmp_sysclk_buf : IBUFDS
---    generic map (
---      DIFF_TERM    => false,            -- Differential Termination
---      IBUF_LOW_PWR => true,             -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
---      IOSTANDARD   => "DEFAULT")
---    port map (
---      O  => l_clk,                      -- Buffer output
---      I  => L_CLKp,                     -- Diff_p buffer input (connect directly to top-level port)
---      IB => L_CLKn                      -- Diff_n buffer input (connect directly to top-level port)
---      );
+  cmp_sysclk_buf : IBUFDS
+    generic map (
+      DIFF_TERM    => false,            -- Differential Termination
+      IBUF_LOW_PWR => true,             -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
+      IOSTANDARD   => "DEFAULT")
+    port map (
+      O  => open,                      -- Buffer output
+      I  => L_CLKp,                     -- Diff_p buffer input (connect directly to top-level port)
+      IB => L_CLKn                      -- Diff_n buffer input (connect directly to top-level port)
+      );
 
   ------------------------------------------------------------------------------
   -- Assign static outputs
