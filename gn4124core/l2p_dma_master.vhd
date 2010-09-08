@@ -236,9 +236,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(wishbone_current_state = WB_WAIT_L2P_START) then
-            l2p_dma_next_state <= L2P_HEADER;
+            l2p_dma_current_state <= L2P_HEADER;
           else
-            l2p_dma_next_state <= IDLE;
+            l2p_dma_current_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
@@ -247,30 +247,30 @@ begin
         when L2P_HEADER =>
           if(arb_ldm_gnt_i = '1') then
             if(s_64b_address = '1') then
-              l2p_dma_next_state <= L2P_ADDR_H;
+              l2p_dma_current_state <= L2P_ADDR_H;
             else
-              l2p_dma_next_state <= L2P_ADDR_L;
+              l2p_dma_current_state <= L2P_ADDR_L;
             end if;
           else
-            l2p_dma_next_state <= L2P_HEADER;
+            l2p_dma_current_state <= L2P_HEADER;
           end if;
 
           -----------------------------------------------------------------
           -- L2P ADDRESS (63-32)
           -----------------------------------------------------------------
         when L2P_ADDR_H =>
-          l2p_dma_next_state <= L2P_ADDR_L;
+          l2p_dma_current_state <= L2P_ADDR_L;
 
           -----------------------------------------------------------------
           -- L2P ADDRESS (31-00)
           -----------------------------------------------------------------
         when L2P_ADDR_L =>
           if(s_fifo_empty = '1') then
-            l2p_dma_next_state <= WB_DATA_WAIT;
+            l2p_dma_current_state <= WB_DATA_WAIT;
           elsif(l2p_data_cpt = 1) then
-            l2p_dma_next_state <= L2P_DATA_LAST;
+            l2p_dma_current_state <= L2P_DATA_LAST;
           else
-            l2p_dma_next_state <= L2P_DATA;
+            l2p_dma_current_state <= L2P_DATA;
           end if;
 
           -----------------------------------------------------------------
@@ -278,11 +278,11 @@ begin
           -----------------------------------------------------------------
         when WB_DATA_WAIT =>
           if(s_fifo_empty = '1') then
-            l2p_dma_next_state <= WB_DATA_WAIT;
+            l2p_dma_current_state <= WB_DATA_WAIT;
           elsif(l2p_data_cpt = 1) then
-            l2p_dma_next_state <= L2P_DATA_LAST;
+            l2p_dma_current_state <= L2P_DATA_LAST;
           else
-            l2p_dma_next_state <= L2P_DATA;
+            l2p_dma_current_state <= L2P_DATA;
           end if;
 
           -----------------------------------------------------------------
@@ -290,11 +290,11 @@ begin
           -----------------------------------------------------------------
         when L2P_DATA =>
           if(s_fifo_empty = '1') then
-            l2p_dma_next_state <= WB_DATA_WAIT;
+            l2p_dma_current_state <= WB_DATA_WAIT;
           elsif(l2p_data_cpt = 2) then
-            l2p_dma_next_state <= L2P_DATA_LAST;
+            l2p_dma_current_state <= L2P_DATA_LAST;
           else
-            l2p_dma_next_state <= L2P_DATA;
+            l2p_dma_current_state <= L2P_DATA;
           end if;
 
           -----------------------------------------------------------------
@@ -302,18 +302,18 @@ begin
           -----------------------------------------------------------------
         when L2P_DATA_LAST =>
           if(l2p_len_cpt > 0) then
-            l2p_dma_next_state <= L2P_HEADER;
+            l2p_dma_current_state <= L2P_HEADER;
           else
-            l2p_dma_next_state <= IDLE;
+            l2p_dma_current_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          l2p_dma_next_state <= IDLE;
+          l2p_dma_current_state <= IDLE;
       end case;
-      l2p_dma_current_state <= l2p_dma_next_state;
+      --l2p_dma_current_state <= l2p_dma_next_state;
     end if;
   end process;
 
@@ -372,9 +372,9 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(dma_ctrl_start_l2p_i = '1' and not (dma_ctrl_len_i(31 downto 2) = "000000000000000000000000000000")) then
-            wishbone_next_state <= WB_WAIT_L2P_START;
+            wishbone_current_state <= WB_WAIT_L2P_START;
           else
-            wishbone_next_state <= IDLE;
+            wishbone_current_state <= IDLE;
           end if;
 
           -----------------------------------------------------------------
@@ -382,9 +382,9 @@ begin
           -----------------------------------------------------------------
         when WB_WAIT_L2P_START =>
           if not (l2p_dma_current_state = IDLE) then
-            wishbone_next_state <= WB_REQUEST;
+            wishbone_current_state <= WB_REQUEST;
           else
-            wishbone_next_state <= WB_WAIT_L2P_START;
+            wishbone_current_state <= WB_WAIT_L2P_START;
           end if;
 
           -----------------------------------------------------------------
@@ -393,16 +393,16 @@ begin
         when WB_REQUEST =>
           if(wb_data_cpt = 1) then
             if (l2p_dma_ack_i = '0') then
-              wishbone_next_state <= WB_LAST_ACK;
+              wishbone_current_state <= WB_LAST_ACK;
             elsif (wb_ack_cpt = 2) then
-              wishbone_next_state <= WB_LAST_ACK;
+              wishbone_current_state <= WB_LAST_ACK;
             else
-              wishbone_next_state <= WB_WAIT_L2P_IDLE;
+              wishbone_current_state <= WB_WAIT_L2P_IDLE;
             end if;
           elsif (s_fifo_almost_full = '1') then
-            wishbone_next_state <= WB_FIFO_FULL;
+            wishbone_current_state <= WB_FIFO_FULL;
           else
-            wishbone_next_state <= WB_REQUEST;
+            wishbone_current_state <= WB_REQUEST;
           end if;
 
           -----------------------------------------------------------------
@@ -411,12 +411,12 @@ begin
         when WB_FIFO_FULL =>
           if(s_fifo_almost_full = '0') then
             if(wb_data_cpt > 0) then
-              wishbone_next_state <= WB_REQUEST;
+              wishbone_current_state <= WB_REQUEST;
             else
-              wishbone_next_state <= WB_WAIT_L2P_IDLE;
+              wishbone_current_state <= WB_WAIT_L2P_IDLE;
             end if;
           else
-            wishbone_next_state <= WB_FIFO_FULL;
+            wishbone_current_state <= WB_FIFO_FULL;
           end if;
 
           -----------------------------------------------------------------
@@ -424,9 +424,9 @@ begin
           -----------------------------------------------------------------
         when WB_LAST_ACK =>
           if(l2p_dma_ack_i = '1') then
-            wishbone_next_state <= WB_WAIT_L2P_IDLE;
+            wishbone_current_state <= WB_WAIT_L2P_IDLE;
           else
-            wishbone_next_state <= WB_LAST_ACK;
+            wishbone_current_state <= WB_LAST_ACK;
           end if;
 
           -----------------------------------------------------------------
@@ -434,17 +434,17 @@ begin
           -----------------------------------------------------------------
         when WB_WAIT_L2P_IDLE =>
           if (l2p_dma_current_state = IDLE) then
-            wishbone_next_state <= IDLE;
+            wishbone_current_state <= IDLE;
           else
-            wishbone_next_state <= WB_WAIT_L2P_IDLE;
+            wishbone_current_state <= WB_WAIT_L2P_IDLE;
           end if;
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          wishbone_next_state <= IDLE;
+          wishbone_current_state <= IDLE;
       end case;
-      wishbone_current_state <= wishbone_next_state;
+      --öwishbone_current_state <= wishbone_next_state;
     end if;
   end process;
 

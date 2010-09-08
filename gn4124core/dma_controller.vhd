@@ -282,53 +282,53 @@ begin
         -----------------------------------------------------------------
         when IDLE =>
           if(dma_ctrl_reg(0) = '1') then
-            dma_ctrl_next_state <= DMA_START_TRANSFER;
+            dma_ctrl_current_state <= DMA_START_TRANSFER;
           else
-            dma_ctrl_next_state <= IDLE;
+            dma_ctrl_current_state <= IDLE;
           end if;
           DEBUG <= "1110";
           -----------------------------------------------------------------
           -- DMA TRANSFER
           -----------------------------------------------------------------
         when DMA_START_TRANSFER =>
-          dma_ctrl_next_state <= DMA_TRANSFER;
-          DEBUG               <= "1101";
+          dma_ctrl_current_state <= DMA_TRANSFER;
+          DEBUG                  <= "1101";
 
         when DMA_TRANSFER =>
           if(dma_ctrl_error_i = '1') then
-            dma_ctrl_next_state <= IDLE;    -- set status = error
+            dma_ctrl_current_state <= IDLE;    -- set status = error
           elsif(dma_ctrl_done_i = '1') then
             if(dma_attrib_reg(0) = '1') then
-              dma_ctrl_next_state <= DMA_START_CHAIN;
+              dma_ctrl_current_state <= DMA_START_CHAIN;
             else
-              dma_ctrl_next_state <= IDLE;  -- set status = done
+              dma_ctrl_current_state <= IDLE;  -- set status = done
             end if;
           else
-            dma_ctrl_next_state <= DMA_TRANSFER;
+            dma_ctrl_current_state <= DMA_TRANSFER;
           end if;
           DEBUG <= "1100";
           -----------------------------------------------------------------
           -- Get the next item of the DMA chain
           -----------------------------------------------------------------
         when DMA_START_CHAIN =>
-          dma_ctrl_next_state <= DMA_CHAIN;
-          DEBUG               <= "1011";
+          dma_ctrl_current_state <= DMA_CHAIN;
+          DEBUG                  <= "1011";
         when DMA_CHAIN =>
           if(dma_ctrl_error_i = '1') then
-            dma_ctrl_next_state <= IDLE;    -- set status = error
+            dma_ctrl_current_state <= IDLE;    -- set status = error
           elsif (next_item_valid_i = '1') then
-            dma_ctrl_next_state <= DMA_START_TRANSFER;
+            dma_ctrl_current_state <= DMA_START_TRANSFER;
           else
-            dma_ctrl_next_state <= DMA_CHAIN;
+            dma_ctrl_current_state <= DMA_CHAIN;
           end if;
           DEBUG <= "1010";
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          dma_ctrl_next_state <= IDLE;
+          dma_ctrl_current_state <= IDLE;
       end case;
-      dma_ctrl_current_state <= dma_ctrl_next_state;
+      --dma_ctrl_current_state <= dma_ctrl_next_state;
     end if;
   end process;
 
