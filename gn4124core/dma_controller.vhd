@@ -346,7 +346,7 @@ begin
           dma_ctrl_carrier_addr_o <= (others => '0');
           dma_ctrl_host_addr_h_o <= dma_nexth_reg;
           dma_ctrl_host_addr_l_o <= dma_nextl_reg;
-          dma_ctrl_len_o <= (others => '0');
+          dma_ctrl_len_o <= X"0000001C";
           dma_ctrl_start_l2p_o <= '0';
           dma_ctrl_start_p2l_o <= '0';
           dma_ctrl_start_next_o <= '1';
