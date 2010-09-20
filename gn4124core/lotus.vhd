@@ -427,8 +427,8 @@ begin
           wb_data_cnt <= wb_data_cnt + 1;
           if (dma_stb_o = '0') then
             wb_next_state <= IDLE;
-          elsif (wb_data_cnt(0) = '0') then
-            wb_next_state <= ST1;
+          --elsif (wb_data_cnt(0) = '0') then
+          --  wb_next_state := ST1;
           else
             wb_next_state <= ACK;
           end if;
@@ -449,9 +449,10 @@ begin
     end if;
   end process;
 
-  dma_stall_i <= '1' when ((wb_current_state = ACK and wb_data_cnt(0) = '0' and dma_stb_o = '1')
-                           or (wb_current_state = IDLE and wb_data_cnt(0) = '1' and dma_stb_o = '1'))
-                 else '0';
+  --dma_stall_i <= '1' when ((wb_current_state = ACK and wb_data_cnt(0) = '0' and dma_stb_o = '1')
+  --                         or (wb_current_state = IDLE and wb_data_cnt(0) = '1' and dma_stb_o = '1'))
+  --               else '0';
+  dma_stall_i <= '0';
 
   dma_dat_i <= std_logic_vector(wb_data_cnt) when wb_current_state = ACK
                else x"00000000";
