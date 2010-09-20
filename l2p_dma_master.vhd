@@ -229,6 +229,11 @@ begin
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       l2p_dma_current_state <= IDLE;
+      ldm_arb_req_o <= '0';
+      ldm_arb_data_o <= (others => '0');
+      ldm_arb_valid_o <= '0';
+      ldm_arb_dframe_o <= '0';
+      s_fifo_rd_en <= '0';
     elsif rising_edge(gn4124_clk_i) then
       case l2p_dma_current_state is
         -----------------------------------------------------------------
@@ -237,8 +242,17 @@ begin
         when IDLE =>
           if(wishbone_current_state = WB_WAIT_L2P_START) then
             l2p_dma_current_state <= L2P_HEADER;
+            ldm_arb_req_o <= '1';
+            ldm_arb_data_o <= s_l2p_header;
+            ldm_arb_valid_o <= '1';
+            ldm_arb_dframe_o <= '1';
+            s_fifo_rd_en <= '0';
           else
             l2p_dma_current_state <= IDLE;
+            ldm_arb_data_o <= (others => '0');
+            ldm_arb_valid_o <= '0';
+            ldm_arb_dframe_o <= '0';
+            s_fifo_rd_en <= '0';
           end if;
 
           -----------------------------------------------------------------
@@ -246,13 +260,27 @@ begin
           -----------------------------------------------------------------
         when L2P_HEADER =>
           if(arb_ldm_gnt_i = '1') then
+            ldm_arb_req_o <= '0';
             if(s_64b_address = '1') then
               l2p_dma_current_state <= L2P_ADDR_H;
+              ldm_arb_data_o <= l2p_address_h;
+              ldm_arb_valid_o <= '1';
+              ldm_arb_dframe_o <= '1';
+              s_fifo_rd_en <= '0';
             else
               l2p_dma_current_state <= L2P_ADDR_L;
+              ldm_arb_data_o <= std_logic_vector(l2p_address_l);
+              ldm_arb_valid_o <= '1';
+              ldm_arb_dframe_o <= '1';
+              s_fifo_rd_en <= '1';
             end if;
           else
             l2p_dma_current_state <= L2P_HEADER;
+            ldm_arb_req_o <= '1';
+            ldm_arb_data_o <= s_l2p_header;
+            ldm_arb_valid_o <= '1';
+            ldm_arb_dframe_o <= '1';
+            s_fifo_rd_en <= '0';
           end if;
 
           -----------------------------------------------------------------
@@ -260,6 +288,10 @@ begin
           -----------------------------------------------------------------
         when L2P_ADDR_H =>
           l2p_dma_current_state <= L2P_ADDR_L;
+          ldm_arb_data_o <= std_logic_vector(l2p_address_l);
+          ldm_arb_valid_o <= '1';
+          ldm_arb_dframe_o <= '1';
+          s_fifo_rd_en <= '1';
 
           -----------------------------------------------------------------
           -- L2P ADDRESS (31-00)
@@ -267,10 +299,23 @@ begin
         when L2P_ADDR_L =>
           if(s_fifo_empty = '1') then
             l2p_dma_current_state <= WB_DATA_WAIT;
+            ldm_arb_valid_o <= '0';
+            ldm_arb_dframe_o <= '1';
+            s_fifo_rd_en <= '1';
           elsif(l2p_data_cpt = 1) then
             l2p_dma_current_state <= L2P_DATA_LAST;
+            ldm_arb_data_o <= s_l2p_data;
+            ldm_arb_valid_o <= '1';
+            ldm_arb_dframe_o <= '0';
+            s_fifo_rd_en <= '0';
           else
             l2p_dma_current_state <= L2P_DATA;
+            --ldm_arb_data_o <= s_l2p_data;
+            ldm_arb_valid_o <= '0';
+            ldm_arb_dframe_o <= '1';
+            if (s_fifo_empty = '0') then
+              s_fifo_rd_en <= '1';
+            end if;
           end if;
 
           -----------------------------------------------------------------
@@ -279,10 +324,23 @@ begin
         when WB_DATA_WAIT =>
           if(s_fifo_empty = '1') then
             l2p_dma_current_state <= WB_DATA_WAIT;
+            ldm_arb_valid_o <= '0';
+            ldm_arb_dframe_o <= '1';
+            s_fifo_rd_en <= '1';
           elsif(l2p_data_cpt = 1) then
             l2p_dma_current_state <= L2P_DATA_LAST;
+            ldm_arb_data_o <= s_l2p_data;
+            ldm_arb_valid_o <= '1';
+            ldm_arb_dframe_o <= '0';
+            s_fifo_rd_en <= '0';
           else
             l2p_dma_current_state <= L2P_DATA;
+            --ldm_arb_data_o <= s_l2p_data;
+            ldm_arb_valid_o <= '0';
+            ldm_arb_dframe_o <= '1';
+            if (s_fifo_empty = '0') then
+              s_fifo_rd_en <= '1';
+            end if;
           end if;
 
           -----------------------------------------------------------------
@@ -291,10 +349,23 @@ begin
         when L2P_DATA =>
           if(s_fifo_empty = '1') then
             l2p_dma_current_state <= WB_DATA_WAIT;
+            ldm_arb_valid_o <= '0';
+            ldm_arb_dframe_o <= '1';
+            s_fifo_rd_en <= '1';
           elsif(l2p_data_cpt = 2) then
             l2p_dma_current_state <= L2P_DATA_LAST;
+            ldm_arb_data_o <= s_l2p_data;
+            ldm_arb_valid_o <= '1';
+            ldm_arb_dframe_o <= '0';
+            s_fifo_rd_en <= '0';
           else
             l2p_dma_current_state <= L2P_DATA;
+            ldm_arb_data_o <= s_l2p_data;
+            ldm_arb_valid_o <= '1';
+            ldm_arb_dframe_o <= '1';
+            if (s_fifo_empty = '0') then
+              s_fifo_rd_en <= '1';
+            end if;
           end if;
 
           -----------------------------------------------------------------
@@ -303,8 +374,17 @@ begin
         when L2P_DATA_LAST =>
           if(l2p_len_cpt > 0) then
             l2p_dma_current_state <= L2P_HEADER;
+            ldm_arb_req_o <= '1';
+            ldm_arb_data_o <= s_l2p_header;
+            ldm_arb_valid_o <= '1';
+            ldm_arb_dframe_o <= '1';
+            s_fifo_rd_en <= '0';
           else
             l2p_dma_current_state <= IDLE;
+            ldm_arb_data_o <= (others => '0');
+            ldm_arb_valid_o <= '0';
+            ldm_arb_dframe_o <= '0';
+            s_fifo_rd_en <= '0';
           end if;
 
           -----------------------------------------------------------------
@@ -312,6 +392,12 @@ begin
           -----------------------------------------------------------------
         when others =>
           l2p_dma_current_state <= IDLE;
+          ldm_arb_req_o <= '0';
+          ldm_arb_data_o <= (others => '0');
+          ldm_arb_valid_o <= '0';
+          ldm_arb_dframe_o <= '0';
+          s_fifo_rd_en <= '0';
+
       end case;
       --l2p_dma_current_state <= l2p_dma_next_state;
     end if;
@@ -322,36 +408,36 @@ begin
 -- Bus toward arbiter
 -----------------------------------------------------------------------------
 
-  ldm_arb_req_o <= '1' when (l2p_dma_current_state = L2P_HEADER)
-                   else '0';
+  --ldm_arb_req_o <= '1' when (l2p_dma_current_state = L2P_HEADER)
+  --                 else '0';
 
-  ldm_arb_data_o <= s_l2p_header when (l2p_dma_current_state = L2P_HEADER)
-                    else l2p_address_h when (l2p_dma_current_state = L2P_ADDR_H)
+  --ldm_arb_data_o <= s_l2p_header when (l2p_dma_current_state = L2P_HEADER)
+  --                  else l2p_address_h when (l2p_dma_current_state = L2P_ADDR_H)
 
-                    else std_logic_vector(l2p_address_l) when (l2p_dma_current_state = L2P_ADDR_L)
-                    else s_l2p_data when (l2p_dma_current_state = L2P_DATA
-                                          or l2p_dma_current_state = L2P_DATA_LAST)
-                    else (others => '0');
+  --                  else std_logic_vector(l2p_address_l) when (l2p_dma_current_state = L2P_ADDR_L)
+  --                  else s_l2p_data when (l2p_dma_current_state = L2P_DATA
+  --                                        or l2p_dma_current_state = L2P_DATA_LAST)
+  --                  else (others => '0');
 
-  ldm_arb_valid_o <= '1' when (l2p_dma_current_state = L2P_HEADER
-                               or l2p_dma_current_state = L2P_ADDR_H
-                               or l2p_dma_current_state = L2P_ADDR_L
-                               or l2p_dma_current_state = L2P_DATA
-                               or l2p_dma_current_state = L2P_DATA_LAST)
-                     else '0';
+  --ldm_arb_valid_o <= '1' when (l2p_dma_current_state = L2P_HEADER
+  --                             or l2p_dma_current_state = L2P_ADDR_H
+  --                             or l2p_dma_current_state = L2P_ADDR_L
+  --                             or l2p_dma_current_state = L2P_DATA
+  --                             or l2p_dma_current_state = L2P_DATA_LAST)
+  --                   else '0';
 
 
-  ldm_arb_dframe_o <= '1' when (l2p_dma_current_state = L2P_HEADER
-                                or l2p_dma_current_state = L2P_ADDR_H
-                                or l2p_dma_current_state = L2P_ADDR_L
-                                or l2p_dma_current_state = WB_DATA_WAIT
-                                or l2p_dma_current_state = L2P_DATA)
-                      else '0';
+  --ldm_arb_dframe_o <= '1' when (l2p_dma_current_state = L2P_HEADER
+  --                              or l2p_dma_current_state = L2P_ADDR_H
+  --                              or l2p_dma_current_state = L2P_ADDR_L
+  --                              or l2p_dma_current_state = WB_DATA_WAIT
+  --                              or l2p_dma_current_state = L2P_DATA)
+  --                    else '0';
 
-  s_fifo_rd_en <= '1' when ((l2p_dma_current_state = L2P_ADDR_L
-                             or l2p_dma_current_state = WB_DATA_WAIT
-                             or l2p_dma_current_state = L2P_DATA) and not s_fifo_empty='1')
-                  else '0';
+  --s_fifo_rd_en <= '1' when ((l2p_dma_current_state = L2P_ADDR_L
+  --                           or l2p_dma_current_state = WB_DATA_WAIT
+  --                           or l2p_dma_current_state = L2P_DATA) and not s_fifo_empty='1')
+  --                else '0';
 
 
 --=========================================================================--
