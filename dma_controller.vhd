@@ -273,15 +273,15 @@ begin
   process (sys_clk_i, sys_rst_n_i)
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
-      dma_ctrl_current_state <= IDLE;
+      dma_ctrl_current_state  <= IDLE;
       dma_ctrl_carrier_addr_o <= (others => '0');
-      dma_ctrl_host_addr_h_o <= (others => '0');
-      dma_ctrl_host_addr_l_o <= (others => '0');
-      dma_ctrl_len_o <= (others => '0');
-      dma_ctrl_start_l2p_o <= '0';
-      dma_ctrl_start_p2l_o <= '0';
-      dma_ctrl_start_next_o <= '0';
-      DEBUG                  <= "1111";
+      dma_ctrl_host_addr_h_o  <= (others => '0');
+      dma_ctrl_host_addr_l_o  <= (others => '0');
+      dma_ctrl_len_o          <= (others => '0');
+      dma_ctrl_start_l2p_o    <= '0';
+      dma_ctrl_start_p2l_o    <= '0';
+      dma_ctrl_start_next_o   <= '0';
+      DEBUG                   <= "1111";
     elsif rising_edge(sys_clk_i) then
       case dma_ctrl_current_state is
         -----------------------------------------------------------------
@@ -294,29 +294,29 @@ begin
             dma_ctrl_current_state <= IDLE;
           end if;
           dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o <= (others => '0');
-          dma_ctrl_host_addr_l_o <= (others => '0');
-          dma_ctrl_len_o <= (others => '0');
-          dma_ctrl_start_l2p_o <= '0';
-          dma_ctrl_start_p2l_o <= '0';
-          dma_ctrl_start_next_o <= '0';
-          DEBUG <= "1110";
+          dma_ctrl_host_addr_h_o  <= (others => '0');
+          dma_ctrl_host_addr_l_o  <= (others => '0');
+          dma_ctrl_len_o          <= (others => '0');
+          dma_ctrl_start_l2p_o    <= '0';
+          dma_ctrl_start_p2l_o    <= '0';
+          dma_ctrl_start_next_o   <= '0';
+          DEBUG                   <= "1110";
           -----------------------------------------------------------------
           -- DMA TRANSFER
           -----------------------------------------------------------------
         when DMA_START_TRANSFER =>
           if (dma_attrib_reg(1) = '0') then
             dma_ctrl_start_l2p_o <= '1';
-          --elsif (dma_attrib_reg(1) = '1') then
-          --  dma_ctrl_start_p2l_o <= '1';
+            --elsif (dma_attrib_reg(1) = '1') then
+            --  dma_ctrl_start_p2l_o <= '1';
           end if;
-          dma_ctrl_current_state <= DMA_TRANSFER;
+          dma_ctrl_current_state  <= DMA_TRANSFER;
           dma_ctrl_carrier_addr_o <= dma_cstart_reg;
-          dma_ctrl_host_addr_h_o <= dma_hstarth_reg;
-          dma_ctrl_host_addr_l_o <= dma_hstartl_reg;
-          dma_ctrl_len_o <= dma_len_reg;
-          dma_ctrl_start_next_o <= '0';
-          DEBUG                  <= "1101";
+          dma_ctrl_host_addr_h_o  <= dma_hstarth_reg;
+          dma_ctrl_host_addr_l_o  <= dma_hstartl_reg;
+          dma_ctrl_len_o          <= dma_len_reg;
+          dma_ctrl_start_next_o   <= '0';
+          DEBUG                   <= "1101";
 
         when DMA_TRANSFER =>
           if(dma_ctrl_error_i = '1') then
@@ -331,55 +331,55 @@ begin
             dma_ctrl_current_state <= DMA_TRANSFER;
           end if;
           dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o <= (others => '0');
-          dma_ctrl_host_addr_l_o <= (others => '0');
-          dma_ctrl_len_o <= (others => '0');
-          dma_ctrl_start_l2p_o <= '0';
-          dma_ctrl_start_p2l_o <= '0';
-          dma_ctrl_start_next_o <= '0';
-          DEBUG <= "1100";
+          dma_ctrl_host_addr_h_o  <= (others => '0');
+          dma_ctrl_host_addr_l_o  <= (others => '0');
+          dma_ctrl_len_o          <= (others => '0');
+          dma_ctrl_start_l2p_o    <= '0';
+          dma_ctrl_start_p2l_o    <= '0';
+          dma_ctrl_start_next_o   <= '0';
+          DEBUG                   <= "1100";
           -----------------------------------------------------------------
           -- Get the next item of the DMA chain
           -----------------------------------------------------------------
         when DMA_START_CHAIN =>
-          dma_ctrl_current_state <= DMA_CHAIN;
+          dma_ctrl_current_state  <= DMA_CHAIN;
           dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o <= dma_nexth_reg;
-          dma_ctrl_host_addr_l_o <= dma_nextl_reg;
-          dma_ctrl_len_o <= X"0000001C";
-          dma_ctrl_start_l2p_o <= '0';
-          dma_ctrl_start_p2l_o <= '0';
-          dma_ctrl_start_next_o <= '1';
-          DEBUG                  <= "1011";
+          dma_ctrl_host_addr_h_o  <= dma_nexth_reg;
+          dma_ctrl_host_addr_l_o  <= dma_nextl_reg;
+          dma_ctrl_len_o          <= X"0000001C";
+          dma_ctrl_start_l2p_o    <= '0';
+          dma_ctrl_start_p2l_o    <= '0';
+          dma_ctrl_start_next_o   <= '1';
+          DEBUG                   <= "1011";
 
         when DMA_CHAIN =>
           if(dma_ctrl_error_i = '1') then
-            dma_ctrl_current_state <= IDLE;    -- set status = error
+            dma_ctrl_current_state <= IDLE;  -- set status = error
           elsif (next_item_valid_i = '1') then
             dma_ctrl_current_state <= DMA_START_TRANSFER;
           else
             dma_ctrl_current_state <= DMA_CHAIN;
           end if;
           dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o <= (others => '0');
-          dma_ctrl_host_addr_l_o <= (others => '0');
-          dma_ctrl_len_o <= (others => '0');
-          dma_ctrl_start_l2p_o <= '0';
-          dma_ctrl_start_p2l_o <= '0';
-          dma_ctrl_start_next_o <= '0';
-          DEBUG <= "1010";
+          dma_ctrl_host_addr_h_o  <= (others => '0');
+          dma_ctrl_host_addr_l_o  <= (others => '0');
+          dma_ctrl_len_o          <= (others => '0');
+          dma_ctrl_start_l2p_o    <= '0';
+          dma_ctrl_start_p2l_o    <= '0';
+          dma_ctrl_start_next_o   <= '0';
+          DEBUG                   <= "1010";
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
-          dma_ctrl_current_state <= IDLE;
+          dma_ctrl_current_state  <= IDLE;
           dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o <= (others => '0');
-          dma_ctrl_host_addr_l_o <= (others => '0');
-          dma_ctrl_len_o <= (others => '0');
-          dma_ctrl_start_l2p_o <= '0';
-          dma_ctrl_start_p2l_o <= '0';
-          dma_ctrl_start_next_o <= '0';
+          dma_ctrl_host_addr_h_o  <= (others => '0');
+          dma_ctrl_host_addr_l_o  <= (others => '0');
+          dma_ctrl_len_o          <= (others => '0');
+          dma_ctrl_start_l2p_o    <= '0';
+          dma_ctrl_start_p2l_o    <= '0';
+          dma_ctrl_start_next_o   <= '0';
 
       end case;
       --dma_ctrl_current_state <= dma_ctrl_next_state;
