@@ -105,11 +105,11 @@ architecture behaviour of l2p_dma_master is
 
   type   l2p_dma_state_type is (IDLE, WB_DATA_WAIT, L2P_HEADER, L2P_ADDR_H, L2P_ADDR_L, L2P_DATA, L2P_DATA_LAST);
   signal l2p_dma_current_state : l2p_dma_state_type;
-  signal l2p_dma_next_state : l2p_dma_state_type;
+  signal l2p_dma_next_state    : l2p_dma_state_type;
 
   type   wishbone_state_type is (IDLE, WB_WAIT_L2P_START, WB_FIFO_FULL, WB_REQUEST, WB_LAST_ACK, WB_WAIT_L2P_IDLE);
   signal wishbone_current_state : wishbone_state_type;
-  signal wishbone_next_state : wishbone_state_type;
+  signal wishbone_next_state    : wishbone_state_type;
 
   signal s_carrier_addr : unsigned(31 downto 0);
   signal s_host_addr_h  : std_logic_vector(31 downto 0);
@@ -165,8 +165,27 @@ begin
       l2p_data_cpt  <= (others => '0');
       l2p_address_h <= (others => '0');
       l2p_address_l <= (others => '0');
+      s_64b_address <= '0';
+      s_l2p_header  <= (others => '0');
 
     elsif rising_edge(gn4124_clk_i) then
+
+      if (s_host_addr_h = X"00000000") then
+        s_64b_address <= '0';
+      else
+        s_64b_address <= '1';
+      end if;
+
+      s_l2p_header <= "000"                                          -->  Traffic Class
+                      & '0'                                          -->  Snoop
+                      & "001"                                        -->  Memory write
+                      & s_64b_address                                -->  Memory write
+                      & "1111"                                       -->  LBE
+                      & "1111"                                       -->  FBE
+                      & "000"                                        -->  Reserved
+                      & '0'                                          -->  VC
+                      & "00"                                         -->  Reserved
+                      & std_logic_vector(l2p_data_cpt(9 downto 0));  -->  Length
 
       if (wishbone_current_state = WB_WAIT_L2P_START and  -- First block of data
           l2p_dma_current_state = IDLE) then
@@ -207,19 +226,20 @@ begin
 
     end if;
   end process;
-  s_64b_address <= '0' when l2p_address_h = x"00000000" else
-                   '1';
 
-  s_l2p_header <= "000"                                          -->  Traffic Class
-                  & '0'                                          -->  Snoop
-                  & "001"                                        -->  Memory write
-                  & s_64b_address                                -->  Memory write
-                  & "1111"                                       -->  LBE
-                  & "1111"                                       -->  FBE
-                  & "000"                                        -->  Reserved
-                  & '0'                                          -->  VC
-                  & "00"                                         -->  Reserved
-                  & std_logic_vector(l2p_data_cpt(9 downto 0));  -->  Length
+  --s_64b_address <= '0' when l2p_address_h = x"00000000" else
+  --                 '1';
+
+  --s_l2p_header <= "000"                                          -->  Traffic Class
+  --                & '0'                                          -->  Snoop
+  --                & "001"                                        -->  Memory write
+  --                & s_64b_address                                -->  Memory write
+  --                & "1111"                                       -->  LBE
+  --                & "1111"                                       -->  FBE
+  --                & "000"                                        -->  Reserved
+  --                & '0'                                          -->  VC
+  --                & "00"                                         -->  Reserved
+  --                & std_logic_vector(l2p_data_cpt(9 downto 0));  -->  Length
 
 -----------------------------------------------------------------------------
 -- PCIe Write State Machine
@@ -229,11 +249,11 @@ begin
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       l2p_dma_current_state <= IDLE;
-      ldm_arb_req_o <= '0';
-      ldm_arb_data_o <= (others => '0');
-      ldm_arb_valid_o <= '0';
-      ldm_arb_dframe_o <= '0';
-      s_fifo_rd_en <= '0';
+      ldm_arb_req_o         <= '0';
+      ldm_arb_data_o        <= (others => '0');
+      ldm_arb_valid_o       <= '0';
+      ldm_arb_dframe_o      <= '0';
+      s_fifo_rd_en          <= '0';
     elsif rising_edge(gn4124_clk_i) then
       case l2p_dma_current_state is
         -----------------------------------------------------------------
@@ -242,17 +262,17 @@ begin
         when IDLE =>
           if(wishbone_current_state = WB_WAIT_L2P_START) then
             l2p_dma_current_state <= L2P_HEADER;
-            ldm_arb_req_o <= '1';
-            ldm_arb_data_o <= s_l2p_header;
-            ldm_arb_valid_o <= '1';
-            ldm_arb_dframe_o <= '1';
-            s_fifo_rd_en <= '0';
+            ldm_arb_req_o         <= '1';
+            ldm_arb_data_o        <= s_l2p_header;
+            ldm_arb_valid_o       <= '1';
+            ldm_arb_dframe_o      <= '1';
+            s_fifo_rd_en          <= '0';
           else
             l2p_dma_current_state <= IDLE;
-            ldm_arb_data_o <= (others => '0');
-            ldm_arb_valid_o <= '0';
-            ldm_arb_dframe_o <= '0';
-            s_fifo_rd_en <= '0';
+            ldm_arb_data_o        <= (others => '0');
+            ldm_arb_valid_o       <= '0';
+            ldm_arb_dframe_o      <= '0';
+            s_fifo_rd_en          <= '0';
           end if;
 
           -----------------------------------------------------------------
@@ -263,24 +283,24 @@ begin
             ldm_arb_req_o <= '0';
             if(s_64b_address = '1') then
               l2p_dma_current_state <= L2P_ADDR_H;
-              ldm_arb_data_o <= l2p_address_h;
-              ldm_arb_valid_o <= '1';
-              ldm_arb_dframe_o <= '1';
-              s_fifo_rd_en <= '0';
+              ldm_arb_data_o        <= l2p_address_h;
+              ldm_arb_valid_o       <= '1';
+              ldm_arb_dframe_o      <= '1';
+              s_fifo_rd_en          <= '0';
             else
               l2p_dma_current_state <= L2P_ADDR_L;
-              ldm_arb_data_o <= std_logic_vector(l2p_address_l);
-              ldm_arb_valid_o <= '1';
-              ldm_arb_dframe_o <= '1';
-              s_fifo_rd_en <= '1';
+              ldm_arb_data_o        <= std_logic_vector(l2p_address_l);
+              ldm_arb_valid_o       <= '1';
+              ldm_arb_dframe_o      <= '1';
+              s_fifo_rd_en          <= '1';
             end if;
           else
             l2p_dma_current_state <= L2P_HEADER;
-            ldm_arb_req_o <= '1';
-            ldm_arb_data_o <= s_l2p_header;
-            ldm_arb_valid_o <= '1';
-            ldm_arb_dframe_o <= '1';
-            s_fifo_rd_en <= '0';
+            ldm_arb_req_o         <= '1';
+            ldm_arb_data_o        <= s_l2p_header;
+            ldm_arb_valid_o       <= '1';
+            ldm_arb_dframe_o      <= '1';
+            s_fifo_rd_en          <= '0';
           end if;
 
           -----------------------------------------------------------------
@@ -288,10 +308,10 @@ begin
           -----------------------------------------------------------------
         when L2P_ADDR_H =>
           l2p_dma_current_state <= L2P_ADDR_L;
-          ldm_arb_data_o <= std_logic_vector(l2p_address_l);
-          ldm_arb_valid_o <= '1';
-          ldm_arb_dframe_o <= '1';
-          s_fifo_rd_en <= '1';
+          ldm_arb_data_o        <= std_logic_vector(l2p_address_l);
+          ldm_arb_valid_o       <= '1';
+          ldm_arb_dframe_o      <= '1';
+          s_fifo_rd_en          <= '1';
 
           -----------------------------------------------------------------
           -- L2P ADDRESS (31-00)
@@ -299,20 +319,20 @@ begin
         when L2P_ADDR_L =>
           if(s_fifo_empty = '1') then
             l2p_dma_current_state <= WB_DATA_WAIT;
-            ldm_arb_valid_o <= '0';
-            ldm_arb_dframe_o <= '1';
-            s_fifo_rd_en <= '1';
+            ldm_arb_valid_o       <= '0';
+            ldm_arb_dframe_o      <= '1';
+            s_fifo_rd_en          <= '1';
           elsif(l2p_data_cpt = 1) then
             l2p_dma_current_state <= L2P_DATA_LAST;
-            ldm_arb_data_o <= s_l2p_data;
-            ldm_arb_valid_o <= '1';
-            ldm_arb_dframe_o <= '0';
-            s_fifo_rd_en <= '0';
+            ldm_arb_data_o        <= s_l2p_data;
+            ldm_arb_valid_o       <= '1';
+            ldm_arb_dframe_o      <= '0';
+            s_fifo_rd_en          <= '0';
           else
             l2p_dma_current_state <= L2P_DATA;
             --ldm_arb_data_o <= s_l2p_data;
-            ldm_arb_valid_o <= '0';
-            ldm_arb_dframe_o <= '1';
+            ldm_arb_valid_o       <= '0';
+            ldm_arb_dframe_o      <= '1';
             if (s_fifo_empty = '0') then
               s_fifo_rd_en <= '1';
             end if;
@@ -324,20 +344,20 @@ begin
         when WB_DATA_WAIT =>
           if(s_fifo_empty = '1') then
             l2p_dma_current_state <= WB_DATA_WAIT;
-            ldm_arb_valid_o <= '0';
-            ldm_arb_dframe_o <= '1';
-            s_fifo_rd_en <= '1';
+            ldm_arb_valid_o       <= '0';
+            ldm_arb_dframe_o      <= '1';
+            s_fifo_rd_en          <= '1';
           elsif(l2p_data_cpt = 1) then
             l2p_dma_current_state <= L2P_DATA_LAST;
-            ldm_arb_data_o <= s_l2p_data;
-            ldm_arb_valid_o <= '1';
-            ldm_arb_dframe_o <= '0';
-            s_fifo_rd_en <= '0';
+            ldm_arb_data_o        <= s_l2p_data;
+            ldm_arb_valid_o       <= '1';
+            ldm_arb_dframe_o      <= '0';
+            s_fifo_rd_en          <= '0';
           else
             l2p_dma_current_state <= L2P_DATA;
             --ldm_arb_data_o <= s_l2p_data;
-            ldm_arb_valid_o <= '0';
-            ldm_arb_dframe_o <= '1';
+            ldm_arb_valid_o       <= '0';
+            ldm_arb_dframe_o      <= '1';
             if (s_fifo_empty = '0') then
               s_fifo_rd_en <= '1';
             end if;
@@ -349,20 +369,20 @@ begin
         when L2P_DATA =>
           if(s_fifo_empty = '1') then
             l2p_dma_current_state <= WB_DATA_WAIT;
-            ldm_arb_valid_o <= '0';
-            ldm_arb_dframe_o <= '1';
-            s_fifo_rd_en <= '1';
+            ldm_arb_valid_o       <= '0';
+            ldm_arb_dframe_o      <= '1';
+            s_fifo_rd_en          <= '1';
           elsif(l2p_data_cpt = 2) then
             l2p_dma_current_state <= L2P_DATA_LAST;
-            ldm_arb_data_o <= s_l2p_data;
-            ldm_arb_valid_o <= '1';
-            ldm_arb_dframe_o <= '0';
-            s_fifo_rd_en <= '0';
+            ldm_arb_data_o        <= s_l2p_data;
+            ldm_arb_valid_o       <= '1';
+            ldm_arb_dframe_o      <= '0';
+            s_fifo_rd_en          <= '0';
           else
             l2p_dma_current_state <= L2P_DATA;
-            ldm_arb_data_o <= s_l2p_data;
-            ldm_arb_valid_o <= '1';
-            ldm_arb_dframe_o <= '1';
+            ldm_arb_data_o        <= s_l2p_data;
+            ldm_arb_valid_o       <= '1';
+            ldm_arb_dframe_o      <= '1';
             if (s_fifo_empty = '0') then
               s_fifo_rd_en <= '1';
             end if;
@@ -374,17 +394,17 @@ begin
         when L2P_DATA_LAST =>
           if(l2p_len_cpt > 0) then
             l2p_dma_current_state <= L2P_HEADER;
-            ldm_arb_req_o <= '1';
-            ldm_arb_data_o <= s_l2p_header;
-            ldm_arb_valid_o <= '1';
-            ldm_arb_dframe_o <= '1';
-            s_fifo_rd_en <= '0';
+            ldm_arb_req_o         <= '1';
+            ldm_arb_data_o        <= s_l2p_header;
+            ldm_arb_valid_o       <= '1';
+            ldm_arb_dframe_o      <= '1';
+            s_fifo_rd_en          <= '0';
           else
             l2p_dma_current_state <= IDLE;
-            ldm_arb_data_o <= (others => '0');
-            ldm_arb_valid_o <= '0';
-            ldm_arb_dframe_o <= '0';
-            s_fifo_rd_en <= '0';
+            ldm_arb_data_o        <= (others => '0');
+            ldm_arb_valid_o       <= '0';
+            ldm_arb_dframe_o      <= '0';
+            s_fifo_rd_en          <= '0';
           end if;
 
           -----------------------------------------------------------------
@@ -392,11 +412,11 @@ begin
           -----------------------------------------------------------------
         when others =>
           l2p_dma_current_state <= IDLE;
-          ldm_arb_req_o <= '0';
-          ldm_arb_data_o <= (others => '0');
-          ldm_arb_valid_o <= '0';
-          ldm_arb_dframe_o <= '0';
-          s_fifo_rd_en <= '0';
+          ldm_arb_req_o         <= '0';
+          ldm_arb_data_o        <= (others => '0');
+          ldm_arb_valid_o       <= '0';
+          ldm_arb_dframe_o      <= '0';
+          s_fifo_rd_en          <= '0';
 
       end case;
       --l2p_dma_current_state <= l2p_dma_next_state;
