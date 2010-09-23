@@ -80,7 +80,7 @@ architecture behaviour of arbiter is
   signal wbm_arb_req_valid : std_logic;
   signal pdm_arb_req_valid : std_logic;
   signal ldm_arb_req_valid : std_logic;
-  signal arb_req_valid     : std_logic;
+  --signal arb_req_valid     : std_logic;
   signal arb_wbm_gnt       : std_logic;
   signal arb_pdm_gnt       : std_logic;
   signal arb_ldm_gnt       : std_logic;
@@ -90,18 +90,19 @@ architecture behaviour of arbiter is
 begin
 
 
-  wbm_arb_req_valid <= wbm_arb_req_i;
-  pdm_arb_req_valid <= pdm_arb_req_i;
-  ldm_arb_req_valid <= ldm_arb_req_i;
+  -- A request is valid only if the access not already granted to another source
+  wbm_arb_req_valid <= wbm_arb_req_i and (not(arb_pdm_gnt) and not(arb_ldm_gnt));
+  pdm_arb_req_valid <= pdm_arb_req_i and (not(arb_wbm_gnt) and not(arb_ldm_gnt));
+  ldm_arb_req_valid <= ldm_arb_req_i and (not(arb_wbm_gnt) and not(arb_pdm_gnt));
 
   -- Detect any valid request to allow arbitration
-  arb_req_valid <= (wbm_arb_req_valid or pdm_arb_req_valid or ldm_arb_req_valid) and
-                   (not arb_wbm_gnt and not arb_pdm_gnt and not arb_ldm_gnt);
+  --arb_req_valid <= (wbm_arb_req_valid or pdm_arb_req_valid or ldm_arb_req_valid) and
+  --                 (not arb_wbm_gnt and not arb_pdm_gnt and not arb_ldm_gnt);
 
   -- Detect end of packet to delimit the arbitration phase
-  eop <= ((arb_wbm_gnt and not wbm_arb_dframe_i) or
-          (arb_pdm_gnt and not pdm_arb_dframe_i) or
-          (arb_ldm_gnt and not ldm_arb_dframe_i));
+  eop <= ((arb_wbm_gnt and not(wbm_arb_dframe_i) and wbm_arb_valid_i) or
+          (arb_pdm_gnt and not(pdm_arb_dframe_i) and pdm_arb_valid_i) or
+          (arb_ldm_gnt and not(ldm_arb_dframe_i) and ldm_arb_valid_i));
 
   -----------------------------------------------------------------------------
   -- Arbitration is started when a valid request is present and ends when the
@@ -119,24 +120,24 @@ begin
       arb_pdm_gnt <= '0';
       arb_ldm_gnt <= '0';
     elsif rising_edge(clk_i) then
-      if (arb_req_valid = '1') then
-        if (wbm_arb_req_valid = '1') then
-          arb_wbm_gnt <= '1';
-          arb_pdm_gnt <= '0';
-          arb_ldm_gnt <= '0';
-        elsif (ldm_arb_req_valid = '1') then
-          arb_wbm_gnt <= '0';
-          arb_pdm_gnt <= '0';
-          arb_ldm_gnt <= '1';
-        elsif (pdm_arb_req_valid = '1') then
-          arb_wbm_gnt <= '0';
-          arb_pdm_gnt <= '1';
-          arb_ldm_gnt <= '0';
-        else
-          arb_wbm_gnt <= '0';
-          arb_pdm_gnt <= '0';
-          arb_ldm_gnt <= '0';
-        end if;
+      --if (arb_req_valid = '1') then
+      if (wbm_arb_req_valid = '1') then
+        arb_wbm_gnt <= '1';
+        arb_pdm_gnt <= '0';
+        arb_ldm_gnt <= '0';
+      elsif (ldm_arb_req_valid = '1') then
+        arb_wbm_gnt <= '0';
+        arb_pdm_gnt <= '0';
+        arb_ldm_gnt <= '1';
+      elsif (pdm_arb_req_valid = '1') then
+        arb_wbm_gnt <= '0';
+        arb_pdm_gnt <= '1';
+        arb_ldm_gnt <= '0';
+        --else
+        --  arb_wbm_gnt <= '0';
+        --  arb_pdm_gnt <= '0';
+        --  arb_ldm_gnt <= '0';
+        --end if;
       elsif (eop = '1') then
         arb_wbm_gnt <= '0';
         arb_pdm_gnt <= '0';
