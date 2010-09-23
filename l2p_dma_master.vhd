@@ -121,7 +121,6 @@ architecture behaviour of l2p_dma_master is
 
   -- L2P packet generator
   signal s_l2p_header : std_logic_vector(31 downto 0);
-  signal s_l2p_data   : std_logic_vector(31 downto 0);
 
   signal l2p_len_cnt     : unsigned(29 downto 0);
   signal l2p_address_h   : unsigned(31 downto 0);
@@ -129,8 +128,7 @@ architecture behaviour of l2p_dma_master is
   signal l2p_data_cnt    : unsigned(10 downto 0);
   signal l2p_64b_address : std_logic;
   signal l2p_len_header  : std_logic_vector(9 downto 0);
-
-  signal l2p_byte_swap : std_logic_vector(1 downto 0);
+  signal l2p_byte_swap   : std_logic_vector(1 downto 0);
 
 begin
 
@@ -273,21 +271,8 @@ begin
                   & l2p_len_header;          -->  Length (in 32-bit words)
                                              --   0x000 => 1024 words (4096 bytes)
 
-  -- Payload byte swap
-  s_l2p_data <= data_fifo_dout when l2p_byte_swap = "00" else
-                data_fifo_dout(15 downto 0)&
-                data_fifo_dout(31 downto 16) when l2p_byte_swap = "10" else
-                data_fifo_dout(7 downto 0)&
-                data_fifo_dout(15 downto 8)&
-                data_fifo_dout(23 downto 16)&
-                data_fifo_dout(31 downto 24) when l2p_byte_swap = "11" else
-                data_fifo_dout(23 downto 16)&
-                data_fifo_dout(31 downto 24)&
-                data_fifo_dout(7 downto 0)&
-                data_fifo_dout(15 downto 8);
-
   -----------------------------------------------------------------------------
-  -- L2P write FSM
+  -- L2P packet write FSM
   -----------------------------------------------------------------------------
   process(sys_clk_i, sys_rst_n_i)
   begin
@@ -362,8 +347,27 @@ begin
           end if;
 
         when L2P_DATA =>
-          -- send data
-          ldm_arb_data_o  <= s_l2p_data;
+          -- send data with byte swap if requested
+          case l2p_byte_swap is
+            when "00" =>
+              ldm_arb_data_o <= data_fifo_dout;
+            when "01" =>
+              ldm_arb_data_o <= data_fifo_dout(23 downto 16)
+                                & data_fifo_dout(31 downto 24)
+                                & data_fifo_dout(7 downto 0)
+                                & data_fifo_dout(15 downto 8);
+            when "10" =>
+              ldm_arb_data_o <= data_fifo_dout(15 downto 0)
+                                & data_fifo_dout(31 downto 16);
+            when "11" =>
+              ldm_arb_data_o <= data_fifo_dout(7 downto 0)
+                                & data_fifo_dout(15 downto 8)
+                                & data_fifo_dout(23 downto 16)
+                                & data_fifo_dout(31 downto 24);
+            when others =>
+              ldm_arb_data_o <= data_fifo_dout;
+          end case;
+          --ldm_arb_data_o  <= s_l2p_data;
           ldm_arb_valid_o <= '1';
           if(data_fifo_empty = '1') then
             l2p_dma_current_state <= L2P_WAIT_DATA;
@@ -387,8 +391,27 @@ begin
           end if;
 
         when L2P_LAST_DATA =>
-          -- send the last data word
-          ldm_arb_data_o   <= s_l2p_data;
+          -- send last data word with byte swap if requested
+          case l2p_byte_swap is
+            when "00" =>
+              ldm_arb_data_o <= data_fifo_dout;
+            when "01" =>
+              ldm_arb_data_o <= data_fifo_dout(23 downto 16)
+                                & data_fifo_dout(31 downto 24)
+                                & data_fifo_dout(7 downto 0)
+                                & data_fifo_dout(15 downto 8);
+            when "10" =>
+              ldm_arb_data_o <= data_fifo_dout(15 downto 0)
+                                & data_fifo_dout(31 downto 16);
+            when "11" =>
+              ldm_arb_data_o <= data_fifo_dout(7 downto 0)
+                                & data_fifo_dout(15 downto 8)
+                                & data_fifo_dout(23 downto 16)
+                                & data_fifo_dout(31 downto 24);
+            when others =>
+              ldm_arb_data_o <= data_fifo_dout;
+          end case;
+          --ldm_arb_data_o   <= s_l2p_data;
           ldm_arb_valid_o  <= '1';
           -- clear dframe signal to indicate the end of packet
           ldm_arb_dframe_o <= '0';
@@ -420,9 +443,9 @@ begin
   end process;
 
 
---=========================================================================--
--- FIFOs for transition between GN4124 core and wishbone clock domain
---=========================================================================--
+  ------------------------------------------------------------------------------
+  -- FIFOs for transition between GN4124 core and wishbone clock domain
+  ------------------------------------------------------------------------------
   cmp_addr_fifo : fifo_32x512
     port map (
       rst                     => fifo_rst,
@@ -458,11 +481,11 @@ begin
   data_fifo_din <= l2p_dma_dat_i;
   data_fifo_wr  <= l2p_dma_ack_i;
 
---=========================================================================--
--- Pipelined wishbone master
---=========================================================================--
--- Initatiates read transactions as long there is an address present
--- in the address fifo. Then fills the data fifo with the read data.
+  ------------------------------------------------------------------------------
+  -- Pipelined wishbone master
+  ------------------------------------------------------------------------------
+  -- Initatiates read transactions as long there is an address present
+  -- in the address fifo. Then fills the data fifo with the read data.
 
   -- Wishbone master only make reads
   l2p_dma_we_o  <= '0';
