@@ -6,23 +6,24 @@
 --
 -- unit name: 32 bit DMA master (l2p_dma_master.vhd)
 --
--- author: Simon Deprez (simon.deprez@cern.ch)
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
 -- date: 31-08-2010
 --
 -- version: 0.2
 --
 -- description: Provide a pipelined Wishbone interface to performs DMA
--- transfers from local application to PCI express host.
+--              transfers from local application to PCI express host.
 --
--- dependencies:
+-- dependencies: Xilinx FIFOs
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
+-- last changes: 23-09-2010 (mcattin) Split wishbone and gn4124 clock domains
+--               All signals crossing the clock domains are now going through fifos.
+--               Dead times optimisation in packet generator.
 --------------------------------------------------------------------------------
--- TODO: - error signal
---       -
+-- TODO: -
 --       -
 --------------------------------------------------------------------------------
 
@@ -81,9 +82,9 @@ architecture behaviour of l2p_dma_master is
 -- Local constants
 -----------------------------------------------------------------------------
   -- max payload set to 32 for debug/simul, should be 1024
-  constant c_L2P_MAX_PAYLOAD      : unsigned(9 downto 0)         := to_unsigned(32, 10);
-  signal   c_ADDR_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
-  signal   c_DATA_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
+  constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- up to 1024
+  constant c_ADDR_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
+  constant c_DATA_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
 -----------------------------------------------------------------------------
 -- Internal Signals
@@ -115,7 +116,7 @@ architecture behaviour of l2p_dma_master is
   signal wb_ack_cnt  : unsigned(6 downto 0);
 
   -- L2P DMA Master FSM
-  type   l2p_dma_state_type is (IDLE, WB_DATA_WAIT, L2P_HEADER, L2P_ADDR_H, L2P_ADDR_L, L2P_DATA, L2P_DATA_LAST);
+  type   l2p_dma_state_type is (L2P_IDLE, L2P_WAIT_DATA, L2P_HEADER, L2P_ADDR_H, L2P_ADDR_L, L2P_DATA, L2P_LAST_DATA);
   signal l2p_dma_current_state : l2p_dma_state_type;
 
   -- L2P packet generator
@@ -125,8 +126,9 @@ architecture behaviour of l2p_dma_master is
   signal l2p_len_cnt     : unsigned(29 downto 0);
   signal l2p_address_h   : unsigned(31 downto 0);
   signal l2p_address_l   : unsigned(31 downto 0);
-  signal l2p_data_cnt    : unsigned(9 downto 0);
+  signal l2p_data_cnt    : unsigned(10 downto 0);
   signal l2p_64b_address : std_logic;
+  signal l2p_len_header  : std_logic_vector(9 downto 0);
 
   signal l2p_byte_swap : std_logic_vector(1 downto 0);
 
@@ -136,6 +138,7 @@ begin
   ------------------------------------------------------------------------------
   -- Active high reset for fifo
   ------------------------------------------------------------------------------
+  -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
     fifo_rst <= not(sys_rst_n_i);
   end generate;
@@ -156,7 +159,7 @@ begin
       addr_fifo_wr     <= '0';
     elsif rising_edge(sys_clk_i) then
       if (dma_ctrl_start_l2p_i = '1') then
-        if (l2p_dma_current_state = IDLE) then
+        if (l2p_dma_current_state = L2P_IDLE) then
           -- dma_ctrl_target_addr_i is a byte address and target_addr_cnt is a
           -- 32-bit word address
           target_addr_cnt  <= unsigned(dma_ctrl_target_addr_i(31 downto 2));
@@ -164,11 +167,14 @@ begin
           dma_length_cnt   <= unsigned(dma_ctrl_len_i(31 downto 2));
           dma_ctrl_error_o <= '0';
         else
+          -- trying to start a DMA transfert when another is still in progress
+          -- will gives an error
           target_addr_cnt  <= (others => '0');
           dma_length_cnt   <= (others => '0');
           dma_ctrl_error_o <= '1';
         end if;
       elsif (dma_length_cnt /= 0 and addr_fifo_full = '0') then
+        -- increment the target address and write it to address fifo
         addr_fifo_wr    <= '1';
         target_addr_cnt <= target_addr_cnt + 1;
         dma_length_cnt  <= dma_length_cnt - 1;
@@ -178,14 +184,14 @@ begin
     end if;
   end process p_target_cnt;
 
-  -- FIFO width is 32 bits
+  -- Adust data width, fifo width is 32 bits
   addr_fifo_din <= "00" & std_logic_vector(target_addr_cnt);
 
   ------------------------------------------------------------------------------
   -- Packet generator
   ------------------------------------------------------------------------------
   -- Sends data to the host.
-  -- Split in several packets if amont of data exceed max payload size.
+  -- Split in several packets if amont of data exceeds max payload size.
 
   p_pkt_gen : process (sys_clk_i, sys_rst_n_i)
   begin
@@ -195,25 +201,36 @@ begin
       l2p_address_h   <= (others => '0');
       l2p_address_l   <= (others => '0');
       l2p_64b_address <= '0';
+      l2p_len_header  <= (others => '0');
       l2p_byte_swap   <= (others => '0');
     elsif rising_edge(sys_clk_i) then
       -- First packet
-      if (l2p_dma_current_state = IDLE) then
+      if (l2p_dma_current_state = L2P_IDLE) then
         if (dma_ctrl_start_l2p_i = '1') then
+          -- store DMA info locally
           l2p_len_cnt   <= unsigned(dma_ctrl_len_i(31 downto 2));
           l2p_address_h <= unsigned(dma_ctrl_host_addr_h_i);
           l2p_address_l <= unsigned(dma_ctrl_host_addr_l_i);
           l2p_byte_swap <= dma_ctrl_byte_swap_i;
         else
+          -- if DMA length is bigger than the max PCIe payload size,
+          -- the data is split in several packets
           if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
             l2p_data_cnt <= c_L2P_MAX_PAYLOAD;
           else
-            l2p_data_cnt <= l2p_len_cnt(9 downto 0);
+            l2p_data_cnt <= l2p_len_cnt(10 downto 0);
           end if;
+          -- if host address is 64-bit, generates a 64-bit address memory write
           if (l2p_address_h = 0) then
             l2p_64b_address <= '0';
           else
             l2p_64b_address <= '1';
+          end if;
+          -- if payload length is 1024, the header length field = 0
+          if (l2p_len_cnt(10 downto 0) = 1024) then
+            l2p_len_header <= (others => '0');
+          else
+            l2p_len_header <= std_logic_vector(l2p_len_cnt(9 downto 0));
           end if;
         end if;
         -- Next packet (if any)
@@ -225,27 +242,36 @@ begin
         end if;
       elsif (l2p_dma_current_state = L2P_DATA) then
         l2p_data_cnt <= l2p_data_cnt - 1;
-      elsif (l2p_len_cnt > 0 and l2p_dma_current_state = L2P_DATA_LAST) then
+      elsif (l2p_len_cnt > 0 and l2p_dma_current_state = L2P_LAST_DATA) then
+        -- load the size of the next packet
         if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
           l2p_data_cnt <= c_L2P_MAX_PAYLOAD;
         else
-          l2p_data_cnt <= l2p_len_cnt(9 downto 0);
+          l2p_data_cnt <= l2p_len_cnt(10 downto 0);
+        end if;
+        -- if payload length is 1024, the header length field = 0
+        if (l2p_len_cnt(10 downto 0) = 1024) then
+          l2p_len_header <= (others => '0');
+        else
+          l2p_len_header <= std_logic_vector(l2p_len_cnt(9 downto 0));
         end if;
       end if;
     end if;
   end process p_pkt_gen;
 
   -- Packet header
-  s_l2p_header <= "000"                              -->  Traffic Class
-                  & '0'                              -->  Snoop
-                  & "001"                            -->  Memory write
-                  & l2p_64b_address                  -->  Memory write
-                  & "1111"                           -->  LBE
-                  & "1111"                           -->  FBE
-                  & "000"                            -->  Reserved
-                  & '0'                              -->  VC
-                  & "00"                             -->  Reserved
-                  & std_logic_vector(l2p_data_cnt);  -->  Length
+  s_l2p_header <= "000"                      -->  Traffic Class
+                  & '0'                      -->  Snoop
+                  & "001" & l2p_64b_address  -->  Header type,
+                                             --   memory write 32-bit or
+                                             --   memory write 64-bit
+                  & "1111"                   -->  LBE (Last Byte Enable)
+                  & "1111"                   -->  FBE (First Byte Enable)
+                  & "000"                    -->  Reserved
+                  & '0'                      -->  VC (Virtual Channel)
+                  & "00"                     -->  Reserved
+                  & l2p_len_header;          -->  Length (in 32-bit words)
+                                             --   0x000 => 1024 words (4096 bytes)
 
   -- Payload byte swap
   s_l2p_data <= data_fifo_dout when l2p_byte_swap = "00" else
@@ -266,7 +292,7 @@ begin
   process(sys_clk_i, sys_rst_n_i)
   begin
     if (sys_rst_n_i = c_RST_ACTIVE) then
-      l2p_dma_current_state <= IDLE;
+      l2p_dma_current_state <= L2P_IDLE;
       ldm_arb_req_o         <= '0';
       ldm_arb_data_o        <= (others => '0');
       ldm_arb_valid_o       <= '0';
@@ -275,10 +301,8 @@ begin
       dma_ctrl_done_o       <= '0';
     elsif rising_edge(sys_clk_i) then
       case l2p_dma_current_state is
-        -----------------------------------------------------------------
-        -- IDLE
-        -----------------------------------------------------------------
-        when IDLE =>
+
+        when L2P_IDLE =>
           -- do nothing !
           data_fifo_rd     <= '0';
           dma_ctrl_done_o  <= '0';
@@ -289,19 +313,10 @@ begin
           if (data_fifo_empty = '0') then
             -- We have data to send -> prepare a packet, first the header
             l2p_dma_current_state <= L2P_HEADER;
-            ldm_arb_req_o         <= '1';  -- request access to PCIe bus
-            --ldm_arb_data_o        <= s_l2p_header;
-            --ldm_arb_valid_o       <= '1';
-            --ldm_arb_dframe_o      <= '1';
-            --data_fifo_rd          <= '0';
-            --dma_ctrl_done_o       <= '0';
-            --else
-            --l2p_dma_current_state <= IDLE;
+            -- request access to PCIe bus
+            ldm_arb_req_o         <= '1';
           end if;
 
-          -----------------------------------------------------------------
-          -- L2P HEADER
-          -----------------------------------------------------------------
         when L2P_HEADER =>
           if(arb_ldm_gnt_i = '1') then
             -- clear access request to the arbiter
@@ -315,29 +330,15 @@ begin
               -- if host address is 64-bit, we have to send an additionnal
               -- 32-word containing highest bits of the host address
               l2p_dma_current_state <= L2P_ADDR_H;
-              --ldm_arb_data_o        <= std_logic_vector(l2p_address_h);
-              --ldm_arb_valid_o       <= '1';
-              --ldm_arb_dframe_o      <= '1';
-              --data_fifo_rd          <= '0';
             else
               -- for 32-bit host address, we only have to send lowest bits
               l2p_dma_current_state <= L2P_ADDR_L;
               -- Starts reading data in the fifo now, because there is
               -- 1 cycle delay until data are available
               data_fifo_rd          <= '1';
-              --ldm_arb_data_o        <= std_logic_vector(l2p_address_l);
-              --ldm_arb_valid_o       <= '1';
-              --ldm_arb_dframe_o      <= '1';
             end if;
-            --else
-            --  l2p_dma_current_state <= L2P_HEADER;
-            --  ldm_arb_req_o         <= '1';
-            --  data_fifo_rd <= '0';
           end if;
 
-          -----------------------------------------------------------------
-          -- L2P ADDRESS (63-32)
-          -----------------------------------------------------------------
         when L2P_ADDR_H =>
           -- send host address 32 highest bits
           ldm_arb_data_o        <= std_logic_vector(l2p_address_h);
@@ -346,136 +347,67 @@ begin
           -- Starts reading data in the fifo now, because there is
           -- 1 cycle delay until data are available
           data_fifo_rd          <= '1';
-          --ldm_arb_data_o        <= std_logic_vector(l2p_address_l);
-          --ldm_arb_valid_o       <= '1';
-          --ldm_arb_dframe_o      <= '1';
 
-          -----------------------------------------------------------------
-          -- L2P ADDRESS (31-00)
-          -----------------------------------------------------------------
         when L2P_ADDR_L =>
           -- send host address 32 lowest bits
-          ldm_arb_data_o <= std_logic_vector(l2p_address_l);
-          --if(data_fifo_valid = '1') then
-          --  l2p_dma_current_state <= WB_DATA_WAIT;
-          --  ldm_arb_valid_o       <= '0';
-          --  ldm_arb_dframe_o      <= '1';
-          --  data_fifo_rd          <= '1';
+          ldm_arb_data_o  <= std_logic_vector(l2p_address_l);
           if(l2p_data_cnt <= 2) then
             -- Only one 32-bit data word to send
-            l2p_dma_current_state <= L2P_DATA_LAST;
+            l2p_dma_current_state <= L2P_LAST_DATA;
             -- Stop reading from fifo
             data_fifo_rd          <= '0';
-            --ldm_arb_data_o        <= s_l2p_data;
-            --ldm_arb_valid_o       <= '1';
-            --ldm_arb_dframe_o      <= '0';
           else
             -- More than one data word to send
             l2p_dma_current_state <= L2P_DATA;
-            --ldm_arb_data_o <= s_l2p_data;
-            --ldm_arb_valid_o       <= '0';
-            --ldm_arb_dframe_o      <= '1';
-            --if (data_fifo_empty = '0') then
-            --  data_fifo_rd <= '1';
-            --end if;
           end if;
 
-          -----------------------------------------------------------------
-          -- L2P DATA
-          -----------------------------------------------------------------
         when L2P_DATA =>
           -- send data
-          ldm_arb_data_o        <= s_l2p_data;
-          ldm_arb_valid_o       <= '1';
+          ldm_arb_data_o  <= s_l2p_data;
+          ldm_arb_valid_o <= '1';
           if(data_fifo_empty = '1') then
-            l2p_dma_current_state <= WB_DATA_WAIT;
-            --ldm_arb_valid_o       <= '0';
-            --ldm_arb_dframe_o      <= '1';
-            --data_fifo_rd          <= '1';
+            l2p_dma_current_state <= L2P_WAIT_DATA;
           elsif(l2p_data_cnt <= 2) then
             -- Only one 32-bit data word to send
-            l2p_dma_current_state <= L2P_DATA_LAST;
+            l2p_dma_current_state <= L2P_LAST_DATA;
             -- Stop reading from fifo
             data_fifo_rd          <= '0';
-            --ldm_arb_data_o        <= s_l2p_data;
-            --ldm_arb_valid_o       <= '1';
-            --ldm_arb_dframe_o      <= '0';
-          --else
-          --  l2p_dma_current_state <= L2P_DATA;
-          --  ldm_arb_data_o        <= s_l2p_data;
-          --  ldm_arb_valid_o       <= '1';
-          --  ldm_arb_dframe_o      <= '1';
-          --  if (data_fifo_empty = '0') then
-          --    data_fifo_rd <= '1';
-          --  end if;
           end if;
 
-          -----------------------------------------------------------------
-          -- Wait data from the Wishbone machine
-          -----------------------------------------------------------------
-        when WB_DATA_WAIT =>
-          ldm_arb_valid_o       <= '0';
+        when L2P_WAIT_DATA =>
+          ldm_arb_valid_o <= '0';
           if(data_fifo_empty = '0') then
+            -- data ready to be send again
             l2p_dma_current_state <= L2P_DATA;
-            --l2p_dma_current_state <= WB_DATA_WAIT;
-            --ldm_arb_valid_o       <= '0';
-            --ldm_arb_dframe_o      <= '1';
-            --data_fifo_rd          <= '1';
           elsif(l2p_data_cnt <= 2) then
             -- Only one 32-bit data word to send
-            l2p_dma_current_state <= L2P_DATA_LAST;
+            l2p_dma_current_state <= L2P_LAST_DATA;
             -- Stop reading from fifo
             data_fifo_rd          <= '0';
-            --ldm_arb_data_o        <= s_l2p_data;
-            --ldm_arb_valid_o       <= '1';
-            --ldm_arb_dframe_o      <= '0';
-            --data_fifo_rd          <= '0';
-          --else
-          --  l2p_dma_current_state <= L2P_DATA;
-          --  --ldm_arb_data_o <= s_l2p_data;
-          --  ldm_arb_valid_o       <= '0';
-          --  ldm_arb_dframe_o      <= '1';
-          --  if (data_fifo_empty = '0') then
-          --    data_fifo_rd <= '1';
-          --  end if;
           end if;
 
-          -----------------------------------------------------------------
-          -- L2P DATA Last double word
-          -----------------------------------------------------------------
-        when L2P_DATA_LAST =>
+        when L2P_LAST_DATA =>
           -- send the last data word
-          ldm_arb_data_o        <= s_l2p_data;
-          ldm_arb_valid_o       <= '1';
+          ldm_arb_data_o   <= s_l2p_data;
+          ldm_arb_valid_o  <= '1';
           -- clear dframe signal to indicate the end of packet
-          ldm_arb_dframe_o      <= '0';
+          ldm_arb_dframe_o <= '0';
           if(l2p_len_cnt > 0) then
             -- There is still data to be send -> start a new packet
             l2p_dma_current_state <= L2P_HEADER;
             -- As the end of packet is used to delimit arbitration phases
             -- we have to ask again for permission
             ldm_arb_req_o         <= '1';
-            --ldm_arb_data_o        <= s_l2p_header;
-            --ldm_arb_valid_o       <= '1';
-            --ldm_arb_dframe_o      <= '1';
-            --data_fifo_rd          <= '0';
           else
             -- Nomore data to send, go back to sleep
-            l2p_dma_current_state <= IDLE;
+            l2p_dma_current_state <= L2P_IDLE;
             -- Indicate that the DMA transfer is finished
             dma_ctrl_done_o       <= '1';
-            --ldm_arb_data_o        <= (others => '0');
-            --ldm_arb_valid_o       <= '0';
-            --ldm_arb_dframe_o      <= '0';
-            --data_fifo_rd          <= '0';
           end if;
 
-          -----------------------------------------------------------------
-          -- OTHERS
-          -----------------------------------------------------------------
         when others =>
           -- should no arrive here, but just in case...
-          l2p_dma_current_state <= IDLE;
+          l2p_dma_current_state <= L2P_IDLE;
           ldm_arb_req_o         <= '0';
           ldm_arb_data_o        <= (others => '0');
           ldm_arb_valid_o       <= '0';
@@ -550,11 +482,11 @@ begin
       l2p_dma_cyc_o <= '0';
       l2p_dma_sel_o <= (others => '0');
     elsif rising_edge(l2p_dma_clk_i) then
-      -- adr
+      -- adr signal management
       if (addr_fifo_valid = '1') then
         l2p_dma_adr_o <= addr_fifo_dout;
       end if;
-      -- stb and sel
+      -- stb and sel signals management
       if (addr_fifo_valid = '1' or l2p_dma_stall_i = '1') then
         l2p_dma_stb_o <= '1';
         l2p_dma_sel_o <= (others => '1');
@@ -562,10 +494,11 @@ begin
         l2p_dma_stb_o <= '0';
         l2p_dma_sel_o <= (others => '0');
       end if;
-      -- cyc
+      -- cyc signal management
       if (addr_fifo_valid = '1') then
         l2p_dma_cyc_o <= '1';
       elsif (wb_ack_cnt-1 = wb_read_cnt and l2p_dma_ack_i = '1') then
+        -- last ack received -> end of the transaction
         l2p_dma_cyc_o <= '0';
       end if;
     end if;
