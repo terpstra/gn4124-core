@@ -139,7 +139,7 @@ package gn4124_core_pkg is
 
 
 -----------------------------------------------------------------------------
-  component wbmaster32 is
+  component wbmaster32
 -----------------------------------------------------------------------------
     generic
       (
@@ -206,7 +206,7 @@ package gn4124_core_pkg is
   end component;  -- wbmaster32
 
 -----------------------------------------------------------------------------
-  component dma_controller is
+  component dma_controller
 -----------------------------------------------------------------------------
     port
       (
@@ -255,26 +255,25 @@ package gn4124_core_pkg is
   end component;  -- dma_controller
 
 -----------------------------------------------------------------------------
-  component l2p_dma_master is
+  component l2p_dma_master
 -----------------------------------------------------------------------------
     port
       (
         ---------------------------------------------------------
-        -- Clock/Reset
-        sys_clk_i    : in std_logic;
-        sys_rst_n_i  : in std_logic;
-        gn4124_clk_i : in std_logic;
+        -- GN4124 core clock and reset
+        sys_clk_i   : in std_logic;
+        sys_rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- From the DMA controller
-        dma_ctrl_carrier_addr_i : in  std_logic_vector(31 downto 0);
-        dma_ctrl_host_addr_h_i  : in  std_logic_vector(31 downto 0);
-        dma_ctrl_host_addr_l_i  : in  std_logic_vector(31 downto 0);
-        dma_ctrl_len_i          : in  std_logic_vector(31 downto 0);
-        dma_ctrl_start_l2p_i    : in  std_logic;
-        dma_ctrl_done_o         : out std_logic;
-        dma_ctrl_error_o        : out std_logic;
-        dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
+        dma_ctrl_target_addr_i : in  std_logic_vector(31 downto 0);
+        dma_ctrl_host_addr_h_i : in  std_logic_vector(31 downto 0);
+        dma_ctrl_host_addr_l_i : in  std_logic_vector(31 downto 0);
+        dma_ctrl_len_i         : in  std_logic_vector(31 downto 0);
+        dma_ctrl_start_l2p_i   : in  std_logic;
+        dma_ctrl_done_o        : out std_logic;
+        dma_ctrl_error_o       : out std_logic;
+        dma_ctrl_byte_swap_i   : in  std_logic_vector(1 downto 0);
 
         ---------------------------------------------------------
         -- To the L2P Interface (send the DMA data)
@@ -286,6 +285,7 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- DMA Interface (Pipelined Wishbone)
+        l2p_dma_clk_i   : in  std_logic;                      -- Bus clock
         l2p_dma_adr_o   : out std_logic_vector(31 downto 0);  -- Adress
         l2p_dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
         l2p_dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
@@ -299,7 +299,7 @@ package gn4124_core_pkg is
   end component;  -- l2p_dma_master
 
 -----------------------------------------------------------------------------
-  component p2l_dma_master is
+  component p2l_dma_master
 -----------------------------------------------------------------------------
     port
       (
@@ -382,7 +382,7 @@ package gn4124_core_pkg is
   end component;  -- p2l_dma_master
 
 -----------------------------------------------------------------------------
-  component arbiter is
+  component arbiter
 -----------------------------------------------------------------------------
     port (
       ---------------------------------------------------------
@@ -421,5 +421,44 @@ package gn4124_core_pkg is
       arb_ser_data_o   : out std_logic_vector(31 downto 0)
       );
   end component;  -- arbiter
+
+-----------------------------------------------------------------------------
+  component fifo_32x512
+-----------------------------------------------------------------------------
+    port (
+      rst                     : in  std_logic;
+      wr_clk                  : in  std_logic;
+      rd_clk                  : in  std_logic;
+      din                     : in  std_logic_vector(31 downto 0);
+      wr_en                   : in  std_logic;
+      rd_en                   : in  std_logic;
+      prog_full_thresh_assert : in  std_logic_vector(8 downto 0);
+      prog_full_thresh_negate : in  std_logic_vector(8 downto 0);
+      dout                    : out std_logic_vector(31 downto 0);
+      full                    : out std_logic;
+      empty                   : out std_logic;
+      valid                   : out std_logic;
+      prog_full               : out std_logic);
+  end component;
+
+-----------------------------------------------------------------------------
+  component fifo_64x512
+-----------------------------------------------------------------------------
+    port (
+      rst                     : in  std_logic;
+      wr_clk                  : in  std_logic;
+      rd_clk                  : in  std_logic;
+      din                     : in  std_logic_vector(63 downto 0);
+      wr_en                   : in  std_logic;
+      rd_en                   : in  std_logic;
+      prog_full_thresh_assert : in  std_logic_vector(8 downto 0);
+      prog_full_thresh_negate : in  std_logic_vector(8 downto 0);
+      dout                    : out std_logic_vector(63 downto 0);
+      full                    : out std_logic;
+      empty                   : out std_logic;
+      valid                   : out std_logic;
+      prog_full               : out std_logic);
+  end component;
+
 
 end gn4124_core_pkg;
