@@ -548,9 +548,7 @@ begin
       sys_clk_i   => clk_p,             --sys_clk_i,
       sys_rst_n_i => rst_n,
 
-      gn4124_clk_i => clk_p,
-
-      dma_ctrl_carrier_addr_i => dma_ctrl_carrier_addr,
+      dma_ctrl_target_addr_i => dma_ctrl_carrier_addr,
       dma_ctrl_host_addr_h_i  => dma_ctrl_host_addr_h,
       dma_ctrl_host_addr_l_i  => dma_ctrl_host_addr_l,
       dma_ctrl_len_i          => dma_ctrl_len,
@@ -565,6 +563,7 @@ begin
       ldm_arb_req_o    => ldm_arb_req,
       arb_ldm_gnt_i    => arb_ldm_gnt,
 
+      l2p_dma_clk_i   => clk_p,
       l2p_dma_adr_o   => l2p_dma_adr,
       l2p_dma_dat_i   => l2p_dma_dat_s2m,
       l2p_dma_dat_o   => l2p_dma_dat_m2s,
