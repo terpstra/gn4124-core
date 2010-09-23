@@ -6,19 +6,21 @@
 --
 -- unit name: GN4124 core arbiter (arbiter.vhd)
 --
--- author: Simon Deprez (simon.deprez@cern.ch)
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
 -- date: 12-08-2010
 --
 -- version: 0.1
 --
--- description: Arbitrate between Wishbone master, DMA master and DMA pdmuencer
+-- description: Arbitrates PCIe accesses between Wishbone master,
+--              L2P DMA master and P2L DMA master
 --
 -- dependencies:
 --
 -------------------------------------------------------------------------------
--- last changes:
---       - 08-06-2010,
+-- last changes: 23-09-2010 (mcattin) Add FF on data path and
+--                                    change valid request logic
 -------------------------------------------------------------------------------
 -- TODO: -
 --       -
@@ -80,7 +82,6 @@ architecture behaviour of arbiter is
   signal wbm_arb_req_valid : std_logic;
   signal pdm_arb_req_valid : std_logic;
   signal ldm_arb_req_valid : std_logic;
-  --signal arb_req_valid     : std_logic;
   signal arb_wbm_gnt       : std_logic;
   signal arb_pdm_gnt       : std_logic;
   signal arb_ldm_gnt       : std_logic;
@@ -94,10 +95,6 @@ begin
   wbm_arb_req_valid <= wbm_arb_req_i and (not(arb_pdm_gnt) and not(arb_ldm_gnt));
   pdm_arb_req_valid <= pdm_arb_req_i and (not(arb_wbm_gnt) and not(arb_ldm_gnt));
   ldm_arb_req_valid <= ldm_arb_req_i and (not(arb_wbm_gnt) and not(arb_pdm_gnt));
-
-  -- Detect any valid request to allow arbitration
-  --arb_req_valid <= (wbm_arb_req_valid or pdm_arb_req_valid or ldm_arb_req_valid) and
-  --                 (not arb_wbm_gnt and not arb_pdm_gnt and not arb_ldm_gnt);
 
   -- Detect end of packet to delimit the arbitration phase
   eop <= ((arb_wbm_gnt and not(wbm_arb_dframe_i) and wbm_arb_valid_i) or
@@ -133,11 +130,6 @@ begin
         arb_wbm_gnt <= '0';
         arb_pdm_gnt <= '1';
         arb_ldm_gnt <= '0';
-        --else
-        --  arb_wbm_gnt <= '0';
-        --  arb_pdm_gnt <= '0';
-        --  arb_ldm_gnt <= '0';
-        --end if;
       elsif (eop = '1') then
         arb_wbm_gnt <= '0';
         arb_pdm_gnt <= '0';
@@ -172,18 +164,6 @@ begin
       end if;
     end if;
   end process;
-
-  --arb_ser_valid_o <= wbm_arb_valid_i when (arb_wbm_gnt = '1') else
-  --                   pdm_arb_valid_i when (arb_pdm_gnt = '1') else
-  --                   ldm_arb_valid_i when (arb_ldm_gnt = '1') else '0';
-
-  --arb_ser_dframe_o <= wbm_arb_dframe_i when (arb_wbm_gnt = '1') else
-  --                    pdm_arb_dframe_i when (arb_pdm_gnt = '1') else
-  --                    ldm_arb_dframe_i when (arb_ldm_gnt = '1') else '0';
-
-  --arb_ser_data_o <= wbm_arb_data_i when (arb_wbm_gnt = '1') else
-  --                  pdm_arb_data_i when (arb_pdm_gnt = '1') else
-  --                  ldm_arb_data_i when (arb_ldm_gnt = '1') else x"00000000";
 
   arb_wbm_gnt_o <= arb_wbm_gnt;
   arb_pdm_gnt_o <= arb_pdm_gnt;
