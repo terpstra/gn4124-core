@@ -526,7 +526,7 @@ begin
       next_item_attrib_i       => next_item_attrib,
       next_item_valid_i        => next_item_valid,
 
-      wb_adr_i => wb_adr(5 downto 2),
+      wb_adr_i => wb_adr(3 downto 0),
       wb_dat_o => wb_dat_s2m_dma_ctrl,
       wb_dat_i => wb_dat_m2s,
       wb_sel_i => wb_sel,
