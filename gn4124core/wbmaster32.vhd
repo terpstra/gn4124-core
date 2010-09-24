@@ -43,9 +43,8 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- Clock/Reset
-      sys_clk_i    : in std_logic;
-      sys_rst_n_i  : in std_logic;
-      gn4124_clk_i : in std_logic;
+      sys_clk_i   : in std_logic;
+      sys_rst_n_i : in std_logic;
 
       ---------------------------------------------------------
       -- From P2L Decoder
@@ -85,15 +84,16 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- Wishbone Interface
-      wb_adr_o : out std_logic_vector(32-1 downto 0);  -- Adress
-      wb_dat_i : in  std_logic_vector(31 downto 0);    -- Data in
-      wb_dat_o : out std_logic_vector(31 downto 0);    -- Data out
-      wb_sel_o : out std_logic_vector(3 downto 0);     -- Byte select
-      wb_cyc_o : out std_logic;                        -- Read or write cycle
-      wb_stb_o : out std_logic;                        -- Read or write strobe
-      wb_we_o  : out std_logic;                        -- Write
-      wb_ack_i : in  std_logic                         -- Acknowledge
-      --wb_stall_i : in  std_logic                         -- Pipelined mode
+      wb_clk_i   : in  std_logic;                        -- Wishbone bus clock
+      wb_adr_o   : out std_logic_vector(32-1 downto 0);  -- Adress
+      wb_dat_i   : in  std_logic_vector(31 downto 0);    -- Data in
+      wb_dat_o   : out std_logic_vector(31 downto 0);    -- Data out
+      wb_sel_o   : out std_logic_vector(3 downto 0);     -- Byte select
+      wb_cyc_o   : out std_logic;                        -- Read or write cycle
+      wb_stb_o   : out std_logic;                        -- Read or write strobe
+      wb_we_o    : out std_logic;                        -- Write
+      wb_ack_i   : in  std_logic;                        -- Acknowledge
+      wb_stall_i : in  std_logic                         -- Pipelined mode
       );
 end wbmaster32;
 
@@ -116,6 +116,7 @@ architecture behaviour of wbmaster32 is
 -- Internal Signals
 -----------------------------------------------------------------------------
 
+  -- Sync fifos
   signal fifo_rst : std_logic;
 
   -- P2L Bus Tracker State Machine
@@ -164,6 +165,7 @@ begin
   ------------------------------------------------------------------------------
   -- Active high reset for fifo
   ------------------------------------------------------------------------------
+  -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
     fifo_rst <= not(sys_rst_n_i);
   end generate;
@@ -223,7 +225,7 @@ begin
     end if;
   end process;
 
-  process (gn4124_clk_i, sys_rst_n_i)
+  process (sys_clk_i, sys_rst_n_i)
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       s_p2l_addr_reg   <= (others => '0');
@@ -232,7 +234,7 @@ begin
       s_p2l_header_d1  <= '0';
       s_p2l_rd_req_reg <= '0';
     else
-      if rising_edge(gn4124_clk_i) then
+      if rising_edge(sys_clk_i) then
         s_p2l_header_d1 <= pd_wbm_hdr_start_i;
 
         if (s_p2l_header_d1 = '1' and pd_wbm_addr_start_i = '1' and
@@ -268,7 +270,7 @@ begin
 -- PCIe write State Machine (Read completion)
 -----------------------------------------------------------------------------
 
-  process (gn4124_clk_i, sys_rst_n_i)
+  process (sys_clk_i, sys_rst_n_i)
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       l2p_read_cpl_current_state <= IDLE;
@@ -276,7 +278,7 @@ begin
       wbm_arb_data_o             <= (others => '0');
       wbm_arb_valid_o            <= '0';
       wbm_arb_dframe_o           <= '0';
-    elsif rising_edge(gn4124_clk_i) then
+    elsif rising_edge(sys_clk_i) then
       case l2p_read_cpl_current_state is
         -----------------------------------------------------------------
         -- IDLE
@@ -312,16 +314,16 @@ begin
         when L2P_HEADER =>
           if(arb_wbm_gnt_i = '1') then
             l2p_read_cpl_current_state <= L2P_DATA;
-            wbm_arb_req_o           <= '0';
-            wbm_arb_data_o          <= s_read_data_reg;
-            wbm_arb_valid_o         <= '1';
-            wbm_arb_dframe_o        <= '0';
+            wbm_arb_req_o              <= '0';
+            wbm_arb_data_o             <= s_read_data_reg;
+            wbm_arb_valid_o            <= '1';
+            wbm_arb_dframe_o           <= '0';
           else
             l2p_read_cpl_current_state <= L2P_HEADER;
-            wbm_arb_req_o    <= '1';
-            wbm_arb_data_o   <= s_l2p_header_reg;
-            wbm_arb_valid_o  <= '1';
-            wbm_arb_dframe_o <= '1';
+            wbm_arb_req_o              <= '1';
+            wbm_arb_data_o             <= s_l2p_header_reg;
+            wbm_arb_valid_o            <= '1';
+            wbm_arb_dframe_o           <= '1';
           end if;
 
           -----------------------------------------------------------------
@@ -329,18 +331,18 @@ begin
           -----------------------------------------------------------------
         when L2P_DATA =>
           l2p_read_cpl_current_state <= IDLE;
-          wbm_arb_data_o          <= (others => '0');
-          wbm_arb_valid_o         <= '0';
+          wbm_arb_data_o             <= (others => '0');
+          wbm_arb_valid_o            <= '0';
 
           -----------------------------------------------------------------
           -- OTHERS
           -----------------------------------------------------------------
         when others =>
           l2p_read_cpl_current_state <= IDLE;
-          wbm_arb_req_o           <= '0';
-          wbm_arb_data_o          <= (others => '0');
-          wbm_arb_valid_o         <= '0';
-          wbm_arb_dframe_o        <= '0';
+          wbm_arb_req_o              <= '0';
+          wbm_arb_data_o             <= (others => '0');
+          wbm_arb_valid_o            <= '0';
+          wbm_arb_dframe_o           <= '0';
 
       end case;
       --l2p_read_cpl_current_state <= l2p_read_cpl_next_state;
@@ -575,7 +577,7 @@ begin
   u_fifo_write : fifo_write port map
     (
       rst    => fifo_rst,
-      wr_clk => gn4124_clk_i,
+      wr_clk => sys_clk_i,
       rd_clk => sys_clk_i,
       din    => s_fifo_in,
       wr_en  => s_fifo_push,

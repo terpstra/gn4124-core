@@ -151,9 +151,8 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- Clock/Reset
-        sys_clk_i    : in std_logic;
-        sys_rst_n_i  : in std_logic;
-        gn4124_clk_i : in std_logic;
+        sys_clk_i   : in std_logic;
+        sys_rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- From P2L Decoder
@@ -193,15 +192,16 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- Wishbone Interface
-        wb_adr_o : out std_logic_vector(32-1 downto 0);  -- Adress
-        wb_dat_i : in  std_logic_vector(31 downto 0);    -- Data in
-        wb_dat_o : out std_logic_vector(31 downto 0);    -- Data out
-        wb_sel_o : out std_logic_vector(3 downto 0);     -- Byte select
-        wb_cyc_o : out std_logic;                        -- Read or write cycle
-        wb_stb_o : out std_logic;                        -- Read or write strobe
-        wb_we_o  : out std_logic;                        -- Write
-        wb_ack_i : in  std_logic                         -- Acknowledge
-        --wb_stall_i          : in  std_logic                         -- Pipelined mode
+        wb_clk_i   : in  std_logic;                        -- Wishbone bus clock
+        wb_adr_o   : out std_logic_vector(32-1 downto 0);  -- Adress
+        wb_dat_i   : in  std_logic_vector(31 downto 0);    -- Data in
+        wb_dat_o   : out std_logic_vector(31 downto 0);    -- Data out
+        wb_sel_o   : out std_logic_vector(3 downto 0);     -- Byte select
+        wb_cyc_o   : out std_logic;                        -- Read or write cycle
+        wb_stb_o   : out std_logic;                        -- Read or write strobe
+        wb_we_o    : out std_logic;                        -- Write
+        wb_ack_i   : in  std_logic;                        -- Acknowledge
+        wb_stall_i : in  std_logic                         -- Pipelined mode
         );
   end component;  -- wbmaster32
 
@@ -257,6 +257,10 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
   component l2p_dma_master
 -----------------------------------------------------------------------------
+    generic (
+      -- Enable byte swap module (if false, no swap)
+      g_BYTE_SWAP : boolean := true
+      );
     port
       (
         ---------------------------------------------------------
