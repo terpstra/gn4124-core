@@ -21,8 +21,9 @@
 -- last changes: <date> <initials> <log>
 -- <extended description>
 --------------------------------------------------------------------------------
--- TODO: -
---       -
+-- TODO: - a packet can contain 1024 32-bit word, the to_wb_fifo depth is 512 words => !!
+--         should drive p2l_rdy to pause transfer.
+--       - byte enable support.
 --       -
 --------------------------------------------------------------------------------
 
@@ -99,18 +100,12 @@ end wbmaster32;
 
 architecture behaviour of wbmaster32 is
 
-  component fifo_write
-    port (
-      rst    : in  std_logic;
-      wr_clk : in  std_logic;
-      rd_clk : in  std_logic;
-      din    : in  std_logic_vector(63 downto 0);
-      wr_en  : in  std_logic;
-      rd_en  : in  std_logic;
-      dout   : out std_logic_vector(63 downto 0);
-      full   : out std_logic;
-      empty  : out std_logic);
-  end component;
+
+-----------------------------------------------------------------------------
+-- Local constants
+-----------------------------------------------------------------------------
+  constant c_TO_WB_FIFO_FULL_THRES   : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
+  constant c_FROM_WB_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
 -----------------------------------------------------------------------------
 -- Internal Signals
@@ -119,46 +114,36 @@ architecture behaviour of wbmaster32 is
   -- Sync fifos
   signal fifo_rst : std_logic;
 
-  -- P2L Bus Tracker State Machine
-  type wishbone_state_type is (WB_IDLE, WB_READ_REQUEST, WB_READ_WAIT_ACK, WB_READ_SEND_PCIE,
-                               WB_WRITE_FIFO, WB_WRITE_REQUEST, WB_WRITE_WAIT_ACK);
+  signal to_wb_fifo_empty : std_logic;
+  signal to_wb_fifo_full  : std_logic;
+  signal to_wb_fifo_rd    : std_logic;
+  signal to_wb_fifo_wr    : std_logic;
+  signal to_wb_fifo_din   : std_logic_vector(63 downto 0);
+  signal to_wb_fifo_dout  : std_logic_vector(63 downto 0);
+  signal to_wb_fifo_rw    : std_logic;
+  signal to_wb_fifo_data  : std_logic_vector(31 downto 0);
+  signal to_wb_fifo_addr  : std_logic_vector(29 downto 0);
+
+  signal from_wb_fifo_empty : std_logic;
+  signal from_wb_fifo_full  : std_logic;
+  signal from_wb_fifo_rd    : std_logic;
+  signal from_wb_fifo_wr    : std_logic;
+  signal from_wb_fifo_din   : std_logic_vector(31 downto 0);
+  signal from_wb_fifo_dout  : std_logic_vector(31 downto 0);
+
+  -- Wishbone FSM
+  type   wishbone_state_type is (WB_IDLE, WB_READ_FIFO, WB_CYCLE, WB_WAIT_ACK);
   signal wishbone_current_state : wishbone_state_type;
-  signal wishbone_next_state    : wishbone_state_type;
 
-  type   l2p_read_cpl_state_type is (IDLE, L2P_SEM, L2P_HEADER, L2P_DATA);
+  signal s_wb_we : std_logic;
+
+  -- L2P packet generator
+  type   l2p_read_cpl_state_type is (L2P_IDLE, L2P_HEADER, L2P_DATA);
   signal l2p_read_cpl_current_state : l2p_read_cpl_state_type;
-  signal l2p_read_cpl_next_state    : l2p_read_cpl_state_type;
 
-  signal s_read_request  : std_logic;   -- signal a waiting read request to the Wishbone master state machine
-  signal s_write_request : std_logic;   -- signal a waiting write request to the Wishbone master state machine
+  signal p2l_cid      : std_logic_vector(1 downto 0);
+  signal s_l2p_header : std_logic_vector(31 downto 0);
 
-  signal s_p2l_addr_reg   : std_logic_vector(31 downto 0);
-  signal s_p2l_cid_reg    : std_logic_vector(1 downto 0);
-  signal s_p2l_len_reg    : std_logic_vector(9 downto 0);
-  signal s_p2l_header_d1  : std_logic;
-  signal s_p2l_rd_req_reg : std_logic;
-
-  signal s_read_request_reg : std_logic;
-  signal s_read_addr_reg    : unsigned(31 downto 0);
-  signal s_read_cid_reg     : std_logic_vector(1 downto 0);
-  signal s_read_len_reg     : unsigned(9 downto 0);
-  signal s_read_data_reg    : std_logic_vector(31 downto 0);
-
-  signal s_l2p_header_reg : std_logic_vector(31 downto 0);
-  signal s_l2p_last       : std_logic;
-
-  signal s_fifo_push  : std_logic;
-  signal s_fifo_pop   : std_logic;
-  signal s_fifo_empty : std_logic;
-  signal s_fifo_full  : std_logic;
-  signal s_fifo_in    : std_logic_vector(63 downto 0);
-  signal s_fifo_out   : std_logic_vector(63 downto 0);
-
-  signal s_write_data_reg : std_logic_vector(31 downto 0);
-  signal s_write_addr_reg : std_logic_vector(31 downto 0);
-
-  signal s_wb_timeout_cnt : unsigned(3 downto 0);
-  signal s_wb_timeout     : std_logic;
 
 begin
 
@@ -174,436 +159,241 @@ begin
     fifo_rst <= sys_rst_n_i;
   end generate;
 
+  ------------------------------------------------------------------------------
+  -- Write frame from P2L decoder to fifo
+  ------------------------------------------------------------------------------
 
---=========================================================================--
--- Read completion block
---=========================================================================--
+  -- always ready to receive new data
+  p_wr_rdy_o <= '1';
 
-  s_read_request <= s_read_request_reg and not s_write_request;
-
-  s_write_request <= not s_fifo_empty;
-
-  process (sys_clk_i, sys_rst_n_i)
+  p_from_decoder : process (sys_clk_i, sys_rst_n_i)
   begin
-    if(sys_rst_n_i = c_RST_ACTIVE) then
-      s_read_addr_reg    <= (others => '0');
-      s_read_cid_reg     <= (others => '0');
-      s_read_len_reg     <= (others => '0');
-      s_read_data_reg    <= (others => '0');
-      s_read_request_reg <= '0';
-      DEBUG(1 downto 0)  <= "00";
-    else
-      if rising_edge(sys_clk_i) then
-
-        if (wishbone_current_state = WB_READ_REQUEST or wishbone_current_state = WB_READ_WAIT_ACK) then
-          if (wb_ack_i = '1') then
-            s_read_data_reg              <= wb_dat_i;
-            DEBUG(0)                     <= '1';
-            s_read_addr_reg(31 downto 2) <= s_read_addr_reg(31 downto 2) + 1;
-            s_read_len_reg               <= s_read_len_reg - 1;
-          elsif (s_wb_timeout = '1') then
-            s_read_data_reg              <= x"12345678";
-            s_read_addr_reg(31 downto 2) <= s_read_addr_reg(31 downto 2) + 1;
-            s_read_len_reg               <= s_read_len_reg - 1;
-          end if;
-
-        end if;
-
-        if (s_l2p_last = '1') then
-          s_read_request_reg <= '0';
-        end if;
-
-        if (s_p2l_rd_req_reg = '1' and not (s_p2l_len_reg = "0000000000")) then
-          s_read_addr_reg    <= unsigned(s_p2l_addr_reg);
-          s_read_cid_reg     <= s_p2l_cid_reg;
-          s_read_len_reg     <= unsigned(s_p2l_len_reg);
-          s_read_request_reg <= '1';
-          DEBUG(1)           <= '1';
-        end if;
-
+    if (sys_rst_n_i = c_RST_ACTIVE) then
+      to_wb_fifo_din <= (others => '0');
+      to_wb_fifo_wr  <= '0';
+    elsif rising_edge(sys_clk_i) then
+      -- pd_wbm_data_valid_i is not asserted for read request,
+      -- pd_wbm_data_last_i is used instead
+      if (pd_wbm_data_valid_i = '1' or pd_wbm_data_last_i = '1') then
+        -- wishbone address is in 32-bit words and address from PCIe in byte
+        to_wb_fifo_din(61 downto 32) <= pd_wbm_addr_i(31 downto 2);
+        to_wb_fifo_din(31 downto 0)  <= pd_wbm_data_i;
+        to_wb_fifo_din(62)           <= pd_wbm_target_mwr_i;
+        to_wb_fifo_wr                <= '1';
+      else
+        to_wb_fifo_wr <= '0';
       end if;
     end if;
-  end process;
+  end process p_from_decoder;
 
-  process (sys_clk_i, sys_rst_n_i)
+  ------------------------------------------------------------------------------
+  -- Packet generator
+  ------------------------------------------------------------------------------
+  -- Generates read completion with requested data
+  -- Single 32-bit word read only
+
+  -- Store CID for read completion packet
+  p_pkt_gen : process (sys_clk_i, sys_rst_n_i)
   begin
-    if(sys_rst_n_i = c_RST_ACTIVE) then
-      s_p2l_addr_reg   <= (others => '0');
-      s_p2l_cid_reg    <= (others => '0');
-      s_p2l_len_reg    <= (others => '0');
-      s_p2l_header_d1  <= '0';
-      s_p2l_rd_req_reg <= '0';
-    else
-      if rising_edge(sys_clk_i) then
-        s_p2l_header_d1 <= pd_wbm_hdr_start_i;
-
-        if (s_p2l_header_d1 = '1' and pd_wbm_addr_start_i = '1' and
-            pd_wbm_target_mrd_i = '1' and pd_wbm_wbm_addr_i = '1' and
-            s_p2l_rd_req_reg = '0') then
-          s_p2l_addr_reg   <= pd_wbm_addr_i;
-          s_p2l_cid_reg    <= pd_wbm_hdr_cid_i;
-          s_p2l_len_reg    <= pd_wbm_hdr_length_i;
-          s_p2l_rd_req_reg <= '1';
-        elsif (s_read_request = '1') then
-          s_p2l_rd_req_reg <= '0';
-        end if;
+    if (sys_rst_n_i = c_RST_ACTIVE) then
+      p2l_cid <= (others => '0');
+    elsif rising_edge(sys_clk_i) then
+      if (pd_wbm_hdr_start_i = '1') then
+        p2l_cid <= pd_wbm_hdr_cid_i;
       end if;
     end if;
-  end process;
-
-  s_l2p_last <= '1' when (s_read_len_reg(9 downto 0) = "0000000000")
-                else '0';
+  end process p_pkt_gen;
 
   --read completion header
-  s_l2p_header_reg <= "000"             -->  Traffic Class
-                      & '0'             -->  Reserved
-                      & "0101"          -->  Read completion
-                      & "000000"        -->  Reserved
-                      & "00"            -->  Completion Status
-                      & s_l2p_last      -->  Last completion packet
-                      & "00"            -->  Reserved
-                      & '0'             -->  VC
-                      & s_read_cid_reg  -->  CID
-                      & "0000000001";   -->  Length
+  s_l2p_header <= "000"                 -->  Traffic Class
+                  & '0'                 -->  Reserved
+                  & "0101"              -->  Read completion (Master read competition with data)
+                  & "000000"            -->  Reserved
+                  & "00"                -->  Completion Status
+                  & '1'                 -->  Last completion packet
+                  & "00"                -->  Reserved
+                  & '0'                 -->  VC (Vitrual Channel)
+                  & p2l_cid             -->  CID (Completion Identifer)
+                  & "0000000001";       -->  Length (Single 32-bit word read only)
 
------------------------------------------------------------------------------
--- PCIe write State Machine (Read completion)
------------------------------------------------------------------------------
-
+  ------------------------------------------------------------------------------
+  -- L2P packet write FSM
+  ------------------------------------------------------------------------------
   process (sys_clk_i, sys_rst_n_i)
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
-      l2p_read_cpl_current_state <= IDLE;
+      l2p_read_cpl_current_state <= L2P_IDLE;
       wbm_arb_req_o              <= '0';
       wbm_arb_data_o             <= (others => '0');
       wbm_arb_valid_o            <= '0';
       wbm_arb_dframe_o           <= '0';
+      from_wb_fifo_rd            <= '0';
     elsif rising_edge(sys_clk_i) then
       case l2p_read_cpl_current_state is
-        -----------------------------------------------------------------
-        -- IDLE
-        -----------------------------------------------------------------
-        when IDLE =>
-          if(wishbone_current_state = WB_READ_SEND_PCIE) then
-            l2p_read_cpl_current_state <= L2P_SEM;
-          else
-            l2p_read_cpl_current_state <= IDLE;
-          end if;
+
+        when L2P_IDLE =>
           wbm_arb_req_o    <= '0';
           wbm_arb_data_o   <= (others => '0');
           wbm_arb_valid_o  <= '0';
           wbm_arb_dframe_o <= '0';
-
-          -----------------------------------------------------------------
-          -- L2P_SEM
-          -----------------------------------------------------------------
-        when L2P_SEM =>
-          if not (wishbone_current_state = WB_READ_SEND_PCIE) then
-            l2p_read_cpl_current_state <= L2P_HEADER;
-          else
-            l2p_read_cpl_current_state <= L2P_SEM;
-          end if;
-          wbm_arb_req_o    <= '0';
-          wbm_arb_data_o   <= (others => '0');
-          wbm_arb_valid_o  <= '0';
-          wbm_arb_dframe_o <= '0';
-
-          -----------------------------------------------------------------
-          -- L2P HEADER
-          -----------------------------------------------------------------
-        when L2P_HEADER =>
-          if(arb_wbm_gnt_i = '1') then
-            l2p_read_cpl_current_state <= L2P_DATA;
-            wbm_arb_req_o              <= '0';
-            wbm_arb_data_o             <= s_read_data_reg;
-            wbm_arb_valid_o            <= '1';
-            wbm_arb_dframe_o           <= '0';
-          else
-            l2p_read_cpl_current_state <= L2P_HEADER;
+          if(from_wb_fifo_empty = '0') then
             wbm_arb_req_o              <= '1';
-            wbm_arb_data_o             <= s_l2p_header_reg;
+            from_wb_fifo_rd            <= '1';
+            l2p_read_cpl_current_state <= L2P_HEADER;
+          end if;
+
+        when L2P_HEADER =>
+          from_wb_fifo_rd <= '0';
+          if(arb_wbm_gnt_i = '1') then
+            wbm_arb_req_o              <= '0';
+            wbm_arb_data_o             <= s_l2p_header;
             wbm_arb_valid_o            <= '1';
             wbm_arb_dframe_o           <= '1';
+            l2p_read_cpl_current_state <= L2P_DATA;
           end if;
 
-          -----------------------------------------------------------------
-          -- L2P DATA
-          -----------------------------------------------------------------
         when L2P_DATA =>
-          l2p_read_cpl_current_state <= IDLE;
-          wbm_arb_data_o             <= (others => '0');
-          wbm_arb_valid_o            <= '0';
+          l2p_read_cpl_current_state <= L2P_IDLE;
+          wbm_arb_data_o             <= from_wb_fifo_dout;
+          wbm_arb_dframe_o           <= '0';
 
-          -----------------------------------------------------------------
-          -- OTHERS
-          -----------------------------------------------------------------
         when others =>
-          l2p_read_cpl_current_state <= IDLE;
+          l2p_read_cpl_current_state <= L2P_IDLE;
           wbm_arb_req_o              <= '0';
           wbm_arb_data_o             <= (others => '0');
           wbm_arb_valid_o            <= '0';
           wbm_arb_dframe_o           <= '0';
+          from_wb_fifo_rd            <= '0';
 
       end case;
-      --l2p_read_cpl_current_state <= l2p_read_cpl_next_state;
     end if;
   end process;
 
-
------------------------------------------------------------------------------
--- Bus toward arbiter
------------------------------------------------------------------------------
-
-  --wbm_arb_req_o <= '1' when (l2p_read_cpl_current_state = L2P_HEADER)
-  --                 else '0';
-
-  --wbm_arb_data_o <= s_l2p_header_reg when l2p_read_cpl_current_state = L2P_HEADER
-  --                  else s_read_data_reg when l2p_read_cpl_current_state = L2P_DATA
-  --                  else (others => '0');
-
-  --wbm_arb_valid_o <= '1' when (l2p_read_cpl_current_state = L2P_HEADER
-  --                             or l2p_read_cpl_current_state = L2P_DATA)
-  --                   else '0';
-
-  --wbm_arb_dframe_o <= '1' when l2p_read_cpl_current_state = L2P_HEADER
-  --                    else '0';
-
-
---=========================================================================--
--- Wishbone master block (pipelined)
---=========================================================================--
-
 ----------------------------------------------------------------------------
--- Timeout counter
+-- FIFOs for transition between GN4124 core and wishbone clock domain
 -----------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_n_i)
 
-  begin
-    if(sys_rst_n_i = c_RST_ACTIVE) then
-      s_wb_timeout_cnt <= (others => '0');
-      s_wb_timeout     <= '0';
-    elsif rising_edge(sys_clk_i) then
-      if wishbone_current_state = WB_IDLE then
-        s_wb_timeout_cnt <= (others => '0');
-        s_wb_timeout     <= '0';
-      elsif (s_wb_timeout_cnt = WBM_TIMEOUT) then
-        s_wb_timeout <= '1';
-      elsif (wishbone_current_state = WB_READ_REQUEST or wishbone_current_state = WB_WRITE_REQUEST or
-             wishbone_current_state = WB_READ_WAIT_ACK or wishbone_current_state = WB_WRITE_WAIT_ACK) then
-        s_wb_timeout_cnt <= s_wb_timeout_cnt + 1;
-      end if;
-    end if;
-  end process;
-----------------------------------------------------------------------------
--- Wishbone master state machine
------------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_n_i)
+  -- fifo for PCIe to WB transfer
+  cmp_fifo_to_wb : fifo_64x512
+    port map (
+      rst                     => fifo_rst,
+      wr_clk                  => sys_clk_i,
+      rd_clk                  => wb_clk_i,
+      din                     => to_wb_fifo_din,
+      wr_en                   => to_wb_fifo_wr,
+      rd_en                   => to_wb_fifo_rd,
+      prog_full_thresh_assert => c_TO_WB_FIFO_FULL_THRES,
+      prog_full_thresh_negate => c_TO_WB_FIFO_FULL_THRES,
+      dout                    => to_wb_fifo_dout,
+      full                    => open,
+      empty                   => to_wb_fifo_empty,
+      valid                   => open,
+      prog_full               => to_wb_fifo_full);
+
+  to_wb_fifo_rw   <= to_wb_fifo_dout(62);
+  to_wb_fifo_addr <= to_wb_fifo_dout(61 downto 32);  -- 30-bit
+  to_wb_fifo_data <= to_wb_fifo_dout(31 downto 0);   -- 32-bit
+
+  -- fifo for WB to PCIe transfer
+  cmp_from_wb_fifo : fifo_32x512
+    port map (
+      rst                     => fifo_rst,
+      wr_clk                  => wb_clk_i,
+      rd_clk                  => sys_clk_i,
+      din                     => from_wb_fifo_din,
+      wr_en                   => from_wb_fifo_wr,
+      rd_en                   => from_wb_fifo_rd,
+      prog_full_thresh_assert => c_FROM_WB_FIFO_FULL_THRES,
+      prog_full_thresh_negate => c_FROM_WB_FIFO_FULL_THRES,
+      dout                    => from_wb_fifo_dout,
+      full                    => open,
+      empty                   => from_wb_fifo_empty,
+      valid                   => open,
+      prog_full               => from_wb_fifo_full);
+
+  ----------------------------------------------------------------------------
+  -- Wishbone master state machine
+  -----------------------------------------------------------------------------
+  p_wb_fsm : process (wb_clk_i, sys_rst_n_i)
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
       wishbone_current_state <= WB_IDLE;
+      to_wb_fifo_rd          <= '0';
       wb_cyc_o               <= '0';
       wb_stb_o               <= '0';
-      wb_we_o                <= '0';
+      s_wb_we                <= '0';
       wb_sel_o               <= "0000";
       wb_dat_o               <= (others => '0');
       wb_adr_o               <= (others => '0');
-      s_fifo_pop             <= '0';
-    elsif rising_edge(sys_clk_i) then
+      from_wb_fifo_din       <= (others => '0');
+      from_wb_fifo_wr        <= '0';
+    elsif rising_edge(wb_clk_i) then
       case wishbone_current_state is
-        -----------------------------------------------------------------
-        -- Wait for a Wishbone cycle
-        -----------------------------------------------------------------
+
         when WB_IDLE =>
-          if(s_read_request = '1' and l2p_read_cpl_current_state = IDLE) then
-            wishbone_current_state <= WB_READ_WAIT_ACK;
-            wb_cyc_o               <= '1';
-            wb_stb_o               <= '1';
-            wb_we_o                <= '0';
-            wb_sel_o               <= "1111";
-            wb_dat_o               <= (others => '0');
-            wb_adr_o               <= std_logic_vector(s_read_addr_reg);
-          elsif(s_write_request = '1') then
-            wishbone_current_state <= WB_WRITE_FIFO;
-            s_fifo_pop             <= '1';
-            wb_cyc_o               <= '0';
+          -- stop writing to fifo
+          from_wb_fifo_wr <= '0';
+          -- clear bus
+          wb_cyc_o        <= '0';
+          wb_stb_o        <= '0';
+          wb_sel_o        <= "0000";
+          -- Wait for a Wishbone cycle
+          if (to_wb_fifo_empty = '0') then
+            -- read requset in fifo (address, data and transfer type)
+            to_wb_fifo_rd          <= '1';
+            wishbone_current_state <= WB_READ_FIFO;
+          end if;
+
+        when WB_READ_FIFO =>
+          -- read only one request in fifo (no block transfer)
+          to_wb_fifo_rd          <= '0';
+          wishbone_current_state <= WB_CYCLE;
+
+        when WB_CYCLE =>
+          -- initate a bus cycle
+          wb_cyc_o <= '1';
+          wb_stb_o <= '1';
+          s_wb_we  <= to_wb_fifo_rw;
+          wb_sel_o <= "1111";
+          wb_adr_o <= "00" & to_wb_fifo_addr;
+          if (to_wb_fifo_wr = '1') then
+            wb_dat_o <= to_wb_fifo_data;
+          end if;
+          -- wait for slave to ack
+          wishbone_current_state <= WB_WAIT_ACK;
+
+        when WB_WAIT_ACK =>
+          if (wb_ack_i = '1') then
+            -- for read cycles write read data to fifo
+            if (s_wb_we = '0') then
+              from_wb_fifo_din <= wb_dat_i;
+              from_wb_fifo_wr  <= '1';
+            end if;
+            -- end of the bus cycle
             wb_stb_o               <= '0';
-            wb_we_o                <= '0';
-            wb_sel_o               <= "0000";
-            wb_dat_o               <= (others => '0');
-            wb_adr_o               <= (others => '0');
-          else
+            wb_cyc_o               <= '0';
             wishbone_current_state <= WB_IDLE;
-            wb_cyc_o               <= '0';
-            wb_stb_o               <= '0';
-            wb_we_o                <= '0';
-            wb_sel_o               <= "0000";
-            wb_dat_o               <= (others => '0');
-            wb_adr_o               <= (others => '0');
           end if;
 
-          -----------------------------------------------------------------
-          -- Write wait fifo
-          -----------------------------------------------------------------
-        when WB_WRITE_FIFO =>
-          wishbone_current_state <= WB_WRITE_REQUEST;
-          s_fifo_pop             <= '0';
-
-          -----------------------------------------------------------------
-          -- Write request on the Wishbone bus
-          -----------------------------------------------------------------
-        when WB_WRITE_REQUEST =>
-          --if (wb_stall_i = '1' and s_wb_timeout = '0') then
-          --  wishbone_current_state <= WB_WRITE_REQUEST;
-          --if(wb_ack_i = '1' or s_wb_timeout = '1') then
-          --  wishbone_current_state <= WB_IDLE;
-          --else
-          wishbone_current_state <= WB_WRITE_WAIT_ACK;
-          --end if;
-          wb_cyc_o               <= '1';
-          wb_stb_o               <= '1';
-          wb_we_o                <= '1';
-          wb_sel_o               <= "1111";
-          wb_dat_o               <= s_write_data_reg;
-          wb_adr_o               <= s_write_addr_reg;
-
-          -----------------------------------------------------------------
-          -- Wait for acknowledge (write request)
-          -----------------------------------------------------------------
-        when WB_WRITE_WAIT_ACK =>
-          if(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_current_state <= WB_IDLE;
-            wb_cyc_o               <= '0';
-            wb_stb_o               <= '0';
-            wb_we_o                <= '0';
-            wb_sel_o               <= "0000";
-            wb_dat_o               <= (others => '0');
-            wb_adr_o               <= (others => '0');
-          else
-            wishbone_current_state <= WB_WRITE_WAIT_ACK;
-          end if;
-
-          -----------------------------------------------------------------
-          -- Read request on the Wishbone bus
-          -----------------------------------------------------------------
-        when WB_READ_REQUEST =>
-          --if (wb_stall_i = '1' and s_wb_timeout = '0') then
-          --  wishbone_current_state <= WB_READ_REQUEST;
-          --if(wb_ack_i = '1' or s_wb_timeout = '1') then
-          --  wishbone_current_state <= WB_READ_SEND_PCIE;
-          --else
-          wishbone_current_state <= WB_READ_WAIT_ACK;
-          --end if;
-
-          -----------------------------------------------------------------
-          -- Wait for acknowledge (read request)
-          -----------------------------------------------------------------
-        when WB_READ_WAIT_ACK =>
-          if(wb_ack_i = '1' or s_wb_timeout = '1') then
-            wishbone_current_state <= WB_READ_SEND_PCIE;
-            wb_cyc_o               <= '0';
-            wb_stb_o               <= '0';
-            wb_we_o                <= '0';
-            wb_sel_o               <= "0000";
-            wb_dat_o               <= (others => '0');
-            wb_adr_o               <= (others => '0');
-          else
-            wishbone_current_state <= WB_READ_WAIT_ACK;
-            wb_adr_o               <= std_logic_vector(s_read_addr_reg);
-          end if;
-
-          -----------------------------------------------------------------
-          -- Wait for the read completion machine start
-          -----------------------------------------------------------------
-        when WB_READ_SEND_PCIE =>
-          if (l2p_read_cpl_current_state = L2P_SEM) then
-            wishbone_current_state <= WB_IDLE;
-          else
-            wishbone_current_state <= WB_READ_SEND_PCIE;
-          end if;
-
-          -----------------------------------------------------------------
-          -- OTHERS
-          -----------------------------------------------------------------
         when others =>
+          -- should not get here!
           wishbone_current_state <= WB_IDLE;
           wb_cyc_o               <= '0';
           wb_stb_o               <= '0';
-          wb_we_o                <= '0';
+          s_wb_we                <= '0';
           wb_sel_o               <= "0000";
           wb_dat_o               <= (others => '0');
           wb_adr_o               <= (others => '0');
+          to_wb_fifo_rd          <= '0';
+          from_wb_fifo_din       <= (others => '0');
+          from_wb_fifo_wr        <= '0';
 
       end case;
-      --wishbone_current_state <= wishbone_next_state;
     end if;
-  end process;
+  end process p_wb_fsm;
 
-  --wb_cyc_o <= '1' when (wishbone_current_state = WB_WRITE_REQUEST
-  --                      or wishbone_current_state = WB_READ_REQUEST
-  --                      or wishbone_current_state = WB_WRITE_WAIT_ACK
-  --                      or wishbone_current_state = WB_READ_WAIT_ACK)
-  --            else '0';
-
-  --wb_stb_o <= '1' when (wishbone_current_state = WB_WRITE_REQUEST
-  --                      or wishbone_current_state = WB_READ_REQUEST)
-  --            else '0';
-
-  --wb_we_o <= '1' when wishbone_current_state = WB_WRITE_REQUEST
-  --           else '0';
-
-  --wb_sel_o <= "1111" when (wishbone_current_state = WB_WRITE_REQUEST
-  --                         or wishbone_current_state = WB_READ_REQUEST)
-  --            else "0000";
-
-  --wb_dat_o <= s_write_data_reg when (wishbone_current_state = WB_WRITE_REQUEST)
-  --            else (others => '0');
-
-  --wb_adr_o <= std_logic_vector(s_read_addr_reg) when (wishbone_current_state = WB_READ_REQUEST)
-  --            else s_write_addr_reg when (wishbone_current_state = WB_WRITE_REQUEST)
-  --            else (others => '0');
-
-
---=========================================================================--
--- FIFO blocks for writes requests
---=========================================================================--
-
-  s_fifo_push <= pd_wbm_data_valid_i and pd_wbm_target_mwr_i and pd_wbm_wbm_addr_i and not s_fifo_full;
-
-  --s_fifo_pop <= '1' when (wishbone_current_state = WB_IDLE
-  --                        and s_write_request = '1'
-  --                        and s_read_request = '0')
-  --              else '0';
-
-  u_fifo_write : fifo_write port map
-    (
-      rst    => fifo_rst,
-      wr_clk => sys_clk_i,
-      rd_clk => sys_clk_i,
-      din    => s_fifo_in,
-      wr_en  => s_fifo_push,
-      rd_en  => s_fifo_pop,
-      dout   => s_fifo_out,
-      full   => s_fifo_full,
-      empty  => s_fifo_empty
-      );
-
-  s_fifo_in(63 downto 32) <= pd_wbm_addr_i;
-  s_fifo_in(31 downto 0)  <= pd_wbm_data_i;
-
-  --process (sys_clk_i, sys_rst_n_i)
-  --begin
-  --  if(sys_rst_n_i = c_RST_ACTIVE) then
-  --    s_write_data_reg <= (others => '0');
-  --    s_write_addr_reg <= (others => '0');
-  --  elsif rising_edge(sys_clk_i) then
-  --    if (wishbone_current_state = WB_WRITE_FIFO) then
-  s_write_data_reg <= s_fifo_out(31 downto 0);
-  s_write_addr_reg <= s_fifo_out(63 downto 32);
-  --    end if;
-  --  end if;
-  --end process;
-
-  p_wr_rdy_o <= s_fifo_empty;
+  -- for read back
+  wb_we_o <= s_wb_we;
 
 end behaviour;
 
