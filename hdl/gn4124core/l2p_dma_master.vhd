@@ -34,6 +34,10 @@ use work.gn4124_core_pkg.all;
 
 
 entity l2p_dma_master is
+  generic (
+    -- Enable byte swap module (if false, no swap)
+    g_BYTE_SWAP : boolean := false
+    );
   port
     (
       ---------------------------------------------------------
@@ -77,6 +81,43 @@ end l2p_dma_master;
 
 
 architecture behaviour of l2p_dma_master is
+
+
+-----------------------------------------------------------------------------
+-- Byte swap function
+-----------------------------------------------------------------------------
+  function f_byte_swap (
+    constant enable    : boolean;
+    signal   din       : std_logic_vector(31 downto 0);
+    signal   byte_swap : std_logic_vector(1 downto 0))
+    return std_logic_vector is
+    variable dout : std_logic_vector(31 downto 0) := din;
+  begin
+    if (enable = true) then
+      case byte_swap is
+        when "00" =>
+          dout := din;
+        when "01" =>
+          dout := din(23 downto 16)
+                  & din(31 downto 24)
+                  & din(7 downto 0)
+                  & din(15 downto 8);
+        when "10" =>
+          dout := din(15 downto 0)
+                  & din(31 downto 16);
+        when "11" =>
+          dout := din(7 downto 0)
+                  & din(15 downto 8)
+                  & din(23 downto 16)
+                  & din(31 downto 24);
+        when others =>
+          dout := din;
+      end case;
+    else
+      dout := din;
+    end if;
+    return dout;
+  end function f_byte_swap;
 
 -----------------------------------------------------------------------------
 -- Local constants
@@ -131,7 +172,6 @@ architecture behaviour of l2p_dma_master is
   signal l2p_byte_swap   : std_logic_vector(1 downto 0);
 
 begin
-
 
   ------------------------------------------------------------------------------
   -- Active high reset for fifo
@@ -348,27 +388,9 @@ begin
 
         when L2P_DATA =>
           -- send data with byte swap if requested
-          case l2p_byte_swap is
-            when "00" =>
-              ldm_arb_data_o <= data_fifo_dout;
-            when "01" =>
-              ldm_arb_data_o <= data_fifo_dout(23 downto 16)
-                                & data_fifo_dout(31 downto 24)
-                                & data_fifo_dout(7 downto 0)
-                                & data_fifo_dout(15 downto 8);
-            when "10" =>
-              ldm_arb_data_o <= data_fifo_dout(15 downto 0)
-                                & data_fifo_dout(31 downto 16);
-            when "11" =>
-              ldm_arb_data_o <= data_fifo_dout(7 downto 0)
-                                & data_fifo_dout(15 downto 8)
-                                & data_fifo_dout(23 downto 16)
-                                & data_fifo_dout(31 downto 24);
-            when others =>
-              ldm_arb_data_o <= data_fifo_dout;
-          end case;
-          --ldm_arb_data_o  <= s_l2p_data;
+          ldm_arb_data_o  <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
           ldm_arb_valid_o <= '1';
+          -- data not ready yet, wait for it
           if(data_fifo_empty = '1') then
             l2p_dma_current_state <= L2P_WAIT_DATA;
           elsif(l2p_data_cnt <= 2) then
@@ -392,26 +414,7 @@ begin
 
         when L2P_LAST_DATA =>
           -- send last data word with byte swap if requested
-          case l2p_byte_swap is
-            when "00" =>
-              ldm_arb_data_o <= data_fifo_dout;
-            when "01" =>
-              ldm_arb_data_o <= data_fifo_dout(23 downto 16)
-                                & data_fifo_dout(31 downto 24)
-                                & data_fifo_dout(7 downto 0)
-                                & data_fifo_dout(15 downto 8);
-            when "10" =>
-              ldm_arb_data_o <= data_fifo_dout(15 downto 0)
-                                & data_fifo_dout(31 downto 16);
-            when "11" =>
-              ldm_arb_data_o <= data_fifo_dout(7 downto 0)
-                                & data_fifo_dout(15 downto 8)
-                                & data_fifo_dout(23 downto 16)
-                                & data_fifo_dout(31 downto 24);
-            when others =>
-              ldm_arb_data_o <= data_fifo_dout;
-          end case;
-          --ldm_arb_data_o   <= s_l2p_data;
+          ldm_arb_data_o   <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
           ldm_arb_valid_o  <= '1';
           -- clear dframe signal to indicate the end of packet
           ldm_arb_dframe_o <= '0';

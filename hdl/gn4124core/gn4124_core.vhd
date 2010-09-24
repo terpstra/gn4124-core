@@ -219,7 +219,7 @@ architecture rtl of gn4124_core is
   signal wb_stb              : std_logic;  -- Read or write strobe
   signal wb_we               : std_logic;  -- Write
   signal wb_ack              : std_logic;  -- Acknowledge
-  --signal wb_stall            : std_logic;                      -- Pipelined mode
+  signal wb_stall            : std_logic;                      -- Pipelined mode
   signal wb_ack_dma_ctrl     : std_logic;  --
   --signal wb_stall_dma_ctrl   : std_logic;                      --
   signal wb_dat_s2m_dma_ctrl : std_logic_vector(31 downto 0);  --
@@ -436,7 +436,6 @@ begin
       -- Clock/Reset
       sys_clk_i    => clk_p,            --sys_clk_i,
       sys_rst_n_i  => rst_n,
-      gn4124_clk_i => clk_p,
 
       ---------------------------------------------------------
       -- From P2L Decoder
@@ -473,6 +472,7 @@ begin
 
       ---------------------------------------------------------
       -- Wishbone Interface
+      wb_clk_i => clk_p,
       wb_adr_o => wb_adr,
       wb_dat_i => wb_dat_s2m,
       wb_dat_o => wb_dat_m2s,
@@ -480,8 +480,8 @@ begin
       wb_cyc_o => wb_cyc,
       wb_stb_o => wb_stb,
       wb_we_o  => wb_we,
-      wb_ack_i => wb_ack
-      --wb_stall_i => wb_stall
+      wb_ack_i => wb_ack,
+      wb_stall_i => wb_stall
       );
 
   wb_adr_o   <= wb_adr;
