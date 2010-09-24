@@ -259,7 +259,7 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
     generic (
       -- Enable byte swap module (if false, no swap)
-      g_BYTE_SWAP : boolean := true
+      g_BYTE_SWAP : boolean := false
       );
     port
       (

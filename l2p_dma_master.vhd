@@ -23,7 +23,7 @@
 --               All signals crossing the clock domains are now going through fifos.
 --               Dead times optimisation in packet generator.
 --------------------------------------------------------------------------------
--- TODO: -
+-- TODO: - issue an error if ask DMA transfert of length = 0
 --       -
 --------------------------------------------------------------------------------
 
@@ -265,7 +265,7 @@ begin
             l2p_64b_address <= '1';
           end if;
           -- if payload length is 1024, the header length field = 0
-          if (l2p_len_cnt(10 downto 0) = 1024) then
+          if (l2p_len_cnt(10) = '1') then
             l2p_len_header <= (others => '0');
           else
             l2p_len_header <= std_logic_vector(l2p_len_cnt(9 downto 0));
