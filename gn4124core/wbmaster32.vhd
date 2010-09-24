@@ -356,7 +356,7 @@ begin
           s_wb_we  <= to_wb_fifo_rw;
           wb_sel_o <= "1111";
           wb_adr_o <= "00" & to_wb_fifo_addr;
-          if (to_wb_fifo_wr = '1') then
+          if (to_wb_fifo_rw = '1') then
             wb_dat_o <= to_wb_fifo_data;
           end if;
           -- wait for slave to ack
