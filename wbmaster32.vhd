@@ -4,22 +4,24 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: 32 bit Wishbone master (wbmaster32.vhd)
+-- unit name: 32-bit Wishbone master (wbmaster32.vhd)
 --
--- author: Simon Deprez (simon.deprez@cern.ch)
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
 -- date: 12-08-2010
 --
 -- version: 0.2
 --
--- description: Provide a Wishbone interface for read and write control and
--- status registers
+-- description: Provide a Wishbone interface for single read and write
+--              control and status registers
 --
--- dependencies: DPRAM_SMALL (DPRAM_SMALL.vhd)
+-- dependencies: Xilinx FIFOs (fifo_32x512.xco, fifo_64x512.xco)
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
+-- last changes: 27-09-2010 (mcattin) Split wishbone and gn4124 clock domains
+--               All signals crossing the clock domains are now going through fifos.
+--               Dead times optimisation in packet generator.
 --------------------------------------------------------------------------------
 -- TODO: - a packet can contain 1024 32-bit word, the to_wb_fifo depth is 512 words => !!
 --         should drive p2l_rdy to pause transfer.
@@ -43,23 +45,24 @@ entity wbmaster32 is
       DEBUG : out std_logic_vector(3 downto 0);
 
       ---------------------------------------------------------
-      -- Clock/Reset
+      -- GN4124 core clock and reset
       sys_clk_i   : in std_logic;
       sys_rst_n_i : in std_logic;
 
       ---------------------------------------------------------
-      -- From P2L Decoder
+      -- From P2L packet decoder
       --
       -- Header
-      pd_wbm_hdr_start_i  : in std_logic;                      -- Indicates Header start cycle
-      pd_wbm_hdr_length_i : in std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
+      pd_wbm_hdr_start_i  : in std_logic;                      -- Header strobe
+      pd_wbm_hdr_length_i : in std_logic_vector(9 downto 0);   -- Packet length in 32-bit words multiples
       pd_wbm_hdr_cid_i    : in std_logic_vector(1 downto 0);   -- Completion ID
       pd_wbm_target_mrd_i : in std_logic;                      -- Target memory read
       pd_wbm_target_mwr_i : in std_logic;                      -- Target memory write
       --
       -- Address
-      pd_wbm_addr_start_i : in std_logic;                      -- Indicates Address Start
-      pd_wbm_addr_i       : in std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
+      pd_wbm_addr_start_i : in std_logic;                      -- Address strobe
+      pd_wbm_addr_i       : in std_logic_vector(31 downto 0);  -- Target address (in byte) that will increment with data
+                                                               -- increment = 4 bytes
       pd_wbm_wbm_addr_i   : in std_logic;                      -- Indicates that current address is for the EPI interface
                                                                -- Can be connected to a decode of IP2L_ADDRi
                                                                -- or to IP2L_ADDRi(0) for BAR2
@@ -72,11 +75,11 @@ entity wbmaster32 is
       pd_wbm_be_i         : in std_logic_vector(3 downto 0);   -- Byte Enable for data
 
       ---------------------------------------------------------
-      -- P2L Control
+      -- P2L channel control
       p_wr_rdy_o : out std_logic;       -- Write buffer not empty
 
       ---------------------------------------------------------
-      -- To the L2P Interface
+      -- To the arbiter (L2P data)
       wbm_arb_valid_o  : out std_logic;  -- Read completion signals
       wbm_arb_dframe_o : out std_logic;  -- Toward the arbiter
       wbm_arb_data_o   : out std_logic_vector(31 downto 0);
@@ -84,7 +87,7 @@ entity wbmaster32 is
       arb_wbm_gnt_i    : in  std_logic;
 
       ---------------------------------------------------------
-      -- Wishbone Interface
+      -- CSR wishbone interface
       wb_clk_i   : in  std_logic;                        -- Wishbone bus clock
       wb_adr_o   : out std_logic_vector(32-1 downto 0);  -- Adress
       wb_dat_i   : in  std_logic_vector(31 downto 0);    -- Data in
@@ -146,6 +149,7 @@ architecture behaviour of wbmaster32 is
 
 
 begin
+
 
   ------------------------------------------------------------------------------
   -- Active high reset for fifo

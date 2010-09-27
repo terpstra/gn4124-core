@@ -361,8 +361,8 @@ begin
     (
       ---------------------------------------------------------
       -- Clock/Reset
-      clk_i   => clk_p,
-      rst_n_i => rst_n,
+      sys_clk_i   => clk_p,
+      sys_rst_n_i => rst_n,
 
       ---------------------------------------------------------
       -- Input from the Deserializer
