@@ -4,22 +4,22 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: P2L_DECODE32 (p2l_decode32.vhd)
+-- unit name: P2L 32-bit datapath decoder (p2l_decode32.vhd)
 --
--- author:
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
--- date:
+-- date: 31-08-2010
 --
--- version: 0.0
+-- version: 1.0
 --
--- description: P2L Packet Decoder - For 32 Bit Data Path Design
+-- description: PCIe to local bus packet decoder - For 32-bit data path design.
 --
 --
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
+-- last changes: 27-09-2010 (mcattin)
 --------------------------------------------------------------------------------
 -- TODO: -
 --       -
@@ -37,33 +37,37 @@ entity p2l_decode32 is
     (
       ---------------------------------------------------------
       -- Clock/Reset
-      clk_i   : in std_logic;
-      rst_n_i : in std_logic;
+      sys_clk_i   : in std_logic;
+      sys_rst_n_i : in std_logic;
 
       ---------------------------------------------------------
-      -- Input from the Deserializer
+      -- Input from the deserializer
       des_p2l_valid_i  : in std_logic;
       des_p2l_dframe_i : in std_logic;
       des_p2l_data_i   : in std_logic_vector(31 downto 0);
 
       ---------------------------------------------------------
-      -- Decoder Outputs
+      -- Decoder outputs
       --
       -- Header
-      p2l_hdr_start_o   : out std_logic;                      -- Indicates Header start cycle
-      p2l_hdr_length_o  : out std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
+      p2l_hdr_start_o   : out std_logic;                      -- Header strobe
+      p2l_hdr_length_o  : out std_logic_vector(9 downto 0);   -- Packet length in 32-bit words multiples
       p2l_hdr_cid_o     : out std_logic_vector(1 downto 0);   -- Completion ID
       p2l_hdr_last_o    : out std_logic;                      -- Indicates Last packet in a completion
       p2l_hdr_stat_o    : out std_logic_vector(1 downto 0);   -- Completion Status
-      p2l_target_mrd_o  : out std_logic;                      -- Target memory read
-      p2l_target_mwr_o  : out std_logic;                      -- Target memory write
-      p2l_master_cpld_o : out std_logic;                      -- Master completion with data
-      p2l_master_cpln_o : out std_logic;                      -- Master completion without data
-      --
+                                                              -- "00" = Successful completion
+                                                              -- "01" = Unsupported request
+                                                              -- "10" = Completer abort
+                                                              -- "11" = Completion time-out
+      -- Packet type (for routing)
+      p2l_target_mrd_o  : out std_logic;                      -- Target memory read (to wbmaster32)
+      p2l_target_mwr_o  : out std_logic;                      -- Target memory write (to wbmaster32)
+      p2l_master_cpld_o : out std_logic;                      -- Master completion with data (to p2l_dma_master)
+      p2l_master_cpln_o : out std_logic;                      -- Master completion without data (to p2l_dma_master)
       -- Address
-      p2l_addr_start_o  : out std_logic;                      -- Indicates Address Start
-      p2l_addr_o        : out std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
-      --
+      p2l_addr_start_o  : out std_logic;                      -- Address strobe
+      p2l_addr_o        : out std_logic_vector(31 downto 0);  -- Target address (in byte) that will increment with data
+                                                              -- increment = 4 bytes
       -- Data
       p2l_d_valid_o     : out std_logic;                      -- Indicates Data is valid
       p2l_d_last_o      : out std_logic;                      -- Indicates end of the packet
@@ -92,6 +96,12 @@ architecture rtl of p2l_decode32 is
   signal des_p2l_valid_d  : std_logic;
   signal des_p2l_dframe_d : std_logic;
 
+  signal p2l_packet_start : std_logic;
+  signal p2l_packet_end   : std_logic;
+
+  signal p2l_addr_strobe : std_logic;
+  signal p2l_data_strobe : std_logic;
+
   signal p2l_hdr_start  : std_logic;                     -- Indicates Header start cycle
   signal p2l_hdr_length : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
   signal p2l_hdr_cid    : std_logic_vector(1 downto 0);  -- Completion ID
@@ -109,7 +119,6 @@ architecture rtl of p2l_decode32 is
   signal p2l_hdr_fbe : std_logic_vector(3 downto 0);  -- First Byte Enable
   signal p2l_hdr_lbe : std_logic_vector(3 downto 0);  -- Last Byte Enable
 
---  signal CYCLE             : STD_ULOGIC;    -- Indicates Address/Data Cycle
   signal dcycle : std_logic;            -- Indicates Data Cycle
   signal acycle : std_logic;            -- Indicates Address Cycle
 
@@ -121,44 +130,50 @@ architecture rtl of p2l_decode32 is
 
 begin
 
---=============================================================================================--
---=============================================================================================--
---== DECODER LOGIC
---=============================================================================================--
---=============================================================================================--
 
------------------------------------------------------------------------------
--- 1 tick delay version of des_p2l_valid_i and des_p2l_dframe_i
------------------------------------------------------------------------------
-  process (clk_i, rst_n_i)
+  -----------------------------------------------------------------------------
+  -- 1 tick delay version of des_p2l_valid_i and des_p2l_dframe_i,
+  -- for start and end frame detection
+  -----------------------------------------------------------------------------
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if rst_n_i = c_RST_ACTIVE then
+    if sys_rst_n_i = c_RST_ACTIVE then
       des_p2l_dframe_d <= '0';
       des_p2l_valid_d  <= '0';
-    elsif rising_edge(clk_i) then
+    elsif rising_edge(sys_clk_i) then
       des_p2l_dframe_d <= des_p2l_dframe_i;
       des_p2l_valid_d  <= des_p2l_valid_i;
     end if;
   end process;
 
+  ------------------------------------------------------------------------------
+  -- Start and end packet detection
+  ------------------------------------------------------------------------------
+  p2l_packet_start <= des_p2l_dframe_i and not(des_p2l_dframe_d) and des_p2l_valid_i;
+  p2l_packet_end   <= des_p2l_valid_d and not(des_p2l_dframe_d);
 
------------------------------------------------------------------------------
--- Decode all cycle types
------------------------------------------------------------------------------
-  process (clk_i, rst_n_i)
+  -----------------------------------------------------------------------------
+  -- Decode packet type
+  -----------------------------------------------------------------------------
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if rst_n_i = c_RST_ACTIVE then
+    if sys_rst_n_i = c_RST_ACTIVE then
       target_mrd  <= '0';
       target_mwr  <= '0';
       master_cpld <= '0';
       master_cpln <= '0';
-    elsif rising_edge(clk_i) then
-      if((des_p2l_dframe_i and not des_p2l_dframe_d and des_p2l_valid_i) = '1') then
+    elsif rising_edge(sys_clk_i) then
+      -- New packet starts, check type for routing
+      if (p2l_packet_start = '1') then
+        -- Target read request
         target_mrd  <= f_to_mvl(des_p2l_data_i(27 downto 24) = "0000");
+        -- Target write
         target_mwr  <= f_to_mvl(des_p2l_data_i(27 downto 24) = "0010");
+        -- Master read completion with data
         master_cpld <= f_to_mvl(des_p2l_data_i(27 downto 24) = "0101");
+        -- Master read completion without data
         master_cpln <= f_to_mvl(des_p2l_data_i(27 downto 24) = "0100");
-      elsif((des_p2l_valid_d and not des_p2l_dframe_d) = '1') then
+      elsif (p2l_packet_end = '1') then
         target_mrd  <= '0';
         target_mwr  <= '0';
         master_cpld <= '0';
@@ -167,13 +182,12 @@ begin
     end if;
   end process;
 
-
------------------------------------------------------------------------------
--- p2l_hdr_start: Indicates Header start cycle
------------------------------------------------------------------------------
-  process (clk_i, rst_n_i)
+  -----------------------------------------------------------------------------
+  -- Packet header decoding
+  -----------------------------------------------------------------------------
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if rst_n_i = c_RST_ACTIVE then
+    if sys_rst_n_i = c_RST_ACTIVE then
       p2l_hdr_start  <= '0';
       p2l_hdr_length <= (others => '0');
       p2l_hdr_cid    <= (others => '0');
@@ -181,8 +195,8 @@ begin
       p2l_hdr_stat   <= (others => '0');
       p2l_hdr_fbe    <= (others => '0');
       p2l_hdr_lbe    <= (others => '0');
-    elsif rising_edge(clk_i) then
-      if((des_p2l_valid_i and des_p2l_dframe_i and not des_p2l_dframe_d) = '1') then
+    elsif rising_edge(sys_clk_i) then
+      if (p2l_packet_start = '1') then
         p2l_hdr_start  <= '1';
         p2l_hdr_length <= des_p2l_data_i(9 downto 0);
         p2l_hdr_cid    <= des_p2l_data_i(11 downto 10);
@@ -196,51 +210,57 @@ begin
     end if;
   end process;
 
-
------------------------------------------------------------------------------
--- CYCLE: indicates a cycle is in progress
------------------------------------------------------------------------------
-  process (clk_i, rst_n_i)
+  -----------------------------------------------------------------------------
+  -- Address and data strobe
+  -----------------------------------------------------------------------------
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if rst_n_i = c_RST_ACTIVE then
---      CYCLE  <= '0';
-      acycle <= '0';
-      dcycle <= '0';
-    elsif rising_edge(clk_i) then
+    if sys_rst_n_i = c_RST_ACTIVE then
+      p2l_addr_strobe <= '0';
+      p2l_data_strobe <= '0';
+      --acycle <= '0';
+      --dcycle <= '0';
+    elsif rising_edge(sys_clk_i) then
 
-      if(acycle = '0') then
-        acycle <= des_p2l_valid_i and des_p2l_dframe_i and not des_p2l_dframe_d;
+      if (p2l_packet_start = '1') then
+        p2l_addr_strobe <= '1';
       else
-        acycle <= not des_p2l_valid_i;
+        p2l_addr_strobe <= '0';
       end if;
 
---      if(CYCLE = '0') then
---        CYCLE <= p2l_hdr_start;
---      else
---        CYCLE <= not(des_p2l_valid_d and not des_p2l_dframe_d);
---      end if;
-
-      if(dcycle = '0') then
-        dcycle <= acycle and target_mwr and des_p2l_valid_i;
+      if (p2l_addr_strobe = '1' or des_p2l_dframe_i = '1') then
+        p2l_data_strobe <= '1';
       else
-        dcycle <= not(des_p2l_valid_i and not des_p2l_dframe_i);
+        p2l_data_strobe <= '0';
       end if;
+
+      --if(acycle = '0') then
+      --  acycle <= des_p2l_valid_i and des_p2l_dframe_i and not des_p2l_dframe_d;
+      --else
+      --  acycle <= not des_p2l_valid_i;
+      --end if;
+
+      --if(dcycle = '0') then
+      --  dcycle <= acycle and target_mwr and des_p2l_valid_i;
+      --else
+      --  dcycle <= not(des_p2l_valid_i and not des_p2l_dframe_i);
+      --end if;
     end if;
   end process;
 
 -----------------------------------------------------------------------------
 -- Address/Data/Byte Enable
 -----------------------------------------------------------------------------
-  process (clk_i, rst_n_i)
+  process (sys_clk_i, sys_rst_n_i)
   begin
-    if rst_n_i = c_RST_ACTIVE then
+    if sys_rst_n_i = c_RST_ACTIVE then
       p2l_d_valid    <= '0';
       p2l_d_last     <= '0';
       p2l_d          <= (others => '0');
       p2l_be         <= (others => '0');
       p2l_addr       <= (others => '0');
       p2l_addr_start <= '0';
-    elsif rising_edge(clk_i) then
+    elsif rising_edge(sys_clk_i) then
 
       p2l_d_valid <= dcycle and des_p2l_valid_i;
       p2l_d_last  <= (acycle or dcycle) and des_p2l_valid_i and not des_p2l_dframe_i;

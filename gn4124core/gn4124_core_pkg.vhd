@@ -76,8 +76,8 @@ package gn4124_core_pkg is
       (
         ---------------------------------------------------------
         -- Clock/Reset
-        clk_i   : in std_logic;
-        rst_n_i : in std_logic;
+        sys_clk_i   : in std_logic;
+        sys_rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- Input from the Deserializer
