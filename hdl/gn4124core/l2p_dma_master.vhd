@@ -4,19 +4,19 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: 32 bit DMA master (l2p_dma_master.vhd)
+-- unit name: 32-bit DMA master (l2p_dma_master.vhd)
 --
 -- authors: Simon Deprez (simon.deprez@cern.ch)
 --          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
 -- date: 31-08-2010
 --
--- version: 0.2
+-- version: 1.0
 --
 -- description: Provide a pipelined Wishbone interface to performs DMA
 --              transfers from local application to PCI express host.
 --
--- dependencies: Xilinx FIFOs
+-- dependencies: Xilinx FIFOs (fifo_32x512.xco)
 --
 --------------------------------------------------------------------------------
 -- last changes: 23-09-2010 (mcattin) Split wishbone and gn4124 clock domains
@@ -57,7 +57,7 @@ entity l2p_dma_master is
       dma_ctrl_byte_swap_i   : in  std_logic_vector(1 downto 0);
 
       ---------------------------------------------------------
-      -- To the L2P Interface (send the DMA data)
+      -- To the arbiter (L2P data)
       ldm_arb_valid_o  : out std_logic;  -- Read completion signals
       ldm_arb_dframe_o : out std_logic;  -- Toward the arbiter
       ldm_arb_data_o   : out std_logic_vector(31 downto 0);
