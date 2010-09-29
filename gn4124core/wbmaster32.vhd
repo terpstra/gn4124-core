@@ -176,13 +176,18 @@ begin
       to_wb_fifo_din <= (others => '0');
       to_wb_fifo_wr  <= '0';
     elsif rising_edge(sys_clk_i) then
-      -- pd_wbm_data_valid_i is not asserted for read request,
-      -- pd_wbm_data_last_i is used instead
-      if (pd_wbm_data_valid_i = '1' or pd_wbm_data_last_i = '1') then
+      if (pd_wbm_target_mwr_i = '1' and pd_wbm_data_valid_i = '1') then
+        -- Target write
         -- wishbone address is in 32-bit words and address from PCIe in byte
         to_wb_fifo_din(61 downto 32) <= pd_wbm_addr_i(31 downto 2);
         to_wb_fifo_din(31 downto 0)  <= pd_wbm_data_i;
-        to_wb_fifo_din(62)           <= pd_wbm_target_mwr_i;
+        to_wb_fifo_din(62)           <= '1';
+        to_wb_fifo_wr                <= '1';
+      elsif (pd_wbm_target_mrd_i = '1' and pd_wbm_addr_start_i = '1') then
+        -- Target read request
+        -- wishbone address is in 32-bit words and address from PCIe in byte
+        to_wb_fifo_din(61 downto 32) <= pd_wbm_addr_i(31 downto 2);
+        to_wb_fifo_din(62)           <= '0';
         to_wb_fifo_wr                <= '1';
       else
         to_wb_fifo_wr <= '0';
