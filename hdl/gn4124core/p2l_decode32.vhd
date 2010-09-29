@@ -19,7 +19,7 @@
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: 27-09-2010 (mcattin)
+-- last changes: 27-09-2010 (mcattin) Rewrite a part of the decoder logic
 --------------------------------------------------------------------------------
 -- TODO: -
 --       -
@@ -78,9 +78,9 @@ end p2l_decode32;
 
 architecture rtl of p2l_decode32 is
 
------------------------------------------------------------------------------
--- to_mvl Function
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- to_mvl Function
+  -----------------------------------------------------------------------------
   function f_to_mvl (b : in boolean) return std_logic is
   begin
     if (b = true) then
@@ -90,19 +90,20 @@ architecture rtl of p2l_decode32 is
     end if;
   end f_to_mvl;
 
------------------------------------------------------------------------------
--- Internal Signals
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Internal Signals
+  -----------------------------------------------------------------------------
   signal des_p2l_valid_d  : std_logic;
   signal des_p2l_dframe_d : std_logic;
 
-  signal p2l_packet_start : std_logic;
-  signal p2l_packet_end   : std_logic;
+  signal p2l_packet_start   : std_logic;
+  signal p2l_packet_start_d : std_logic;
+  signal p2l_packet_end     : std_logic;
 
   signal p2l_addr_strobe : std_logic;
   signal p2l_data_strobe : std_logic;
 
-  signal p2l_hdr_start  : std_logic;                     -- Indicates Header start cycle
+  signal p2l_hdr_strobe : std_logic;                     -- Indicates Header start cycle
   signal p2l_hdr_length : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
   signal p2l_hdr_cid    : std_logic_vector(1 downto 0);  -- Completion ID
   signal p2l_hdr_last   : std_logic;                     -- Indicates Last packet in a completion
@@ -112,15 +113,13 @@ architecture rtl of p2l_decode32 is
   signal p2l_addr       : unsigned(31 downto 0);  -- Registered and counting Address
 
   signal p2l_d_valid : std_logic;                      -- Indicates Address/Data is valid
+  signal p2l_d_first : std_logic;
   signal p2l_d_last  : std_logic;                      -- Indicates end of the packet
   signal p2l_d       : std_logic_vector(31 downto 0);  -- Address/Data
   signal p2l_be      : std_logic_vector(3 downto 0);   -- Byte Enable for data
 
   signal p2l_hdr_fbe : std_logic_vector(3 downto 0);  -- First Byte Enable
   signal p2l_hdr_lbe : std_logic_vector(3 downto 0);  -- Last Byte Enable
-
-  signal dcycle : std_logic;            -- Indicates Data Cycle
-  signal acycle : std_logic;            -- Indicates Address Cycle
 
   signal target_mrd  : std_logic;
   signal target_mwr  : std_logic;
@@ -155,7 +154,7 @@ begin
   -----------------------------------------------------------------------------
   -- Decode packet type
   -----------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_n_i)
+  p_type_decode : process (sys_clk_i, sys_rst_n_i)
   begin
     if sys_rst_n_i = c_RST_ACTIVE then
       target_mrd  <= '0';
@@ -180,15 +179,15 @@ begin
         master_cpln <= '0';
       end if;
     end if;
-  end process;
+  end process p_type_decode;
 
   -----------------------------------------------------------------------------
   -- Packet header decoding
   -----------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_n_i)
+  p_header_decode : process (sys_clk_i, sys_rst_n_i)
   begin
     if sys_rst_n_i = c_RST_ACTIVE then
-      p2l_hdr_start  <= '0';
+      p2l_hdr_strobe <= '0';
       p2l_hdr_length <= (others => '0');
       p2l_hdr_cid    <= (others => '0');
       p2l_hdr_last   <= '0';
@@ -197,101 +196,123 @@ begin
       p2l_hdr_lbe    <= (others => '0');
     elsif rising_edge(sys_clk_i) then
       if (p2l_packet_start = '1') then
-        p2l_hdr_start  <= '1';
+        p2l_hdr_strobe <= '1';
         p2l_hdr_length <= des_p2l_data_i(9 downto 0);
         p2l_hdr_cid    <= des_p2l_data_i(11 downto 10);
         p2l_hdr_last   <= des_p2l_data_i(15);
-        p2l_hdr_stat   <= des_p2l_data_i(17 downto 16);
-        p2l_hdr_fbe    <= des_p2l_data_i(19 downto 16);  -- First Byte Enable
-        p2l_hdr_lbe    <= des_p2l_data_i(23 downto 20);  -- Last Byte Enable
+        if (des_p2l_data_i(26) = '1') then
+          -- read completion
+          p2l_hdr_stat <= des_p2l_data_i(17 downto 16);  -- Completion status
+        else
+          -- Target read or write
+          p2l_hdr_fbe <= des_p2l_data_i(19 downto 16);   -- First Byte Enable
+          p2l_hdr_lbe <= des_p2l_data_i(23 downto 20);   -- Last Byte Enable
+        end if;
       else
-        p2l_hdr_start <= '0';
+        p2l_hdr_strobe <= '0';
       end if;
     end if;
-  end process;
+  end process p_header_decode;
 
   -----------------------------------------------------------------------------
-  -- Address and data strobe
+  -- Packet address decoding
   -----------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_n_i)
+  p_addr_decode : process (sys_clk_i, sys_rst_n_i)
   begin
     if sys_rst_n_i = c_RST_ACTIVE then
-      p2l_addr_strobe <= '0';
-      p2l_data_strobe <= '0';
-      --acycle <= '0';
-      --dcycle <= '0';
+      p2l_packet_start_d <= '0';
+      p2l_addr_strobe    <= '0';
+      p2l_addr           <= (others => '0');
+      p2l_addr_start     <= '0';
     elsif rising_edge(sys_clk_i) then
 
-      if (p2l_packet_start = '1') then
-        p2l_addr_strobe <= '1';
+      -- Delays packet start
+      p2l_packet_start_d <= p2l_packet_start;
+
+      -- Generates address strobe
+      -- No address strobe for read completion packets
+      if (p2l_packet_start_d = '1' and (target_mwr or target_mrd) = '1') then
+        p2l_addr_start <= '1';
       else
-        p2l_addr_strobe <= '0';
+        p2l_addr_start <= '0';
       end if;
 
-      if (p2l_addr_strobe = '1' or des_p2l_dframe_i = '1') then
-        p2l_data_strobe <= '1';
-      else
-        p2l_data_strobe <= '0';
-      end if;
-
-      --if(acycle = '0') then
-      --  acycle <= des_p2l_valid_i and des_p2l_dframe_i and not des_p2l_dframe_d;
-      --else
-      --  acycle <= not des_p2l_valid_i;
-      --end if;
-
-      --if(dcycle = '0') then
-      --  dcycle <= acycle and target_mwr and des_p2l_valid_i;
-      --else
-      --  dcycle <= not(des_p2l_valid_i and not des_p2l_dframe_i);
-      --end if;
-    end if;
-  end process;
-
------------------------------------------------------------------------------
--- Address/Data/Byte Enable
------------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_n_i)
-  begin
-    if sys_rst_n_i = c_RST_ACTIVE then
-      p2l_d_valid    <= '0';
-      p2l_d_last     <= '0';
-      p2l_d          <= (others => '0');
-      p2l_be         <= (others => '0');
-      p2l_addr       <= (others => '0');
-      p2l_addr_start <= '0';
-    elsif rising_edge(sys_clk_i) then
-
-      p2l_d_valid <= dcycle and des_p2l_valid_i;
-      p2l_d_last  <= (acycle or dcycle) and des_p2l_valid_i and not des_p2l_dframe_i;
-
-      p2l_addr_start <= acycle and des_p2l_valid_i;
-
-      if((acycle and des_p2l_valid_i) = '1') then
+      -- Put address on a dedicated bus
+      -- Bits 1-0 are coding the BAR for target read/write
+      -- "00" = BAR 0
+      -- "01" = BAR 2
+      -- "10" = Expansion ROM
+      -- "11" = Reserved
+      if (p2l_packet_start_d = '1' and (target_mwr or target_mrd) = '1') then
+        -- Latch target address
         p2l_addr <= unsigned(des_p2l_data_i);
-      elsif(p2l_d_valid = '1') then
+      elsif (p2l_d_valid = '1' and (target_mwr or target_mrd) = '1') then
+        -- Increment address with data (32-bit data word => increment = +4 bytes)
         p2l_addr(31 downto 2) <= p2l_addr(31 downto 2) + 1;
       end if;
 
+    end if;
+  end process p_addr_decode;
+
+  -----------------------------------------------------------------------------
+  -- Packet data decoding (data strobe)
+  -----------------------------------------------------------------------------
+  p_data_decode : process (sys_clk_i, sys_rst_n_i)
+  begin
+    if sys_rst_n_i = c_RST_ACTIVE then
+      p2l_data_strobe <= '0';
+      p2l_d_valid     <= '0';
+      p2l_d_last      <= '0';
+      p2l_d           <= (others => '0');
+    elsif rising_edge(sys_clk_i) then
+
+      -- Generates data strobe
+      if (p2l_packet_start_d = '1' and des_p2l_dframe_i = '1') then
+        p2l_data_strobe <= '1';
+      elsif (des_p2l_dframe_i = '0') then
+        p2l_data_strobe <= '0';
+      end if;
+
+      -- For read completion, data are valid just after the header (no address)
+      if (master_cpld = '1') then
+        p2l_d_valid <= des_p2l_valid_i;
+      else
+        p2l_d_valid <= p2l_data_strobe;
+      end if;
+
+      -- Generates last data signal
+      p2l_d_last <= p2l_data_strobe and not(des_p2l_dframe_i);
+
+      -- Latch data on the bus
       if(des_p2l_valid_i = '1') then
         p2l_d <= des_p2l_data_i;
       end if;
 
-      if(((acycle or p2l_addr_start) = '1') or (p2l_hdr_length = "0000000001")) then
+    end if;
+  end process p_data_decode;
+
+  -----------------------------------------------------------------------------
+  -- Byte enable
+  -----------------------------------------------------------------------------
+  p_be_decode : process (sys_clk_i, sys_rst_n_i)
+  begin
+    if sys_rst_n_i = c_RST_ACTIVE then
+      p2l_be <= (others => '0');
+    elsif rising_edge(sys_clk_i) then
+      if (p2l_addr_start = '1') then
         p2l_be <= p2l_hdr_fbe;          -- First Byte Enable
-      elsif((dcycle and des_p2l_valid_i and not des_p2l_dframe_i) = '1') then
+      elsif ((p2l_data_strobe and not(des_p2l_dframe_i)) = '1') then
         p2l_be <= p2l_hdr_lbe;          -- Last Byte Enable
-      elsif(p2l_d_valid = '1') then
+      elsif(p2l_data_strobe = '1') then
         p2l_be <= (others => '1');      -- Intermediate Byte Enables
       end if;
     end if;
-  end process;
+  end process p_be_decode;
 
-
------------------------------------------------------------------------------
--- Generate the Final Output Data
------------------------------------------------------------------------------
-  p2l_hdr_start_o  <= p2l_hdr_start;
+  -----------------------------------------------------------------------------
+  -- Assigns signals to output ports
+  -----------------------------------------------------------------------------
+  p2l_hdr_start_o  <= p2l_hdr_strobe;
   p2l_hdr_length_o <= p2l_hdr_length;
   p2l_hdr_cid_o    <= p2l_hdr_cid;
   p2l_hdr_last_o   <= p2l_hdr_last;
