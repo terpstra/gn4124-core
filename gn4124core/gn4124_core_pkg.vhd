@@ -313,7 +313,6 @@ package gn4124_core_pkg is
         -- Clock/Reset
         sys_clk_i    : in std_logic;
         sys_rst_n_i  : in std_logic;
-        gn4124_clk_i : in std_logic;
 
         ---------------------------------------------------------
         -- From the DMA controller
@@ -334,17 +333,8 @@ package gn4124_core_pkg is
         pd_pdm_hdr_start_i   : in std_logic;                      -- Indicates Header start cycle
         pd_pdm_hdr_length_i  : in std_logic_vector(9 downto 0);   -- Latched LENGTH value from header
         pd_pdm_hdr_cid_i     : in std_logic_vector(1 downto 0);   -- Completion ID
-        pd_pdm_target_mrd_i  : in std_logic;                      -- Target memory read
-        pd_pdm_target_mwr_i  : in std_logic;                      -- Target memory write
-        pd_pdm_target_cpld_i : in std_logic;                      -- Target memory write
-        --
-        -- Address
-        pd_pdm_addr_start_i  : in std_logic;                      -- Indicates Address Start
-        pd_pdm_addr_i        : in std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
-        pd_pdm_wbm_addr_i    : in std_logic;                      -- Indicates that current address is for the EPI interface
-                                                                  -- Can be connected to a decode of IP2L_ADDRi
-                                                                  -- or to IP2L_ADDRi(0) for BAR2
-                                                                  -- or to not IP2L_ADDRi(0) for BAR0
+        pd_pdm_master_cpld_i : in std_logic;                      -- Master read completion with data
+        pd_pdm_master_cpln_i : in std_logic;                      -- Master read completion without data
         --
         -- Data
         pd_pdm_data_valid_i  : in std_logic;                      -- Indicates Data is valid
@@ -362,6 +352,7 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- DMA Interface (Pipelined Wishbone)
+        p2l_dma_clk_i   : in  std_logic;                      -- Bus clock
         p2l_dma_adr_o   : out std_logic_vector(31 downto 0);  -- Adress
         p2l_dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
         p2l_dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
