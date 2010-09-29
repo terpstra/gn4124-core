@@ -584,8 +584,6 @@ begin
       sys_clk_i   => clk_p,             --sys_clk_i,
       sys_rst_n_i => rst_n,
 
-      gn4124_clk_i => clk_p,
-
       dma_ctrl_carrier_addr_i => dma_ctrl_carrier_addr,
       dma_ctrl_host_addr_h_i  => dma_ctrl_host_addr_h,
       dma_ctrl_host_addr_l_i  => dma_ctrl_host_addr_l,
@@ -599,13 +597,8 @@ begin
       pd_pdm_hdr_start_i   => p2l_hdr_start,
       pd_pdm_hdr_length_i  => p2l_hdr_length,
       pd_pdm_hdr_cid_i     => p2l_hdr_cid,
-      pd_pdm_target_mrd_i  => p2l_target_mrd,
-      pd_pdm_target_mwr_i  => p2l_target_mwr,
-      pd_pdm_target_cpld_i => p2l_master_cpld,
-
-      pd_pdm_addr_start_i => p2l_addr_start,
-      pd_pdm_addr_i       => p2l_addr,
-      pd_pdm_wbm_addr_i   => p2l_epi_select,
+      pd_pdm_master_cpld_i => p2l_master_cpld,
+      pd_pdm_master_cpln_i => p2l_master_cpln,
 
       pd_pdm_data_valid_i => p2l_d_valid,
       pd_pdm_data_last_i  => p2l_d_last,
@@ -618,6 +611,7 @@ begin
       pdm_arb_req_o    => pdm_arb_req,
       arb_pdm_gnt_i    => arb_pdm_gnt,
 
+      p2l_dma_clk_i   => clk_p,
       p2l_dma_adr_o   => p2l_dma_adr,
       p2l_dma_dat_i   => p2l_dma_dat_s2m,
       p2l_dma_dat_o   => p2l_dma_dat_m2s,
