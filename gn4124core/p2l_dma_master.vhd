@@ -25,8 +25,8 @@
 --------------------------------------------------------------------------------
 -- TODO: - a packet can contain 1024 32-bit word, the to_wb_fifo depth is 512 words => !!
 --         should drive p2l_rdy to pause transfer.
+--       - byte swap
 --       - byte enable support.
---       -
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -316,6 +316,9 @@ begin
             if (l2p_len_cnt > 0) then
               -- A new read request is needed, DMA size > max payload
               p2l_dma_current_state <= P2L_HEADER;
+              -- As the end of packet is used to delimit arbitration phases
+              -- we have to ask again for permission
+              pdm_arb_req_o         <= '1';
             else
               -- indicate end of DMA transfer
               if (is_next_item = '1') then
