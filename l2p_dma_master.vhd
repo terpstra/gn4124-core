@@ -119,17 +119,17 @@ architecture behaviour of l2p_dma_master is
     return dout;
   end function f_byte_swap;
 
------------------------------------------------------------------------------
--- Local constants
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Local constants
+  -----------------------------------------------------------------------------
   -- max payload set to 32 for debug/simul, should be 1024
   constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- up to 1024
   constant c_ADDR_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
   constant c_DATA_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
------------------------------------------------------------------------------
--- Internal Signals
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Internal Signals
+  -----------------------------------------------------------------------------
   -- Target address counter
   signal target_addr_cnt : unsigned(29 downto 0);
   signal dma_length_cnt  : unsigned(29 downto 0);
