@@ -133,6 +133,7 @@ architecture behaviour of p2l_dma_master is
   signal l2p_len_header  : unsigned(9 downto 0);
   signal l2p_64b_address : std_logic;
   signal s_l2p_header    : std_logic_vector(31 downto 0);
+  signal l2p_last_packet : std_logic;
 
   -- Next item retrieve
   signal next_item_data_cnt : unsigned(2 downto 0);
@@ -187,6 +188,7 @@ begin
       l2p_len_header  <= (others => '0');
       l2p_64b_address <= '0';
       is_next_item    <= '0';
+      l2p_last_packet <= '0';
     elsif rising_edge(sys_clk_i) then
       if (p2l_dma_current_state = P2L_IDLE) then
         if (dma_ctrl_start_p2l_i = '1' or dma_ctrl_start_next_i = '1') then
@@ -213,23 +215,33 @@ begin
         if (l2p_len_cnt > c_P2L_MAX_PAYLOAD) then
           -- when payload length is 1024, the header length field = 0
           l2p_len_header <= (others => '0');
+          l2p_last_packet <= '0';
+        elsif (l2p_len_cnt = c_P2L_MAX_PAYLOAD) then
+          l2p_len_header <= (others => '0');
+          l2p_last_packet <= '1';
         else
           l2p_len_header <= l2p_len_cnt(9 downto 0);
+          l2p_last_packet <= '1';
         end if;
       elsif (p2l_dma_current_state = P2L_ADDR_L) then
         -- Subtract the number of word requested to generate a new read request if needed
-        if (l2p_len_cnt > c_P2L_MAX_PAYLOAD) then
+        if (l2p_last_packet = '0') then
           l2p_len_cnt <= l2p_len_cnt - c_P2L_MAX_PAYLOAD;
         else
           l2p_len_cnt <= (others => '0');
         end if;
-      elsif (l2p_len_cnt > 0 and p2l_dma_current_state = P2L_WAIT_READ_COMPLETION) then
+      elsif (l2p_last_packet = '0' and p2l_dma_current_state = P2L_WAIT_READ_COMPLETION) then
         -- Load length of the next read request (if any)
         if (l2p_len_cnt > c_P2L_MAX_PAYLOAD) then
           -- when payload length is 1024, the header length field = 0
           l2p_len_header <= (others => '0');
+          l2p_last_packet <= '0';
+        elsif (l2p_len_cnt = c_P2L_MAX_PAYLOAD) then
+          l2p_len_header <= (others => '0');
+          l2p_last_packet <= '1';
         else
           l2p_len_header <= l2p_len_cnt(9 downto 0);
+          l2p_last_packet <= '1';
         end if;
       end if;
     end if;
@@ -313,7 +325,7 @@ begin
           pdm_arb_valid_o <= '0';
           if (pd_pdm_master_cpld_i = '1' and pd_pdm_data_last_i = '1') then
             -- last word of read completion has been received
-            if (l2p_len_cnt > 0) then
+            if (l2p_last_packet = '0') then
               -- A new read request is needed, DMA size > max payload
               p2l_dma_current_state <= P2L_HEADER;
               -- As the end of packet is used to delimit arbitration phases
