@@ -57,12 +57,12 @@ entity LOTUS is
       GPIO : inout std_logic_vector(15 downto 0);  -- General Purpose Input/Output
 
       -- PCIe to Local [Inbound Data] - RX
-      P2L_RDY    : out std_logic;       -- Rx Buffer Full Flag
-      P2L_CLKn   : in  std_logic;       -- Receiver Source Synchronous Clock-
-      P2L_CLKp   : in  std_logic;       -- Receiver Source Synchronous Clock+
+      P2L_RDY    : out std_logic;                      -- Rx Buffer Full Flag
+      P2L_CLKn   : in  std_logic;                      -- Receiver Source Synchronous Clock-
+      P2L_CLKp   : in  std_logic;                      -- Receiver Source Synchronous Clock+
       P2L_DATA   : in  std_logic_vector(15 downto 0);  -- Parallel receive data
-      P2L_DFRAME : in  std_logic;       -- Receive Frame
-      P2L_VALID  : in  std_logic;       -- Receive Data Valid
+      P2L_DFRAME : in  std_logic;                      -- Receive Frame
+      P2L_VALID  : in  std_logic;                      -- Receive Data Valid
 
       -- Inbound Buffer Request/Status
       P_WR_REQ : in  std_logic_vector(1 downto 0);  -- PCIe Write Request
@@ -71,17 +71,17 @@ entity LOTUS is
 
       -- Local to Parallel [Outbound Data] - TX
       L2P_DATA   : out std_logic_vector(15 downto 0);  -- Parallel transmit data
-      L2P_DFRAME : out std_logic;       -- Transmit Data Frame
-      L2P_VALID  : out std_logic;       -- Transmit Data Valid
-      L2P_CLKn   : out std_logic;  -- Transmitter Source Synchronous Clock-
-      L2P_CLKp   : out std_logic;  -- Transmitter Source Synchronous Clock+
-      L2P_EDB    : out std_logic;       -- Packet termination and discard
+      L2P_DFRAME : out std_logic;                      -- Transmit Data Frame
+      L2P_VALID  : out std_logic;                      -- Transmit Data Valid
+      L2P_CLKn   : out std_logic;                      -- Transmitter Source Synchronous Clock-
+      L2P_CLKp   : out std_logic;                      -- Transmitter Source Synchronous Clock+
+      L2P_EDB    : out std_logic;                      -- Packet termination and discard
 
       -- Outbound Buffer Status
-      L2P_RDY    : in std_logic;        -- Tx Buffer Full Flag
+      L2P_RDY    : in std_logic;                     -- Tx Buffer Full Flag
       L_WR_RDY   : in std_logic_vector(1 downto 0);  -- Local-to-PCIe Write
       P_RD_D_RDY : in std_logic_vector(1 downto 0);  -- PCIe-to-Local Read Response Data Ready
-      TX_ERROR   : in std_logic;        -- Transmit Error
+      TX_ERROR   : in std_logic;                     -- Transmit Error
       VC_RDY     : in std_logic_vector(1 downto 0);  -- Channel ready
 
       -- DDR2 SDRAM Interface
@@ -174,33 +174,39 @@ architecture BEHAVIOUR of LOTUS is
         -- P2L Direction
         --
         -- Source Sync DDR related signals
-        p2l_clk_p_i  : in  std_logic;   -- Receiver Source Synchronous Clock+
-        p2l_clk_n_i  : in  std_logic;   -- Receiver Source Synchronous Clock-
+        p2l_clk_p_i  : in  std_logic;                      -- Receiver Source Synchronous Clock+
+        p2l_clk_n_i  : in  std_logic;                      -- Receiver Source Synchronous Clock-
         p2l_data_i   : in  std_logic_vector(15 downto 0);  -- Parallel receive data
-        p2l_dframe_i : in  std_logic;   -- Receive Frame
-        p2l_valid_i  : in  std_logic;   -- Receive Data Valid
+        p2l_dframe_i : in  std_logic;                      -- Receive Frame
+        p2l_valid_i  : in  std_logic;                      -- Receive Data Valid
         -- P2L Control
-        p2l_rdy_o    : out std_logic;   -- Rx Buffer Full Flag
-        p_wr_req_o   : in  std_logic_vector(1 downto 0);  -- PCIe Write Request
-        p_wr_rdy_o   : out std_logic_vector(1 downto 0);  -- PCIe Write Ready
-        rx_error_o   : out std_logic;   -- Receive Error
+        p2l_rdy_o    : out std_logic;                      -- Rx Buffer Full Flag
+        p_wr_req_o   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
+        p_wr_rdy_o   : out std_logic_vector(1 downto 0);   -- PCIe Write Ready
+        rx_error_o   : out std_logic;                      -- Receive Error
 
         ---------------------------------------------------------
         -- L2P Direction
         --
         -- Source Sync DDR related signals
-        l2p_clk_p_o  : out std_logic;  -- Transmitter Source Synchronous Clock+
-        l2p_clk_n_o  : out std_logic;  -- Transmitter Source Synchronous Clock-
+        l2p_clk_p_o  : out std_logic;                      -- Transmitter Source Synchronous Clock+
+        l2p_clk_n_o  : out std_logic;                      -- Transmitter Source Synchronous Clock-
         l2p_data_o   : out std_logic_vector(15 downto 0);  -- Parallel transmit data
-        l2p_dframe_o : out std_logic;   -- Transmit Data Frame
-        l2p_valid_o  : out std_logic;   -- Transmit Data Valid
-        l2p_edb_o    : out std_logic;   -- Packet termination and discard
+        l2p_dframe_o : out std_logic;                      -- Transmit Data Frame
+        l2p_valid_o  : out std_logic;                      -- Transmit Data Valid
+        l2p_edb_o    : out std_logic;                      -- Packet termination and discard
         -- L2P Control
-        l2p_rdy_i    : in  std_logic;   -- Tx Buffer Full Flag
-        l_wr_rdy_i   : in  std_logic_vector(1 downto 0);  -- Local-to-PCIe Write
-        p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);  -- PCIe-to-Local Read Response Data Ready
-        tx_error_i   : in  std_logic;   -- Transmit Error
-        vc_rdy_i     : in  std_logic_vector(1 downto 0);  -- Channel ready
+        l2p_rdy_i    : in  std_logic;                      -- Tx Buffer Full Flag
+        l_wr_rdy_i   : in  std_logic_vector(1 downto 0);   -- Local-to-PCIe Write
+        p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);   -- PCIe-to-Local Read Response Data Ready
+        tx_error_i   : in  std_logic;                      -- Transmit Error
+        vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Channel ready
+
+        ---------------------------------------------------------
+        -- Interrupt interface
+        dma_irq_o : out std_logic_vector(1 downto 0);  -- Interrupts sources to IRQ manager
+        irq_p_i   : in  std_logic :                    -- Interrupt request pulse from IRQ manager
+        irq_p_o   : out std_logic;                     -- Interrupt request pulse to GN4124 GPIO
 
         ---------------------------------------------------------
         -- Target Interface (Wishbone master)
@@ -224,7 +230,7 @@ architecture BEHAVIOUR of LOTUS is
         dma_stb_o   : out std_logic;
         dma_we_o    : out std_logic;
         dma_ack_i   : in  std_logic;
-        dma_stall_i : in  std_logic     -- for pipelined Wishbone
+        dma_stall_i : in  std_logic                       -- for pipelined Wishbone
         );
   end component;  --  gn4124_core
 
@@ -280,7 +286,7 @@ begin
       IBUF_LOW_PWR => true,             -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
       IOSTANDARD   => "DEFAULT")
     port map (
-      O  => open,                      -- Buffer output
+      O  => open,                       -- Buffer output
       I  => L_CLKp,                     -- Diff_p buffer input (connect directly to top-level port)
       IB => L_CLKn                      -- Diff_n buffer input (connect directly to top-level port)
       );
@@ -347,6 +353,12 @@ begin
       p_rd_d_rdy_i => P_RD_D_RDY,
       tx_error_i   => TX_ERROR,
       vc_rdy_i     => VC_RDY,
+
+      ---------------------------------------------------------
+      -- Interrupt interface
+      dma_irq_o => open,
+      irq_p_i   => '0',
+      irq_p_o   => open,
 
       ---------------------------------------------------------
       -- Target Interface (Wishbone master)
@@ -427,8 +439,8 @@ begin
           wb_data_cnt <= wb_data_cnt + 1;
           if (dma_stb_o = '0') then
             wb_next_state <= IDLE;
-          --elsif (wb_data_cnt(0) = '0') then
-          --  wb_next_state := ST1;
+            --elsif (wb_data_cnt(0) = '0') then
+            --  wb_next_state := ST1;
           else
             wb_next_state <= ACK;
           end if;
