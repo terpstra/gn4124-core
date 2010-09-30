@@ -162,9 +162,10 @@ architecture rtl of gn4124_core is
   signal p2l_be         : std_logic_vector(3 downto 0);   -- Byte Enable for data
   signal p2l_addr       : std_logic_vector(31 downto 0);  -- Registered and counting Address
   signal p2l_addr_start : std_logic;
-  signal p2l_epi_select : std_logic;
 
-  signal p_wr_rdy : std_logic;
+  signal p_wr_rdy    : std_logic;
+  signal p2l_rdy_wbm : std_logic;
+  signal p2l_rdy_pdm : std_logic;
 
   -------------------------------------------------------------
   -- L2P DataPath (from arbiter to serializer)
@@ -457,7 +458,6 @@ begin
       -- Address
       pd_wbm_addr_start_i => p2l_addr_start,
       pd_wbm_addr_i       => p2l_addr,
-      pd_wbm_wbm_addr_i   => p2l_epi_select,
       --
       -- Data
       pd_wbm_data_valid_i => p2l_d_valid,
@@ -468,6 +468,7 @@ begin
       ---------------------------------------------------------
       -- P2L Control
       p_wr_rdy_o => p_wr_rdy,
+      p2l_rdy_o  => p2l_rdy_wbm,
 
       ---------------------------------------------------------
       -- To the L2P Interface
@@ -502,8 +503,6 @@ begin
   --wb_stall   <= wb_stall_i or wb_stall_dma_ctrl;
   --wb_stall_dma_ctrl <= wb_stb and not wb_ack;
 
-  p2l_epi_select <= not p2l_addr(0);
-
 -----------------------------------------------------------------------------
   u_dma_controller : dma_controller
 -----------------------------------------------------------------------------
@@ -513,7 +512,7 @@ begin
       sys_clk_i   => clk_p,             --sys_clk_i,
       sys_rst_n_i => rst_n,
 
-      dma_ctrl_irq_o  => dma_irq_o,
+      dma_ctrl_irq_o => dma_irq_o,
 
       dma_ctrl_carrier_addr_o => dma_ctrl_carrier_addr,
       dma_ctrl_host_addr_h_o  => dma_ctrl_host_addr_h,
@@ -617,6 +616,8 @@ begin
       pd_pdm_data_i       => p2l_d,
       pd_pdm_be_i         => p2l_be,
 
+      p2l_rdy_o => p2l_rdy_pdm,
+
       pdm_arb_valid_o  => pdm_arb_valid,
       pdm_arb_dframe_o => pdm_arb_dframe,
       pdm_arb_data_o   => pdm_arb_data,
@@ -663,10 +664,12 @@ begin
 -- Top Level LB Controls
 -----------------------------------------------------------------------------
 
-  p_wr_rdy_o <= p_wr_rdy & p_wr_rdy;
-  rx_error_o <= '0';
-  l2p_edb_o  <= '0';
-  p2l_rdy_o  <= rst_n;
+  p_wr_rdy_o <= p_wr_rdy & p_wr_rdy;    -- assert when wbmaster32 ready to receive target write
+  rx_error_o <= '0';                    -- assert when p2l dma master aborted
+  l2p_edb_o  <= '0';                    -- assert when l2p dma master aborted
+
+  -- de-asserted to pause transfer from GN4124
+  p2l_rdy_o <= p2l_rdy_wbm and p2l_rdy_pdm;
 
 
 
@@ -675,14 +678,6 @@ begin
 --== L2P DataPath
 --=============================================================================================--
 --=============================================================================================--
-
---  arb_wbm_gnt <= '1';
-
---  arb_ser_valid   <= wbm_arb_valid;
-
---  arb_ser_dframe  <= wbm_arb_dframe;
-
---  arb_ser_data    <= wbm_arb_data;
 
 -----------------------------------------------------------------------------
 -- ARBITER: Arbitrate between Wishbone master, DMA master and DMA pdmuencer
