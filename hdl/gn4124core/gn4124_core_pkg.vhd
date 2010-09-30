@@ -210,12 +210,14 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
     port
       (
-        DEBUG : out std_logic_vector(3 downto 0);
-
         ---------------------------------------------------------
         -- Clock/Reset
         sys_clk_i   : in std_logic;
         sys_rst_n_i : in std_logic;
+
+        ---------------------------------------------------------
+        -- Interrupt request
+        dma_ctrl_irq_o : out std_logic_vector(1 downto 0);
 
         ---------------------------------------------------------
         -- To the L2P DMA master and P2L DMA master
@@ -229,6 +231,7 @@ package gn4124_core_pkg is
         dma_ctrl_done_i         : in  std_logic;
         dma_ctrl_error_i        : in  std_logic;
         dma_ctrl_byte_swap_o    : out std_logic_vector(1 downto 0);
+        dma_ctrl_abort_o        : out std_logic;
 
         ---------------------------------------------------------
         -- From P2L DMA MASTER
@@ -278,6 +281,7 @@ package gn4124_core_pkg is
         dma_ctrl_done_o        : out std_logic;
         dma_ctrl_error_o       : out std_logic;
         dma_ctrl_byte_swap_i   : in  std_logic_vector(1 downto 0);
+        dma_ctrl_abort_i       : in  std_logic;
 
         ---------------------------------------------------------
         -- To the L2P Interface (send the DMA data)
@@ -311,8 +315,8 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- Clock/Reset
-        sys_clk_i    : in std_logic;
-        sys_rst_n_i  : in std_logic;
+        sys_clk_i   : in std_logic;
+        sys_rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- From the DMA controller
@@ -325,6 +329,7 @@ package gn4124_core_pkg is
         dma_ctrl_done_o         : out std_logic;
         dma_ctrl_error_o        : out std_logic;
         dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
+        dma_ctrl_abort_i        : in  std_logic;
 
         ---------------------------------------------------------
         -- From P2L Decoder (receive the read completion)
