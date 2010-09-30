@@ -23,9 +23,7 @@
 --               All signals crossing the clock domains are now going through fifos.
 --               Dead times optimisation in packet generator.
 --------------------------------------------------------------------------------
--- TODO: - a packet can contain 1024 32-bit word, the to_wb_fifo depth is 512 words => !!
---         should drive p2l_rdy to pause transfer.
---       - byte enable support.
+-- TODO: - byte enable support.
 --       -
 --------------------------------------------------------------------------------
 
@@ -63,10 +61,6 @@ entity wbmaster32 is
       pd_wbm_addr_start_i : in std_logic;                      -- Address strobe
       pd_wbm_addr_i       : in std_logic_vector(31 downto 0);  -- Target address (in byte) that will increment with data
                                                                -- increment = 4 bytes
-      pd_wbm_wbm_addr_i   : in std_logic;                      -- Indicates that current address is for the EPI interface
-                                                               -- Can be connected to a decode of IP2L_ADDRi
-                                                               -- or to IP2L_ADDRi(0) for BAR2
-                                                               -- or to not IP2L_ADDRi(0) for BAR0
       --
       -- Data
       pd_wbm_data_valid_i : in std_logic;                      -- Indicates Data is valid
@@ -76,7 +70,8 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- P2L channel control
-      p_wr_rdy_o : out std_logic;       -- Write buffer not empty
+      p_wr_rdy_o : out std_logic;       -- Ready to accept target write
+      p2l_rdy_o  : out std_logic;       -- Asserted to pause transfer already in progress
 
       ---------------------------------------------------------
       -- To the arbiter (L2P data)
@@ -167,8 +162,11 @@ begin
   -- Write frame from P2L decoder to fifo
   ------------------------------------------------------------------------------
 
-  -- always ready to receive new data
-  p_wr_rdy_o <= '1';
+  -- ready to receive new target write if fifo not full
+  p_wr_rdy_o <= not(to_wb_fifo_full);
+
+  -- pause transfer from GN4124 when fifo is full
+  p2l_rdy_o <= not(to_wb_fifo_full);
 
   p_from_decoder : process (sys_clk_i, sys_rst_n_i)
   begin
@@ -360,13 +358,13 @@ begin
 
         when WB_CYCLE =>
           -- initate a bus cycle
-          wb_cyc_o <= '1';
-          wb_stb_o <= '1';
-          s_wb_we  <= to_wb_fifo_rw;
-          wb_sel_o <= "1111";
-          wb_adr_o <= "00" & to_wb_fifo_addr;
+          wb_cyc_o               <= '1';
+          wb_stb_o               <= '1';
+          s_wb_we                <= to_wb_fifo_rw;
+          wb_sel_o               <= "1111";
+          wb_adr_o               <= "00" & to_wb_fifo_addr;
           --if (to_wb_fifo_rw = '1') then
-          wb_dat_o <= to_wb_fifo_data;
+          wb_dat_o               <= to_wb_fifo_data;
           --end if;
           -- wait for slave to ack
           wishbone_current_state <= WB_WAIT_ACK;
