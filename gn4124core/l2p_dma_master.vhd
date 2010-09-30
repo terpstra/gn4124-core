@@ -24,7 +24,7 @@
 --               Dead times optimisation in packet generator.
 --------------------------------------------------------------------------------
 -- TODO: - issue an error if ask DMA transfert of length = 0
---       -
+--       - Abort feature => assert L2P_EDB (EnD of packet Bad)
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -55,6 +55,7 @@ entity l2p_dma_master is
       dma_ctrl_done_o        : out std_logic;
       dma_ctrl_error_o       : out std_logic;
       dma_ctrl_byte_swap_i   : in  std_logic_vector(1 downto 0);
+      dma_ctrl_abort_i       : in  std_logic;
 
       ---------------------------------------------------------
       -- To the arbiter (L2P data)

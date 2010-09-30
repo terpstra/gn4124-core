@@ -24,9 +24,10 @@
 --                                    clean useless entity ports
 --------------------------------------------------------------------------------
 -- TODO: - a packet can contain 1024 32-bit word, the to_wb_fifo depth is 512 words => !!
---         should drive p2l_rdy to pause transfer.
+--         should drive P2L_RDY to pause transfer.
 --       - byte swap
 --       - byte enable support.
+--       - abort feature => assert RX_ERROR to GN4124
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -57,6 +58,7 @@ entity p2l_dma_master is
       dma_ctrl_done_o         : out std_logic;
       dma_ctrl_error_o        : out std_logic;
       dma_ctrl_byte_swap_i    : in  std_logic_vector(1 downto 0);
+      dma_ctrl_abort_i        : in  std_logic;
 
       ---------------------------------------------------------
       -- From P2L Decoder (receive the read completion)

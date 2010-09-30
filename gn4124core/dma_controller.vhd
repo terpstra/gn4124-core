@@ -6,7 +6,8 @@
 --
 -- unit name: DMA controller (dma_controller.vhd)
 --
--- author: Simon Deprez (simon.deprez@cern.ch)
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
 -- date: 31-08-2010
 --
@@ -18,12 +19,10 @@
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
+-- last changes: 30-09-2010 (mcattin) Add status, error and abort
 --------------------------------------------------------------------------------
--- TODO: - Generate interrupt pulse
---       - Status register
---       -
+-- TODO: - Abort feature
+--
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -35,12 +34,14 @@ use work.gn4124_core_pkg.all;
 entity dma_controller is
   port
     (
-      DEBUG : out std_logic_vector(3 downto 0);
-
       ---------------------------------------------------------
       -- Clock/Reset
       sys_clk_i   : in std_logic;
       sys_rst_n_i : in std_logic;
+
+      ---------------------------------------------------------
+      -- Interrupt request
+      dma_ctrl_irq_o : out std_logic;
 
       ---------------------------------------------------------
       -- To the L2P DMA master and P2L DMA master
@@ -53,8 +54,8 @@ entity dma_controller is
       dma_ctrl_start_next_o   : out std_logic;  -- To the P2L DMA master
       dma_ctrl_done_i         : in  std_logic;
       dma_ctrl_error_i        : in  std_logic;
-
-      dma_ctrl_byte_swap_o : out std_logic_vector(1 downto 0);
+      dma_ctrl_byte_swap_o    : out std_logic_vector(1 downto 0);
+      dma_ctrl_abort_o        : out std_logic;
 
       ---------------------------------------------------------
       -- From P2L DMA MASTER
@@ -80,8 +81,12 @@ entity dma_controller is
       );
 end dma_controller;
 
+
 architecture behaviour of dma_controller is
 
+  ------------------------------------------------------------------------------
+  -- Wishbone slave component declaration
+  ------------------------------------------------------------------------------
   component dma_controller_wb_slave is
     port (
       rst_n_i            : in  std_logic;
@@ -134,6 +139,20 @@ architecture behaviour of dma_controller is
   end component dma_controller_wb_slave;
 
 
+  ------------------------------------------------------------------------------
+  -- Local constants
+  ------------------------------------------------------------------------------
+  constant c_IDLE  : std_logic_vector(2 downto 0) := "000";
+  constant c_DONE  : std_logic_vector(2 downto 0) := "001";
+  constant c_BUSY  : std_logic_vector(2 downto 0) := "010";
+  constant c_ERROR : std_logic_vector(2 downto 0) := "011";
+  constant c_ABORT : std_logic_vector(2 downto 0) := "100";
+
+  ------------------------------------------------------------------------------
+  -- Local signals
+  ------------------------------------------------------------------------------
+
+  -- DMA controller registers
   signal dma_ctrl    : std_logic_vector(31 downto 0);
   signal dma_stat    : std_logic_vector(31 downto 0);
   signal dma_cstart  : std_logic_vector(31 downto 0);
@@ -164,14 +183,24 @@ architecture behaviour of dma_controller is
   signal dma_nexth_reg   : std_logic_vector(31 downto 0);
   signal dma_attrib_reg  : std_logic_vector(31 downto 0);
 
-  type   dma_ctrl_state_type is (IDLE, DMA_START_TRANSFER, DMA_TRANSFER, DMA_START_CHAIN, DMA_CHAIN);
+  -- DMA controller FSM
+  type dma_ctrl_state_type is (DMA_IDLE, DMA_START_TRANSFER, DMA_TRANSFER,
+                               DMA_START_CHAIN, DMA_CHAIN,
+                               DMA_ERROR, DMA_ABORT);
   signal dma_ctrl_current_state : dma_ctrl_state_type;
-  signal dma_ctrl_next_state    : dma_ctrl_state_type;
+
+  -- status signals
+  signal dma_status    : std_logic_vector(2 downto 0);
+  signal dma_error_irq : std_logic;
+  signal dma_done_irq  : std_logic;
+
 
 begin
-  -- DEBUG(1 downto 0) <= dma_ctrl_reg(1 downto 0);
---  DEBUG(3 downto 2) <= dma_attrib_reg(1 downto 0);
 
+
+  ------------------------------------------------------------------------------
+  -- Wishbone slave instanciation
+  ------------------------------------------------------------------------------
   dma_controller_wb_slave_0 : dma_controller_wb_slave port map (
     rst_n_i            => sys_rst_n_i,
     wb_clk_i           => sys_clk_i,
@@ -186,9 +215,9 @@ begin
     dma_ctrl_o         => dma_ctrl,
     dma_ctrl_i         => dma_ctrl_reg,
     dma_ctrl_load_o    => dma_ctrl_load,
-    dma_stat_o         => dma_stat,
+    dma_stat_o         => open,
     dma_stat_i         => dma_stat_reg,
-    dma_stat_load_o    => dma_stat_load,
+    dma_stat_load_o    => open,
     dma_cstart_o       => dma_cstart,
     dma_cstart_i       => dma_cstart_reg,
     dma_cstart_load_o  => dma_cstart_load,
@@ -212,7 +241,11 @@ begin
     dma_attrib_load_o  => dma_attrib_load
     );
 
-  process (sys_clk_i, sys_rst_n_i)
+
+  ------------------------------------------------------------------------------
+  -- DMA controller registers
+  ------------------------------------------------------------------------------
+  p_regs : process (sys_clk_i, sys_rst_n_i)
   begin
     if (sys_rst_n_i = c_RST_ACTIVE) then
       dma_ctrl_reg    <= (others => '0');
@@ -225,35 +258,44 @@ begin
       dma_nexth_reg   <= (others => '0');
       dma_attrib_reg  <= (others => '0');
     elsif rising_edge(sys_clk_i) then
+      -- Control register
       if (dma_ctrl_load = '1') then
         dma_ctrl_reg <= dma_ctrl;
       end if;
-      if (dma_stat_load = '1') then
-        dma_stat_reg <= dma_stat;
-      end if;
+      -- Status register
+      dma_stat_reg(2 downto 0)  <= dma_status;
+      dma_stat_reg(31 downto 3) <= (others => '0');
+      -- Target start address
       if (dma_cstart_load = '1') then
         dma_cstart_reg <= dma_cstart;
       end if;
+      -- Host start address lowest 32-bit
       if (dma_hstartl_load = '1') then
         dma_hstartl_reg <= dma_hstartl;
       end if;
+      -- Host start address highest 32-bit
       if (dma_hstarth_load = '1') then
         dma_hstarth_reg <= dma_hstarth;
       end if;
+      -- DMA transfer length in byte
       if (dma_len_load = '1') then
         dma_len_reg <= dma_len;
       end if;
+      -- next item address lowest 32-bit
       if (dma_nextl_load = '1') then
         dma_nextl_reg <= dma_nextl;
       end if;
+      -- next item address highest 32-bit
       if (dma_nexth_load = '1') then
         dma_nexth_reg <= dma_nexth;
       end if;
+      -- Chained DMA control
       if (dma_attrib_load = '1') then
         dma_attrib_reg <= dma_attrib;
       end if;
+      -- next item received => start a new transfer
       if (next_item_valid_i = '1') then
-        dma_ctrl_reg(0) <= '1';         -- Start a new transfer
+        dma_ctrl_reg(0) <= '1';
         dma_cstart_reg  <= next_item_carrier_addr_i;
         dma_hstartl_reg <= next_item_host_addr_l_i;
         dma_hstarth_reg <= next_item_host_addr_h_i;
@@ -262,18 +304,23 @@ begin
         dma_nexth_reg   <= next_item_next_h_i;
         dma_attrib_reg  <= next_item_attrib_i;
       end if;
+      -- Start DMA, 1 tick pulse
       if (dma_ctrl_reg(0) = '1') then
-        dma_ctrl_reg(0) <= '0';         -- Only one transfer
+        dma_ctrl_reg(0) <= '0';
       end if;
     end if;
-  end process;
+  end process p_regs;
+
+  dma_ctrl_byte_swap_o <= dma_ctrl_reg(3 downto 2);
 
 
-
-  process (sys_clk_i, sys_rst_n_i)
+  ------------------------------------------------------------------------------
+  -- DMA controller FSM
+  ------------------------------------------------------------------------------
+  p_fsm : process (sys_clk_i, sys_rst_n_i)
   begin
     if(sys_rst_n_i = c_RST_ACTIVE) then
-      dma_ctrl_current_state  <= IDLE;
+      dma_ctrl_current_state  <= DMA_IDLE;
       dma_ctrl_carrier_addr_o <= (others => '0');
       dma_ctrl_host_addr_h_o  <= (others => '0');
       dma_ctrl_host_addr_l_o  <= (others => '0');
@@ -281,98 +328,108 @@ begin
       dma_ctrl_start_l2p_o    <= '0';
       dma_ctrl_start_p2l_o    <= '0';
       dma_ctrl_start_next_o   <= '0';
-      DEBUG                   <= "1111";
+      dma_status              <= c_IDLE;
+      dma_error_irq           <= '0';
+      dma_done_irq            <= '0';
+      dma_ctrl_abort_o        <= '0';
     elsif rising_edge(sys_clk_i) then
       case dma_ctrl_current_state is
-        -----------------------------------------------------------------
-        -- IDLE
-        -----------------------------------------------------------------
-        when IDLE =>
+
+        when DMA_IDLE =>
+          -- Clear done irq to make it 1 tick pulse
+          dma_done_irq <= '0';
+
           if(dma_ctrl_reg(0) = '1') then
+            -- Starts a new transfer
             dma_ctrl_current_state <= DMA_START_TRANSFER;
-          else
-            dma_ctrl_current_state <= IDLE;
           end if;
-          dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o  <= (others => '0');
-          dma_ctrl_host_addr_l_o  <= (others => '0');
-          dma_ctrl_len_o          <= (others => '0');
-          dma_ctrl_start_l2p_o    <= '0';
-          dma_ctrl_start_p2l_o    <= '0';
-          dma_ctrl_start_next_o   <= '0';
-          DEBUG                   <= "1110";
-          -----------------------------------------------------------------
-          -- DMA TRANSFER
-          -----------------------------------------------------------------
+
         when DMA_START_TRANSFER =>
           if (dma_attrib_reg(1) = '0') then
+            -- L2P transfer (from target to PCIe)
             dma_ctrl_start_l2p_o <= '1';
-            --elsif (dma_attrib_reg(1) = '1') then
-            --  dma_ctrl_start_p2l_o <= '1';
+          elsif (dma_attrib_reg(1) = '1') then
+            -- P2L transfer (from PCIe to target)
+            dma_ctrl_start_p2l_o <= '1';
           end if;
           dma_ctrl_current_state  <= DMA_TRANSFER;
           dma_ctrl_carrier_addr_o <= dma_cstart_reg;
           dma_ctrl_host_addr_h_o  <= dma_hstarth_reg;
           dma_ctrl_host_addr_l_o  <= dma_hstartl_reg;
           dma_ctrl_len_o          <= dma_len_reg;
-          dma_ctrl_start_next_o   <= '0';
-          DEBUG                   <= "1101";
+          dma_status              <= c_BUSY;
+          dma_ctrl_abort_o        <= '0';
 
         when DMA_TRANSFER =>
-          if(dma_ctrl_error_i = '1') then
-            dma_ctrl_current_state <= IDLE;    -- set status = error
+          -- Clear start signals, to make them 1 tick pulses
+          dma_ctrl_start_l2p_o <= '0';
+          dma_ctrl_start_p2l_o <= '0';
+
+          if (dma_ctrl_reg(1) = '1') then
+            -- Transfer aborted
+            dma_ctrl_current_state <= DMA_ABORT;
+          elsif(dma_ctrl_error_i = '1') then
+            -- An error occurs !
+            dma_error_irq          <= '1';
+            dma_ctrl_current_state <= DMA_ERROR;
           elsif(dma_ctrl_done_i = '1') then
+            -- End of DMA transfer
             if(dma_attrib_reg(0) = '1') then
+              -- More transfer in chained DMA
               dma_ctrl_current_state <= DMA_START_CHAIN;
             else
-              dma_ctrl_current_state <= IDLE;  -- set status = done
+              -- Was the last transfer
+              dma_status             <= c_DONE;
+              dma_done_irq           <= '1';
+              dma_ctrl_current_state <= DMA_IDLE;
             end if;
-          else
-            dma_ctrl_current_state <= DMA_TRANSFER;
           end if;
-          dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o  <= (others => '0');
-          dma_ctrl_host_addr_l_o  <= (others => '0');
-          dma_ctrl_len_o          <= (others => '0');
-          dma_ctrl_start_l2p_o    <= '0';
-          dma_ctrl_start_p2l_o    <= '0';
-          dma_ctrl_start_next_o   <= '0';
-          DEBUG                   <= "1100";
-          -----------------------------------------------------------------
-          -- Get the next item of the DMA chain
-          -----------------------------------------------------------------
+
         when DMA_START_CHAIN =>
-          dma_ctrl_current_state  <= DMA_CHAIN;
-          dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o  <= dma_nexth_reg;
-          dma_ctrl_host_addr_l_o  <= dma_nextl_reg;
-          dma_ctrl_len_o          <= X"0000001C";
-          dma_ctrl_start_l2p_o    <= '0';
-          dma_ctrl_start_p2l_o    <= '0';
-          dma_ctrl_start_next_o   <= '1';
-          DEBUG                   <= "1011";
+          -- Catch the next item in host memory
+          dma_ctrl_current_state <= DMA_CHAIN;
+          dma_ctrl_host_addr_h_o <= dma_nexth_reg;
+          dma_ctrl_host_addr_l_o <= dma_nextl_reg;
+          dma_ctrl_len_o         <= X"0000001C";
+          dma_ctrl_start_next_o  <= '1';
 
         when DMA_CHAIN =>
-          if(dma_ctrl_error_i = '1') then
-            dma_ctrl_current_state <= IDLE;  -- set status = error
+          -- Clear start next signal, to make it 1 tick pulse
+          dma_ctrl_start_next_o <= '0';
+
+          if (dma_ctrl_reg(1) = '1') then
+            -- Transfer aborted
+            dma_ctrl_current_state <= DMA_ABORT;
+          elsif(dma_ctrl_error_i = '1') then
+            -- An error occurs !
+            dma_error_irq          <= '1';
+            dma_ctrl_current_state <= DMA_ERROR;
           elsif (next_item_valid_i = '1') then
+            -- next item received
             dma_ctrl_current_state <= DMA_START_TRANSFER;
-          else
-            dma_ctrl_current_state <= DMA_CHAIN;
           end if;
-          dma_ctrl_carrier_addr_o <= (others => '0');
-          dma_ctrl_host_addr_h_o  <= (others => '0');
-          dma_ctrl_host_addr_l_o  <= (others => '0');
-          dma_ctrl_len_o          <= (others => '0');
-          dma_ctrl_start_l2p_o    <= '0';
-          dma_ctrl_start_p2l_o    <= '0';
-          dma_ctrl_start_next_o   <= '0';
-          DEBUG                   <= "1010";
-          -----------------------------------------------------------------
-          -- OTHERS
-          -----------------------------------------------------------------
+
+        when DMA_ERROR =>
+          dma_status    <= c_ERROR;
+          -- Clear error irq to make it 1 tick pulse
+          dma_error_irq <= '0';
+
+          if(dma_ctrl_reg(0) = '1') then
+            -- Starts a new transfer
+            dma_ctrl_current_state <= DMA_START_TRANSFER;
+          end if;
+
+        when DMA_ABORT =>
+          dma_status       <= c_ABORT;
+          dma_ctrl_abort_o <= '1';
+
+          if(dma_ctrl_reg(0) = '1') then
+            -- Starts a new transfer
+            dma_ctrl_current_state <= DMA_START_TRANSFER;
+          end if;
+
         when others =>
-          dma_ctrl_current_state  <= IDLE;
+          dma_ctrl_current_state  <= DMA_IDLE;
           dma_ctrl_carrier_addr_o <= (others => '0');
           dma_ctrl_host_addr_h_o  <= (others => '0');
           dma_ctrl_host_addr_l_o  <= (others => '0');
@@ -380,38 +437,12 @@ begin
           dma_ctrl_start_l2p_o    <= '0';
           dma_ctrl_start_p2l_o    <= '0';
           dma_ctrl_start_next_o   <= '0';
+          dma_status              <= (others => '0');
 
       end case;
-      --dma_ctrl_current_state <= dma_ctrl_next_state;
     end if;
-  end process;
+  end process p_fsm;
 
-  --dma_ctrl_carrier_addr_o <= dma_cstart_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-  --                           else (others => '0');
-
-  --dma_ctrl_host_addr_h_o <= dma_hstarth_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-  --                          else dma_nexth_reg when dma_ctrl_current_state = DMA_START_CHAIN
-  --                          else (others => '0');
-
-  --dma_ctrl_host_addr_l_o <= dma_hstartl_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-  --                          else dma_nextl_reg when dma_ctrl_current_state = DMA_START_CHAIN
-  --                          else (others => '0');
-
-  --dma_ctrl_len_o <= dma_len_reg when dma_ctrl_current_state = DMA_START_TRANSFER
-  --                  else x"0000001C" when dma_ctrl_current_state = DMA_START_CHAIN
-  --                  else (others => '0');
-
-
-  --dma_ctrl_start_l2p_o <= '1' when (dma_ctrl_current_state = DMA_START_TRANSFER and dma_attrib_reg(1) = '0') else
-  --                        '0';
-
-  --dma_ctrl_start_p2l_o <=               --'1' when (dma_ctrl_current_state = DMA_START_TRANSFER and dma_attrib_reg(1) = '1') else
-  --                                      '0';
-
-  --dma_ctrl_start_next_o <= '1' when (dma_ctrl_current_state = DMA_START_CHAIN) else
-  --                         '0';
-
-  dma_ctrl_byte_swap_o <= dma_ctrl_reg(3 downto 2);
 
 end behaviour;
 
