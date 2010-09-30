@@ -122,8 +122,7 @@ architecture behaviour of l2p_dma_master is
   -----------------------------------------------------------------------------
   -- Local constants
   -----------------------------------------------------------------------------
-  -- max payload set to 32 for debug/simul, should be 1024
-  constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- up to 1024
+  constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- MUST be 1024
   constant c_ADDR_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
   constant c_DATA_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
@@ -170,6 +169,7 @@ architecture behaviour of l2p_dma_master is
   signal l2p_64b_address : std_logic;
   signal l2p_len_header  : std_logic_vector(9 downto 0);
   signal l2p_byte_swap   : std_logic_vector(1 downto 0);
+  signal l2p_last_packet : std_logic;
 
 begin
 
@@ -241,6 +241,7 @@ begin
       l2p_64b_address <= '0';
       l2p_len_header  <= (others => '0');
       l2p_byte_swap   <= (others => '0');
+      l2p_last_packet <= '0';
     elsif rising_edge(sys_clk_i) then
       -- First packet
       if (l2p_dma_current_state = L2P_IDLE) then
@@ -250,48 +251,56 @@ begin
           l2p_address_h <= unsigned(dma_ctrl_host_addr_h_i);
           l2p_address_l <= unsigned(dma_ctrl_host_addr_l_i);
           l2p_byte_swap <= dma_ctrl_byte_swap_i;
-        else
-          -- if DMA length is bigger than the max PCIe payload size,
-          -- the data is split in several packets
-          if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
-            l2p_data_cnt <= c_L2P_MAX_PAYLOAD;
-          else
-            l2p_data_cnt <= l2p_len_cnt(10 downto 0);
-          end if;
-          -- if host address is 64-bit, generates a 64-bit address memory write
-          if (l2p_address_h = 0) then
-            l2p_64b_address <= '0';
-          else
-            l2p_64b_address <= '1';
-          end if;
+        end if;
+      elsif (l2p_dma_current_state = L2P_HEADER) then
+        -- if DMA length is bigger than the max PCIe payload size,
+        -- the data is split in several packets
+        if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
+          l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
+          -- when payload length is 1024, the header length field = 0
+          l2p_len_header  <= (others => '0');
+          l2p_last_packet <= '0';
+        elsif (l2p_len_cnt = c_L2P_MAX_PAYLOAD) then
+          l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
           -- if payload length is 1024, the header length field = 0
-          if (l2p_len_cnt(10) = '1') then
-            l2p_len_header <= (others => '0');
-          else
-            l2p_len_header <= std_logic_vector(l2p_len_cnt(9 downto 0));
-          end if;
+          l2p_len_header  <= (others => '0');
+          l2p_last_packet <= '1';
+        else
+          l2p_data_cnt    <= l2p_len_cnt(10 downto 0);
+          l2p_len_header  <= std_logic_vector(l2p_len_cnt(9 downto 0));
+          l2p_last_packet <= '1';
+        end if;
+        -- if host address is 64-bit, generates a 64-bit address memory write
+        if (l2p_address_h = 0) then
+          l2p_64b_address <= '0';
+        else
+          l2p_64b_address <= '1';
         end if;
         -- Next packet (if any)
       elsif (l2p_dma_current_state = L2P_ADDR_L) then
-        if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
+        if (l2p_last_packet = '0') then
           l2p_len_cnt <= l2p_len_cnt - c_L2P_MAX_PAYLOAD;
         else
           l2p_len_cnt <= (others => '0');
         end if;
       elsif (l2p_dma_current_state = L2P_DATA) then
         l2p_data_cnt <= l2p_data_cnt - 1;
-      elsif (l2p_len_cnt > 0 and l2p_dma_current_state = L2P_LAST_DATA) then
+      elsif (l2p_last_packet = '0' and l2p_dma_current_state = L2P_LAST_DATA) then
         -- load the size of the next packet
         if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
-          l2p_data_cnt <= c_L2P_MAX_PAYLOAD;
+          l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
+          -- when payload length is 1024, the header length field = 0
+          l2p_len_header  <= (others => '0');
+          l2p_last_packet <= '0';
+        elsif (l2p_len_cnt = c_L2P_MAX_PAYLOAD) then
+          l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
+          -- if payload length is 1024, the header length field = 0
+          l2p_len_header  <= (others => '0');
+          l2p_last_packet <= '1';
         else
-          l2p_data_cnt <= l2p_len_cnt(10 downto 0);
-        end if;
-        -- if payload length is 1024, the header length field = 0
-        if (l2p_len_cnt(10 downto 0) = 1024) then
-          l2p_len_header <= (others => '0');
-        else
-          l2p_len_header <= std_logic_vector(l2p_len_cnt(9 downto 0));
+          l2p_data_cnt    <= l2p_len_cnt(10 downto 0);
+          l2p_len_header  <= std_logic_vector(l2p_len_cnt(9 downto 0));
+          l2p_last_packet <= '1';
         end if;
       end if;
     end if;
