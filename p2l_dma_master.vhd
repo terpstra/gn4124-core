@@ -23,9 +23,7 @@
 -- last changes: 29-09-2010 (mcattin) Add a wishbone clock,
 --                                    clean useless entity ports
 --------------------------------------------------------------------------------
--- TODO: - a packet can contain 1024 32-bit word, the to_wb_fifo depth is 512 words => !!
---         should drive P2L_RDY to pause transfer.
---       - byte swap
+-- TODO: - byte swap
 --       - byte enable support.
 --       - abort feature => assert RX_ERROR to GN4124
 --------------------------------------------------------------------------------
@@ -75,6 +73,10 @@ entity p2l_dma_master is
       pd_pdm_data_last_i   : in std_logic;                      -- Indicates end of the packet
       pd_pdm_data_i        : in std_logic_vector(31 downto 0);  -- Data
       pd_pdm_be_i          : in std_logic_vector(3 downto 0);   -- Byte Enable for data
+
+      ---------------------------------------------------------
+      -- P2L control
+      p2l_rdy_o : out std_logic;        -- Asserted to pause transfer already in progress
 
       ---------------------------------------------------------
       -- To the P2L Interface (send the DMA Master Read request)
@@ -216,13 +218,13 @@ begin
         -- we have to generate several read request
         if (l2p_len_cnt > c_P2L_MAX_PAYLOAD) then
           -- when payload length is 1024, the header length field = 0
-          l2p_len_header <= (others => '0');
+          l2p_len_header  <= (others => '0');
           l2p_last_packet <= '0';
         elsif (l2p_len_cnt = c_P2L_MAX_PAYLOAD) then
-          l2p_len_header <= (others => '0');
+          l2p_len_header  <= (others => '0');
           l2p_last_packet <= '1';
         else
-          l2p_len_header <= l2p_len_cnt(9 downto 0);
+          l2p_len_header  <= l2p_len_cnt(9 downto 0);
           l2p_last_packet <= '1';
         end if;
       elsif (p2l_dma_current_state = P2L_ADDR_L) then
@@ -236,13 +238,13 @@ begin
         -- Load length of the next read request (if any)
         if (l2p_len_cnt > c_P2L_MAX_PAYLOAD) then
           -- when payload length is 1024, the header length field = 0
-          l2p_len_header <= (others => '0');
+          l2p_len_header  <= (others => '0');
           l2p_last_packet <= '0';
         elsif (l2p_len_cnt = c_P2L_MAX_PAYLOAD) then
-          l2p_len_header <= (others => '0');
+          l2p_len_header  <= (others => '0');
           l2p_last_packet <= '1';
         else
-          l2p_len_header <= l2p_len_cnt(9 downto 0);
+          l2p_len_header  <= l2p_len_cnt(9 downto 0);
           l2p_last_packet <= '1';
         end if;
       end if;
@@ -457,6 +459,9 @@ begin
       empty                   => to_wb_fifo_empty,
       valid                   => to_wb_fifo_valid,
       prog_full               => to_wb_fifo_full);
+
+  -- pause transfer from GN4124 if fifo is (almost) full
+  p2l_rdy_o <= not(to_wb_fifo_full);
 
   ------------------------------------------------------------------------------
   -- Wishbone master (write only)

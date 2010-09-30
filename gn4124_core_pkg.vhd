@@ -167,10 +167,6 @@ package gn4124_core_pkg is
         -- Address
         pd_wbm_addr_start_i : in std_logic;                      -- Indicates Address Start
         pd_wbm_addr_i       : in std_logic_vector(31 downto 0);  -- Latched Address that will increment with data
-        pd_wbm_wbm_addr_i   : in std_logic;                      -- Indicates that current address is for the EPI interface
-                                                                 -- Can be connected to a decode of IP2L_ADDRi
-                                                                 -- or to IP2L_ADDRi(0) for BAR2
-                                                                 -- or to not IP2L_ADDRi(0) for BAR0
         --
         -- Data
         pd_wbm_data_valid_i : in std_logic;                      -- Indicates Data is valid
@@ -181,6 +177,7 @@ package gn4124_core_pkg is
         ---------------------------------------------------------
         -- P2L Control
         p_wr_rdy_o : out std_logic;     -- Write buffer not empty
+        p2l_rdy_o  : out std_logic;     -- Asserted to pause transfer already in progress
 
         ---------------------------------------------------------
         -- To the L2P Interface
@@ -346,6 +343,10 @@ package gn4124_core_pkg is
         pd_pdm_data_last_i   : in std_logic;                      -- Indicates end of the packet
         pd_pdm_data_i        : in std_logic_vector(31 downto 0);  -- Data
         pd_pdm_be_i          : in std_logic_vector(3 downto 0);   -- Byte Enable for data
+
+        ---------------------------------------------------------
+        -- P2L control
+        p2l_rdy_o : out std_logic;      -- Asserted to pause transfer already in progress
 
         ---------------------------------------------------------
         -- To the L2P Interface (send the DMA Master Read request)
