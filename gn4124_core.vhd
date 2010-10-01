@@ -6,7 +6,8 @@
 --
 -- unit name: Gn4124 core main block (gn4124-core.vhd)
 --
--- author: Simon Deprez (simon.deprez@cern.ch)
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
 -- date: 31-08-2010
 --
@@ -18,11 +19,9 @@
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
+-- last changes: 23-09-2010 (mcattin) 
 --------------------------------------------------------------------------------
--- TODO: - P2L DMA master
---       - Interrupt
+-- TODO: - 
 --       -
 --------------------------------------------------------------------------------
 
@@ -60,9 +59,10 @@ entity gn4124_core is
       p2l_valid_i  : in  std_logic;                      -- Receive Data Valid
       -- P2L Control
       p2l_rdy_o    : out std_logic;                      -- Rx Buffer Full Flag
-      p_wr_req_o   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
+      p_wr_req_i   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
       p_wr_rdy_o   : out std_logic_vector(1 downto 0);   -- PCIe Write Ready
       rx_error_o   : out std_logic;                      -- Receive Error
+      vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Channel ready
 
       ---------------------------------------------------------
       -- L2P Direction
@@ -79,12 +79,11 @@ entity gn4124_core is
       l_wr_rdy_i   : in  std_logic_vector(1 downto 0);   -- Local-to-PCIe Write
       p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);   -- PCIe-to-Local Read Response Data Ready
       tx_error_i   : in  std_logic;                      -- Transmit Error
-      vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Channel ready
 
       ---------------------------------------------------------
       -- Interrupt interface
       dma_irq_o : out std_logic_vector(1 downto 0);  -- Interrupts sources to IRQ manager
-      irq_p_i   : in  std_logic :                    -- Interrupt request pulse from IRQ manager
+      irq_p_i   : in  std_logic;                     -- Interrupt request pulse from IRQ manager
       irq_p_o   : out std_logic;                     -- Interrupt request pulse to GN4124 GPIO
 
       ---------------------------------------------------------
@@ -97,7 +96,6 @@ entity gn4124_core is
       wb_stb_o : out std_logic;
       wb_we_o  : out std_logic;
       wb_ack_i : in  std_logic;
-      --wb_stall_i : in  std_logic;
 
       ---------------------------------------------------------
       -- DMA interface (Pipelined wishbone master)
@@ -112,6 +110,7 @@ entity gn4124_core is
       dma_stall_i : in  std_logic                       -- for pipelined Wishbone
       );
 end gn4124_core;
+
 
 --==============================================================================
 -- Architecture declaration for GN4124 core (gn4124_core)
@@ -135,17 +134,21 @@ architecture rtl of gn4124_core is
   signal rst_reg   : std_logic;
   signal rst_n     : std_logic;
 
--------------------------------------------------------------
--- P2L DataPath (from deserializer to packet decoder)
--------------------------------------------------------------
+  -------------------------------------------------------------
+  -- P2L DataPath (from deserializer to packet decoder)
+  -------------------------------------------------------------
   signal des_pd_valid  : std_logic;
   signal des_pd_dframe : std_logic;
   signal des_pd_data   : std_logic_vector(31 downto 0);
 
--------------------------------------------------------------
--- P2L DataPath (from packet decoder to Wishbone master and P2L DMA master)
--------------------------------------------------------------
+  -- Local bus control
+  signal p_wr_rdy    : std_logic;
+  signal p2l_rdy_wbm : std_logic;
+  signal p2l_rdy_pdm : std_logic;
 
+  -------------------------------------------------------------
+  -- P2L DataPath (from packet decoder to Wishbone master and P2L DMA master)
+  -------------------------------------------------------------
   signal p2l_hdr_start   : std_logic;                     -- Indicates Header start cycle
   signal p2l_hdr_length  : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
   signal p2l_hdr_cid     : std_logic_vector(1 downto 0);  -- Completion ID
@@ -163,10 +166,6 @@ architecture rtl of gn4124_core is
   signal p2l_addr       : std_logic_vector(31 downto 0);  -- Registered and counting Address
   signal p2l_addr_start : std_logic;
 
-  signal p_wr_rdy    : std_logic;
-  signal p2l_rdy_wbm : std_logic;
-  signal p2l_rdy_pdm : std_logic;
-
   -------------------------------------------------------------
   -- L2P DataPath (from arbiter to serializer)
   -------------------------------------------------------------
@@ -174,21 +173,40 @@ architecture rtl of gn4124_core is
   signal arb_ser_dframe : std_logic;
   signal arb_ser_data   : std_logic_vector(31 downto 0);
 
-  signal l2p_data_o_o : std_logic_vector(l2p_data_o'range);
-
-  -- Resync bridge controls
-  signal Il_wr_rdy_i   : std_logic;     -- Clocked version of L_WR_RDY from GN412x
-  signal Ip_rd_d_rdy_i : std_logic;     -- Clocked version of p_rd_d_rdy_i from GN412x
-  signal Il2p_rdy_i    : std_logic;     -- Clocked version of l2p_rdy_i from GN412x
+  -- Local bus control
+  signal l_wr_rdy_t   : std_logic_vector(1 downto 0);
+  signal l_wr_rdy     : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy_t : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy   : std_logic_vector(1 downto 0);
+  signal l2p_rdy_t    : std_logic;
+  signal l2p_rdy      : std_logic;
 
   -------------------------------------------------------------
-  -- Target Controller (Wishbone master)
+  -- CSR wishbone master to arbiter
   -------------------------------------------------------------
   signal wbm_arb_valid  : std_logic;
   signal wbm_arb_dframe : std_logic;
   signal wbm_arb_data   : std_logic_vector(31 downto 0);
   signal wbm_arb_req    : std_logic;
   signal arb_wbm_gnt    : std_logic;
+
+  -------------------------------------------------------------
+  -- L2P DMA master to arbiter
+  -------------------------------------------------------------
+  signal ldm_arb_req    : std_logic;    -- Request use of the L2P bus
+  signal arb_ldm_gnt    : std_logic;    -- L2P bus emits data on behalf of the L2P DMA
+  signal ldm_arb_valid  : std_logic;
+  signal ldm_arb_dframe : std_logic;
+  signal ldm_arb_data   : std_logic_vector(31 downto 0);
+
+  -------------------------------------------------------------
+  -- P2L DMA master to arbiter
+  -------------------------------------------------------------
+  signal pdm_arb_valid  : std_logic;
+  signal pdm_arb_dframe : std_logic;
+  signal pdm_arb_data   : std_logic_vector(31 downto 0);
+  signal pdm_arb_req    : std_logic;
+  signal arb_pdm_gnt    : std_logic;
 
   -------------------------------------------------------------
   -- DMA controller
@@ -219,6 +237,9 @@ architecture rtl of gn4124_core is
   signal next_item_attrib       : std_logic_vector(31 downto 0);
   signal next_item_valid        : std_logic;
 
+  ------------------------------------------------------------------------------
+  -- CSR wishbone bus
+  ------------------------------------------------------------------------------
   signal wb_adr              : std_logic_vector(31 downto 0);  -- Adress
   signal wb_dat_s2m          : std_logic_vector(31 downto 0);  -- Data in
   signal wb_dat_m2s          : std_logic_vector(31 downto 0);  -- Data out
@@ -229,9 +250,11 @@ architecture rtl of gn4124_core is
   signal wb_ack              : std_logic;                      -- Acknowledge
   signal wb_stall            : std_logic;                      -- Pipelined mode
   signal wb_ack_dma_ctrl     : std_logic;                      --
-  --signal wb_stall_dma_ctrl   : std_logic;                      --
   signal wb_dat_s2m_dma_ctrl : std_logic_vector(31 downto 0);  --
 
+  ------------------------------------------------------------------------------
+  -- DMA wishbone bus
+  ------------------------------------------------------------------------------
   signal l2p_dma_adr     : std_logic_vector(31 downto 0);  -- Adress
   signal l2p_dma_dat_s2m : std_logic_vector(31 downto 0);  -- Data in
   signal l2p_dma_dat_m2s : std_logic_vector(31 downto 0);  -- Data out
@@ -252,25 +275,6 @@ architecture rtl of gn4124_core is
   signal p2l_dma_ack     : std_logic;                      -- Acknowledge
   signal p2l_dma_stall   : std_logic;                      -- Acknowledge
 
-  -------------------------------------------------------------
-  -- L2P DMA master
-  -------------------------------------------------------------
-  signal ldm_arb_req    : std_logic;    -- Request use of the L2P bus
-  signal arb_ldm_gnt    : std_logic;    -- L2P bus emits data on behalf of the L2P DMA
-  signal ldm_arb_valid  : std_logic;
-  signal ldm_arb_dframe : std_logic;
-  signal ldm_arb_data   : std_logic_vector(31 downto 0);
-
---  signal IL2P_DMA_RDY          : STD_LOGIC; -- Clocked version of l2p_rdy_i from GN412x
-
-  -------------------------------------------------------------
-  -- P2L DMA master
-  -------------------------------------------------------------
-  signal pdm_arb_valid  : std_logic;
-  signal pdm_arb_dframe : std_logic;
-  signal pdm_arb_data   : std_logic_vector(31 downto 0);
-  signal pdm_arb_req    : std_logic;
-  signal arb_pdm_gnt    : std_logic;
 
 --==============================================================================
 -- Architecture begin (gn4124_core)
@@ -318,7 +322,6 @@ begin
     end if;
   end process;
 
-
   cmp_rst_buf : BUFG
     port map (
       I => rst_reg,
@@ -332,9 +335,9 @@ begin
 --=============================================================================================--
 --=============================================================================================--
 
------------------------------------------------------------------------------
--- p2l_des: Deserialize the P2L DDR inputs
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- p2l_des: Deserialize the P2L DDR inputs
+  -----------------------------------------------------------------------------
   cmp_p2l_des : p2l_des
     port map
     (
@@ -361,9 +364,15 @@ begin
       p2l_data_o   => des_pd_data
       );
 
------------------------------------------------------------------------------
--- p2l_decode32: Decode the output of the p2l_des
------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
+  -- P2L local bus control signals
+  ------------------------------------------------------------------------------
+  -- de-asserted to pause transfer from GN4124
+  p2l_rdy_o <= p2l_rdy_wbm and p2l_rdy_pdm;
+
+  -----------------------------------------------------------------------------
+  -- p2l_decode32: Decode the output of the p2l_des
+  -----------------------------------------------------------------------------
   cmp_p2l_decode32 : p2l_decode32
     port map
     (
@@ -405,32 +414,15 @@ begin
       );
 
 
------------------------------------------------------------------------------
--- Resync some GN412x Signals
------------------------------------------------------------------------------
-  process (clk_p, rst_n)
-  begin
-    if(rst_n = c_RST_ACTIVE) then
-      Il_wr_rdy_i   <= '0';
-      Ip_rd_d_rdy_i <= '0';
-      Il2p_rdy_i    <= '0';
-    elsif rising_edge(clk_p) then
-      Il_wr_rdy_i   <= l_wr_rdy_i(0);
-      Ip_rd_d_rdy_i <= p_rd_d_rdy_i(0);
-      Il2p_rdy_i    <= l2p_rdy_i;
-    end if;
-  end process;
-
-
 --=============================================================================================--
 --=============================================================================================--
 --== Core Logic Blocks
 --=============================================================================================--
 --=============================================================================================--
 
------------------------------------------------------------------------------
--- Wishbone master
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Wishbone master
+  -----------------------------------------------------------------------------
   u_wbmaster32 : wbmaster32
     generic map
     (
@@ -467,8 +459,9 @@ begin
 
       ---------------------------------------------------------
       -- P2L Control
-      p_wr_rdy_o => p_wr_rdy,
-      p2l_rdy_o  => p2l_rdy_wbm,
+      p_wr_rdy_o   => p_wr_rdy_o,
+      p2l_rdy_o    => p2l_rdy_wbm,
+      p_rd_d_rdy_i => p_rd_d_rdy,
 
       ---------------------------------------------------------
       -- To the L2P Interface
@@ -500,16 +493,14 @@ begin
   wb_stb_o   <= wb_stb;
   wb_we_o    <= wb_we;
   wb_ack     <= wb_ack_i or wb_ack_dma_ctrl;
-  --wb_stall   <= wb_stall_i or wb_stall_dma_ctrl;
-  --wb_stall_dma_ctrl <= wb_stb and not wb_ack;
 
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- DMA controller
+  -----------------------------------------------------------------------------
   u_dma_controller : dma_controller
------------------------------------------------------------------------------
     port map
     (
-      --DEBUG=> LED (7 downto 4),
-      sys_clk_i   => clk_p,             --sys_clk_i,
+      sys_clk_i   => clk_p,
       sys_rst_n_i => rst_n,
 
       dma_ctrl_irq_o => dma_irq_o,
@@ -545,16 +536,17 @@ begin
       wb_ack_o => wb_ack_dma_ctrl
       );
 
-
-
+  -- Status signals from DMA masters
   dma_ctrl_done  <= dma_ctrl_l2p_done or dma_ctrl_p2l_done;
   dma_ctrl_error <= dma_ctrl_l2p_error or dma_ctrl_p2l_error;
------------------------------------------------------------------------------
+
+  -----------------------------------------------------------------------------
+  -- L2P DMA master
+  -----------------------------------------------------------------------------
   u_l2p_dma_master : l2p_dma_master
------------------------------------------------------------------------------
     port map
     (
-      sys_clk_i   => clk_p,             --sys_clk_i,
+      sys_clk_i   => clk_p,
       sys_rst_n_i => rst_n,
 
       dma_ctrl_target_addr_i => dma_ctrl_carrier_addr,
@@ -573,6 +565,10 @@ begin
       ldm_arb_req_o    => ldm_arb_req,
       arb_ldm_gnt_i    => arb_ldm_gnt,
 
+      l2p_edb_o  => l2p_edb_o,
+      l_wr_rdy_i => l_wr_rdy,
+      l2p_rdy_i  => l2p_rdy,
+
       l2p_dma_clk_i   => clk_p,
       l2p_dma_adr_o   => l2p_dma_adr,
       l2p_dma_dat_i   => l2p_dma_dat_s2m,
@@ -585,13 +581,13 @@ begin
       l2p_dma_stall_i => l2p_dma_stall
       );
 
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- P2L DMA  master
+  -----------------------------------------------------------------------------
   u_p2l_dma_master : p2l_dma_master
------------------------------------------------------------------------------
     port map
     (
-      DEBUG       => LED (7 downto 4),
-      sys_clk_i   => clk_p,             --sys_clk_i,
+      sys_clk_i   => clk_p,
       sys_rst_n_i => rst_n,
 
       dma_ctrl_carrier_addr_i => dma_ctrl_carrier_addr,
@@ -616,7 +612,8 @@ begin
       pd_pdm_data_i       => p2l_d,
       pd_pdm_be_i         => p2l_be,
 
-      p2l_rdy_o => p2l_rdy_pdm,
+      p2l_rdy_o  => p2l_rdy_pdm,
+      rx_error_o => rx_error_o,
 
       pdm_arb_valid_o  => pdm_arb_valid,
       pdm_arb_dframe_o => pdm_arb_dframe,
@@ -659,29 +656,42 @@ begin
   p2l_dma_stall   <= dma_stall_i;
 
 
-
------------------------------------------------------------------------------
--- Top Level LB Controls
------------------------------------------------------------------------------
-
-  p_wr_rdy_o <= p_wr_rdy & p_wr_rdy;    -- assert when wbmaster32 ready to receive target write
-  rx_error_o <= '0';                    -- assert when p2l dma master aborted
-  l2p_edb_o  <= '0';                    -- assert when l2p dma master aborted
-
-  -- de-asserted to pause transfer from GN4124
-  p2l_rdy_o <= p2l_rdy_wbm and p2l_rdy_pdm;
-
-
-
 --=============================================================================================--
 --=============================================================================================--
 --== L2P DataPath
 --=============================================================================================--
 --=============================================================================================--
 
------------------------------------------------------------------------------
--- ARBITER: Arbitrate between Wishbone master, DMA master and DMA pdmuencer
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Resync GN412x L2P status signals
+  -----------------------------------------------------------------------------
+  process (clk_p, rst_n)
+  begin
+    if(rst_n = c_RST_ACTIVE) then
+      l_wr_rdy_t   <= "00";
+      l_wr_rdy     <= "00";
+      p_rd_d_rdy_t <= "00";
+      p_rd_d_rdy   <= "00";
+      l2p_rdy_t    <= '0';
+      l2p_rdy      <= '0';
+    elsif rising_edge(clk_p) then
+      -- must be checked before l2p_dma_master issues a master write
+      l_wr_rdy_t <= l_wr_rdy_i;
+      l_wr_rdy   <= l_wr_rdy_t;
+
+      -- must be checked before wbmaster32 sends read completion with data
+      p_rd_d_rdy_t <= p_rd_d_rdy_i;
+      p_rd_d_rdy   <= p_rd_d_rdy_t;
+
+      -- when de-asserted, l2p_dma_master must stop sending data (de-assert l2p_valid) within 3 (or 7 ?) clock cycles
+      l2p_rdy_t <= l2p_rdy_i;
+      l2p_rdy   <= l2p_rdy_t;
+    end if;
+  end process;
+
+  -----------------------------------------------------------------------------
+  -- L2P arbiter, arbitrates access to GN4124
+  -----------------------------------------------------------------------------
   u_arbiter : arbiter
     port map
     (
@@ -723,9 +733,9 @@ begin
 
 
 
------------------------------------------------------------------------------
--- L2P_SER: Generate the L2P DDR Outputs
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- L2P_SER: Generate the L2P DDR Outputs
+  -----------------------------------------------------------------------------
   cmp_l2p_ser : l2p_ser
     port map
     (

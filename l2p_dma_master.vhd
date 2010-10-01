@@ -24,7 +24,6 @@
 --               Dead times optimisation in packet generator.
 --------------------------------------------------------------------------------
 -- TODO: - issue an error if ask DMA transfert of length = 0
---       - Abort feature => assert L2P_EDB (EnD of packet Bad)
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -64,6 +63,12 @@ entity l2p_dma_master is
       ldm_arb_data_o   : out std_logic_vector(31 downto 0);
       ldm_arb_req_o    : out std_logic;
       arb_ldm_gnt_i    : in  std_logic;
+
+      ---------------------------------------------------------
+      -- L2P channel control
+      l2p_edb_o  : out std_logic;                     -- Asserted when transfer is aborted
+      l_wr_rdy_i : in  std_logic_vector(1 downto 0);  -- Asserted when GN4124 is ready to receive master write
+      l2p_rdy_i  : in  std_logic;                     -- De-asserted to pause transfer already in progress
 
       ---------------------------------------------------------
       -- DMA Interface (Pipelined Wishbone)
@@ -157,7 +162,8 @@ architecture behaviour of l2p_dma_master is
   signal wb_ack_cnt  : unsigned(6 downto 0);
 
   -- L2P DMA Master FSM
-  type   l2p_dma_state_type is (L2P_IDLE, L2P_WAIT_DATA, L2P_HEADER, L2P_ADDR_H, L2P_ADDR_L, L2P_DATA, L2P_LAST_DATA);
+  type   l2p_dma_state_type is (L2P_IDLE, L2P_WAIT_DATA, L2P_HEADER, L2P_ADDR_H,
+                                L2P_ADDR_L, L2P_DATA, L2P_LAST_DATA, L2P_WAIT_RDY);
   signal l2p_dma_current_state : l2p_dma_state_type;
 
   -- L2P packet generator
@@ -334,6 +340,7 @@ begin
       ldm_arb_dframe_o      <= '0';
       data_fifo_rd          <= '0';
       dma_ctrl_done_o       <= '0';
+      l2p_edb_o <= '0';
     elsif rising_edge(sys_clk_i) then
       case l2p_dma_current_state is
 
@@ -344,8 +351,9 @@ begin
           ldm_arb_data_o   <= (others => '0');
           ldm_arb_valid_o  <= '0';
           ldm_arb_dframe_o <= '0';
+          l2p_edb_o <= '0';
 
-          if (data_fifo_empty = '0') then
+          if (data_fifo_empty = '0' and l_wr_rdy_i = "11") then
             -- We have data to send -> prepare a packet, first the header
             l2p_dma_current_state <= L2P_HEADER;
             -- request access to PCIe bus
@@ -400,14 +408,31 @@ begin
           -- send data with byte swap if requested
           ldm_arb_data_o  <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
           ldm_arb_valid_o <= '1';
-          -- data not ready yet, wait for it
-          if(data_fifo_empty = '1') then
+          if (dma_ctrl_abort_i = '1') then
+            l2p_edb_o <= '1';
+            l2p_dma_current_state <= L2P_IDLE;
+          elsif(data_fifo_empty = '1') then
+            -- data not ready yet, wait for it
             l2p_dma_current_state <= L2P_WAIT_DATA;
           elsif(l2p_data_cnt <= 2) then
             -- Only one 32-bit data word to send
             l2p_dma_current_state <= L2P_LAST_DATA;
             -- Stop reading from fifo
             data_fifo_rd          <= '0';
+          elsif (l2p_rdy_i = '0') then
+            -- GN4124 not able to receive more data, have to wait
+            l2p_dma_current_state <= L2P_WAIT_RDY;
+            -- Stop reading from fifo
+            data_fifo_rd <= '0';
+          end if;
+
+        when L2P_WAIT_RDY =>
+          ldm_arb_valid_o <= '0';
+          if (l2p_rdy_i = '1') then
+            -- GN4124 is ready to receive more data
+            l2p_dma_current_state <= L2P_DATA;
+            -- Re-start fifo reading
+            data_fifo_rd <= '1';
           end if;
 
         when L2P_WAIT_DATA =>
