@@ -176,8 +176,9 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- P2L Control
-        p_wr_rdy_o : out std_logic;     -- Write buffer not empty
-        p2l_rdy_o  : out std_logic;     -- Asserted to pause transfer already in progress
+        p_wr_rdy_o   : out std_logic_vector(1 downto 0);  -- Ready to accept target write
+        p2l_rdy_o    : out std_logic;                     -- De-asserted to pause transfer already in progress
+        p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);  -- Asserted when GN4124 ready to accept read completion with data
 
         ---------------------------------------------------------
         -- To the L2P Interface
@@ -289,6 +290,12 @@ package gn4124_core_pkg is
         arb_ldm_gnt_i    : in  std_logic;
 
         ---------------------------------------------------------
+        -- L2P channel control
+        l2p_edb_o  : out std_logic;                     -- Asserted when transfer is aborted
+        l_wr_rdy_i : in  std_logic_vector(1 downto 0);  -- Asserted when GN4124 is ready to receive master write
+        l2p_rdy_i  : in  std_logic;                     -- De-asserted to pause transfer already in progress
+
+        ---------------------------------------------------------
         -- DMA Interface (Pipelined Wishbone)
         l2p_dma_clk_i   : in  std_logic;                      -- Bus clock
         l2p_dma_adr_o   : out std_logic_vector(31 downto 0);  -- Adress
@@ -308,8 +315,6 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
     port
       (
-        DEBUG : out std_logic_vector(3 downto 0);
-
         ---------------------------------------------------------
         -- Clock/Reset
         sys_clk_i   : in std_logic;
@@ -346,7 +351,8 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- P2L control
-        p2l_rdy_o : out std_logic;      -- Asserted to pause transfer already in progress
+        p2l_rdy_o  : out std_logic;     -- De-asserted to pause transfer already in progress
+        rx_error_o : out std_logic;     -- Asserted when transfer is aborted
 
         ---------------------------------------------------------
         -- To the L2P Interface (send the DMA Master Read request)

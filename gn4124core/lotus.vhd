@@ -181,7 +181,7 @@ architecture BEHAVIOUR of LOTUS is
         p2l_valid_i  : in  std_logic;                      -- Receive Data Valid
         -- P2L Control
         p2l_rdy_o    : out std_logic;                      -- Rx Buffer Full Flag
-        p_wr_req_o   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
+        p_wr_req_i   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
         p_wr_rdy_o   : out std_logic_vector(1 downto 0);   -- PCIe Write Ready
         rx_error_o   : out std_logic;                      -- Receive Error
 
@@ -205,7 +205,7 @@ architecture BEHAVIOUR of LOTUS is
         ---------------------------------------------------------
         -- Interrupt interface
         dma_irq_o : out std_logic_vector(1 downto 0);  -- Interrupts sources to IRQ manager
-        irq_p_i   : in  std_logic :                    -- Interrupt request pulse from IRQ manager
+        irq_p_i   : in  std_logic;                     -- Interrupt request pulse from IRQ manager
         irq_p_o   : out std_logic;                     -- Interrupt request pulse to GN4124 GPIO
 
         ---------------------------------------------------------
@@ -332,7 +332,7 @@ begin
 
       -- P2L Control
       p2l_rdy_o  => P2L_RDY,
-      p_wr_req_o => P_WR_REQ,
+      p_wr_req_i => P_WR_REQ,
       p_wr_rdy_o => P_WR_RDY,
       rx_error_o => RX_ERROR,
 

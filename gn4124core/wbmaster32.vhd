@@ -24,7 +24,6 @@
 --               Dead times optimisation in packet generator.
 --------------------------------------------------------------------------------
 -- TODO: - byte enable support.
---       -
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -70,8 +69,9 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- P2L channel control
-      p_wr_rdy_o : out std_logic;       -- Ready to accept target write
-      p2l_rdy_o  : out std_logic;       -- Asserted to pause transfer already in progress
+      p_wr_rdy_o   : out std_logic_vector(1 downto 0);  -- Ready to accept target write
+      p2l_rdy_o    : out std_logic;                     -- De-asserted to pause transfer already in progress
+      p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);  -- Asserted when GN4124 ready to accept read completion with data
 
       ---------------------------------------------------------
       -- To the arbiter (L2P data)
@@ -163,7 +163,7 @@ begin
   ------------------------------------------------------------------------------
 
   -- ready to receive new target write if fifo not full
-  p_wr_rdy_o <= not(to_wb_fifo_full);
+  p_wr_rdy_o <= "00" when to_wb_fifo_full = '1' else "11";
 
   -- pause transfer from GN4124 when fifo is full
   p2l_rdy_o <= not(to_wb_fifo_full);
@@ -243,7 +243,8 @@ begin
           wbm_arb_data_o   <= (others => '0');
           wbm_arb_valid_o  <= '0';
           wbm_arb_dframe_o <= '0';
-          if(from_wb_fifo_empty = '0') then
+          if(from_wb_fifo_empty = '0' and p_rd_d_rdy_i = "11") then
+            -- generate a packet when read data in fifo and GN4124 ready to receive the packet
             wbm_arb_req_o              <= '1';
             from_wb_fifo_rd            <= '1';
             l2p_read_cpl_current_state <= L2P_HEADER;
