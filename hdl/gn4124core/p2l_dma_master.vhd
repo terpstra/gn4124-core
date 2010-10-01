@@ -25,7 +25,7 @@
 --------------------------------------------------------------------------------
 -- TODO: - byte swap
 --       - byte enable support.
---       - abort feature => assert RX_ERROR to GN4124
+--       - issue an error if ask DMA transfert of length = 0
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -37,9 +37,6 @@ use work.gn4124_core_pkg.all;
 entity p2l_dma_master is
   port
     (
-
-      DEBUG : out std_logic_vector(3 downto 0);
-
       ---------------------------------------------------------
       -- Clock/Reset
       sys_clk_i   : in std_logic;
@@ -76,7 +73,8 @@ entity p2l_dma_master is
 
       ---------------------------------------------------------
       -- P2L control
-      p2l_rdy_o : out std_logic;        -- Asserted to pause transfer already in progress
+      p2l_rdy_o  : out std_logic;       -- De-asserted to pause transfer already in progress
+      rx_error_o : out std_logic;       -- Asserted when transfer is aborted
 
       ---------------------------------------------------------
       -- To the P2L Interface (send the DMA Master Read request)
@@ -276,6 +274,7 @@ begin
       dma_ctrl_done_o       <= '0';
       next_item_valid_o     <= '0';
       completion_error      <= '0';
+      rx_error_o            <= '0';
     elsif rising_edge(sys_clk_i) then
       case p2l_dma_current_state is
 
@@ -284,6 +283,7 @@ begin
           dma_ctrl_done_o   <= '0';
           next_item_valid_o <= '0';
           completion_error  <= '0';
+          rx_error_o        <= '0';
           -- Start a read request when a P2L DMA is initated or when the DMA
           -- controller asks for the next DMA info (in a chained DMA).
           if (dma_ctrl_start_p2l_i = '1' or dma_ctrl_start_next_i = '1') then
@@ -327,7 +327,10 @@ begin
         when P2L_WAIT_READ_COMPLETION =>
           -- End of the read request packet
           pdm_arb_valid_o <= '0';
-          if (pd_pdm_master_cpld_i = '1' and pd_pdm_data_last_i = '1') then
+          if (dma_ctrl_abort_i = '1') then
+            rx_error_o            <= '1';
+            p2l_dma_current_state <= P2L_IDLE;
+          elsif (pd_pdm_master_cpld_i = '1' and pd_pdm_data_last_i = '1') then
             -- last word of read completion has been received
             if (l2p_last_packet = '0') then
               -- A new read request is needed, DMA size > max payload
