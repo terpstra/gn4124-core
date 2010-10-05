@@ -234,6 +234,17 @@ architecture BEHAVIOUR of LOTUS is
         );
   end component;  --  gn4124_core
 
+
+  component ram_2048x32
+    port (
+      clka  : in  std_logic;
+      wea   : in  std_logic_vector(0 downto 0);
+      addra : in  std_logic_vector(10 downto 0);
+      dina  : in  std_logic_vector(31 downto 0);
+      douta : out std_logic_vector(31 downto 0)
+      );
+  end component;
+
 --=============================================================================================--
 -- Internal Signals
 --=============================================================================================--
@@ -472,6 +483,14 @@ begin
   dma_ack_i <= '1' when wb_current_state = ACK
                else '0';
 
+  --cmp_test_ram : ram_2048x32
+  --  port map (
+  --    clka  => ,
+  --    wea   => ,
+  --    addra => ,
+  --    dina  => ,
+  --    douta => 
+  --    );
 
 
 end BEHAVIOUR;
