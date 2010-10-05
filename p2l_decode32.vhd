@@ -100,8 +100,8 @@ architecture rtl of p2l_decode32 is
   signal p2l_packet_start_d : std_logic;
   signal p2l_packet_end     : std_logic;
 
-  signal p2l_addr_strobe : std_logic;
-  signal p2l_data_strobe : std_logic;
+  signal p2l_addr_cycle : std_logic;
+  signal p2l_data_cycle : std_logic;
 
   signal p2l_hdr_strobe : std_logic;                     -- Indicates Header start cycle
   signal p2l_hdr_length : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
@@ -220,19 +220,22 @@ begin
   p_addr_decode : process (sys_clk_i, sys_rst_n_i)
   begin
     if sys_rst_n_i = c_RST_ACTIVE then
-      p2l_packet_start_d <= '0';
-      p2l_addr_strobe    <= '0';
+      p2l_addr_cycle    <= '0';
       p2l_addr           <= (others => '0');
       p2l_addr_start     <= '0';
     elsif rising_edge(sys_clk_i) then
 
-      -- Delays packet start
-      p2l_packet_start_d <= p2l_packet_start;
+      -- Indicate address cycle(s)
+      if (p2l_packet_start = '1') then
+        p2l_addr_cycle <= '1';
+      elsif (p2l_addr_cycle = '1' and des_p2l_valid_i = '1') then
+        p2l_addr_cycle <= '0';
+      end if;
 
       -- Generates address strobe
       -- No address strobe for read completion packets
-      if (p2l_packet_start_d = '1' and (target_mwr or target_mrd) = '1') then
-        p2l_addr_start <= '1';
+      if ((target_mwr or target_mrd) = '1') then
+        p2l_addr_start <= p2l_addr_cycle and des_p2l_valid_i;
       else
         p2l_addr_start <= '0';
       end if;
@@ -243,7 +246,7 @@ begin
       -- "01" = BAR 2
       -- "10" = Expansion ROM
       -- "11" = Reserved
-      if (p2l_packet_start_d = '1' and (target_mwr or target_mrd) = '1') then
+      if (p2l_addr_cycle = '1' and des_p2l_valid_i = '1' and (target_mwr or target_mrd) = '1') then
         -- Latch target address
         p2l_addr <= unsigned(des_p2l_data_i);
       elsif (p2l_d_valid = '1' and (target_mwr or target_mrd) = '1') then
@@ -260,28 +263,29 @@ begin
   p_data_decode : process (sys_clk_i, sys_rst_n_i)
   begin
     if sys_rst_n_i = c_RST_ACTIVE then
-      p2l_data_strobe <= '0';
+      p2l_data_cycle <= '0';
       p2l_d_valid     <= '0';
       p2l_d_last      <= '0';
       p2l_d           <= (others => '0');
     elsif rising_edge(sys_clk_i) then
 
-      -- Generates data strobe
-      if (p2l_packet_start_d = '1' and des_p2l_dframe_i = '1') then
-        p2l_data_strobe <= '1';
+      -- Indicates data cycle(s)
+      if (p2l_addr_cycle = '1' and des_p2l_valid_i = '1' and des_p2l_dframe_i = '1') then
+        p2l_data_cycle <= '1';
       elsif (des_p2l_dframe_i = '0') then
-        p2l_data_strobe <= '0';
+        p2l_data_cycle <= '0';
       end if;
 
+      -- Generates data strobe
       -- For read completion, data are valid just after the header (no address)
       if (master_cpld = '1') then
         p2l_d_valid <= des_p2l_valid_i;
       else
-        p2l_d_valid <= p2l_data_strobe and des_p2l_valid_i;
+        p2l_d_valid <= p2l_data_cycle and des_p2l_valid_i;
       end if;
 
       -- Generates last data signal
-      p2l_d_last <= p2l_data_strobe and not(des_p2l_dframe_i);
+      p2l_d_last <= p2l_data_cycle and not(des_p2l_dframe_i);
 
       -- Latch data on the bus
       if(des_p2l_valid_i = '1') then
@@ -301,9 +305,9 @@ begin
     elsif rising_edge(sys_clk_i) then
       if (p2l_addr_start = '1') then
         p2l_be <= p2l_hdr_fbe;          -- First Byte Enable
-      elsif ((p2l_data_strobe and not(des_p2l_dframe_i)) = '1') then
+      elsif ((p2l_data_cycle and not(des_p2l_dframe_i)) = '1') then
         p2l_be <= p2l_hdr_lbe;          -- Last Byte Enable
-      elsif(p2l_data_strobe = '1') then
+      elsif(p2l_data_cycle = '1') then
         p2l_be <= (others => '1');      -- Intermediate Byte Enables
       end if;
     end if;
