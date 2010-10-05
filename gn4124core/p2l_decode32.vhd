@@ -277,7 +277,7 @@ begin
       if (master_cpld = '1') then
         p2l_d_valid <= des_p2l_valid_i;
       else
-        p2l_d_valid <= p2l_data_strobe;
+        p2l_d_valid <= p2l_data_strobe and des_p2l_valid_i;
       end if;
 
       -- Generates last data signal
