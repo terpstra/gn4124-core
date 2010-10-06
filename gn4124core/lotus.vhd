@@ -206,6 +206,7 @@ architecture BEHAVIOUR of LOTUS is
 
         ---------------------------------------------------------
         -- Target Interface (Wishbone master)
+        wb_clk_i : in  std_logic;
         wb_adr_o : out std_logic_vector(31 downto 0);
         wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data in
         wb_dat_o : out std_logic_vector(31 downto 0);  -- Data out
@@ -217,6 +218,7 @@ architecture BEHAVIOUR of LOTUS is
 
         ---------------------------------------------------------
         -- L2P DMA Interface (Pipelined Wishbone master)
+        dma_clk_i   : in  std_logic;
         dma_adr_o   : out std_logic_vector(31 downto 0);
         dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
         dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
@@ -367,6 +369,7 @@ begin
 
       ---------------------------------------------------------
       -- Target Interface (Wishbone master)
+      wb_clk_i => l_clk,
       wb_adr_o => wb_adr_o,
       wb_dat_i => wb_dat_i,
       wb_dat_o => wb_dat_o,
@@ -378,6 +381,7 @@ begin
 
       ---------------------------------------------------------
       -- L2P DMA Interface (Pipelined Wishbone master)
+      dma_clk_i   => l_clk,
       dma_adr_o   => dma_adr_o,
       dma_dat_i   => dma_dat_i,
       dma_dat_o   => dma_dat_o,

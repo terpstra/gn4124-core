@@ -25,8 +25,6 @@
 --       - reset and clock signals
 --       - wishbone timeout generic
 --       - rename component instance -> cmp_xxx
---       - wishbone buses clk -> add input to core
---       - CSR wishbone to DMA controller -> sync reg access to core clock
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -88,6 +86,7 @@ entity gn4124_core is
 
       ---------------------------------------------------------
       -- Target interface (CSR wishbone master)
+      wb_clk_i : in  std_logic;
       wb_adr_o : out std_logic_vector(31 downto 0);
       wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data in
       wb_dat_o : out std_logic_vector(31 downto 0);  -- Data out
@@ -99,6 +98,7 @@ entity gn4124_core is
 
       ---------------------------------------------------------
       -- DMA interface (Pipelined wishbone master)
+      dma_clk_i   : in  std_logic;
       dma_adr_o   : out std_logic_vector(31 downto 0);
       dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
       dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
@@ -455,7 +455,7 @@ begin
 
       ---------------------------------------------------------
       -- Wishbone Interface
-      wb_clk_i => clk_p,
+      wb_clk_i => wb_clk_i,
       wb_adr_o => wb_adr,
       wb_dat_i => wb_dat_s2m,
       wb_dat_o => wb_dat_m2s,
@@ -507,6 +507,7 @@ begin
       next_item_attrib_i       => next_item_attrib,
       next_item_valid_i        => next_item_valid,
 
+      wb_clk_i => wb_clk_i,
       wb_adr_i => wb_adr(3 downto 0),
       wb_dat_o => wb_dat_s2m_dma_ctrl,
       wb_dat_i => wb_dat_m2s,
@@ -550,7 +551,7 @@ begin
       l_wr_rdy_i => l_wr_rdy,
       l2p_rdy_i  => l2p_rdy,
 
-      l2p_dma_clk_i   => clk_p,
+      l2p_dma_clk_i   => dma_clk_i,
       l2p_dma_adr_o   => l2p_dma_adr,
       l2p_dma_dat_i   => l2p_dma_dat_s2m,
       l2p_dma_dat_o   => l2p_dma_dat_m2s,
@@ -602,7 +603,7 @@ begin
       pdm_arb_req_o    => pdm_arb_req,
       arb_pdm_gnt_i    => arb_pdm_gnt,
 
-      p2l_dma_clk_i   => clk_p,
+      p2l_dma_clk_i   => dma_clk_i,
       p2l_dma_adr_o   => p2l_dma_adr,
       p2l_dma_dat_i   => p2l_dma_dat_s2m,
       p2l_dma_dat_o   => p2l_dma_dat_m2s,
