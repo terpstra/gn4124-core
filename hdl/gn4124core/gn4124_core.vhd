@@ -25,6 +25,8 @@
 --       - reset and clock signals
 --       - wishbone timeout generic
 --       - rename component instance -> cmp_xxx
+--       - wishbone buses clk -> add input to core
+--       - CSR wishbone to DMA controller -> sync reg access to core clock
 --------------------------------------------------------------------------------
 
 library IEEE;
