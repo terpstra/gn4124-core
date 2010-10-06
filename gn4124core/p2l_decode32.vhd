@@ -21,10 +21,6 @@
 --------------------------------------------------------------------------------
 -- last changes: 27-09-2010 (mcattin) Rewrite a part of the decoder logic
 --------------------------------------------------------------------------------
--- TODO: -
---       -
---       -
---------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
@@ -36,9 +32,9 @@ entity p2l_decode32 is
   port
     (
       ---------------------------------------------------------
-      -- Clock/Reset
-      sys_clk_i   : in std_logic;
-      sys_rst_n_i : in std_logic;
+      -- GN4124 core clock and reset
+      clk_i   : in std_logic;
+      rst_n_i : in std_logic;
 
       ---------------------------------------------------------
       -- Input from the deserializer
@@ -76,7 +72,9 @@ entity p2l_decode32 is
       );
 end p2l_decode32;
 
+
 architecture rtl of p2l_decode32 is
+
 
   -----------------------------------------------------------------------------
   -- to_mvl Function
@@ -91,7 +89,7 @@ architecture rtl of p2l_decode32 is
   end f_to_mvl;
 
   -----------------------------------------------------------------------------
-  -- Internal Signals
+  -- Signals declaration
   -----------------------------------------------------------------------------
   signal des_p2l_valid_d  : std_logic;
   signal des_p2l_dframe_d : std_logic;
@@ -134,12 +132,12 @@ begin
   -- 1 tick delay version of des_p2l_valid_i and des_p2l_dframe_i,
   -- for start and end frame detection
   -----------------------------------------------------------------------------
-  process (sys_clk_i, sys_rst_n_i)
+  process (clk_i, rst_n_i)
   begin
-    if sys_rst_n_i = c_RST_ACTIVE then
+    if rst_n_i = c_RST_ACTIVE then
       des_p2l_dframe_d <= '0';
       des_p2l_valid_d  <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       des_p2l_dframe_d <= des_p2l_dframe_i;
       des_p2l_valid_d  <= des_p2l_valid_i;
     end if;
@@ -154,14 +152,14 @@ begin
   -----------------------------------------------------------------------------
   -- Decode packet type
   -----------------------------------------------------------------------------
-  p_type_decode : process (sys_clk_i, sys_rst_n_i)
+  p_type_decode : process (clk_i, rst_n_i)
   begin
-    if sys_rst_n_i = c_RST_ACTIVE then
+    if rst_n_i = c_RST_ACTIVE then
       target_mrd  <= '0';
       target_mwr  <= '0';
       master_cpld <= '0';
       master_cpln <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       -- New packet starts, check type for routing
       if (p2l_packet_start = '1') then
         -- Target read request
@@ -184,9 +182,9 @@ begin
   -----------------------------------------------------------------------------
   -- Packet header decoding
   -----------------------------------------------------------------------------
-  p_header_decode : process (sys_clk_i, sys_rst_n_i)
+  p_header_decode : process (clk_i, rst_n_i)
   begin
-    if sys_rst_n_i = c_RST_ACTIVE then
+    if rst_n_i = c_RST_ACTIVE then
       p2l_hdr_strobe <= '0';
       p2l_hdr_length <= (others => '0');
       p2l_hdr_cid    <= (others => '0');
@@ -194,7 +192,7 @@ begin
       p2l_hdr_stat   <= (others => '0');
       p2l_hdr_fbe    <= (others => '0');
       p2l_hdr_lbe    <= (others => '0');
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       if (p2l_packet_start = '1') then
         p2l_hdr_strobe <= '1';
         p2l_hdr_length <= des_p2l_data_i(9 downto 0);
@@ -217,13 +215,13 @@ begin
   -----------------------------------------------------------------------------
   -- Packet address decoding
   -----------------------------------------------------------------------------
-  p_addr_decode : process (sys_clk_i, sys_rst_n_i)
+  p_addr_decode : process (clk_i, rst_n_i)
   begin
-    if sys_rst_n_i = c_RST_ACTIVE then
-      p2l_addr_cycle    <= '0';
-      p2l_addr           <= (others => '0');
-      p2l_addr_start     <= '0';
-    elsif rising_edge(sys_clk_i) then
+    if rst_n_i = c_RST_ACTIVE then
+      p2l_addr_cycle <= '0';
+      p2l_addr       <= (others => '0');
+      p2l_addr_start <= '0';
+    elsif rising_edge(clk_i) then
 
       -- Indicate address cycle(s)
       if (p2l_packet_start = '1') then
@@ -260,14 +258,14 @@ begin
   -----------------------------------------------------------------------------
   -- Packet data decoding (data strobe)
   -----------------------------------------------------------------------------
-  p_data_decode : process (sys_clk_i, sys_rst_n_i)
+  p_data_decode : process (clk_i, rst_n_i)
   begin
-    if sys_rst_n_i = c_RST_ACTIVE then
+    if rst_n_i = c_RST_ACTIVE then
       p2l_data_cycle <= '0';
-      p2l_d_valid     <= '0';
-      p2l_d_last      <= '0';
-      p2l_d           <= (others => '0');
-    elsif rising_edge(sys_clk_i) then
+      p2l_d_valid    <= '0';
+      p2l_d_last     <= '0';
+      p2l_d          <= (others => '0');
+    elsif rising_edge(clk_i) then
 
       -- Indicates data cycle(s)
       if (p2l_addr_cycle = '1' and des_p2l_valid_i = '1' and des_p2l_dframe_i = '1') then
@@ -298,11 +296,11 @@ begin
   -----------------------------------------------------------------------------
   -- Byte enable
   -----------------------------------------------------------------------------
-  p_be_decode : process (sys_clk_i, sys_rst_n_i)
+  p_be_decode : process (clk_i, rst_n_i)
   begin
-    if sys_rst_n_i = c_RST_ACTIVE then
+    if rst_n_i = c_RST_ACTIVE then
       p2l_be <= (others => '0');
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       if (p2l_addr_start = '1') then
         p2l_be <= p2l_hdr_fbe;          -- First Byte Enable
       elsif ((p2l_data_cycle and not(des_p2l_dframe_i)) = '1') then

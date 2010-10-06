@@ -4,26 +4,23 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: l2p_ser (l2p_ser.vhd)
+-- unit name: L2P serializer (l2p_ser.vhd)
 --
--- author:
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
--- date:
+-- date: 31-08-2010
 --
--- version: 0.0
+-- version: 1.0
 --
--- description: Generates the DDR L2P bus from SDR that is synchronous to ICLK
+-- description: Generates the DDR L2P bus from SDR that is synchronous to the
+--              core clock.
 --
 --
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
---------------------------------------------------------------------------------
--- TODO: -
---       -
---       -
+-- last changes: 23-09-2010 (mcattin) Always active high reset for FFs.
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -31,25 +28,27 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
 
-
 library UNISIM;
 use UNISIM.vcomponents.all;
+
 
 entity l2p_ser is
   port
     (
       ---------------------------------------------------------
-      -- ICLK Clock Domain Inputs
+      -- Reset and clock
       clk_p_i : in std_logic;
       clk_n_i : in std_logic;
       rst_n_i : in std_logic;
 
+      ---------------------------------------------------------
+      -- Serializer inputs
       l2p_valid_i  : in std_logic;
       l2p_dframe_i : in std_logic;
       l2p_data_i   : in std_logic_vector(31 downto 0);
 
       ---------------------------------------------------------
-      -- SER Outputs
+      -- L2P DDR outputs
       l2p_clk_p_o  : out std_logic;
       l2p_clk_n_o  : out std_logic;
       l2p_valid_o  : out std_logic;
@@ -58,12 +57,18 @@ entity l2p_ser is
       );
 end l2p_ser;
 
+
 architecture rtl of l2p_ser is
 
------------------------------------------------------------------------------
--- Internal Signals
------------------------------------------------------------------------------
-  signal ff_rst      : std_logic;
+
+  -----------------------------------------------------------------------------
+  -- Signals declaration
+  -----------------------------------------------------------------------------
+
+  -- DDR FF reset
+  signal ff_rst : std_logic;
+
+  -- SDR to DDR signals
   signal dframe_d    : std_logic;
   signal valid_d     : std_logic;
   signal data_d      : std_logic_vector(l2p_data_i'range);
@@ -71,6 +76,7 @@ architecture rtl of l2p_ser is
 
 
 begin
+
 
   ------------------------------------------------------------------------------
   -- Active high reset for DDR FF
@@ -83,10 +89,9 @@ begin
     ff_rst <= rst_n_i;
   end generate;
 
-
------------------------------------------------------------------------------
--- Re-allign Data tightly for the +'ve clock edge
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Re-allign data tightly for the positive clock edge
+  -----------------------------------------------------------------------------
   process (clk_p_i, rst_n_i)
   begin
     if(rst_n_i = c_RST_ACTIVE) then
@@ -100,6 +105,9 @@ begin
     end if;
   end process;
 
+  ------------------------------------------------------------------------------
+  -- Align control signals to the negative clock edge
+  ------------------------------------------------------------------------------
   process (clk_n_i, rst_n_i)
   begin
     if(rst_n_i = c_RST_ACTIVE) then
@@ -111,7 +119,9 @@ begin
     end if;
   end process;
 
-
+  ------------------------------------------------------------------------------
+  -- DDR FF instanciation for data
+  ------------------------------------------------------------------------------
   DDROUT : for i in 0 to 15 generate
     U : OFDDRRSE
       port map
@@ -127,6 +137,9 @@ begin
         );
   end generate;
 
+  ------------------------------------------------------------------------------
+  -- DDR source synchronous clock generation
+  ------------------------------------------------------------------------------
   L2P_CLK_BUF : OBUFDS
     port map(
       O  => l2p_clk_p_o,
