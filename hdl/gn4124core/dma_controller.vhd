@@ -13,16 +13,13 @@
 --
 -- version: 0.2
 --
--- description:
+-- description: Manages the DMA transfers.
 --
 --
 -- dependencies:
 --
 --------------------------------------------------------------------------------
 -- last changes: 30-09-2010 (mcattin) Add status, error and abort
---------------------------------------------------------------------------------
--- TODO:
---
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -35,9 +32,9 @@ entity dma_controller is
   port
     (
       ---------------------------------------------------------
-      -- Clock/Reset
-      sys_clk_i   : in std_logic;
-      sys_rst_n_i : in std_logic;
+      -- GN4124 core clock and reset
+      clk_i   : in std_logic;
+      rst_n_i : in std_logic;
 
       ---------------------------------------------------------
       -- Interrupt request
@@ -58,7 +55,7 @@ entity dma_controller is
       dma_ctrl_abort_o        : out std_logic;
 
       ---------------------------------------------------------
-      -- From P2L DMA MASTER
+      -- From P2L DMA master
       next_item_carrier_addr_i : in std_logic_vector(31 downto 0);
       next_item_host_addr_h_i  : in std_logic_vector(31 downto 0);
       next_item_host_addr_l_i  : in std_logic_vector(31 downto 0);
@@ -69,7 +66,7 @@ entity dma_controller is
       next_item_valid_i        : in std_logic;
 
       ---------------------------------------------------------
-      -- Wishbone Slave Interface
+      -- Wishbone slave interface
       wb_adr_i : in  std_logic_vector(3 downto 0);   -- Adress
       wb_dat_o : out std_logic_vector(31 downto 0);  -- Data in
       wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data out
@@ -83,6 +80,7 @@ end dma_controller;
 
 
 architecture behaviour of dma_controller is
+
 
   ------------------------------------------------------------------------------
   -- Wishbone slave component declaration
@@ -140,7 +138,7 @@ architecture behaviour of dma_controller is
 
 
   ------------------------------------------------------------------------------
-  -- Local constants
+  -- Constants declaration
   ------------------------------------------------------------------------------
   constant c_IDLE  : std_logic_vector(2 downto 0) := "000";
   constant c_DONE  : std_logic_vector(2 downto 0) := "001";
@@ -149,7 +147,7 @@ architecture behaviour of dma_controller is
   constant c_ABORT : std_logic_vector(2 downto 0) := "100";
 
   ------------------------------------------------------------------------------
-  -- Local signals
+  -- Signals declaration
   ------------------------------------------------------------------------------
 
   -- DMA controller registers
@@ -202,8 +200,8 @@ begin
   -- Wishbone slave instanciation
   ------------------------------------------------------------------------------
   dma_controller_wb_slave_0 : dma_controller_wb_slave port map (
-    rst_n_i            => sys_rst_n_i,
-    wb_clk_i           => sys_clk_i,
+    rst_n_i            => rst_n_i,
+    wb_clk_i           => clk_i,
     wb_addr_i          => wb_adr_i,
     wb_data_i          => wb_dat_i,
     wb_data_o          => wb_dat_o,
@@ -245,9 +243,9 @@ begin
   ------------------------------------------------------------------------------
   -- DMA controller registers
   ------------------------------------------------------------------------------
-  p_regs : process (sys_clk_i, sys_rst_n_i)
+  p_regs : process (clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       dma_ctrl_reg    <= (others => '0');
       dma_stat_reg    <= (others => '0');
       dma_cstart_reg  <= (others => '0');
@@ -257,7 +255,7 @@ begin
       dma_nextl_reg   <= (others => '0');
       dma_nexth_reg   <= (others => '0');
       dma_attrib_reg  <= (others => '0');
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       -- Control register
       if (dma_ctrl_load = '1') then
         dma_ctrl_reg <= dma_ctrl;
@@ -321,9 +319,9 @@ begin
 ------------------------------------------------------------------------------
   -- DMA controller FSM
   ------------------------------------------------------------------------------
-  p_fsm : process (sys_clk_i, sys_rst_n_i)
+  p_fsm : process (clk_i, rst_n_i)
   begin
-    if(sys_rst_n_i = c_RST_ACTIVE) then
+    if(rst_n_i = c_RST_ACTIVE) then
       dma_ctrl_current_state  <= DMA_IDLE;
       dma_ctrl_carrier_addr_o <= (others => '0');
       dma_ctrl_host_addr_h_o  <= (others => '0');
@@ -336,7 +334,7 @@ begin
       dma_error_irq           <= '0';
       dma_done_irq            <= '0';
       dma_ctrl_abort_o        <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       case dma_ctrl_current_state is
 
         when DMA_IDLE =>
@@ -442,6 +440,9 @@ begin
           dma_ctrl_start_p2l_o    <= '0';
           dma_ctrl_start_next_o   <= '0';
           dma_status              <= (others => '0');
+          dma_error_irq           <= '0';
+          dma_done_irq            <= '0';
+          dma_ctrl_abort_o        <= '0';
 
       end case;
     end if;

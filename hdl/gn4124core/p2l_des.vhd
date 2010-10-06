@@ -4,13 +4,14 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: p2l_des (p2l_des.vhd)
+-- unit name: P2L deserializer (p2l_des.vhd)
 --
--- author:
+-- authors: Simon Deprez (simon.deprez@cern.ch)
+--          Matthieu Cattin (matthieu.cattin@cern.ch)
 --
--- date:
+-- date: 31-08-2010
 --
--- version: 0.0
+-- version: 1.0
 --
 -- description: Takes the DDR P2L bus and converts to SDR that is synchronous
 --              to the core clock.
@@ -18,12 +19,7 @@
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
---------------------------------------------------------------------------------
--- TODO: -
---       -
---       -
+-- last changes: 23-09-2010 (mcattin) Always active high reset for FFs.
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -45,17 +41,17 @@ entity p2l_des is
       clk_n_i : in std_logic;
 
       ---------------------------------------------------------
-      -- P2L Clock Domain
+      -- P2L clock domain (DDR)
       --
-      -- P2L Inputs
+      -- P2L inputs
       p2l_valid_i  : in std_logic;
       p2l_dframe_i : in std_logic;
       p2l_data_i   : in std_logic_vector(15 downto 0);
 
       ---------------------------------------------------------
-      -- Core Clock Domain
+      -- Core clock domain (SDR)
       --
-      -- DeSerialized Output
+      -- Deserialized output
       p2l_valid_o  : out std_logic;
       p2l_dframe_o : out std_logic;
       p2l_data_o   : out std_logic_vector(31 downto 0)
@@ -67,9 +63,13 @@ architecture rtl of p2l_des is
 
 
   -----------------------------------------------------------------------------
-  -- Signals for the P2L_CLK domain
+  -- Signals declaration
   -----------------------------------------------------------------------------
-  signal ff_rst         : std_logic;
+
+  -- DDR FF reset
+  signal ff_rst : std_logic;
+
+  -- SDR signals
   signal p2l_valid_p    : std_logic;
   signal p2l_valid_n    : std_logic;
   signal p2l_dframe_p   : std_logic;
@@ -78,19 +78,12 @@ architecture rtl of p2l_des is
   signal p2l_data_n     : std_logic_vector(p2l_data_i'range);
   signal p2l_data_sdr_l : std_logic_vector(p2l_data_i'range);
   signal p2l_data_sdr   : std_logic_vector(p2l_data_i'length*2-1 downto 0);
-  signal clk_p          : std_logic;
-  signal clk_n          : std_logic;
-  signal rst_reg        : std_logic;
-  signal rst_buf        : std_logic;
 
 
 begin
 
 
-
-
-
-------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   -- Active high reset for DDR FF
   ------------------------------------------------------------------------------
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
@@ -159,11 +152,12 @@ begin
     end if;
   end process;
 
+  -- Combine 16-bit DDR data into 32-bit word
   p2l_data_sdr <= p2l_data_n & p2l_data_sdr_l;
 
 
   -----------------------------------------------------------------------------
-  -- Final Positive Edge Clock Allignment
+  -- Final positive edge clock alignment
   -----------------------------------------------------------------------------
   process (clk_p_i, rst_n_i)
   begin

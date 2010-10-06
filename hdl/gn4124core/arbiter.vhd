@@ -22,10 +22,6 @@
 -- last changes: 23-09-2010 (mcattin) Add FF on data path and
 --                                    change valid request logic
 -------------------------------------------------------------------------------
--- TODO: -
---       -
---       -
--------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
@@ -37,7 +33,7 @@ entity arbiter is
   port
     (
       ---------------------------------------------------------
-      -- Clock/Reset
+      -- GN4124 core clock and reset
       clk_i   : in std_logic;
       rst_n_i : in std_logic;
 
@@ -50,7 +46,7 @@ entity arbiter is
       arb_wbm_gnt_o    : out std_logic;
 
       ---------------------------------------------------------
-      -- From DMA pdmuencer (pdm) to arbiter (arb)
+      -- From P2L DMA master (pdm) to arbiter (arb)
       pdm_arb_valid_i  : in  std_logic;
       pdm_arb_dframe_i : in  std_logic;
       pdm_arb_data_i   : in  std_logic_vector(31 downto 0);
@@ -58,7 +54,7 @@ entity arbiter is
       arb_pdm_gnt_o    : out std_logic;
 
       ---------------------------------------------------------
-      -- From P2L DMA master (ldm) to arbiter (arb)
+      -- From L2P DMA master (ldm) to arbiter (arb)
       ldm_arb_valid_i  : in  std_logic;
       ldm_arb_dframe_i : in  std_logic;
       ldm_arb_data_i   : in  std_logic_vector(31 downto 0);
@@ -77,8 +73,9 @@ end arbiter;
 architecture behaviour of arbiter is
 
 
----------------------------------------------------------
-  -- Signal declarations
+  ------------------------------------------------------------------------------
+  -- Signals declaration
+  ------------------------------------------------------------------------------
   signal wbm_arb_req_valid : std_logic;
   signal pdm_arb_req_valid : std_logic;
   signal ldm_arb_req_valid : std_logic;

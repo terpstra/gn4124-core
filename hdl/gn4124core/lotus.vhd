@@ -162,13 +162,9 @@ architecture BEHAVIOUR of LOTUS is
 -----------------------------------------------------------------------------
     port
       (
-        LED         : out std_logic_vector(7 downto 0);
         ---------------------------------------------------------
-        -- Clock/Reset from GN412x
-        --      L_CLKp                 : in   std_logic;                     -- Running at 100 or 200 Mhz
-        --      L_CLKn                 : in   std_logic;                     -- Running at 100 or 200 Mhz
-        sys_clk_o   : out std_logic;
-        sys_rst_n_i : in  std_logic;
+        -- Asynchronous reset from GN4124
+        rst_n_a_i : in  std_logic;
 
         ---------------------------------------------------------
         -- P2L Direction
@@ -218,7 +214,6 @@ architecture BEHAVIOUR of LOTUS is
         wb_stb_o : out std_logic;
         wb_we_o  : out std_logic;
         wb_ack_i : in  std_logic;
-        --wb_stall_i : in  std_logic;
 
         ---------------------------------------------------------
         -- L2P DMA Interface (Pipelined Wishbone master)
@@ -297,7 +292,7 @@ begin
       IBUF_LOW_PWR => true,             -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
       IOSTANDARD   => "DEFAULT")
     port map (
-      O  => open,                       -- Buffer output
+      O  => l_clk,                      -- Buffer output
       I  => L_CLKp,                     -- Diff_p buffer input (connect directly to top-level port)
       IB => L_CLKn                      -- Diff_n buffer input (connect directly to top-level port)
       );
@@ -323,13 +318,12 @@ begin
   u_gn4124_core : gn4124_core
     port map
     (
-      LED         => led,
       ---------------------------------------------------------
       -- Clock/Reset from GN412x
 --      L_CLKp                 => L_CLKp,
 --      L_CLKn                 => L_CLKn,
-      sys_clk_o   => l_clk,
-      sys_rst_n_i => L_RST_N,
+--      sys_clk_o => l_clk,
+      rst_n_a_i => L_RST_N,
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -381,7 +375,6 @@ begin
       wb_stb_o => wb_stb_o,
       wb_we_o  => wb_we_o,
       wb_ack_i => wb_ack_i,
-      --wb_stall_i => wb_stall_i,
 
       ---------------------------------------------------------
       -- L2P DMA Interface (Pipelined Wishbone master)
@@ -400,30 +393,13 @@ begin
   -- UNUSED local wishbone bus
   ------------------------------------------------------------------------------
   wb_ack_i <= '0';
-  --wb_stall_i <= '0';
   wb_dat_i <= "00000000000000000000000000000000";
 
 
 
   -----------------------------------------------------------------------------
-  -- Simulation DMA Wisbbone
+  -- Simulation DMA, pipelined wishbone slave
   -----------------------------------------------------------------------------
-
-  -- TEST: L2P DMA interface
-  -- process (L_CLKp, L_RST_N)
-  --  variable wb_next_state : wb_state_type;
-  --begin
-  --  if(L_RST_N = '0') then
-  --  elsif rising_edge(L_CLKp) then
-  --    if (L2P_RDY = '0') then
-  --    end if;
-  --    if (L_WR_RDY(0) = '0') then
-  --    end if;
-  --    if (L_WR_RDY(1) = '0') then
-  --    end if;
-  --  end if;
-  --end process;
-
   process (l_clk, L_RST_N)
   begin
     if(L_RST_N = '0') then

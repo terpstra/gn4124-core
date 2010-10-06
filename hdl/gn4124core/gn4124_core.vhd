@@ -13,7 +13,7 @@
 --
 -- version: 0.3
 --
--- description:
+-- description: GN4124 core top level.
 --
 --
 -- dependencies:
@@ -21,8 +21,10 @@
 --------------------------------------------------------------------------------
 -- last changes: 23-09-2010 (mcattin) 
 --------------------------------------------------------------------------------
--- TODO: - 
---       -
+-- TODO: - wishbone buses address map and mux
+--       - reset and clock signals
+--       - wishbone timeout generic
+--       - rename component instance -> cmp_xxx
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -40,13 +42,9 @@ use UNISIM.vcomponents.all;
 entity gn4124_core is
   port
     (
-      LED         : out std_logic_vector(7 downto 0);
       ---------------------------------------------------------
-      -- Clock/Reset from GN412x
-      --      L_CLKp                 : in   std_logic;                     -- Running at 100 or 200 Mhz
-      --      L_CLKn                 : in   std_logic;                     -- Running at 100 or 200 Mhz
-      sys_clk_o   : out std_logic;
-      sys_rst_n_i : in  std_logic;
+      -- Asynchronous reset from GN4124
+      rst_n_a_i : in  std_logic;
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -118,19 +116,16 @@ end gn4124_core;
 architecture rtl of gn4124_core is
 
 
---==============================================================================
--- Internal signals
---==============================================================================
+  ------------------------------------------------------------------------------
+  -- Signals declaration
+  ------------------------------------------------------------------------------
 
-  -------------------------------------------------------------
-  -- Clock/Reset
-  -------------------------------------------------------------
-  -- Internal 1X clock operating at the same rate as LCLK
+  -- Clock
   signal clk_p     : std_logic;
   signal clk_n     : std_logic;
   signal clk_p_buf : std_logic;
   signal clk_n_buf : std_logic;
-  -- RESET for all clk_p logic
+  -- Reset for all clk_p logic
   signal rst_reg   : std_logic;
   signal rst_n     : std_logic;
 
@@ -149,22 +144,21 @@ architecture rtl of gn4124_core is
   -------------------------------------------------------------
   -- P2L DataPath (from packet decoder to Wishbone master and P2L DMA master)
   -------------------------------------------------------------
-  signal p2l_hdr_start   : std_logic;                     -- Indicates Header start cycle
-  signal p2l_hdr_length  : std_logic_vector(9 downto 0);  -- Latched LENGTH value from header
-  signal p2l_hdr_cid     : std_logic_vector(1 downto 0);  -- Completion ID
-  signal p2l_hdr_last    : std_logic;                     -- Indicates Last packet in a completion
-  signal p2l_hdr_stat    : std_logic_vector(1 downto 0);  -- Completion Status
+  signal p2l_hdr_start   : std_logic;
+  signal p2l_hdr_length  : std_logic_vector(9 downto 0);
+  signal p2l_hdr_cid     : std_logic_vector(1 downto 0);
+  signal p2l_hdr_last    : std_logic;
+  signal p2l_hdr_stat    : std_logic_vector(1 downto 0);
   signal p2l_target_mrd  : std_logic;
   signal p2l_target_mwr  : std_logic;
   signal p2l_master_cpld : std_logic;
   signal p2l_master_cpln : std_logic;
-
-  signal p2l_d_valid    : std_logic;                      -- Indicates Address/Data is valid
-  signal p2l_d_last     : std_logic;                      -- Indicates end of the packet
-  signal p2l_d          : std_logic_vector(31 downto 0);  -- Address/Data
-  signal p2l_be         : std_logic_vector(3 downto 0);   -- Byte Enable for data
-  signal p2l_addr       : std_logic_vector(31 downto 0);  -- Registered and counting Address
-  signal p2l_addr_start : std_logic;
+  signal p2l_d_valid     : std_logic;
+  signal p2l_d_last      : std_logic;
+  signal p2l_d           : std_logic_vector(31 downto 0);
+  signal p2l_be          : std_logic_vector(3 downto 0);
+  signal p2l_addr        : std_logic_vector(31 downto 0);
+  signal p2l_addr_start  : std_logic;
 
   -------------------------------------------------------------
   -- L2P DataPath (from arbiter to serializer)
@@ -193,8 +187,8 @@ architecture rtl of gn4124_core is
   -------------------------------------------------------------
   -- L2P DMA master to arbiter
   -------------------------------------------------------------
-  signal ldm_arb_req    : std_logic;    -- Request use of the L2P bus
-  signal arb_ldm_gnt    : std_logic;    -- L2P bus emits data on behalf of the L2P DMA
+  signal ldm_arb_req    : std_logic;
+  signal arb_ldm_gnt    : std_logic;
   signal ldm_arb_valid  : std_logic;
   signal ldm_arb_dframe : std_logic;
   signal ldm_arb_data   : std_logic_vector(31 downto 0);
@@ -215,9 +209,9 @@ architecture rtl of gn4124_core is
   signal dma_ctrl_host_addr_h  : std_logic_vector(31 downto 0);
   signal dma_ctrl_host_addr_l  : std_logic_vector(31 downto 0);
   signal dma_ctrl_len          : std_logic_vector(31 downto 0);
-  signal dma_ctrl_start_l2p    : std_logic;  -- To the L2P DMA master
-  signal dma_ctrl_start_p2l    : std_logic;  -- To the P2L DMA master
-  signal dma_ctrl_start_next   : std_logic;  -- To the P2L DMA master
+  signal dma_ctrl_start_l2p    : std_logic;
+  signal dma_ctrl_start_p2l    : std_logic;
+  signal dma_ctrl_start_next   : std_logic;
 
   signal dma_ctrl_done      : std_logic;
   signal dma_ctrl_error     : std_logic;
@@ -240,40 +234,39 @@ architecture rtl of gn4124_core is
   ------------------------------------------------------------------------------
   -- CSR wishbone bus
   ------------------------------------------------------------------------------
-  signal wb_adr              : std_logic_vector(31 downto 0);  -- Adress
-  signal wb_dat_s2m          : std_logic_vector(31 downto 0);  -- Data in
-  signal wb_dat_m2s          : std_logic_vector(31 downto 0);  -- Data out
-  signal wb_sel              : std_logic_vector(3 downto 0);   -- Byte select
-  signal wb_cyc              : std_logic;                      -- Read or write cycle
-  signal wb_stb              : std_logic;                      -- Read or write strobe
-  signal wb_we               : std_logic;                      -- Write
-  signal wb_ack              : std_logic;                      -- Acknowledge
-  signal wb_stall            : std_logic;                      -- Pipelined mode
-  signal wb_ack_dma_ctrl     : std_logic;                      --
-  signal wb_dat_s2m_dma_ctrl : std_logic_vector(31 downto 0);  --
+  signal wb_adr              : std_logic_vector(31 downto 0);
+  signal wb_dat_s2m          : std_logic_vector(31 downto 0);
+  signal wb_dat_m2s          : std_logic_vector(31 downto 0);
+  signal wb_sel              : std_logic_vector(3 downto 0);
+  signal wb_cyc              : std_logic;
+  signal wb_stb              : std_logic;
+  signal wb_we               : std_logic;
+  signal wb_ack              : std_logic;
+  signal wb_ack_dma_ctrl     : std_logic;
+  signal wb_dat_s2m_dma_ctrl : std_logic_vector(31 downto 0);
 
   ------------------------------------------------------------------------------
   -- DMA wishbone bus
   ------------------------------------------------------------------------------
-  signal l2p_dma_adr     : std_logic_vector(31 downto 0);  -- Adress
-  signal l2p_dma_dat_s2m : std_logic_vector(31 downto 0);  -- Data in
-  signal l2p_dma_dat_m2s : std_logic_vector(31 downto 0);  -- Data out
-  signal l2p_dma_sel     : std_logic_vector(3 downto 0);   -- Byte select
-  signal l2p_dma_cyc     : std_logic;                      -- Read or write cycle
-  signal l2p_dma_stb     : std_logic;                      -- Read or write strobe
-  signal l2p_dma_we      : std_logic;                      -- Write
-  signal l2p_dma_ack     : std_logic;                      -- Acknowledge
-  signal l2p_dma_stall   : std_logic;                      -- Acknowledge
+  signal l2p_dma_adr     : std_logic_vector(31 downto 0);
+  signal l2p_dma_dat_s2m : std_logic_vector(31 downto 0);
+  signal l2p_dma_dat_m2s : std_logic_vector(31 downto 0);
+  signal l2p_dma_sel     : std_logic_vector(3 downto 0);
+  signal l2p_dma_cyc     : std_logic;
+  signal l2p_dma_stb     : std_logic;
+  signal l2p_dma_we      : std_logic;
+  signal l2p_dma_ack     : std_logic;
+  signal l2p_dma_stall   : std_logic;
 
-  signal p2l_dma_adr     : std_logic_vector(31 downto 0);  -- Adress
-  signal p2l_dma_dat_s2m : std_logic_vector(31 downto 0);  -- Data in
-  signal p2l_dma_dat_m2s : std_logic_vector(31 downto 0);  -- Data out
-  signal p2l_dma_sel     : std_logic_vector(3 downto 0);   -- Byte select
-  signal p2l_dma_cyc     : std_logic;                      -- Read or write cycle
-  signal p2l_dma_stb     : std_logic;                      -- Read or write strobe
-  signal p2l_dma_we      : std_logic;                      -- Write
-  signal p2l_dma_ack     : std_logic;                      -- Acknowledge
-  signal p2l_dma_stall   : std_logic;                      -- Acknowledge
+  signal p2l_dma_adr     : std_logic_vector(31 downto 0);
+  signal p2l_dma_dat_s2m : std_logic_vector(31 downto 0);
+  signal p2l_dma_dat_m2s : std_logic_vector(31 downto 0);
+  signal p2l_dma_sel     : std_logic_vector(3 downto 0);
+  signal p2l_dma_cyc     : std_logic;
+  signal p2l_dma_stb     : std_logic;
+  signal p2l_dma_we      : std_logic;
+  signal p2l_dma_ack     : std_logic;
+  signal p2l_dma_stall   : std_logic;
 
 
 --==============================================================================
@@ -307,15 +300,12 @@ begin
       I => clk_n_buf,
       O => clk_n);
 
-  -- clock for top level -> TEST ONLY
-  sys_clk_o <= clk_p;
-
   ------------------------------------------------------------------------------
   -- Reset aligned to core clock
   ------------------------------------------------------------------------------
-  process (clk_p, sys_rst_n_i)
+  process (clk_p, rst_n_a_i)
   begin
-    if sys_rst_n_i = c_RST_ACTIVE then
+    if rst_n_a_i = c_RST_ACTIVE then
       rst_reg <= c_RST_ACTIVE;
     elsif rising_edge(clk_p) then
       rst_reg <= not(c_RST_ACTIVE);
@@ -329,11 +319,9 @@ begin
       );
 
 
---=============================================================================================--
---=============================================================================================--
---== P2L DataPath
---=============================================================================================--
---=============================================================================================--
+  --============================================================================
+  -- P2L DataPath
+  --============================================================================
 
   -----------------------------------------------------------------------------
   -- p2l_des: Deserialize the P2L DDR inputs
@@ -378,8 +366,8 @@ begin
     (
       ---------------------------------------------------------
       -- Clock/Reset
-      sys_clk_i   => clk_p,
-      sys_rst_n_i => rst_n,
+      clk_i   => clk_p,
+      rst_n_i => rst_n,
 
       ---------------------------------------------------------
       -- Input from the Deserializer
@@ -414,28 +402,20 @@ begin
       );
 
 
---=============================================================================================--
---=============================================================================================--
---== Core Logic Blocks
---=============================================================================================--
---=============================================================================================--
+  --===========================================================================
+  -- Core Logic Blocks
+  --===========================================================================
 
   -----------------------------------------------------------------------------
   -- Wishbone master
   -----------------------------------------------------------------------------
   u_wbmaster32 : wbmaster32
-    generic map
-    (
-      WBM_TIMEOUT => 5
-      )
     port map
     (
-      DEBUG => LED (3 downto 0),
-
       ---------------------------------------------------------
       -- Clock/Reset
-      sys_clk_i   => clk_p,             --sys_clk_i,
-      sys_rst_n_i => rst_n,
+      clk_i   => clk_p,
+      rst_n_i => rst_n,
 
       ---------------------------------------------------------
       -- From P2L Decoder
@@ -473,16 +453,15 @@ begin
 
       ---------------------------------------------------------
       -- Wishbone Interface
-      wb_clk_i   => clk_p,
-      wb_adr_o   => wb_adr,
-      wb_dat_i   => wb_dat_s2m,
-      wb_dat_o   => wb_dat_m2s,
-      wb_sel_o   => wb_sel,
-      wb_cyc_o   => wb_cyc,
-      wb_stb_o   => wb_stb,
-      wb_we_o    => wb_we,
-      wb_ack_i   => wb_ack,
-      wb_stall_i => wb_stall
+      wb_clk_i => clk_p,
+      wb_adr_o => wb_adr,
+      wb_dat_i => wb_dat_s2m,
+      wb_dat_o => wb_dat_m2s,
+      wb_sel_o => wb_sel,
+      wb_cyc_o => wb_cyc,
+      wb_stb_o => wb_stb,
+      wb_we_o  => wb_we,
+      wb_ack_i => wb_ack
       );
 
   wb_adr_o   <= wb_adr;
@@ -500,8 +479,8 @@ begin
   u_dma_controller : dma_controller
     port map
     (
-      sys_clk_i   => clk_p,
-      sys_rst_n_i => rst_n,
+      clk_i   => clk_p,
+      rst_n_i => rst_n,
 
       dma_ctrl_irq_o => dma_irq_o,
 
@@ -546,8 +525,8 @@ begin
   u_l2p_dma_master : l2p_dma_master
     port map
     (
-      sys_clk_i   => clk_p,
-      sys_rst_n_i => rst_n,
+      clk_i   => clk_p,
+      rst_n_i => rst_n,
 
       dma_ctrl_target_addr_i => dma_ctrl_carrier_addr,
       dma_ctrl_host_addr_h_i => dma_ctrl_host_addr_h,
@@ -587,8 +566,8 @@ begin
   u_p2l_dma_master : p2l_dma_master
     port map
     (
-      sys_clk_i   => clk_p,
-      sys_rst_n_i => rst_n,
+      clk_i   => clk_p,
+      rst_n_i => rst_n,
 
       dma_ctrl_carrier_addr_i => dma_ctrl_carrier_addr,
       dma_ctrl_host_addr_h_i  => dma_ctrl_host_addr_h,
@@ -656,11 +635,9 @@ begin
   p2l_dma_stall   <= dma_stall_i;
 
 
---=============================================================================================--
---=============================================================================================--
---== L2P DataPath
---=============================================================================================--
---=============================================================================================--
+  --===========================================================================
+  -- L2P DataPath
+  --===========================================================================
 
   -----------------------------------------------------------------------------
   -- Resync GN412x L2P status signals

@@ -13,7 +13,7 @@
 --
 -- version: 0.1
 --
--- description: Provide a pipelined Wishbone interface to performs DMA
+-- description: Provides a pipelined Wishbone interface to performs DMA
 --              transfers from PCI express host to local application.
 --              This entity is also used to catch the next item in chained DMA.
 --
@@ -38,9 +38,9 @@ entity p2l_dma_master is
   port
     (
       ---------------------------------------------------------
-      -- Clock/Reset
-      sys_clk_i   : in std_logic;
-      sys_rst_n_i : in std_logic;
+      -- GN4124 core clock and reset
+      clk_i   : in std_logic;
+      rst_n_i : in std_logic;
 
       ---------------------------------------------------------
       -- From the DMA controller
@@ -98,7 +98,7 @@ entity p2l_dma_master is
       p2l_dma_stall_i : in  std_logic;                      -- for pipelined Wishbone
 
       ---------------------------------------------------------
-      -- From P2L DMA MASTER
+      -- To the DMA controller
       next_item_carrier_addr_o : out std_logic_vector(31 downto 0);
       next_item_host_addr_h_o  : out std_logic_vector(31 downto 0);
       next_item_host_addr_l_o  : out std_logic_vector(31 downto 0);
@@ -113,14 +113,15 @@ end p2l_dma_master;
 
 architecture behaviour of p2l_dma_master is
 
+
   -----------------------------------------------------------------------------
-  -- Local constants
+  -- Constants declaration
   -----------------------------------------------------------------------------
   constant c_P2L_MAX_PAYLOAD       : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- MUST BE 1024
   constant c_TO_WB_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
   -----------------------------------------------------------------------------
-  -- Internal Signals
+  -- Signals declaration
   -----------------------------------------------------------------------------
 
   -- control signals
@@ -161,16 +162,17 @@ architecture behaviour of p2l_dma_master is
 
 begin
 
+
   ------------------------------------------------------------------------------
   -- Active high reset for fifo
   ------------------------------------------------------------------------------
   -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    fifo_rst <= not(sys_rst_n_i);
+    fifo_rst <= not(rst_n_i);
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    fifo_rst <= sys_rst_n_i;
+    fifo_rst <= rst_n_i;
   end generate;
 
   -- Errors to DMA controller
@@ -181,9 +183,9 @@ begin
   ------------------------------------------------------------------------------
   -- Stores infofmation for read request packet
   -- Can be a P2L DMA transfer or catching the next item of a chained DMA
-  p_read_req : process (sys_clk_i, sys_rst_n_i)
+  p_read_req : process (clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       l2p_address_h   <= (others => '0');
       l2p_address_l   <= (others => '0');
       l2p_len_cnt     <= (others => '0');
@@ -191,7 +193,7 @@ begin
       l2p_64b_address <= '0';
       is_next_item    <= '0';
       l2p_last_packet <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       if (p2l_dma_current_state = P2L_IDLE) then
         if (dma_ctrl_start_p2l_i = '1' or dma_ctrl_start_next_i = '1') then
           -- Stores DMA info locally
@@ -263,9 +265,9 @@ begin
   -----------------------------------------------------------------------------
   -- PCIe read request FSM
   -----------------------------------------------------------------------------
-  p_read_req_fsm : process (sys_clk_i, sys_rst_n_i)
+  p_read_req_fsm : process (clk_i, rst_n_i)
   begin
-    if(sys_rst_n_i = c_RST_ACTIVE) then
+    if(rst_n_i = c_RST_ACTIVE) then
       p2l_dma_current_state <= P2L_IDLE;
       pdm_arb_req_o         <= '0';
       pdm_arb_data_o        <= (others => '0');
@@ -275,7 +277,7 @@ begin
       next_item_valid_o     <= '0';
       completion_error      <= '0';
       rx_error_o            <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       case p2l_dma_current_state is
 
         when P2L_IDLE =>
@@ -370,9 +372,9 @@ begin
   ------------------------------------------------------------------------------
   -- Next DMA item retrieve
   ------------------------------------------------------------------------------
-  p_next_item : process (sys_clk_i, sys_rst_n_i)
+  p_next_item : process (clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       next_item_carrier_addr_o <= (others => '0');
       next_item_host_addr_h_o  <= (others => '0');
       next_item_host_addr_l_o  <= (others => '0');
@@ -381,7 +383,7 @@ begin
       next_item_next_h_o       <= (others => '0');
       next_item_attrib_o       <= (others => '0');
       next_item_data_cnt       <= (others => '0');
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       if (dma_ctrl_start_next_i = '1') then
         next_item_data_cnt <= (others => '0');
       elsif (p2l_dma_current_state = P2L_WAIT_READ_COMPLETION
@@ -413,14 +415,14 @@ begin
   ------------------------------------------------------------------------------
   -- Target address counter
   ------------------------------------------------------------------------------
-  p_addr_cnt : process (sys_clk_i, sys_rst_n_i)
+  p_addr_cnt : process (clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       target_addr_cnt <= (others => '0');
       dma_busy_error  <= '0';
       to_wb_fifo_din  <= (others => '0');
       to_wb_fifo_wr   <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       if (dma_ctrl_start_p2l_i = '1') then
         if (p2l_dma_current_state = P2L_IDLE) then
           -- dma_ctrl_target_addr_i is a byte address and target_addr_cnt is a
@@ -450,7 +452,7 @@ begin
   cmp_to_wb_fifo : fifo_64x512
     port map (
       rst                     => fifo_rst,
-      wr_clk                  => sys_clk_i,
+      wr_clk                  => clk_i,
       rd_clk                  => p2l_dma_clk_i,
       din                     => to_wb_fifo_din,
       wr_en                   => to_wb_fifo_wr,
@@ -478,9 +480,9 @@ begin
   p2l_dma_we_o <= '1';
 
   -- Wishbone master process
-  p_wb_master : process (sys_rst_n_i, p2l_dma_clk_i)
+  p_wb_master : process (rst_n_i, p2l_dma_clk_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       p2l_dma_cyc_o <= '0';
       p2l_dma_stb_o <= '0';
       p2l_dma_sel_o <= "0000";

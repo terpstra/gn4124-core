@@ -76,8 +76,8 @@ package gn4124_core_pkg is
       (
         ---------------------------------------------------------
         -- Clock/Reset
-        sys_clk_i   : in std_logic;
-        sys_rst_n_i : in std_logic;
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- Input from the Deserializer
@@ -141,18 +141,12 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
   component wbmaster32
 -----------------------------------------------------------------------------
-    generic
-      (
-        WBM_TIMEOUT : integer := 5      -- Determines the timeout value of read and write
-        );
     port
       (
-        DEBUG : out std_logic_vector(3 downto 0);
-
         ---------------------------------------------------------
         -- Clock/Reset
-        sys_clk_i   : in std_logic;
-        sys_rst_n_i : in std_logic;
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- From P2L Decoder
@@ -190,16 +184,15 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- Wishbone Interface
-        wb_clk_i   : in  std_logic;                        -- Wishbone bus clock
-        wb_adr_o   : out std_logic_vector(32-1 downto 0);  -- Adress
-        wb_dat_i   : in  std_logic_vector(31 downto 0);    -- Data in
-        wb_dat_o   : out std_logic_vector(31 downto 0);    -- Data out
-        wb_sel_o   : out std_logic_vector(3 downto 0);     -- Byte select
-        wb_cyc_o   : out std_logic;                        -- Read or write cycle
-        wb_stb_o   : out std_logic;                        -- Read or write strobe
-        wb_we_o    : out std_logic;                        -- Write
-        wb_ack_i   : in  std_logic;                        -- Acknowledge
-        wb_stall_i : in  std_logic                         -- Pipelined mode
+        wb_clk_i : in  std_logic;                        -- Wishbone bus clock
+        wb_adr_o : out std_logic_vector(32-1 downto 0);  -- Adress
+        wb_dat_i : in  std_logic_vector(31 downto 0);    -- Data in
+        wb_dat_o : out std_logic_vector(31 downto 0);    -- Data out
+        wb_sel_o : out std_logic_vector(3 downto 0);     -- Byte select
+        wb_cyc_o : out std_logic;                        -- Read or write cycle
+        wb_stb_o : out std_logic;                        -- Read or write strobe
+        wb_we_o  : out std_logic;                        -- Write
+        wb_ack_i : in  std_logic                         -- Acknowledge
         );
   end component;  -- wbmaster32
 
@@ -209,9 +202,9 @@ package gn4124_core_pkg is
     port
       (
         ---------------------------------------------------------
-        -- Clock/Reset
-        sys_clk_i   : in std_logic;
-        sys_rst_n_i : in std_logic;
+        -- GN4124 core clock and reset
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- Interrupt request
@@ -266,8 +259,8 @@ package gn4124_core_pkg is
       (
         ---------------------------------------------------------
         -- GN4124 core clock and reset
-        sys_clk_i   : in std_logic;
-        sys_rst_n_i : in std_logic;
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- From the DMA controller
@@ -317,8 +310,8 @@ package gn4124_core_pkg is
       (
         ---------------------------------------------------------
         -- Clock/Reset
-        sys_clk_i   : in std_logic;
-        sys_rst_n_i : in std_logic;
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
 
         ---------------------------------------------------------
         -- From the DMA controller
