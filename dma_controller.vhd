@@ -67,6 +67,7 @@ entity dma_controller is
 
       ---------------------------------------------------------
       -- Wishbone slave interface
+      wb_clk_i : in  std_logic;                      -- Bus clock
       wb_adr_i : in  std_logic_vector(3 downto 0);   -- Adress
       wb_dat_o : out std_logic_vector(31 downto 0);  -- Data in
       wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data out
@@ -97,6 +98,7 @@ architecture behaviour of dma_controller is
       wb_stb_i           : in  std_logic;
       wb_we_i            : in  std_logic;
       wb_ack_o           : out std_logic;
+      clk_i              : in  std_logic;
 -- Port for std_logic_vector field: 'DMA engine control' in reg: 'DMACTRLR'
       dma_ctrl_o         : out std_logic_vector(31 downto 0);
       dma_ctrl_i         : in  std_logic_vector(31 downto 0);
@@ -210,6 +212,7 @@ begin
     wb_stb_i           => wb_stb_i,
     wb_we_i            => wb_we_i,
     wb_ack_o           => wb_ack_o,
+    clk_i              => clk_i,
     dma_ctrl_o         => dma_ctrl,
     dma_ctrl_i         => dma_ctrl_reg,
     dma_ctrl_load_o    => dma_ctrl_load,

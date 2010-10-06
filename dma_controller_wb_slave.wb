@@ -16,6 +16,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -29,6 +30,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -42,6 +44,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -55,6 +58,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -68,6 +72,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -81,6 +86,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -94,6 +100,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -107,6 +114,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
@@ -120,6 +128,7 @@ peripheral {
       load = LOAD_EXT;
       access_bus = READ_WRITE;
       access_dev = READ_WRITE;
+      clock = "clk_i"
     };
   };
 
