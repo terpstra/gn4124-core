@@ -237,6 +237,7 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- Wishbone Slave Interface
+        wb_clk_i : in  std_logic;                      -- Bus clock
         wb_adr_i : in  std_logic_vector(3 downto 0);   -- Adress
         wb_dat_o : out std_logic_vector(31 downto 0);  -- Data in
         wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data out
