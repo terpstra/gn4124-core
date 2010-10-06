@@ -13,7 +13,7 @@
 --
 -- version: 1.0
 --
--- description: Provide a pipelined Wishbone interface to performs DMA
+-- description: Provides a pipelined Wishbone interface to performs DMA
 --              transfers from local application to PCI express host.
 --
 -- dependencies: Xilinx FIFOs (fifo_32x512.xco)
@@ -41,8 +41,8 @@ entity l2p_dma_master is
     (
       ---------------------------------------------------------
       -- GN4124 core clock and reset
-      sys_clk_i   : in std_logic;
-      sys_rst_n_i : in std_logic;
+      clk_i   : in std_logic;
+      rst_n_i : in std_logic;
 
       ---------------------------------------------------------
       -- From the DMA controller
@@ -89,9 +89,9 @@ end l2p_dma_master;
 architecture behaviour of l2p_dma_master is
 
 
------------------------------------------------------------------------------
--- Byte swap function
------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
+  -- Byte swap function
+  -----------------------------------------------------------------------------
   function f_byte_swap (
     constant enable    : boolean;
     signal   din       : std_logic_vector(31 downto 0);
@@ -126,15 +126,16 @@ architecture behaviour of l2p_dma_master is
   end function f_byte_swap;
 
   -----------------------------------------------------------------------------
-  -- Local constants
+  -- Constants declaration
   -----------------------------------------------------------------------------
   constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- MUST be 1024
   constant c_ADDR_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
   constant c_DATA_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
   -----------------------------------------------------------------------------
-  -- Internal Signals
+  -- Signals declaration
   -----------------------------------------------------------------------------
+
   -- Target address counter
   signal target_addr_cnt : unsigned(29 downto 0);
   signal dma_length_cnt  : unsigned(29 downto 0);
@@ -178,31 +179,33 @@ architecture behaviour of l2p_dma_master is
   signal l2p_byte_swap   : std_logic_vector(1 downto 0);
   signal l2p_last_packet : std_logic;
 
+
 begin
+
 
   ------------------------------------------------------------------------------
   -- Active high reset for fifo
   ------------------------------------------------------------------------------
   -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    fifo_rst <= not(sys_rst_n_i);
+    fifo_rst <= not(rst_n_i);
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    fifo_rst <= sys_rst_n_i;
+    fifo_rst <= rst_n_i;
   end generate;
 
   ------------------------------------------------------------------------------
   -- Target address counter
   ------------------------------------------------------------------------------
-  p_target_cnt : process (sys_clk_i, sys_rst_n_i)
+  p_target_cnt : process (clk_i, rst_n_i)
   begin
-    if(sys_rst_n_i = c_RST_ACTIVE) then
+    if(rst_n_i = c_RST_ACTIVE) then
       target_addr_cnt  <= (others => '0');
       dma_length_cnt   <= (others => '0');
       dma_ctrl_error_o <= '0';
       addr_fifo_wr     <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       if (dma_ctrl_start_l2p_i = '1') then
         if (l2p_dma_current_state = L2P_IDLE) then
           -- dma_ctrl_target_addr_i is a byte address and target_addr_cnt is a
@@ -238,9 +241,9 @@ begin
   -- Sends data to the host.
   -- Split in several packets if amont of data exceeds max payload size.
 
-  p_pkt_gen : process (sys_clk_i, sys_rst_n_i)
+  p_pkt_gen : process (clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       l2p_len_cnt     <= (others => '0');
       l2p_data_cnt    <= (others => '0');
       l2p_address_h   <= (others => '0');
@@ -249,7 +252,7 @@ begin
       l2p_len_header  <= (others => '0');
       l2p_byte_swap   <= (others => '0');
       l2p_last_packet <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       -- First packet
       if (l2p_dma_current_state = L2P_IDLE) then
         if (dma_ctrl_start_l2p_i = '1') then
@@ -330,9 +333,9 @@ begin
   -----------------------------------------------------------------------------
   -- L2P packet write FSM
   -----------------------------------------------------------------------------
-  process(sys_clk_i, sys_rst_n_i)
+  process(clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       l2p_dma_current_state <= L2P_IDLE;
       ldm_arb_req_o         <= '0';
       ldm_arb_data_o        <= (others => '0');
@@ -341,7 +344,7 @@ begin
       data_fifo_rd          <= '0';
       dma_ctrl_done_o       <= '0';
       l2p_edb_o <= '0';
-    elsif rising_edge(sys_clk_i) then
+    elsif rising_edge(clk_i) then
       case l2p_dma_current_state is
 
         when L2P_IDLE =>
@@ -480,14 +483,13 @@ begin
     end if;
   end process;
 
-
   ------------------------------------------------------------------------------
   -- FIFOs for transition between GN4124 core and wishbone clock domain
   ------------------------------------------------------------------------------
   cmp_addr_fifo : fifo_32x512
     port map (
       rst                     => fifo_rst,
-      wr_clk                  => sys_clk_i,
+      wr_clk                  => clk_i,
       rd_clk                  => l2p_dma_clk_i,
       din                     => addr_fifo_din,
       wr_en                   => addr_fifo_wr,
@@ -504,7 +506,7 @@ begin
     port map (
       rst                     => fifo_rst,
       wr_clk                  => l2p_dma_clk_i,
-      rd_clk                  => sys_clk_i,
+      rd_clk                  => clk_i,
       din                     => data_fifo_din,
       wr_en                   => data_fifo_wr,
       rd_en                   => data_fifo_rd,
@@ -535,9 +537,9 @@ begin
                   and not(data_fifo_full);
 
   -- Wishbone master process
-  p_wb_master : process (l2p_dma_clk_i, sys_rst_n_i)
+  p_wb_master : process (l2p_dma_clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       l2p_dma_adr_o <= (others => '0');
       l2p_dma_stb_o <= '0';
       l2p_dma_cyc_o <= '0';
@@ -566,9 +568,9 @@ begin
   end process p_wb_master;
 
   -- Wishbone read cycle counter
-  p_wb_read_cnt : process (l2p_dma_clk_i, sys_rst_n_i)
+  p_wb_read_cnt : process (l2p_dma_clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       wb_read_cnt <= (others => '0');
     elsif rising_edge(l2p_dma_clk_i) then
       if (addr_fifo_valid = '1') then
@@ -578,9 +580,9 @@ begin
   end process p_wb_read_cnt;
 
 -- Wishbone ack counter
-  p_wb_ack_cnt : process (l2p_dma_clk_i, sys_rst_n_i)
+  p_wb_ack_cnt : process (l2p_dma_clk_i, rst_n_i)
   begin
-    if (sys_rst_n_i = c_RST_ACTIVE) then
+    if (rst_n_i = c_RST_ACTIVE) then
       wb_ack_cnt <= (others => '0');
     elsif rising_edge(l2p_dma_clk_i) then
       if (l2p_dma_ack_i = '1') then
