@@ -114,7 +114,7 @@ architecture behaviour of wbmaster32 is
   signal to_wb_fifo_dout  : std_logic_vector(63 downto 0);
   signal to_wb_fifo_rw    : std_logic;
   signal to_wb_fifo_data  : std_logic_vector(31 downto 0);
-  signal to_wb_fifo_addr  : std_logic_vector(29 downto 0);
+  signal to_wb_fifo_addr  : std_logic_vector(30 downto 0);
 
   signal from_wb_fifo_empty : std_logic;
   signal from_wb_fifo_full  : std_logic;
@@ -171,15 +171,17 @@ begin
       if (pd_wbm_target_mwr_i = '1' and pd_wbm_data_valid_i = '1') then
         -- Target write
         -- wishbone address is in 32-bit words and address from PCIe in byte
-        to_wb_fifo_din(61 downto 32) <= pd_wbm_addr_i(31 downto 2);
+        -- pd_wbm_addr_i(0) represent the BAR (0 = BAR0, 1 = BAR 2)
+        to_wb_fifo_din(62 downto 32) <= pd_wbm_addr_i(0) & pd_wbm_addr_i(31 downto 2);
         to_wb_fifo_din(31 downto 0)  <= pd_wbm_data_i;
-        to_wb_fifo_din(62)           <= '1';
+        to_wb_fifo_din(63)           <= '1';
         to_wb_fifo_wr                <= '1';
       elsif (pd_wbm_target_mrd_i = '1' and pd_wbm_addr_start_i = '1') then
         -- Target read request
         -- wishbone address is in 32-bit words and address from PCIe in byte
-        to_wb_fifo_din(61 downto 32) <= pd_wbm_addr_i(31 downto 2);
-        to_wb_fifo_din(62)           <= '0';
+        -- pd_wbm_addr_i(0) represent the BAR (0 = BAR0, 1 = BAR 2)
+        to_wb_fifo_din(62 downto 32) <= pd_wbm_addr_i(0) & pd_wbm_addr_i(31 downto 2);
+        to_wb_fifo_din(63)           <= '0';
         to_wb_fifo_wr                <= '1';
       else
         to_wb_fifo_wr <= '0';
@@ -292,8 +294,8 @@ begin
       valid                   => open,
       prog_full               => to_wb_fifo_full);
 
-  to_wb_fifo_rw   <= to_wb_fifo_dout(62);
-  to_wb_fifo_addr <= to_wb_fifo_dout(61 downto 32);  -- 30-bit
+  to_wb_fifo_rw   <= to_wb_fifo_dout(63);
+  to_wb_fifo_addr <= to_wb_fifo_dout(62 downto 32);  -- 31-bit
   to_wb_fifo_data <= to_wb_fifo_dout(31 downto 0);   -- 32-bit
 
   -- fifo for WB to PCIe transfer
@@ -357,7 +359,7 @@ begin
           wb_stb_o               <= '1';
           s_wb_we                <= to_wb_fifo_rw;
           wb_sel_o               <= "1111";
-          wb_adr_o               <= "00" & to_wb_fifo_addr;
+          wb_adr_o               <= '0' & to_wb_fifo_addr;
           --if (to_wb_fifo_rw = '1') then
           wb_dat_o               <= to_wb_fifo_data;
           --end if;
