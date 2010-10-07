@@ -234,57 +234,57 @@ begin
           dma_ctrl_lw <= dma_ctrl_lw_delay;
           dma_ctrl_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_ctrl_lw_read_in_progress = '1')) then
+            dma_ctrl_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_ctrl_int_read;
           end if;
-          dma_ctrl_lw_read_in_progress <= '0';
           dma_stat_lw <= dma_stat_lw_delay;
           dma_stat_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_stat_lw_read_in_progress = '1')) then
+            dma_stat_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_stat_int_read;
           end if;
-          dma_stat_lw_read_in_progress <= '0';
           dma_cstart_lw <= dma_cstart_lw_delay;
           dma_cstart_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_cstart_lw_read_in_progress = '1')) then
+            dma_cstart_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_cstart_int_read;
           end if;
-          dma_cstart_lw_read_in_progress <= '0';
           dma_hstartl_lw <= dma_hstartl_lw_delay;
           dma_hstartl_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_hstartl_lw_read_in_progress = '1')) then
+            dma_hstartl_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_hstartl_int_read;
           end if;
-          dma_hstartl_lw_read_in_progress <= '0';
           dma_hstarth_lw <= dma_hstarth_lw_delay;
           dma_hstarth_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_hstarth_lw_read_in_progress = '1')) then
+            dma_hstarth_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_hstarth_int_read;
           end if;
-          dma_hstarth_lw_read_in_progress <= '0';
           dma_len_lw <= dma_len_lw_delay;
           dma_len_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_len_lw_read_in_progress = '1')) then
+            dma_len_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_len_int_read;
           end if;
-          dma_len_lw_read_in_progress <= '0';
           dma_nextl_lw <= dma_nextl_lw_delay;
           dma_nextl_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_nextl_lw_read_in_progress = '1')) then
+            dma_nextl_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_nextl_int_read;
           end if;
-          dma_nextl_lw_read_in_progress <= '0';
           dma_nexth_lw <= dma_nexth_lw_delay;
           dma_nexth_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_nexth_lw_read_in_progress = '1')) then
+            dma_nexth_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_nexth_int_read;
           end if;
-          dma_nexth_lw_read_in_progress <= '0';
           dma_attrib_lw <= dma_attrib_lw_delay;
           dma_attrib_lw_delay <= '0';
           if ((ack_sreg(1) = '1') and (dma_attrib_lw_read_in_progress = '1')) then
+            dma_attrib_lw_read_in_progress <= '0';
             rddata_reg(31 downto 0) <= dma_attrib_int_read;
           end if;
-          dma_attrib_lw_read_in_progress <= '0';
         end if;
       else
         if ((wb_cyc_i = '1') and (wb_stb_i = '1')) then

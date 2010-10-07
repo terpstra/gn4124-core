@@ -203,7 +203,7 @@ begin
   ------------------------------------------------------------------------------
   dma_controller_wb_slave_0 : dma_controller_wb_slave port map (
     rst_n_i            => rst_n_i,
-    wb_clk_i           => clk_i,
+    wb_clk_i           => wb_clk_i,
     wb_addr_i          => wb_adr_i,
     wb_data_i          => wb_dat_i,
     wb_data_o          => wb_dat_o,
