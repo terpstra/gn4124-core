@@ -472,6 +472,7 @@ begin
   --    douta => 
   --    );
 
+  LED <= (others => '1');
 
 end BEHAVIOUR;
 
