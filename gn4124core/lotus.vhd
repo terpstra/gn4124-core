@@ -283,6 +283,9 @@ architecture BEHAVIOUR of LOTUS is
 
   signal led0 : std_logic_vector(7 downto 0);
 
+  signal irq_sources : std_logic_vector(1 downto 0);
+  signal irq_to_gn4124 : std_logic;
+
 begin
 
   ------------------------------------------------------------------------------
@@ -363,9 +366,9 @@ begin
 
       ---------------------------------------------------------
       -- Interrupt interface
-      dma_irq_o => open,
-      irq_p_i   => '0',
-      irq_p_o   => open,
+      dma_irq_o => irq_sources,
+      irq_p_i   => irq_to_gn4124,
+      irq_p_o   => GPIO(8),
 
       ---------------------------------------------------------
       -- Target Interface (Wishbone master)
@@ -471,6 +474,9 @@ begin
   --    dina  => ,
   --    douta => 
   --    );
+
+  -- just forward irq pulses for test
+  irq_to_gn4124 <= irq_sources(1) or irq_sources(0);
 
   LED <= (others => '1');
 
