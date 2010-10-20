@@ -639,17 +639,44 @@ begin
       next_item_valid_o        => next_item_valid
       );
 
-  dma_adr_o       <= l2p_dma_adr or p2l_dma_adr;
+  p_dma_wb_mux : process (p2l_dma_cyc, l2p_dma_cyc, l2p_dma_we, p2l_dma_we,
+                          l2p_dma_stb, p2l_dma_stb, l2p_dma_sel, p2l_dma_sel,
+                          l2p_dma_dat_m2s, p2l_dma_dat_m2s, l2p_dma_adr, p2l_dma_adr)
+  begin
+    if (l2p_dma_cyc = '1') then
+      dma_adr_o <= l2p_dma_adr;
+      dma_dat_o <= l2p_dma_dat_m2s;
+      dma_sel_o <= l2p_dma_sel;
+      dma_cyc_o <= l2p_dma_cyc;
+      dma_stb_o <= l2p_dma_stb;
+      dma_we_o  <= l2p_dma_we;
+    elsif (p2l_dma_cyc = '1') then
+      dma_adr_o <= p2l_dma_adr;
+      dma_dat_o <= p2l_dma_dat_m2s;
+      dma_sel_o <= p2l_dma_sel;
+      dma_cyc_o <= p2l_dma_cyc;
+      dma_stb_o <= p2l_dma_stb;
+      dma_we_o  <= p2l_dma_we;
+    else
+      dma_adr_o <= (others => 'X');
+      dma_dat_o <= (others => 'X');
+      dma_sel_o <= (others => 'X');
+      dma_cyc_o <= '0';
+      dma_stb_o <= '0';
+      dma_we_o  <= 'X';
+    end if;
+  end process;
+  --dma_adr_o       <= l2p_dma_adr or p2l_dma_adr;
+  --dma_dat_o       <= l2p_dma_dat_m2s or p2l_dma_dat_m2s;
+  --dma_sel_o       <= l2p_dma_sel or p2l_dma_sel;
+  --dma_cyc_o       <= l2p_dma_cyc or p2l_dma_cyc;
+  --dma_stb_o       <= l2p_dma_stb or p2l_dma_stb;
+  --dma_we_o        <= l2p_dma_we or p2l_dma_we;
   l2p_dma_dat_s2m <= dma_dat_i;
   p2l_dma_dat_s2m <= dma_dat_i;
-  dma_dat_o       <= l2p_dma_dat_m2s or p2l_dma_dat_m2s;
-  dma_sel_o       <= l2p_dma_sel or p2l_dma_sel;
-  dma_cyc_o       <= l2p_dma_cyc or p2l_dma_cyc;
-  dma_stb_o       <= l2p_dma_stb or p2l_dma_stb;
-  dma_we_o        <= l2p_dma_we or p2l_dma_we;
   l2p_dma_ack     <= dma_ack_i;
-  l2p_dma_stall   <= dma_stall_i;
   p2l_dma_ack     <= dma_ack_i;
+  l2p_dma_stall   <= dma_stall_i;
   p2l_dma_stall   <= dma_stall_i;
 
 
