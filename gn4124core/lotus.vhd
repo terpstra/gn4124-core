@@ -160,11 +160,17 @@ architecture BEHAVIOUR of LOTUS is
 -----------------------------------------------------------------------------
   component gn4124_core
 -----------------------------------------------------------------------------
+    generic(
+      g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
+      g_CSR_WB_ADDR_WIDTH : integer := 27;  -- CSR wishbone address bus width
+      g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
+      g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
+      );
     port
       (
         ---------------------------------------------------------
         -- Asynchronous reset from GN4124
-        rst_n_a_i : in  std_logic;
+        rst_n_a_i : in std_logic;
 
         ---------------------------------------------------------
         -- P2L Direction
@@ -205,29 +211,29 @@ architecture BEHAVIOUR of LOTUS is
         irq_p_o   : out std_logic;                     -- Interrupt request pulse to GN4124 GPIO
 
         ---------------------------------------------------------
-        -- Target Interface (Wishbone master)
+        -- Target interface (CSR wishbone master)
         wb_clk_i : in  std_logic;
-        wb_adr_o : out std_logic_vector(31 downto 0);
-        wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data in
-        wb_dat_o : out std_logic_vector(31 downto 0);  -- Data out
-        wb_sel_o : out std_logic_vector(3 downto 0);   -- Byte select
-        wb_cyc_o : out std_logic;
+        wb_adr_o : out std_logic_vector(g_CSR_WB_ADDR_WIDTH-1 downto 0);
+        wb_dat_o : out std_logic_vector(31 downto 0);                         -- Data out
+        wb_sel_o : out std_logic_vector(3 downto 0);                          -- Byte select
         wb_stb_o : out std_logic;
         wb_we_o  : out std_logic;
-        wb_ack_i : in  std_logic;
+        wb_cyc_o : out std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
+        wb_dat_i : in  std_logic_vector((32*g_CSR_WB_SLAVES_NB)-1 downto 0);  -- Data in
+        wb_ack_i : in  std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
 
         ---------------------------------------------------------
-        -- L2P DMA Interface (Pipelined Wishbone master)
+        -- DMA interface (Pipelined wishbone master)
         dma_clk_i   : in  std_logic;
         dma_adr_o   : out std_logic_vector(31 downto 0);
-        dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
-        dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
-        dma_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
-        dma_cyc_o   : out std_logic;
+        dma_dat_o   : out std_logic_vector(31 downto 0);                         -- Data out
+        dma_sel_o   : out std_logic_vector(3 downto 0);                          -- Byte select
         dma_stb_o   : out std_logic;
         dma_we_o    : out std_logic;
-        dma_ack_i   : in  std_logic;
-        dma_stall_i : in  std_logic                       -- for pipelined Wishbone
+        dma_cyc_o   : out std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
+        dma_dat_i   : in  std_logic_vector((32*g_DMA_WB_SLAVES_NB)-1 downto 0);  -- Data in
+        dma_ack_i   : in  std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
+        dma_stall_i : in  std_logic--_vector(g_DMA_WB_SLAVES_NB-1 downto 0)        -- for pipelined Wishbone
         );
   end component;  --  gn4124_core
 
@@ -243,6 +249,14 @@ architecture BEHAVIOUR of LOTUS is
   end component;
 
 --=============================================================================================--
+-- Local constants
+--=============================================================================================--
+  constant c_CSR_WB_SLAVES_NB  : integer := 1;
+  constant c_CSR_WB_ADDR_WIDTH : integer := 27;
+  constant c_DMA_WB_SLAVES_NB  : integer := 1;
+  constant c_DMA_WB_ADDR_WIDTH : integer := 26;
+
+--=============================================================================================--
 -- Internal Signals
 --=============================================================================================--
 
@@ -253,25 +267,25 @@ architecture BEHAVIOUR of LOTUS is
   signal IRST  : std_logic;
   signal L_RST : std_logic;
 
-  signal wb_adr_o : std_logic_vector(31 downto 0);
-  signal wb_dat_i : std_logic_vector(31 downto 0);
+  signal wb_adr_o : std_logic_vector(c_CSR_WB_ADDR_WIDTH-1 downto 0);
+  signal wb_dat_i : std_logic_vector((32*c_CSR_WB_SLAVES_NB)-1 downto 0);
   signal wb_dat_o : std_logic_vector(31 downto 0);
   signal wb_sel_o : std_logic_vector(3 downto 0);
-  signal wb_cyc_o : std_logic;
+  signal wb_cyc_o : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
   signal wb_stb_o : std_logic;
   signal wb_we_o  : std_logic;
-  signal wb_ack_i : std_logic;
+  signal wb_ack_i : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
   --signal wb_stall_i : std_logic;
 
   signal dma_adr_o   : std_logic_vector(31 downto 0);
-  signal dma_dat_i   : std_logic_vector(31 downto 0);
+  signal dma_dat_i   : std_logic_vector((32*c_DMA_WB_SLAVES_NB)-1 downto 0);
   signal dma_dat_o   : std_logic_vector(31 downto 0);
   signal dma_sel_o   : std_logic_vector(3 downto 0);
-  signal dma_cyc_o   : std_logic;
+  signal dma_cyc_o   : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
   signal dma_stb_o   : std_logic;
   signal dma_we_o    : std_logic;
-  signal dma_ack_i   : std_logic;
-  signal dma_stall_i : std_logic;
+  signal dma_ack_i   : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
+  signal dma_stall_i : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
 
 -- TEST: L2P DMA interface
   type   wb_state_type is (IDLE, ACK, ST1);
@@ -283,7 +297,7 @@ architecture BEHAVIOUR of LOTUS is
 
   signal led0 : std_logic_vector(7 downto 0);
 
-  signal irq_sources : std_logic_vector(1 downto 0);
+  signal irq_sources   : std_logic_vector(1 downto 0);
   signal irq_to_gn4124 : std_logic;
 
 begin
@@ -321,6 +335,12 @@ begin
   -- GN4124 interface
   ------------------------------------------------------------------------------
   u_gn4124_core : gn4124_core
+    generic map (
+      g_CSR_WB_SLAVES_NB  => c_CSR_WB_SLAVES_NB,
+      g_CSR_WB_ADDR_WIDTH => c_CSR_WB_ADDR_WIDTH,
+      g_DMA_WB_SLAVES_NB  => c_DMA_WB_SLAVES_NB,
+      g_DMA_WB_ADDR_WIDTH => c_DMA_WB_ADDR_WIDTH
+      )
     port map
     (
       ---------------------------------------------------------
@@ -374,24 +394,24 @@ begin
       -- Target Interface (Wishbone master)
       wb_clk_i => l_clk,
       wb_adr_o => wb_adr_o,
-      wb_dat_i => wb_dat_i,
       wb_dat_o => wb_dat_o,
       wb_sel_o => wb_sel_o,
-      wb_cyc_o => wb_cyc_o,
       wb_stb_o => wb_stb_o,
       wb_we_o  => wb_we_o,
+      wb_cyc_o => wb_cyc_o,
+      wb_dat_i => wb_dat_i,
       wb_ack_i => wb_ack_i,
 
       ---------------------------------------------------------
       -- L2P DMA Interface (Pipelined Wishbone master)
       dma_clk_i   => l_clk,
       dma_adr_o   => dma_adr_o,
-      dma_dat_i   => dma_dat_i,
       dma_dat_o   => dma_dat_o,
       dma_sel_o   => dma_sel_o,
-      dma_cyc_o   => dma_cyc_o,
       dma_stb_o   => dma_stb_o,
       dma_we_o    => dma_we_o,
+      dma_cyc_o   => dma_cyc_o,
+      dma_dat_i   => dma_dat_i,
       dma_ack_i   => dma_ack_i,
       dma_stall_i => dma_stall_i
       );
@@ -399,8 +419,8 @@ begin
   ------------------------------------------------------------------------------
   -- UNUSED local wishbone bus
   ------------------------------------------------------------------------------
-  wb_ack_i <= '0';
-  wb_dat_i <= "00000000000000000000000000000000";
+  wb_ack_i <= (others => '0');
+  wb_dat_i <= (others => '0');
 
 
 

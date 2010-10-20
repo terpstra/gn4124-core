@@ -141,6 +141,11 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
   component wbmaster32
 -----------------------------------------------------------------------------
+    generic
+      (
+        g_WB_SLAVES_NB  : integer := 2;
+        g_WB_ADDR_WIDTH : integer := 27
+        );
     port
       (
         ---------------------------------------------------------
@@ -183,16 +188,16 @@ package gn4124_core_pkg is
         arb_wbm_gnt_i    : in  std_logic;
 
         ---------------------------------------------------------
-        -- Wishbone Interface
-        wb_clk_i : in  std_logic;                        -- Wishbone bus clock
-        wb_adr_o : out std_logic_vector(32-1 downto 0);  -- Adress
-        wb_dat_i : in  std_logic_vector(31 downto 0);    -- Data in
-        wb_dat_o : out std_logic_vector(31 downto 0);    -- Data out
-        wb_sel_o : out std_logic_vector(3 downto 0);     -- Byte select
-        wb_cyc_o : out std_logic;                        -- Read or write cycle
-        wb_stb_o : out std_logic;                        -- Read or write strobe
-        wb_we_o  : out std_logic;                        -- Write
-        wb_ack_i : in  std_logic                         -- Acknowledge
+        -- CSR wishbone interface
+        wb_clk_i : in  std_logic;                                         -- Wishbone bus clock
+        wb_adr_o : out std_logic_vector(g_WB_ADDR_WIDTH-1 downto 0);      -- Address
+        wb_dat_o : out std_logic_vector(31 downto 0);                     -- Data out
+        wb_sel_o : out std_logic_vector(3 downto 0);                      -- Byte select
+        wb_stb_o : out std_logic;                                         -- Strobe
+        wb_we_o  : out std_logic;                                         -- Write
+        wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);       -- Cycle
+        wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);  -- Data in
+        wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)        -- Acknowledge
         );
   end component;  -- wbmaster32
 

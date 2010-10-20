@@ -40,11 +40,17 @@ use UNISIM.vcomponents.all;
 -- Entity declaration for GN4124 core (gn4124_core)
 --==============================================================================
 entity gn4124_core is
+  generic(
+    g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
+    g_CSR_WB_ADDR_WIDTH : integer := 27;  -- CSR wishbone address bus width
+    g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
+    g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
+    );
   port
     (
       ---------------------------------------------------------
       -- Asynchronous reset from GN4124
-      rst_n_a_i : in  std_logic;
+      rst_n_a_i : in std_logic;
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -87,27 +93,27 @@ entity gn4124_core is
       ---------------------------------------------------------
       -- Target interface (CSR wishbone master)
       wb_clk_i : in  std_logic;
-      wb_adr_o : out std_logic_vector(31 downto 0);
-      wb_dat_i : in  std_logic_vector(31 downto 0);  -- Data in
-      wb_dat_o : out std_logic_vector(31 downto 0);  -- Data out
-      wb_sel_o : out std_logic_vector(3 downto 0);   -- Byte select
-      wb_cyc_o : out std_logic;
+      wb_adr_o : out std_logic_vector(g_CSR_WB_ADDR_WIDTH-1 downto 0);
+      wb_dat_o : out std_logic_vector(31 downto 0);                         -- Data out
+      wb_sel_o : out std_logic_vector(3 downto 0);                          -- Byte select
       wb_stb_o : out std_logic;
       wb_we_o  : out std_logic;
-      wb_ack_i : in  std_logic;
+      wb_cyc_o : out std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
+      wb_dat_i : in  std_logic_vector((32*g_CSR_WB_SLAVES_NB)-1 downto 0);  -- Data in
+      wb_ack_i : in  std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
 
       ---------------------------------------------------------
       -- DMA interface (Pipelined wishbone master)
       dma_clk_i   : in  std_logic;
       dma_adr_o   : out std_logic_vector(31 downto 0);
-      dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
-      dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
-      dma_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
-      dma_cyc_o   : out std_logic;
+      dma_dat_o   : out std_logic_vector(31 downto 0);                         -- Data out
+      dma_sel_o   : out std_logic_vector(3 downto 0);                          -- Byte select
       dma_stb_o   : out std_logic;
       dma_we_o    : out std_logic;
-      dma_ack_i   : in  std_logic;
-      dma_stall_i : in  std_logic                       -- for pipelined Wishbone
+      dma_cyc_o   : out std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
+      dma_dat_i   : in  std_logic_vector((32*g_DMA_WB_SLAVES_NB)-1 downto 0);  -- Data in
+      dma_ack_i   : in  std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
+      dma_stall_i : in  std_logic--_vector(g_DMA_WB_SLAVES_NB-1 downto 0)        -- for pipelined Wishbone
       );
 end gn4124_core;
 
@@ -236,14 +242,14 @@ architecture rtl of gn4124_core is
   ------------------------------------------------------------------------------
   -- CSR wishbone bus
   ------------------------------------------------------------------------------
-  signal wb_adr              : std_logic_vector(31 downto 0);
-  signal wb_dat_s2m          : std_logic_vector(31 downto 0);
+  signal wb_adr              : std_logic_vector(g_CSR_WB_ADDR_WIDTH-1 downto 0);
+  signal wb_dat_s2m          : std_logic_vector((32*(g_CSR_WB_SLAVES_NB+1))-1 downto 0);
   signal wb_dat_m2s          : std_logic_vector(31 downto 0);
   signal wb_sel              : std_logic_vector(3 downto 0);
-  signal wb_cyc              : std_logic;
+  signal wb_cyc              : std_logic_vector(g_CSR_WB_SLAVES_NB downto 0);
   signal wb_stb              : std_logic;
   signal wb_we               : std_logic;
-  signal wb_ack              : std_logic;
+  signal wb_ack              : std_logic_vector(g_CSR_WB_SLAVES_NB downto 0);
   signal wb_ack_dma_ctrl     : std_logic;
   signal wb_dat_s2m_dma_ctrl : std_logic_vector(31 downto 0);
 
@@ -416,6 +422,11 @@ begin
   -- Wishbone master
   -----------------------------------------------------------------------------
   u_wbmaster32 : wbmaster32
+    generic map
+    (
+      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1),  -- +1 for the DMA controller (wb slave always present)
+      g_WB_ADDR_WIDTH => g_CSR_WB_ADDR_WIDTH
+      )
     port map
     (
       ---------------------------------------------------------
@@ -471,13 +482,13 @@ begin
       );
 
   wb_adr_o   <= wb_adr;
-  wb_dat_s2m <= wb_dat_i or wb_dat_s2m_dma_ctrl;
+  wb_dat_s2m <= wb_dat_i & wb_dat_s2m_dma_ctrl;
   wb_dat_o   <= wb_dat_m2s;
   wb_sel_o   <= wb_sel;
-  wb_cyc_o   <= wb_cyc;
+  wb_cyc_o   <= wb_cyc(g_CSR_WB_SLAVES_NB downto 1);  -- wb_cyc(0) is for DMA controller
   wb_stb_o   <= wb_stb;
   wb_we_o    <= wb_we;
-  wb_ack     <= wb_ack_i or wb_ack_dma_ctrl;
+  wb_ack     <= wb_ack_i & wb_ack_dma_ctrl;
 
   -----------------------------------------------------------------------------
   -- DMA controller
@@ -516,7 +527,7 @@ begin
       wb_dat_o => wb_dat_s2m_dma_ctrl,
       wb_dat_i => wb_dat_m2s,
       wb_sel_i => wb_sel,
-      wb_cyc_i => wb_cyc,
+      wb_cyc_i => wb_cyc(0),
       wb_stb_i => wb_stb,
       wb_we_i  => wb_we,
       wb_ack_o => wb_ack_dma_ctrl
