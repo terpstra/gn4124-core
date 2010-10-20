@@ -159,11 +159,12 @@ architecture behaviour of l2p_dma_master is
   signal data_fifo_full  : std_logic;
 
   -- Wishbone
-  signal wb_read_cnt : unsigned(6 downto 0);
-  signal wb_ack_cnt  : unsigned(6 downto 0);
+  signal wb_read_cnt   : unsigned(6 downto 0);
+  signal wb_ack_cnt    : unsigned(6 downto 0);
+  signal l2p_dma_cyc_t : std_logic;
 
   -- L2P DMA Master FSM
-  type   l2p_dma_state_type is (L2P_IDLE, L2P_WAIT_DATA, L2P_HEADER, L2P_ADDR_H,
+  type l2p_dma_state_type is (L2P_IDLE, L2P_WAIT_DATA, L2P_HEADER, L2P_ADDR_H,
                                 L2P_ADDR_L, L2P_DATA, L2P_LAST_DATA, L2P_WAIT_RDY);
   signal l2p_dma_current_state : l2p_dma_state_type;
 
@@ -226,14 +227,13 @@ begin
         addr_fifo_wr    <= '1';
         target_addr_cnt <= target_addr_cnt + 1;
         dma_length_cnt  <= dma_length_cnt - 1;
+        -- Adust data width, fifo width is 32 bits
+        addr_fifo_din <= "00" & std_logic_vector(target_addr_cnt);
       else
         addr_fifo_wr <= '0';
       end if;
     end if;
   end process p_target_cnt;
-
-  -- Adust data width, fifo width is 32 bits
-  addr_fifo_din <= "00" & std_logic_vector(target_addr_cnt);
 
   ------------------------------------------------------------------------------
   -- Packet generator
@@ -343,7 +343,7 @@ begin
       ldm_arb_dframe_o      <= '0';
       data_fifo_rd          <= '0';
       dma_ctrl_done_o       <= '0';
-      l2p_edb_o <= '0';
+      l2p_edb_o             <= '0';
     elsif rising_edge(clk_i) then
       case l2p_dma_current_state is
 
@@ -354,7 +354,7 @@ begin
           ldm_arb_data_o   <= (others => '0');
           ldm_arb_valid_o  <= '0';
           ldm_arb_dframe_o <= '0';
-          l2p_edb_o <= '0';
+          l2p_edb_o        <= '0';
 
           if (data_fifo_empty = '0' and l_wr_rdy_i = "11") then
             -- We have data to send -> prepare a packet, first the header
@@ -412,7 +412,7 @@ begin
           ldm_arb_data_o  <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
           ldm_arb_valid_o <= '1';
           if (dma_ctrl_abort_i = '1') then
-            l2p_edb_o <= '1';
+            l2p_edb_o             <= '1';
             l2p_dma_current_state <= L2P_IDLE;
           elsif(data_fifo_empty = '1') then
             -- data not ready yet, wait for it
@@ -426,7 +426,7 @@ begin
             -- GN4124 not able to receive more data, have to wait
             l2p_dma_current_state <= L2P_WAIT_RDY;
             -- Stop reading from fifo
-            data_fifo_rd <= '0';
+            data_fifo_rd          <= '0';
           end if;
 
         when L2P_WAIT_RDY =>
@@ -435,7 +435,7 @@ begin
             -- GN4124 is ready to receive more data
             l2p_dma_current_state <= L2P_DATA;
             -- Re-start fifo reading
-            data_fifo_rd <= '1';
+            data_fifo_rd          <= '1';
           end if;
 
         when L2P_WAIT_DATA =>
@@ -519,7 +519,8 @@ begin
       prog_full               => data_fifo_full);
 
   data_fifo_din <= l2p_dma_dat_i;
-  data_fifo_wr  <= l2p_dma_ack_i;
+  -- latch data when receiving ack and the cycle has been initiated by this master
+  data_fifo_wr  <= l2p_dma_ack_i and l2p_dma_cyc_t;
 
   ------------------------------------------------------------------------------
   -- Pipelined wishbone master
@@ -542,7 +543,7 @@ begin
     if (rst_n_i = c_RST_ACTIVE) then
       l2p_dma_adr_o <= (others => '0');
       l2p_dma_stb_o <= '0';
-      l2p_dma_cyc_o <= '0';
+      l2p_dma_cyc_t <= '0';
       l2p_dma_sel_o <= (others => '0');
     elsif rising_edge(l2p_dma_clk_i) then
       -- adr signal management
@@ -559,13 +560,16 @@ begin
       end if;
       -- cyc signal management
       if (addr_fifo_valid = '1') then
-        l2p_dma_cyc_o <= '1';
-      elsif (wb_ack_cnt-1 = wb_read_cnt and l2p_dma_ack_i = '1') then
+        l2p_dma_cyc_t <= '1';
+      elsif (wb_ack_cnt = wb_read_cnt-1 and l2p_dma_ack_i = '1') then
         -- last ack received -> end of the transaction
-        l2p_dma_cyc_o <= '0';
+        l2p_dma_cyc_t <= '0';
       end if;
     end if;
   end process p_wb_master;
+
+  -- for read back
+  l2p_dma_cyc_o <= l2p_dma_cyc_t;
 
   -- Wishbone read cycle counter
   p_wb_read_cnt : process (l2p_dma_clk_i, rst_n_i)
@@ -585,7 +589,7 @@ begin
     if (rst_n_i = c_RST_ACTIVE) then
       wb_ack_cnt <= (others => '0');
     elsif rising_edge(l2p_dma_clk_i) then
-      if (l2p_dma_ack_i = '1') then
+      if (l2p_dma_ack_i = '1' and l2p_dma_cyc_t = '1') then
         wb_ack_cnt <= wb_ack_cnt + 1;
       end if;
     end if;

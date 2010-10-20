@@ -275,7 +275,7 @@ architecture BEHAVIOUR of LOTUS is
   signal wb_stb_o : std_logic;
   signal wb_we_o  : std_logic;
   signal wb_ack_i : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
-  --signal wb_stall_i : std_logic;
+  signal ram_we   : std_logic_vector(0 downto 0);
 
   signal dma_adr_o   : std_logic_vector(31 downto 0);
   signal dma_dat_i   : std_logic_vector((32*c_DMA_WB_SLAVES_NB)-1 downto 0);
@@ -417,7 +417,7 @@ begin
       );
 
   ------------------------------------------------------------------------------
-  -- UNUSED local wishbone bus
+  -- UNUSED CSR wishbone bus
   ------------------------------------------------------------------------------
   wb_ack_i <= (others => '0');
   wb_dat_i <= (others => '0');
@@ -427,73 +427,90 @@ begin
   -----------------------------------------------------------------------------
   -- Simulation DMA, pipelined wishbone slave
   -----------------------------------------------------------------------------
-  process (l_clk, L_RST_N)
-  begin
-    if(L_RST_N = '0') then
-      wb_current_state <= IDLE;
-      wb_data_cnt      <= x"AB340000";
-    elsif rising_edge(l_clk) then
-      case wb_current_state is
-        -----------------------------------------------------------------
-        -- IDLE
-        -----------------------------------------------------------------
-        when IDLE =>
-          if (dma_stb_o = '1' and wb_data_cnt(0) = '0') then
-            wb_next_state <= ACK;
-          elsif (dma_stb_o = '1' and wb_data_cnt(0) = '1') then
-            wb_next_state <= ST1;
-          else
-            wb_next_state <= IDLE;
-          end if;
+  --process (l_clk, L_RST_N)
+  --begin
+  --  if(L_RST_N = '0') then
+  --    wb_current_state <= IDLE;
+  --    wb_data_cnt      <= x"AB340000";
+  --  elsif rising_edge(l_clk) then
+  --    case wb_current_state is
+  --      -----------------------------------------------------------------
+  --      -- IDLE
+  --      -----------------------------------------------------------------
+  --      when IDLE =>
+  --        if (dma_stb_o = '1' and wb_data_cnt(0) = '0') then
+  --          wb_next_state <= ACK;
+  --        elsif (dma_stb_o = '1' and wb_data_cnt(0) = '1') then
+  --          wb_next_state <= ST1;
+  --        else
+  --          wb_next_state <= IDLE;
+  --        end if;
 
-          -----------------------------------------------------------------
-          -- Send ACK signal
-          -----------------------------------------------------------------
-        when ACK =>
-          wb_data_cnt <= wb_data_cnt + 1;
-          if (dma_stb_o = '0') then
-            wb_next_state <= IDLE;
-            --elsif (wb_data_cnt(0) = '0') then
-            --  wb_next_state := ST1;
-          else
-            wb_next_state <= ACK;
-          end if;
+  --        -----------------------------------------------------------------
+  --        -- Send ACK signal
+  --        -----------------------------------------------------------------
+  --      when ACK =>
+  --        wb_data_cnt <= wb_data_cnt + 1;
+  --        if (dma_stb_o = '0') then
+  --          wb_next_state <= IDLE;
+  --          --elsif (wb_data_cnt(0) = '0') then
+  --          --  wb_next_state := ST1;
+  --        else
+  --          wb_next_state <= ACK;
+  --        end if;
 
-          -----------------------------------------------------------------
-          -- One cycle delay
-          -----------------------------------------------------------------
-        when ST1 =>
-          wb_next_state <= ACK;
+  --        -----------------------------------------------------------------
+  --        -- One cycle delay
+  --        -----------------------------------------------------------------
+  --      when ST1 =>
+  --        wb_next_state <= ACK;
 
-          -----------------------------------------------------------------
-          -- OTHERS
-          -----------------------------------------------------------------
-        when others =>
-          wb_next_state <= IDLE;
-      end case;
-      wb_current_state <= wb_next_state;
-    end if;
-  end process;
+  --        -----------------------------------------------------------------
+  --        -- OTHERS
+  --        -----------------------------------------------------------------
+  --      when others =>
+  --        wb_next_state <= IDLE;
+  --    end case;
+  --    wb_current_state <= wb_next_state;
+  --  end if;
+  --end process;
 
   --dma_stall_i <= '1' when ((wb_current_state = ACK and wb_data_cnt(0) = '0' and dma_stb_o = '1')
   --                         or (wb_current_state = IDLE and wb_data_cnt(0) = '1' and dma_stb_o = '1'))
   --               else '0';
+
+
+  --dma_dat_i <= std_logic_vector(wb_data_cnt) when wb_current_state = ACK
+  --             else x"00000000";
+
+  --dma_ack_i <= '1' when wb_current_state = ACK
+  --             else '0';
+
+  process (l_clk, L_RST_N)
+  begin
+    if (L_RST_N = '0') then
+      dma_ack_i <= '0';
+    elsif rising_edge(l_clk) then
+      if (dma_cyc_o = '1' and dma_stb_o = '1') then
+        dma_ack_i <= '1';
+      else
+        dma_ack_i <= '0';
+      end if;
+    end if;
+  end process;
+
   dma_stall_i <= '0';
 
-  dma_dat_i <= std_logic_vector(wb_data_cnt) when wb_current_state = ACK
-               else x"00000000";
+  ram_we(0) <= dma_we_o and dma_cyc_o and dma_stb_o;
 
-  dma_ack_i <= '1' when wb_current_state = ACK
-               else '0';
-
-  --cmp_test_ram : ram_2048x32
-  --  port map (
-  --    clka  => ,
-  --    wea   => ,
-  --    addra => ,
-  --    dina  => ,
-  --    douta => 
-  --    );
+  cmp_test_ram : ram_2048x32
+    port map (
+      clka  => l_clk,
+      wea   => ram_we,
+      addra => dma_adr_o(10 downto 0),
+      dina  => dma_dat_o,
+      douta => dma_dat_i
+      );
 
   -- just forward irq pulses for test
   irq_to_gn4124 <= irq_sources(1) or irq_sources(0);
