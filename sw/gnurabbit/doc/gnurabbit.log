@@ -1,0 +1,14 @@
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdfetex 2010.5.7)  26 AUG 2010 08:59
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**\nonstopmode \catcode126=12 \def\normaltilde{~}\catcode126=13 \let~\normaltil
+de  \input ./gnurabbit.texi
+(./gnurabbit.texi)
+! Emergency stop.
+<*> ... \let~\normaltilde  \input ./gnurabbit.texi
+                                                  
+*** (job aborted, no legal \end found)
+
+!  ==> Fatal error occurred, no output PDF file produced!

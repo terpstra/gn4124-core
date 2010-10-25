@@ -1,0 +1,15 @@
+
+This work is part of the White Rabbit project at CERN (cern.ch).
+
+The package includes the raw I/O driver and the GN4124 driver. The kernel
+part lives in the kernel/ subdir of the package, while user-space utilities
+are under user/
+
+Documentation is under doc/ and is written in Texinfo, which though
+old is simple enough to require little efforts on my side. Output is
+pdf, text and info.
+
+To compile, just "make". If you miss TeX or texinfo you won't have the
+docs.  If you miss the compiler or gmake you won't have anything.
+
+To make clean just "make clean".

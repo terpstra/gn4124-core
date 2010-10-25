@@ -1,0 +1,52 @@
+#! /usr/bin/sed -f
+
+# allow "%" as a comment char, but only at the beginning of the line
+s/^%/@c /
+#s/[^\\]%.*$//
+s/^\\%/%/
+
+# turn accents into tex encoding (for Italian language)
+s/a`/à/g
+s/e`/è/g
+s/E`/È/g
+s/i`/ì/g
+s/o`/ò/g
+s/u`/ù/g
+
+s/erchè/erché/g
+s/oichè/oiché/g
+s/nè/né/g
+
+s/à/@`a/g
+s/è/@`e/g
+s/é/@'e/g
+s/ì/@`i/g
+s/ò/@`o/g
+s/È/@`E/g
+s/ù/@`u/g
+
+
+#preserve blanks, braces and @ in @example and @smallexample blocks
+/@example/,/@end example/ s/{/@{/g
+/@example/,/@end example/ s/}/@}/g
+/@example/,/@end example/ s/@/@@/g
+s/^@@example/@example/
+s/^@@end/@end/
+/@example/,/@end example/ p
+/@example/,/@end example/ d
+
+/@smallexample/,/@end smallexample/ s/{/@{/g
+/@smallexample/,/@end smallexample/ s/}/@}/g
+/@smallexample/,/@end smallexample/ s/@/@@/g
+s/^@@smallexample/@smallexample/
+s/^@@end/@end/
+/@smallexample/,/@end smallexample/ p
+/@smallexample/,/@end smallexample/ d
+
+# remove leading blanks
+s/^[ 	]*//
+
+# fix include to include texi not in
+s/^\(.include.*\).in$/\1.texi/
+
+
