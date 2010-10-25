@@ -4,38 +4,35 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: LOTUS (lotus.vhd)
+-- unit name: gw_wrapper (gullwing_wrapper.vhd)
 --
--- author:
+-- author: Matthieu Cattin (matthieu.cattin@cern.ch)
 --
--- date:
+-- date: 20-10-2010
 --
 -- version: 0.1
 --
--- description: Wrapper for the Lotus Project to drop into the FPGA on the
+-- description: Wrapper for the GN4124 core to drop into the FPGA on the
 --              Gullwing board
 --
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: <date> <initials> <log>
--- <extended description>
+-- last changes: 21-10-2010 (mcattin) Add a RAM block to perform  bi-directional
+--                                    DMA tests.
 --------------------------------------------------------------------------------
--- TODO: -
---       -
---       -
+-- TODO: - 
 --------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
-use work.lotus_util.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
 
 
-entity LOTUS is
+entity gw_wrapper is
   generic
     (
       TAR_ADDR_WDTH : integer := 13     -- not used for this project
@@ -153,13 +150,15 @@ entity LOTUS is
       GS4911_LOCK_LOST : in  std_logic;  -- requested by Jared
       GS4911_REF_LOST  : in  std_logic   -- requested by Jared
       );
-end LOTUS;
+end gw_wrapper;
 
-architecture BEHAVIOUR of LOTUS is
+architecture rtl of gw_wrapper is
 
------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
+  -- Components declaration
+  ------------------------------------------------------------------------------
+
   component gn4124_core
------------------------------------------------------------------------------
     generic(
       g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
       g_CSR_WB_ADDR_WIDTH : integer := 27;  -- CSR wishbone address bus width
@@ -248,25 +247,22 @@ architecture BEHAVIOUR of LOTUS is
       );
   end component;
 
---=============================================================================================--
--- Local constants
---=============================================================================================--
+  ------------------------------------------------------------------------------
+  -- Constants declaration
+  ------------------------------------------------------------------------------
   constant c_CSR_WB_SLAVES_NB  : integer := 1;
   constant c_CSR_WB_ADDR_WIDTH : integer := 27;
   constant c_DMA_WB_SLAVES_NB  : integer := 1;
   constant c_DMA_WB_ADDR_WIDTH : integer := 26;
 
---=============================================================================================--
--- Internal Signals
---=============================================================================================--
+  ------------------------------------------------------------------------------
+  -- Signals declaration
+  ------------------------------------------------------------------------------
 
-  -- Internal 1X clock operating at the same rate as LCLK
-  signal ICLK  : std_logic;
-  signal ICLKn : std_logic;
-  -- RESET for all ICLK logic
-  signal IRST  : std_logic;
-  signal L_RST : std_logic;
+  -- LCLK from GN4124 used as system clock
+  signal l_clk : std_logic;
 
+  -- CSR wishbone bus
   signal wb_adr_o : std_logic_vector(c_CSR_WB_ADDR_WIDTH-1 downto 0);
   signal wb_dat_i : std_logic_vector((32*c_CSR_WB_SLAVES_NB)-1 downto 0);
   signal wb_dat_o : std_logic_vector(31 downto 0);
@@ -275,8 +271,8 @@ architecture BEHAVIOUR of LOTUS is
   signal wb_stb_o : std_logic;
   signal wb_we_o  : std_logic;
   signal wb_ack_i : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
-  signal ram_we   : std_logic_vector(0 downto 0);
 
+  -- DMA wishbone bus
   signal dma_adr_o   : std_logic_vector(31 downto 0);
   signal dma_dat_i   : std_logic_vector((32*c_DMA_WB_SLAVES_NB)-1 downto 0);
   signal dma_dat_o   : std_logic_vector(31 downto 0);
@@ -286,19 +282,12 @@ architecture BEHAVIOUR of LOTUS is
   signal dma_we_o    : std_logic;
   signal dma_ack_i   : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
   signal dma_stall_i : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
+  signal ram_we   : std_logic_vector(0 downto 0);
 
--- TEST: L2P DMA interface
-  type   wb_state_type is (IDLE, ACK, ST1);
-  signal wb_current_state : wb_state_type;
-  signal wb_next_state    : wb_state_type;
-  signal wb_data_cnt      : unsigned(31 downto 0);
-
-  signal l_clk : std_logic;
-
-  signal led0 : std_logic_vector(7 downto 0);
-
+  -- Interrupts stuff
   signal irq_sources   : std_logic_vector(1 downto 0);
   signal irq_to_gn4124 : std_logic;
+
 
 begin
 
@@ -316,8 +305,9 @@ begin
       IB => L_CLKn                      -- Diff_n buffer input (connect directly to top-level port)
       );
 
+
   ------------------------------------------------------------------------------
-  -- Assign static outputs
+  -- Assign static (unused) outputs
   ------------------------------------------------------------------------------
   GS4911_CSB       <= '1';
   SER_SDHDN        <= '0';
@@ -330,11 +320,13 @@ begin
   SER_DVB_ASI      <= '0';
   GS4911_HOST_B    <= '0';
   SER_SMPTE_BYPASS <= '0';
+  LED <= (others => '1');
+
 
   ------------------------------------------------------------------------------
   -- GN4124 interface
   ------------------------------------------------------------------------------
-  u_gn4124_core : gn4124_core
+  cmp_gn4124_core : gn4124_core
     generic map (
       g_CSR_WB_SLAVES_NB  => c_CSR_WB_SLAVES_NB,
       g_CSR_WB_ADDR_WIDTH => c_CSR_WB_ADDR_WIDTH,
@@ -344,10 +336,7 @@ begin
     port map
     (
       ---------------------------------------------------------
-      -- Clock/Reset from GN412x
---      L_CLKp                 => L_CLKp,
---      L_CLKn                 => L_CLKn,
---      sys_clk_o => l_clk,
+      -- Reset from GN4124
       rst_n_a_i => L_RST_N,
 
       ---------------------------------------------------------
@@ -416,6 +405,7 @@ begin
       dma_stall_i => dma_stall_i
       );
 
+
   ------------------------------------------------------------------------------
   -- UNUSED CSR wishbone bus
   ------------------------------------------------------------------------------
@@ -423,69 +413,9 @@ begin
   wb_dat_i <= (others => '0');
 
 
-
-  -----------------------------------------------------------------------------
-  -- Simulation DMA, pipelined wishbone slave
-  -----------------------------------------------------------------------------
-  --process (l_clk, L_RST_N)
-  --begin
-  --  if(L_RST_N = '0') then
-  --    wb_current_state <= IDLE;
-  --    wb_data_cnt      <= x"AB340000";
-  --  elsif rising_edge(l_clk) then
-  --    case wb_current_state is
-  --      -----------------------------------------------------------------
-  --      -- IDLE
-  --      -----------------------------------------------------------------
-  --      when IDLE =>
-  --        if (dma_stb_o = '1' and wb_data_cnt(0) = '0') then
-  --          wb_next_state <= ACK;
-  --        elsif (dma_stb_o = '1' and wb_data_cnt(0) = '1') then
-  --          wb_next_state <= ST1;
-  --        else
-  --          wb_next_state <= IDLE;
-  --        end if;
-
-  --        -----------------------------------------------------------------
-  --        -- Send ACK signal
-  --        -----------------------------------------------------------------
-  --      when ACK =>
-  --        wb_data_cnt <= wb_data_cnt + 1;
-  --        if (dma_stb_o = '0') then
-  --          wb_next_state <= IDLE;
-  --          --elsif (wb_data_cnt(0) = '0') then
-  --          --  wb_next_state := ST1;
-  --        else
-  --          wb_next_state <= ACK;
-  --        end if;
-
-  --        -----------------------------------------------------------------
-  --        -- One cycle delay
-  --        -----------------------------------------------------------------
-  --      when ST1 =>
-  --        wb_next_state <= ACK;
-
-  --        -----------------------------------------------------------------
-  --        -- OTHERS
-  --        -----------------------------------------------------------------
-  --      when others =>
-  --        wb_next_state <= IDLE;
-  --    end case;
-  --    wb_current_state <= wb_next_state;
-  --  end if;
-  --end process;
-
-  --dma_stall_i <= '1' when ((wb_current_state = ACK and wb_data_cnt(0) = '0' and dma_stb_o = '1')
-  --                         or (wb_current_state = IDLE and wb_data_cnt(0) = '1' and dma_stb_o = '1'))
-  --               else '0';
-
-
-  --dma_dat_i <= std_logic_vector(wb_data_cnt) when wb_current_state = ACK
-  --             else x"00000000";
-
-  --dma_ack_i <= '1' when wb_current_state = ACK
-  --             else '0';
-
+  ------------------------------------------------------------------------------
+  -- DMA wishbone bus connected to a DPRAM
+  ------------------------------------------------------------------------------
   process (l_clk, L_RST_N)
   begin
     if (L_RST_N = '0') then
@@ -512,11 +442,14 @@ begin
       douta => dma_dat_i
       );
 
+
+  ------------------------------------------------------------------------------
+  -- Interrupt stuff
+  ------------------------------------------------------------------------------
   -- just forward irq pulses for test
   irq_to_gn4124 <= irq_sources(1) or irq_sources(0);
 
-  LED <= (others => '1');
 
-end BEHAVIOUR;
+end rtl;
 
 

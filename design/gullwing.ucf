@@ -1,0 +1,559 @@
+
+#---------------------------------------------------------------------------------------------
+# IO standards 
+#---------------------------------------------------------------------------------------------
+NET "l2p_data[0]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[10]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[11]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[12]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[13]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[14]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[15]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[1]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[2]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[3]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[4]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[5]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[6]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[7]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[8]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[9]"  IOSTANDARD = SSTL18_I;
+NET "l2p_clkp"     IOSTANDARD = DIFF_SSTL18_I;
+NET "l2p_clkn"     IOSTANDARD = DIFF_SSTL18_I;
+NET "l2p_rdy"      IOSTANDARD = SSTL18_I;
+NET "l_clkn"       IOSTANDARD = DIFF_SSTL18_I; #SSTL18_I;
+NET "l_clkp"       IOSTANDARD = DIFF_SSTL18_I; #SSTL18_I;
+NET "l_rst_n"      IOSTANDARD = SSTL18_I;
+NET "p2l_clkp"     IOSTANDARD = DIFF_SSTL18_I;
+NET "p2l_clkn"     IOSTANDARD = DIFF_SSTL18_I;
+NET "p2l_data[0]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[10]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[11]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[12]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[13]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[14]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[15]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[1]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[2]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[3]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[4]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[5]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[6]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[7]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[8]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[9]"  IOSTANDARD = SSTL18_I;
+NET "p2l_rdy"      IOSTANDARD = SSTL18_I;
+NET "l_wr_rdy[0]"    IOSTANDARD = SSTL18_I;
+NET "l_wr_rdy[1]"    IOSTANDARD = SSTL18_I;
+NET "p_rd_d_rdy[0]"  IOSTANDARD = SSTL18_I;
+NET "p_rd_d_rdy[1]"  IOSTANDARD = SSTL18_I;
+NET "l2p_dframe"   IOSTANDARD = SSTL18_I;
+NET "l2p_valid"    IOSTANDARD = SSTL18_I;
+NET "l2p_edb"      IOSTANDARD = SSTL18_I;
+NET "p2l_dframe"   IOSTANDARD = SSTL18_I;
+NET "p2l_valid"    IOSTANDARD = SSTL18_I;
+NET "p_wr_rdy[0]"    IOSTANDARD = SSTL18_I;
+NET "p_wr_rdy[1]"    IOSTANDARD = SSTL18_I;
+NET "rx_error"     IOSTANDARD = SSTL18_I;
+NET "tx_error"     IOSTANDARD = SSTL18_I;
+NET "vc_rdy[0]"    IOSTANDARD = SSTL18_I;
+NET "vc_rdy[1]"    IOSTANDARD = SSTL18_I;
+NET "p_wr_req[0]" IOSTANDARD = SSTL18_I;
+NET "p_wr_req[1]" IOSTANDARD = SSTL18_I;
+
+NET "l_rst33_n"    IOSTANDARD = "LVCMOS33";
+
+## GN1559 de-serializer
+NET "des[*]"   IOSTANDARD = "LVCMOS33";
+NET "des_pclk" IOSTANDARD = "LVCMOS33";
+
+## GN1531 serializer
+NET "ser[*]"    IOSTANDARD = "LVCMOS33";
+
+## GN1559 related
+NET "des_h" IOSTANDARD = "LVCMOS33";
+NET "des_v" IOSTANDARD = "LVCMOS33";
+NET "des_f" IOSTANDARD = "LVCMOS33";
+NET "des_smpte_bypass" IOSTANDARD = "LVCMOS33";
+NET "des_dvb_asi" IOSTANDARD = "LVCMOS33";
+NET "des_sdhdn" IOSTANDARD = "LVCMOS33";
+
+## GN1531 related
+NET "ser_h" IOSTANDARD = "LVCMOS33";
+NET "ser_v" IOSTANDARD = "LVCMOS33";
+NET "ser_f" IOSTANDARD = "LVCMOS33";
+NET "ser_smpte_bypass" IOSTANDARD = "LVCMOS33";
+NET "ser_dvb_asi" IOSTANDARD = "LVCMOS33";
+NET "ser_sdhdn" IOSTANDARD = "LVCMOS33";
+
+
+## GN4911 Timing Generator
+NET "syncseperator_h_timing" IOSTANDARD = "LVCMOS33";
+NET "syncseperator_v_timing" IOSTANDARD = "LVCMOS33";
+NET "syncseperator_f_timing" IOSTANDARD = "LVCMOS33";
+
+# GPIO
+NET "gpio[*]" IOSTANDARD = "LVCMOS33";
+
+# I2C
+NET "sda" IOSTANDARD = "LVCMOS33";
+NET "scl" IOSTANDARD = "LVCMOS33";
+
+# MICTOR connector
+NET "mic_clka" IOSTANDARD = "LVCMOS33";
+NET "mic_clkb" IOSTANDARD = "LVCMOS33";
+
+NET "mic_data[*]" IOSTANDARD = "LVCMOS33";
+
+# debug input switches
+NET "debug[*]" IOSTANDARD = "LVCMOS33";
+NET "led[*]"   IOSTANDARD = "LVCMOS33";
+
+NET "spi_sck" IOSTANDARD = "LVCMOS33";
+NET "spi_ss[*]"   IOSTANDARD = "LVCMOS33";
+NET "spi_mosi" IOSTANDARD = "LVCMOS33";
+NET "spi_miso" IOSTANDARD = "LVCMOS33";
+   
+NET "gs4911_host_b" IOSTANDARD = "LVCMOS33";
+NET "gs4911_sclk" IOSTANDARD = "LVCMOS33";
+NET "gs4911_sdin" IOSTANDARD = "LVCMOS33";
+NET "gs4911_sdout" IOSTANDARD = "LVCMOS33";
+NET "gs4911_csb" IOSTANDARD = "LVCMOS33";
+NET "PCLK_4911_1531" IOSTANDARD = "LVCMOS33";
+NET "GS4911_LOCK_LOST" IOSTANDARD = "LVCMOS33";
+NET "GS4911_REF_LOST"  IOSTANDARD = "LVCMOS33";
+
+#---------------------------------------------------------------------------------------------
+# Force DDR Flops into IOBs 
+# Offset constraints shoudl force this although the input and output DDR primtives are 
+# instantiated within the RTL.
+#---------------------------------------------------------------------------------------------
+#INST "lp2_data<*>" IOB=TRUE;  
+#INST "l2p_dframe" IOB=TRUE;
+#INST "l2p_valid"  IOB=TRUE;
+#INST "l2p_edb"    IOB=TRUE;
+#
+#---------------------------------------------------------------------------------------------
+# Constrain DDR inputs
+# Assume offset requirement of 6.25 on inputs for a 10ns clock
+#---------------------------------------------------------------------------------------------
+# Group the I/O  pads -- 0 degree clock 
+
+# Create a PERIOD constraint on the original clock
+NET "P2L_CLKp" TNM_NET = "p2l_clkp_grp";
+#### mcattin ####
+#TIMESPEC TS_p2l_clkp = PERIOD "p2l_clkp_grp" 4.8 ns HIGH 50%;   
+TIMESPEC TS_p2l_clkp = PERIOD "p2l_clkp_grp" 5 ns HIGH 50%;
+NET "P2L_CLKn" TNM_NET = "p2l_clkn_grp";
+#### mcattin ####
+#TIMESPEC TS_p2l_clkn = PERIOD "p2l_clkn_grp" 4.8 ns HIGH 50%; 
+TIMESPEC TS_p2l_clkn = PERIOD "p2l_clkn_grp" 5 ns HIGH 50%; 
+
+NET "P2L_CLKp" IBUF_DELAY_VALUE= 0;
+NET "P2L_CLKn" IBUF_DELAY_VALUE= 0;
+
+# Create an OFFSET constraint for the ddr group
+NET "p2l_data*" IFD_DELAY_VALUE = 2;  # Option: 0-8 or AUTO(does not work) 
+net "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKp" high;
+net "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKn" high;
+
+#---------------------------------------------------------------------------------------------
+# Constrain DDR outputs
+# Assume offset requirement of 7.5 on outputs for a 10ns clock period
+#---------------------------------------------------------------------------------------------
+
+# Create an OFFSET constraint for the ddr group
+# There is a minimum delay of ~3.2ns from the DDRDFF to the pad!!!!
+NET "l2p_data*" OFFSET = OUT 6.5 ns AFTER "P2L_CLKp" high;
+NET "l2p_data*" OFFSET = OUT 6.5 ns AFTER "P2L_CLKn" high;
+
+#---------------------------------------------------------------------------------------------
+# Constrain the other inputs
+#---------------------------------------------------------------------------------------------
+NET "p2l_dframe" IFD_DELAY_VALUE = 1;  # 0-8 or AUTO
+NET "p2l_dframe"  OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" HIGH; ##1.5 ns VALID 2.0 ns
+NET "p2l_valid" IFD_DELAY_VALUE = 1;
+NET "p2l_valid"   OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" HIGH; ##1.5 ns VALID 2.0 ns
+
+
+NET "vc_rdy*" maxdelay = 2 ns;
+NET "l_wr_rdy*" maxdelay = 2 ns;
+NET "p_rd_d_rdy[*]" maxdelay = 2 ns;
+NET "l2p_rdy" maxdelay = 2 ns;
+
+#---------------------------------------------------------------------------------------------
+# Constrain the other outputs
+#---------------------------------------------------------------------------------------------
+NET "l2p_dframe"   OFFSET = OUT 6.5 ns AFTER "P2L_CLKn" HIGH;
+NET "l2p_valid"    OFFSET = OUT 6.5 ns AFTER "P2L_CLKn" HIGH;
+NET "l2p_clkp"     OFFSET = OUT 6.5 ns AFTER "P2L_CLKp" HIGH;
+NET "l2p_clkn"     OFFSET = OUT 6.5 ns AFTER "P2L_CLKn" HIGH;
+
+#---------------------------------------------------------------------------------------------
+# False Path from Aysnchronous reset
+#---------------------------------------------------------------------------------------------
+NET "l_rst_n" TIG;
+##### mcattin #####
+#NET "cmp_gn4124_core/cmp_p2l_des/irst*" TIG;
+##### mcattin #####
+NET "cmp_gn4124_core/rst_*" TIG;
+
+#---------------------------------------------------------------------------------------------
+# False Path from write pointer as it is multi cycle
+#---------------------------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------------------------
+# False Path from all lgogic clocked by l_clk_fpga in tx_fifo to logic clocked by l2p_0_clk
+#---------------------------------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------------------------------
+# DCM placement constraints
+#---------------------------------------------------------------------------------------------
+
+#INST lbi_0/lt_0/lclk_0/CLK2X_BUFG_INST LOC=BUFGMUX_X1Y0; 
+##### mcattin #####
+#INST cmp_gn4124_core/cmp_p2l_des/iclk_bufg  LOC = BUFGMUX_X2Y10;
+#INST cmp_gn4124_core/cmp_p2l_des/iclkn_bufg LOC = BUFGMUX_X2Y11;
+#NET "P2L_CLKp" CLOCK_DEDICATED_ROUTE = FALSE;
+#NET "P2L_CLKn" CLOCK_DEDICATED_ROUTE = FALSE;
+
+#NET "cmp_gn4124_core/cmp_p2l_des/iclk_i" maxdelay = 0.1 ns;
+#NET "cmp_gn4124_core/cmp_p2l_des/iclkn_i" maxdelay = 0.1 ns;
+##### mcattin #####
+
+#INST cmp_gn4124_core/clk_p_bufg LOC = BUFGMUX_X2Y10;
+#INST cmp_gn4124_core/clk_n_bufg LOC = BUFGMUX_X2Y11;
+INST cmp_gn4124_core/clk_bufg LOC = BUFGMUX_X2Y10;
+INST cmp_gn4124_core/clkn_bufg LOC = BUFGMUX_X2Y11;
+NET "P2L_CLKp" CLOCK_DEDICATED_ROUTE = FALSE;
+NET "P2L_CLKn" CLOCK_DEDICATED_ROUTE = FALSE;
+
+NET "cmp_gn4124_core/clk_p_buf" maxdelay = 0.1 ns;
+NET "cmp_gn4124_core/clk_n_buf" maxdelay = 0.1 ns;
+
+#The IO Location Constraints 
+NET "des_h" LOC = C10;
+NET "gpio[4]" LOC = AB13;
+#NET "ser[14]" LOC = A20;
+#NET "ddr2_dqs[2]" LOC = K1;
+NET "gpio[5]" LOC = AA3;
+#NET "ser[15]" LOC = E15;
+#NET "cntrl0_ddr2_dqs[3]" LOC = H4;
+#NET "cntrl0_ddr2_cs_n" LOC = C1;
+NET "gpio[6]" LOC = AA4;
+#NET "ser[16]" LOC = F15;
+NET "des_v" LOC = G11;
+NET "gpio[7]" LOC = AA8;
+#NET "ser[17]" LOC = C18;
+NET "syncseperator_f_timing" LOC = D7;
+NET "p2l_dframe" LOC = L22;
+NET "gpio[8]" LOC = V10;
+NET "des[10]" LOC = E16;
+#NET "ser[18]" LOC = A18;
+NET "gpio[9]" LOC = AB2;
+NET "des[11]" LOC = G15;
+#NET "ser[19]" LOC = A19;
+NET "des[12]" LOC = G16;
+NET "tx_error" LOC = M16;
+NET "des[13]" LOC = G14;
+#NET "cntrl0_ddr2_ck_n[0]" LOC = AA2;
+NET "des[14]" LOC = H14;
+NET "l2p_rdy" LOC = P16;
+#NET "cntrl0_ddr2_ck_n[1]" LOC = Y2;
+#NET "cntrl0_ddr2_a[0]" LOC = D3;
+NET "des[15]" LOC = H13;
+NET "l2p_valid" LOC = T19;
+#NET "cntrl0_ddr2_a[1]" LOC = G5;
+NET "des[16]" LOC = F12;
+#NET "cntrl0_ddr2_dq[0]" LOC = W1;
+#NET "cntrl0_ddr2_a[2]" LOC = G6;
+NET "des[17]" LOC = G12;
+#NET "cntrl0_ddr2_dq[1]" LOC = W2;
+#NET "sys_clkb" LOC = U12;
+NET "l2p_data[10]" LOC = R19;
+#NET "cntrl0_ddr2_a[3]" LOC = E1;
+NET "des[18]" LOC = D11;
+#NET "cntrl0_ddr2_dq[2]" LOC = U3;
+NET "p2l_valid" LOC = M22;
+NET "l2p_data[11]" LOC = N18;
+#NET "cntrl0_ddr2_a[4]" LOC = D1;
+NET "des[19]" LOC = C5;
+#NET "cntrl0_ddr2_dq[3]" LOC = U4;
+NET "l2p_data[12]" LOC = U19;
+#NET "cntrl0_ddr2_a[5]" LOC = E3;
+#NET "cntrl0_ddr2_dq[4]" LOC = V1;
+NET "l2p_data[13]" LOC = U21;
+#NET "cntrl0_ddr2_a[6]" LOC = F4;
+#NET "cntrl0_ddr2_dq[5]" LOC = V3;
+NET "des[0]" LOC = A8;
+NET "l2p_data[14]" LOC = U20;
+#NET "cntrl0_ddr2_a[7]" LOC = G4;
+#NET "cntrl0_ddr2_dq[6]" LOC = U1;
+NET "des[1]" LOC = D10;
+NET "l2p_edb" LOC = L21;
+NET "l2p_data[15]" LOC = N19;
+#NET "cntrl0_ddr2_a[8]" LOC = F3;
+#NET "cntrl0_ddr2_dq[7]" LOC = U2;
+NET "des[2]" LOC = E10;
+#NET "cntrl0_ddr2_a[9]" LOC = H6;
+#NET "cntrl0_ddr2_dq[8]" LOC = R5;
+NET "des[3]" LOC = H10;
+#NET "cntrl0_ddr2_dq[9]" LOC = T3;
+NET "des[4]" LOC = B9;
+NET "des[5]" LOC = B8;
+NET "p_rd_d_rdy[0]" LOC = N17;
+NET "p_rd_d_rdy[1]" LOC = P18;
+NET "des[6]" LOC = C8;
+NET "des[7]" LOC = G10;
+NET "l_rst_n" LOC = N20;
+NET "p2l_data[10]" LOC = K19;
+NET "p_wr_rdy[0]" LOC = T20;
+NET "p_wr_rdy[1]" LOC = T22;
+NET "des[8]" LOC = A7;
+NET "p2l_data[11]" LOC = M20;
+NET "des[9]" LOC = A6;
+NET "p2l_data[12]" LOC = G22;
+NET "p2l_data[13]" LOC = L18;
+NET "p2l_data[14]" LOC = M18;
+NET "p2l_rdy" LOC = D21;
+NET "p2l_data[15]" LOC = K20;
+NET "l2p_clkn" LOC = Y21;
+NET "l2p_clkp" LOC = AA22;
+#NET "ser[0]" LOC = D17;
+#NET "ser[1]" LOC = C17;
+NET "des_dvb_asi" LOC = E13;
+#NET "ser[2]" LOC = D16;
+NET "debug[0]" LOC = AB11;
+NET "syncseperator_v_timing" LOC = B6;
+#NET "ser[3]" LOC = C16;
+NET "rx_error" LOC = U22;
+NET "des_smpte_bypass" LOC = A13;
+NET "debug[1]" LOC = Y11;
+#NET "ser[4]" LOC = C14;
+NET "debug[2]" LOC = R10;
+#NET "ser[5]" LOC = E14;
+NET "debug[3]" LOC = AB10;
+#NET "ser[6]" LOC = B17;
+NET "debug[4]" LOC = U7;
+#NET "ser[7]" LOC = A17;
+NET "debug[5]" LOC = V7;
+#NET "ser[8]" LOC = D15;
+NET "debug[6]" LOC = U8;
+#NET "ser[9]" LOC = C15;
+NET "debug[7]" LOC = T9;
+NET "vc_rdy[0]" LOC = N21;
+NET "vc_rdy[1]" LOC = L20;
+NET "mic_data[0]" LOC = AB15;
+NET "mic_data[1]" LOC = Y17;
+#NET "cntrl0_ddr2_we_n" LOC = G17;
+NET "mic_data[2]" LOC = AA14;
+NET "mic_data[3]" LOC = AA19;
+#NET "cntrl0_ddr2_odt" LOC = G18;
+#NET "cntrl0_ddr2_a[10]" LOC = H5;
+#NET "sys_clk" LOC = V12;
+NET "p2l_clkn" LOC = E12;
+NET "p2l_clkp" LOC = C12;
+NET "mic_data[4]" LOC = Y16;
+#NET "cntrl0_ddr2_a[11]" LOC = J5;
+NET "l_wr_rdy[0]" LOC = M17;
+NET "l_wr_rdy[1]" LOC = R15;
+NET "mic_data[5]" LOC = Y7;
+#NET "cntrl0_ddr2_dq[10]" LOC = R3;
+#NET "cntrl0_ddr2_ck[0]" LOC = AA1;
+#NET "cntrl0_ddr2_a[12]" LOC = K6;
+NET "mic_data[6]" LOC = AB17;
+#NET "cntrl0_ddr2_dq[11]" LOC = R4;
+#NET "cntrl0_ddr2_ck[1]" LOC = Y1;
+NET "mic_data[7]" LOC = AB19;
+NET "l2p_data[0]" LOC = V22;
+#NET "cntrl0_ddr2_dq[12]" LOC = M5;
+NET "mic_data[8]" LOC = AB6;
+NET "l2p_data[1]" LOC = W22;
+NET "cntrl0_ddr2_dq[13]" LOC = N4;
+#NET "cntrl0_ddr2_dqs_n[0]" LOC = U5;
+#NET "cntrl0_ddr2_cas_n" LOC = N3;
+NET "mic_data[9]" LOC = AB8;
+NET "l2p_data[2]" LOC = V20;
+NET "l_clkn" LOC = V11;
+#NET "cntrl0_ddr2_dq[14]" LOC = P3;
+NET "p2l_data[0]" LOC = E22;
+NET "l_clkp" LOC = U11;
+#NET "cntrl0_ddr2_dqs_n[1]" LOC = R2;
+NET "des_sdhdn" LOC = A14;
+NET "l2p_data[3]" LOC = V19;
+#NET "cntrl0_ddr2_dq[20]" LOC = L5;
+#NET "cntrl0_ddr2_dq[15]" LOC = P5;
+NET "p2l_data[1]" LOC = J18;
+#NET "cntrl0_ddr2_dqs_n[2]" LOC = L1;
+NET "l2p_data[4]" LOC = W21;
+#NET "cntrl0_ddr2_dq[21]" LOC = L3;
+#NET "cntrl0_ddr2_dq[16]" LOC = M3;
+NET "p2l_data[2]" LOC = G19;
+#NET "cntrl0_ddr2_dqs_n[3]" LOC = H3;
+NET "l2p_data[5]" LOC = Y22;
+#NET "cntrl0_ddr2_dq[22]" LOC = K3;
+#NET "cntrl0_ddr2_dq[17]" LOC = M4;
+NET "p2l_data[3]" LOC = K15;
+NET "mic_data[10]" LOC = W8;
+NET "l2p_data[6]" LOC = T18;
+#NET "cntrl0_ddr2_dq[23]" LOC = K2;
+#NET "cntrl0_ddr2_dq[18]" LOC = M1;
+NET "p2l_data[4]" LOC = H17;
+NET "mic_data[11]" LOC = V16;
+NET "l2p_data[7]" LOC = T17;
+NET "syncseperator_h_timing" LOC = C7;
+#NET "cntrl0_ddr2_dq[24]" LOC = K5;
+#NET "cntrl0_ddr2_dq[19]" LOC = M2;
+NET "p2l_data[5]" LOC = G20;
+NET "mic_data[12]" LOC = AA6;
+NET "l2p_data[8]" LOC = W20;
+#NET "cntrl0_ddr2_dq[30]" LOC = F2;
+#NET "cntrl0_ddr2_dq[25]" LOC = K4;
+NET "p2l_data[6]" LOC = F22;
+NET "mic_data[13]" LOC = Y8;
+NET "l2p_data[9]" LOC = W19;
+#NET "cntrl0_ddr2_dq[31]" LOC = F1;
+#NET "cntrl0_ddr2_dq[26]" LOC = J3;
+NET "p2l_data[7]" LOC = H19;
+NET "mic_data[14]" LOC = Y6;
+#NET "cntrl0_ddr2_ras_n" LOC = D2;
+#NET "cntrl0_rst_dqs_div_out" LOC = P1;
+#NET "cntrl0_ddr2_dq[27]" LOC = H1;
+NET "p2l_data[8]" LOC = K22;
+NET "mic_data[20]" LOC = AA15;
+NET "mic_data[15]" LOC = V15;
+#NET "cntrl0_ddr2_dq[28]" LOC = G3;
+NET "p2l_data[9]" LOC = K17;
+NET "mic_data[21]" LOC = Y12;
+NET "mic_data[16]" LOC = AB16;
+#NET "cntrl0_ddr2_dq[29]" LOC = G1;
+#NET "cntrl0_ddr2_ba[0]" LOC = B1;
+NET "mic_data[22]" LOC = AB21;
+NET "mic_data[17]" LOC = W17;
+#NET "cntrl0_ddr2_ba[1]" LOC = E4;
+NET "mic_data[23]" LOC = Y13;
+NET "mic_data[18]" LOC = V14;
+NET "reset_in_n" LOC = N8;
+#NET "cntrl0_rst_dqs_div_in" LOC = P2;
+NET "mic_data[24]" LOC = U13;
+NET "mic_data[19]" LOC = Y5;
+NET "gpio[10]" LOC = AB18;
+NET "mic_data[30]" LOC = AB14;
+NET "mic_data[25]" LOC = W18;
+NET "gpio[11]" LOC = Y10;
+NET "mic_data[31]" LOC = W16;
+NET "mic_data[26]" LOC = W15;
+NET "l2p_dframe" LOC = J22;
+NET "gpio[12]" LOC = W6;
+NET "mic_data[27]" LOC = Y18;
+#NET "cntrl0_ddr2_dm[0]" LOC = T4;
+#NET "cntrl0_ddr2_cke" LOC = C2;
+NET "gpio[13]" LOC = Y9;
+NET "mic_data[28]" LOC = AB7;
+#NET "cntrl0_ddr2_dm[1]" LOC = H2;
+NET "gpio[14]" LOC = AB9;
+NET "mic_data[29]" LOC = AA21;
+#NET "cntrl0_ddr2_dm[2]" LOC = V4;
+NET "gpio[15]" LOC = AA10;
+#NET "cntrl0_ddr2_dm[3]" LOC = W3;
+NET "des_pclk" LOC = E11;
+NET "sda" LOC = A16; ##R12;  ##Problem
+#NET "mic_clka" LOC = Y15;
+#NET "mic_clkb" LOC = Y4;
+NET "scl" LOC = W9;
+NET "gpio[0]" LOC = AB5;
+#NET "ser[10]" LOC = E17;
+NET "l_rst33_n" LOC = H8;
+NET "gpio[1]" LOC = W7;
+#NET "ser[11]" LOC = D18;
+NET "gpio[2]" LOC = AB4;
+#NET "ser[12]" LOC = C19;
+#NET "cntrl0_ddr2_dqs[0]" LOC = T5;
+NET "gpio[3]" LOC = AB3;
+#NET "ser[13]" LOC = B20;
+#NET "cntrl0_ddr2_dqs[1]" LOC = R1;
+NET "des_f" LOC = A10;
+#NET "ser_h" LOC = D8;
+#NET "ser_v" LOC = A12;
+#NET "ser_f" LOC = D13;
+#NET "ser_smpte_bypass" LOC = C6;
+#NET "ser_dvb_asi" LOC = A3;
+#NET "ser_sdhdn" LOC = E9;
+NET "p_wr_req[0]" LOC = L15;
+NET "p_wr_req[1]" LOC = R21;
+
+NET "led[0]" LOC = Y14;
+NET "led[1]" LOC = W12;
+NET "led[2]" LOC = V17;
+NET "led[3]" LOC = AA17;
+NET "led[4]" LOC = AA12;
+NET "led[5]" LOC = AB12;
+NET "led[6]" LOC = V9;
+NET "led[7]" LOC = W13;
+
+NET "spi_sck"       LOC = G9;
+NET "spi_ss[0]"     LOC = D5;
+NET "spi_ss[1]"     LOC = B13;
+NET "spi_ss[2]"     LOC = A4;
+NET "spi_ss[3]"     LOC = C13;
+NET "spi_ss[4]"     LOC = B15;
+NET "spi_mosi"      LOC = G13;
+NET "spi_miso"      LOC = A5;
+NET "gs4911_host_B" LOC = B4;
+NET "gs4911_sclk"   LOC = B3;
+NET "gs4911_sdin"   LOC = D6;
+NET "gs4911_sdout"  LOC = E8;
+NET "gs4911_csb"    LOC = A9;
+NET "PCLK_4911_1531" LOC = A11;
+NET "GS4911_LOCK_LOST" LOC = B22;
+NET "GS4911_REF_LOST"  LOC = B21;
+
+#---------------------------------------------------------------------------------------------
+# Prohibit the use of configuration pins
+#---------------------------------------------------------------------------------------------
+CONFIG CONFIG_MODE=S_SERIAL;
+
+CONFIG PROHIBIT = W5;   # MODE 0
+CONFIG PROHIBIT = V6;   # MODE 1
+CONFIG PROHIBIT = W4;   # MODE 2
+CONFIG PROHIBIT = V13;  # INIT_B
+CONFIG PROHIBIT = AB20; # DIN
+CONFIG PROHIBIT = AA20; # CCLK
+CONFIG PROHIBIT = J1;
+CONFIG PROHIBIT = N1;
+CONFIG PROHIBIT = T1;
+CONFIG PROHIBIT = J8;
+CONFIG PROHIBIT = R6;
+CONFIG PROHIBIT = H7;
+CONFIG PROHIBIT = L8;
+CONFIG PROHIBIT = T6;
+CONFIG PROHIBIT = R12;
+CONFIG PROHIBIT = R13;
+CONFIG PROHIBIT = R14;
+CONFIG PROHIBIT = T10;
+CONFIG PROHIBIT = T11;
+CONFIG PROHIBIT = T15;
+CONFIG PROHIBIT = T16;
+CONFIG PROHIBIT = T7;
+CONFIG PROHIBIT = T8;
+CONFIG PROHIBIT = V8;
+CONFIG PROHIBIT = P22;
+CONFIG PROHIBIT = R16;
+CONFIG PROHIBIT = R18;
+CONFIG PROHIBIT = N16;
+CONFIG PROHIBIT = M15;
+CONFIG PROHIBIT = K14;
+CONFIG PROHIBIT = J15;
+CONFIG PROHIBIT = H16;
+CONFIG PROHIBIT = A15;
+CONFIG PROHIBIT = C9;
+CONFIG PROHIBIT = D19;
+CONFIG PROHIBIT = B19;
+CONFIG PROHIBIT = B2;
+CONFIG PROHIBIT = G8;
+CONFIG PROHIBIT = H12;
+CONFIG PROHIBIT = H9;
+ 
+
+

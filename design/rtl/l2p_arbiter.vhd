@@ -29,7 +29,7 @@ use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
 
 
-entity arbiter is
+entity l2p_arbiter is
   port
     (
       ---------------------------------------------------------
@@ -67,10 +67,10 @@ entity arbiter is
       arb_ser_dframe_o : out std_logic;
       arb_ser_data_o   : out std_logic_vector(31 downto 0)
       );
-end arbiter;
+end l2p_arbiter;
 
 
-architecture behaviour of arbiter is
+architecture rtl of l2p_arbiter is
 
 
   ------------------------------------------------------------------------------
@@ -166,4 +166,4 @@ begin
   arb_pdm_gnt_o <= arb_pdm_gnt;
   arb_ldm_gnt_o <= arb_ldm_gnt;
 
-end behaviour;
+end rtl;
