@@ -21,7 +21,7 @@
 --------------------------------------------------------------------------------
 -- last changes: 23-09-2010 (mcattin) 
 --------------------------------------------------------------------------------
--- TODO: - wishbone buses address map and mux
+-- TODO: - DMA wishbone bus address map
 --       - reset and clock signals
 --       - wishbone timeout generic
 --       - rename component instance -> cmp_xxx
@@ -311,14 +311,14 @@ begin
   ------------------------------------------------------------------------------
   -- Reset aligned to core clock
   ------------------------------------------------------------------------------
-  process (clk_p, rst_n_a_i)
+  p_core_rst : process (clk_p, rst_n_a_i)
   begin
     if rst_n_a_i = c_RST_ACTIVE then
       rst_reg <= c_RST_ACTIVE;
     elsif rising_edge(clk_p) then
       rst_reg <= not(c_RST_ACTIVE);
     end if;
-  end process;
+  end process p_core_rst;
 
   cmp_rst_buf : BUFG
     port map (
@@ -421,7 +421,7 @@ begin
   -----------------------------------------------------------------------------
   -- Wishbone master
   -----------------------------------------------------------------------------
-  u_wbmaster32 : wbmaster32
+  cmp_wbmaster32 : wbmaster32
     generic map
     (
       g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1),  -- +1 for the DMA controller (wb slave always present)
@@ -493,7 +493,7 @@ begin
   -----------------------------------------------------------------------------
   -- DMA controller
   -----------------------------------------------------------------------------
-  u_dma_controller : dma_controller
+  cmp_dma_controller : dma_controller
     port map
     (
       clk_i   => clk_p,
@@ -540,7 +540,7 @@ begin
   -----------------------------------------------------------------------------
   -- L2P DMA master
   -----------------------------------------------------------------------------
-  u_l2p_dma_master : l2p_dma_master
+  cmp_l2p_dma_master : l2p_dma_master
     port map
     (
       clk_i   => clk_p,
@@ -581,7 +581,7 @@ begin
   -----------------------------------------------------------------------------
   -- P2L DMA  master
   -----------------------------------------------------------------------------
-  u_p2l_dma_master : p2l_dma_master
+  cmp_p2l_dma_master : p2l_dma_master
     port map
     (
       clk_i   => clk_p,
@@ -665,13 +665,8 @@ begin
       dma_stb_o <= '0';
       dma_we_o  <= 'X';
     end if;
-  end process;
-  --dma_adr_o       <= l2p_dma_adr or p2l_dma_adr;
-  --dma_dat_o       <= l2p_dma_dat_m2s or p2l_dma_dat_m2s;
-  --dma_sel_o       <= l2p_dma_sel or p2l_dma_sel;
-  --dma_cyc_o       <= l2p_dma_cyc or p2l_dma_cyc;
-  --dma_stb_o       <= l2p_dma_stb or p2l_dma_stb;
-  --dma_we_o        <= l2p_dma_we or p2l_dma_we;
+  end process p_dma_wb_mux;
+
   l2p_dma_dat_s2m <= dma_dat_i;
   p2l_dma_dat_s2m <= dma_dat_i;
   l2p_dma_ack     <= dma_ack_i;
@@ -687,7 +682,7 @@ begin
   -----------------------------------------------------------------------------
   -- Resync GN412x L2P status signals
   -----------------------------------------------------------------------------
-  process (clk_p, rst_n)
+  p_l2p_status_sync : process (clk_p, rst_n)
   begin
     if(rst_n = c_RST_ACTIVE) then
       l_wr_rdy_t   <= "00";
@@ -709,12 +704,12 @@ begin
       l2p_rdy_t <= l2p_rdy_i;
       l2p_rdy   <= l2p_rdy_t;
     end if;
-  end process;
+  end process p_l2p_status_sync;
 
   -----------------------------------------------------------------------------
   -- L2P arbiter, arbitrates access to GN4124
   -----------------------------------------------------------------------------
-  u_arbiter : arbiter
+  cmp_l2p_arbiter : l2p_arbiter
     port map
     (
       ---------------------------------------------------------

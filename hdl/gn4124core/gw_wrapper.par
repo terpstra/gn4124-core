@@ -1,0 +1,594 @@
+Release 12.2 par M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+ABPC10853::  Mon Oct 25 10:21:57 2010
+
+par -w -intstyle ise -pl high -rl high -xe n -t 1 gw_wrapper_map.ncd
+gw_wrapper.ncd gw_wrapper.pcf 
+
+
+Constraints file: gw_wrapper.pcf.
+Loading device for application Rf_Device from file '3s1400a.nph' in environment /opt/Xilinx/12.2/ISE_DS/ISE/.
+   "gw_wrapper" is an NCD, version 3.2, device xc3s1400a, package fg484, speed -5
+WARNING:ConstraintSystem:64 - Constraint <NET "L_WR_RDY<1>/L_WR_RDY_1_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7636)]
+   overrides constraint <NET "L_WR_RDY<1>/L_WR_RDY_1_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7635)] on the design object
+   'L_WR_RDY<1>/L_WR_RDY_1_IBUF'.
+
+WARNING:ConstraintSystem:64 - Constraint <NET "L_WR_RDY<0>/L_WR_RDY_0_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7638)]
+   overrides constraint <NET "L_WR_RDY<0>/L_WR_RDY_0_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7637)] on the design object
+   'L_WR_RDY<0>/L_WR_RDY_0_IBUF'.
+
+WARNING:ConstraintSystem:64 - Constraint <NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7643)] overrides
+   constraint <NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7642)] on the design object 'VC_RDY<1>_IBUF'.
+
+WARNING:ConstraintSystem:64 - Constraint <NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7645)] overrides
+   constraint <NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns;> [gw_wrapper.pcf(7644)] on the design object 'VC_RDY<0>_IBUF'.
+
+
+Initializing temperature to 85.000 Celsius. (default - Range: 0.000 to 85.000 Celsius)
+Initializing voltage to 1.140 Volts. (default - Range: 1.140 to 1.260 Volts)
+
+
+Device speed data version:  "PRODUCTION 1.41 2010-06-22".
+
+
+
+Design Summary Report:
+
+ Number of External IOBs                         179 out of 375    47%
+
+   Number of External Input IOBs                130
+
+      Number of External Input IBUFs            130
+        Number of LOCed External Input IBUFs    130 out of 130   100%
+
+
+   Number of External Output IOBs                45
+
+      Number of External Output DIFFMs            1
+        Number of LOCed External Output DIFFMs    1 out of 1     100%
+
+      Number of External Output DIFFSs            1
+        Number of LOCed External Output DIFFSs    1 out of 1     100%
+
+      Number of External Output IOBs             43
+        Number of LOCed External Output IOBs     37 out of 43     86%
+
+
+   Number of External Bidir IOBs                  0
+
+
+   Number of BUFGMUXs                        4 out of 24     16%
+      Number of LOCed BUFGMUXs               2 out of 4      50%
+
+   Number of RAMB16BWEs                     11 out of 32     34%
+   Number of Slices                       2604 out of 11264  23%
+      Number of SLICEMs                      3 out of 5632    1%
+
+
+
+Overall effort level (-ol):   Not applicable because -pl and -rl switches are used
+Router effort level (-rl):    High 
+
+INFO:Timing:3386 - Intersecting Constraints found and resolved.  For more information, see the TSI report.  Please
+   consult the Xilinx Command Line Tools User Guide for information on generating a TSI report.
+Starting initial Timing Analysis.  REAL time: 36 secs 
+Finished initial Timing Analysis.  REAL time: 36 secs 
+
+WARNING:Par:288 - The signal RESET_IN_N_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SPI_SCK_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SDA_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SCL_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GS4911_REF_LOST_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SPI_MOSI_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GS4911_LOCK_LOST_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal VC_RDY<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal VC_RDY<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SPI_SS<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SPI_SS<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SPI_SS<2>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SPI_SS<3>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SPI_SS<4>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal L_RST33_N_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal TX_ERROR_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES_F_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal CNTRL0_DDR2_DQ<13>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES_H_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES_V_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SYNCSEPERATOR_F_TIMING_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SYNCSEPERATOR_H_TIMING_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal P_WR_REQ<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal P_WR_REQ<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<2>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<3>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<4>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<5>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<6>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<7>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<8>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<9>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<2>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<3>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<4>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<5>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<6>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<7>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<8>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<9>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal SYNCSEPERATOR_V_TIMING_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES_SMPTE_BYPASS_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GS4911_SDOUT_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES_SDHDN_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<2>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<3>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<4>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<5>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<6>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DEBUG<7>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal PCLK_4911_1531_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES_DVB_ASI_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<10>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<11>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<20>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<12>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<21>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<13>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<30>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<22>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<14>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<31>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<23>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<15>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<24>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<16>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<25>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<17>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<26>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<18>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<27>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<19>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<28>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal MIC_DATA<29>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES_PCLK_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<10>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<11>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<12>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<13>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<14>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<15>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<10>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<11>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<12>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<13>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<14>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<15>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<16>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<17>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<18>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal DES<19>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<0>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<1>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<2>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<3>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<4>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<5>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<6>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<7>_IBUF has no load.  PAR will not attempt to route this signal.
+WARNING:Par:288 - The signal GPIO<9>_IBUF has no load.  PAR will not attempt to route this signal.
+Starting Router
+
+
+Phase  1  : 16828 unrouted;      REAL time: 1 mins 
+
+Phase  2  : 14098 unrouted;      REAL time: 1 mins 1 secs 
+
+Phase  3  : 3974 unrouted;      REAL time: 1 mins 9 secs 
+
+Phase  4  : 4388 unrouted; (Setup:23955, Hold:0, Component Switching Limit:0)     REAL time: 1 mins 20 secs 
+
+Phase  5  : 0 unrouted; (Setup:46280, Hold:0, Component Switching Limit:0)     REAL time: 2 mins 
+
+Updating file: gw_wrapper.ncd with current fully routed design.
+
+Phase  6  : 0 unrouted; (Setup:46280, Hold:0, Component Switching Limit:0)     REAL time: 2 mins 4 secs 
+
+Phase  7  : 0 unrouted; (Setup:15297, Hold:0, Component Switching Limit:0)     REAL time: 4 mins 31 secs 
+
+Updating file: gw_wrapper.ncd with current fully routed design.
+
+Phase  8  : 0 unrouted; (Setup:14786, Hold:0, Component Switching Limit:0)     REAL time: 5 mins 36 secs 
+
+Updating file: gw_wrapper.ncd with current fully routed design.
+
+Phase  9  : 0 unrouted; (Setup:14786, Hold:0, Component Switching Limit:0)     REAL time: 8 mins 42 secs 
+
+Phase 10  : 0 unrouted; (Setup:14786, Hold:0, Component Switching Limit:0)     REAL time: 8 mins 43 secs 
+
+Phase 11  : 0 unrouted; (Setup:9458, Hold:0, Component Switching Limit:0)     REAL time: 8 mins 45 secs 
+
+Total REAL time to Router completion: 8 mins 46 secs 
+Total CPU time to Router completion: 8 mins 38 secs 
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+Generating "PAR" statistics.
+
+**************************
+Generating Clock Report
+**************************
+
++---------------------+--------------+------+------+------------+-------------+
+|        Clock Net    |   Resource   |Locked|Fanout|Net Skew(ns)|Max Delay(ns)|
++---------------------+--------------+------+------+------------+-------------+
+|cmp_gn4124_core/clk_ |              |      |      |            |             |
+|                   p | BUFGMUX_X2Y10|Yes   | 1793 |  0.287     |  1.175      |
++---------------------+--------------+------+------+------------+-------------+
+|               l_clk |  BUFGMUX_X2Y1| No   |  702 |  0.198     |  1.085      |
++---------------------+--------------+------+------+------------+-------------+
+|cmp_gn4124_core/clk_ |              |      |      |            |             |
+|                   n | BUFGMUX_X2Y11|Yes   |   49 |  0.101     |  1.041      |
++---------------------+--------------+------+------+------------+-------------+
+
+* Net Skew is the difference between the minimum and maximum routing
+only delays for the net. Note this is different from Clock Skew which
+is reported in TRCE timing report. Clock Skew is the difference between
+the minimum and maximum path delays which includes logic delays.
+
+Timing Score: 9458 (Setup: 9458, Hold: 0, Component Switching Limit: 0)
+
+WARNING:Par:468 - Your design did not meet timing.  The following are some suggestions to assist you to meet timing in
+   your design.
+
+   Review the timing report using Timing Analyzer (In ISE select "Post-Place &
+   Route Static Timing Report"). Go to the failing constraint(s) and evaluate the failing paths for each constraint.
+
+   Try the Design Goal and Strategies for Timing Performance(In ISE select Project -> Design Goals & Strategies) to
+   ensure the best options are set in the tools for timing closure.
+
+   Increase the PAR Effort Level setting to "high"
+
+   Use the Xilinx "SmartXplorer" script to try special combinations of
+   options known to produce very good results.
+
+   Visit the Xilinx technical support web at http://support.xilinx.com and go to
+   either "Troubleshoot->Tech Tips->Timing & Constraints" or "
+   TechXclusives->Timing Closure" for tips and suggestions for meeting timing
+   in your design.
+
+Number of Timing Constraints that were not applied: 10
+
+Asterisk (*) preceding a constraint indicates it was not met.
+   This may be due to a setup or hold violation.
+
+----------------------------------------------------------------------------------------------------------
+  Constraint                                |    Check    | Worst Case |  Best Case | Timing |   Timing   
+                                            |             |    Slack   | Achievable | Errors |    Score   
+----------------------------------------------------------------------------------------------------------
+* TS_p2l_clkn = PERIOD TIMEGRP "p2l_clkn_gr | SETUP       |    -0.589ns|     5.589ns|      54|        9458
+  p" 5 ns HIGH 50%                          | HOLD        |     0.199ns|            |       0|           0
+----------------------------------------------------------------------------------------------------------
+  NET "cmp_gn4124_core/clk_p_buf" MAXDELAY  | MAXDELAY    |     0.078ns|     0.022ns|       0|           0
+  = 0.1 ns                                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  NET "cmp_gn4124_core/clk_n_buf" MAXDELAY  | MAXDELAY    |     0.078ns|     0.022ns|       0|           0
+  = 0.1 ns                                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_CLKp" OFFSET = OUT 6.5 ns AFTER | MAXDELAY    |     0.237ns|     6.263ns|       0|           0
+   COMP "P2L_CLKp" HIGH                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_CLKn" OFFSET = OUT 6.5 ns AFTER | MAXDELAY    |     0.237ns|     6.263ns|       0|           0
+   COMP "P2L_CLKn" HIGH                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<12>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.306ns|     6.194ns|       0|           0
+  FTER COMP "P2L_CLKn" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<12>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.306ns|     6.194ns|       0|           0
+  FTER COMP "P2L_CLKp" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<14>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.306ns|     6.194ns|       0|           0
+  FTER COMP "P2L_CLKp" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<14>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.306ns|     6.194ns|       0|           0
+  FTER COMP "P2L_CLKn" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<13>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.310ns|     6.190ns|       0|           0
+  FTER COMP "P2L_CLKn" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<13>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.310ns|     6.190ns|       0|           0
+  FTER COMP "P2L_CLKp" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<1>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.326ns|     6.174ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DFRAME" OFFSET = OUT 6.5 ns AFT | MAXDELAY    |     0.326ns|     6.174ns|       0|           0
+  ER COMP "P2L_CLKn" HIGH                   |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<1>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.326ns|     6.174ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<0>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.326ns|     6.174ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<0>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.326ns|     6.174ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<8>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.330ns|     6.170ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<8>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.330ns|     6.170ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<9>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.330ns|     6.170ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<9>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.330ns|     6.170ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<11>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.336ns|     6.164ns|       0|           0
+  FTER COMP "P2L_CLKp" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<11>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.336ns|     6.164ns|       0|           0
+  FTER COMP "P2L_CLKn" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<6>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.337ns|     6.163ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<6>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.337ns|     6.163ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<7>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.337ns|     6.163ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<7>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.337ns|     6.163ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<3>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.340ns|     6.160ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<2>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.340ns|     6.160ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<2>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.340ns|     6.160ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<3>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.340ns|     6.160ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<5>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.351ns|     6.149ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<5>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.351ns|     6.149ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<4>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.351ns|     6.149ns|       0|           0
+  TER COMP "P2L_CLKn" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<4>" OFFSET = OUT 6.5 ns AF | MAXDELAY    |     0.351ns|     6.149ns|       0|           0
+  TER COMP "P2L_CLKp" HIGH                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<15>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.358ns|     6.142ns|       0|           0
+  FTER COMP "P2L_CLKp" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<15>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.358ns|     6.142ns|       0|           0
+  FTER COMP "P2L_CLKn" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<10>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.375ns|     6.125ns|       0|           0
+  FTER COMP "P2L_CLKp" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_DATA<10>" OFFSET = OUT 6.5 ns A | MAXDELAY    |     0.375ns|     6.125ns|       0|           0
+  FTER COMP "P2L_CLKn" HIGH                 |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<9>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.376ns|     0.824ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.308ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<9>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.376ns|     0.824ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.308ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "L2P_VALID" OFFSET = OUT 6.5 ns AFTE | MAXDELAY    |     0.378ns|     6.122ns|       0|           0
+  R COMP "P2L_CLKn" HIGH                    |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<6>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.382ns|     0.818ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.301ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<6>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.382ns|     0.818ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.301ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<3>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.383ns|     0.817ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.299ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<3>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.383ns|     0.817ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.299ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<12>" OFFSET = IN 1.2 ns VA | SETUP       |     0.385ns|     0.815ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKp"         | HOLD        |     0.295ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<12>" OFFSET = IN 1.2 ns VA | SETUP       |     0.386ns|     0.814ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKn"         | HOLD        |     0.295ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<13>" OFFSET = IN 1.2 ns VA | SETUP       |     0.400ns|     0.800ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKp"         | HOLD        |     0.275ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<13>" OFFSET = IN 1.2 ns VA | SETUP       |     0.401ns|     0.799ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKn"         | HOLD        |     0.275ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<0>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.408ns|     0.792ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.271ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<0>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.408ns|     0.792ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.271ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<8>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.415ns|     0.785ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.253ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<8>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.416ns|     0.784ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.253ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<10>" OFFSET = IN 1.2 ns VA | SETUP       |     0.421ns|     0.779ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKp"         | HOLD        |     0.246ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<15>" OFFSET = IN 1.2 ns VA | SETUP       |     0.421ns|     0.779ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKp"         | HOLD        |     0.246ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<10>" OFFSET = IN 1.2 ns VA | SETUP       |     0.422ns|     0.778ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKn"         | HOLD        |     0.246ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<15>" OFFSET = IN 1.2 ns VA | SETUP       |     0.422ns|     0.778ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKn"         | HOLD        |     0.246ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<4>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.423ns|     0.777ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.252ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<4>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.423ns|     0.777ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.252ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<11>" OFFSET = IN 1.2 ns VA | SETUP       |     0.425ns|     0.775ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKp"         | HOLD        |     0.242ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<14>" OFFSET = IN 1.2 ns VA | SETUP       |     0.425ns|     0.775ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKp"         | HOLD        |     0.242ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<14>" OFFSET = IN 1.2 ns VA | SETUP       |     0.426ns|     0.774ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKn"         | HOLD        |     0.242ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<11>" OFFSET = IN 1.2 ns VA | SETUP       |     0.426ns|     0.774ns|       0|           0
+  LID 1.6 ns BEFORE COMP "P2L_CLKn"         | HOLD        |     0.242ns|            |       0|           0
+   HIGH                                     |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<7>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.435ns|     0.765ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.238ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<7>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.435ns|     0.765ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.238ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<1>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.435ns|     0.765ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.238ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<1>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.435ns|     0.765ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.238ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<5>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.439ns|     0.761ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.234ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<2>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.439ns|     0.761ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.234ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<2>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.439ns|     0.761ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKp"          | HOLD        |     0.234ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DATA<5>" OFFSET = IN 1.2 ns VAL | SETUP       |     0.439ns|     0.761ns|       0|           0
+  ID 1.6 ns BEFORE COMP "P2L_CLKn"          | HOLD        |     0.234ns|            |       0|           0
+  HIGH                                      |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  TS_p2l_clkp = PERIOD TIMEGRP "p2l_clkp_gr | MINPERIOD   |     0.500ns|     4.500ns|       0|           0
+  p" 5 ns HIGH 50%                          |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_DFRAME" OFFSET = IN 1.2 ns VALI | SETUP       |     1.176ns|     0.024ns|       0|           0
+  D 3 ns BEFORE COMP "P2L_CLKp" HIGH        | HOLD        |     1.198ns|            |       0|           0
+----------------------------------------------------------------------------------------------------------
+  COMP "P2L_VALID" OFFSET = IN 1.2 ns VALID | SETUP       |     1.176ns|     0.024ns|       0|           0
+   3 ns BEFORE COMP "P2L_CLKp" HIGH         | HOLD        |     1.198ns|            |       0|           0
+----------------------------------------------------------------------------------------------------------
+  NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns      | MAXDELAY    |     2.000ns|     0.000ns|       0|           0
+----------------------------------------------------------------------------------------------------------
+  NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns      | MAXDELAY    |     2.000ns|     0.000ns|       0|           0
+----------------------------------------------------------------------------------------------------------
+  NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns      | N/A         |         N/A|         N/A|     N/A|         N/A
+----------------------------------------------------------------------------------------------------------
+  NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns      | N/A         |         N/A|         N/A|     N/A|         N/A
+----------------------------------------------------------------------------------------------------------
+  NET "P_RD_D_RDY<0>/P_RD_D_RDY_0_IBUF" MAX | N/A         |         N/A|         N/A|     N/A|         N/A
+  DELAY = 2 ns                              |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  NET "P_RD_D_RDY<1>/P_RD_D_RDY_1_IBUF" MAX | N/A         |         N/A|         N/A|     N/A|         N/A
+  DELAY = 2 ns                              |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  NET "L2P_RDY/L2P_RDY_IBUF" MAXDELAY = 2 n | N/A         |         N/A|         N/A|     N/A|         N/A
+  s                                         |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  NET "L_WR_RDY<0>/L_WR_RDY_0_IBUF" MAXDELA | N/A         |         N/A|         N/A|     N/A|         N/A
+  Y = 2 ns                                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  NET "L_WR_RDY<0>/L_WR_RDY_0_IBUF" MAXDELA | N/A         |         N/A|         N/A|     N/A|         N/A
+  Y = 2 ns                                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  NET "L_WR_RDY<1>/L_WR_RDY_1_IBUF" MAXDELA | N/A         |         N/A|         N/A|     N/A|         N/A
+  Y = 2 ns                                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+  NET "L_WR_RDY<1>/L_WR_RDY_1_IBUF" MAXDELA | N/A         |         N/A|         N/A|     N/A|         N/A
+  Y = 2 ns                                  |             |            |            |        |            
+----------------------------------------------------------------------------------------------------------
+
+
+1 constraint not met.
+INFO:Timing:2761 - N/A entries in the Constraints List may indicate that the 
+   constraint is not analyzed due to the following: No paths covered by this 
+   constraint; Other constraints intersect with this constraint; or This 
+   constraint was disabled by a Path Tracing Control. Please run the Timespec 
+   Interaction Report (TSI) via command line (trce tsi) or Timing Analyzer GUI.
+
+
+Generating Pad Report.
+
+All signals are completely routed.
+
+WARNING:Par:283 - There are 106 loadless signals in this design. This design will cause Bitgen to issue DRC warnings.
+
+Total REAL time to PAR completion: 8 mins 50 secs 
+Total CPU time to PAR completion: 8 mins 42 secs 
+
+Peak Memory Usage:  223 MB
+
+Placer: Placement generated during map.
+Routing: Completed - No errors found.
+Timing: Completed - 54 errors found.
+
+Number of error messages: 0
+Number of warning messages: 113
+Number of info messages: 1
+
+Writing design to file gw_wrapper.ncd
+
+
+
+PAR done!
