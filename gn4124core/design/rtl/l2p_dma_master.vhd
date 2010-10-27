@@ -397,7 +397,7 @@ begin
         when L2P_ADDR_L =>
           -- send host address 32 lowest bits
           ldm_arb_data_o  <= std_logic_vector(l2p_address_l);
-          if(l2p_data_cnt <= 2) then
+          if(l2p_data_cnt <= 1) then
             -- Only one 32-bit data word to send
             l2p_dma_current_state <= L2P_LAST_DATA;
             -- Stop reading from fifo
