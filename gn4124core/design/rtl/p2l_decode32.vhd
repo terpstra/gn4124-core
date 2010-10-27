@@ -199,7 +199,7 @@ begin
         p2l_hdr_cid    <= des_p2l_data_i(11 downto 10);
         p2l_hdr_last   <= des_p2l_data_i(15);
         if (des_p2l_data_i(26) = '1') then
-          -- read completion
+          -- packet type = read completion
           p2l_hdr_stat <= des_p2l_data_i(17 downto 16);  -- Completion status
         else
           -- Target read or write
@@ -224,7 +224,9 @@ begin
     elsif rising_edge(clk_i) then
 
       -- Indicate address cycle(s)
-      if (p2l_packet_start = '1') then
+      -- Address cycle comes just after the header.
+      -- Read completion packet doesn't have an address field, then addr_cycle is not asserted.
+      if (p2l_packet_start = '1' and des_p2l_data_i(26) = '0') then
         p2l_addr_cycle <= '1';
       elsif (p2l_addr_cycle = '1' and des_p2l_valid_i = '1') then
         p2l_addr_cycle <= '0';
@@ -268,7 +270,10 @@ begin
     elsif rising_edge(clk_i) then
 
       -- Indicates data cycle(s)
-      if (p2l_addr_cycle = '1' and des_p2l_valid_i = '1' and des_p2l_dframe_i = '1') then
+      -- Data cycle comes after an address cycle, exept for read completion packet
+      -- in this case it comes just after the header.
+      if ((p2l_addr_cycle = '1' or (p2l_packet_start = '1' and des_p2l_data_i(26) = '1'))
+           and des_p2l_valid_i = '1' and des_p2l_dframe_i = '1') then
         p2l_data_cycle <= '1';
       elsif (des_p2l_dframe_i = '0') then
         p2l_data_cycle <= '0';
