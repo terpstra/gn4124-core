@@ -138,9 +138,6 @@ architecture behaviour of p2l_dma_master is
   signal s_l2p_header    : std_logic_vector(31 downto 0);
   signal l2p_last_packet : std_logic;
 
-  -- Next item retrieve
-  signal next_item_data_cnt : unsigned(2 downto 0);
-
   -- Target address counter
   signal target_addr_cnt : unsigned(29 downto 0);
 
@@ -156,13 +153,14 @@ architecture behaviour of p2l_dma_master is
   signal to_wb_fifo_valid : std_logic;
 
   -- wishbone
-  signal wb_write_cnt : unsigned(6 downto 0);
-  signal wb_ack_cnt  : unsigned(6 downto 0);
+  signal wb_write_cnt  : unsigned(6 downto 0);
+  signal wb_ack_cnt    : unsigned(6 downto 0);
   signal p2l_dma_cyc_t : std_logic;
 
   -- P2L DMA read request FSM
   type   p2l_dma_state_type is (P2L_IDLE, P2L_HEADER, P2L_ADDR_H, P2L_ADDR_L, P2L_WAIT_READ_COMPLETION);
   signal p2l_dma_current_state : p2l_dma_state_type;
+  signal p2l_data_cnt          : unsigned(29 downto 0);
 
 
 begin
@@ -337,7 +335,8 @@ begin
           if (dma_ctrl_abort_i = '1') then
             rx_error_o            <= '1';
             p2l_dma_current_state <= P2L_IDLE;
-          elsif (pd_pdm_master_cpld_i = '1' and pd_pdm_data_last_i = '1') then
+          elsif (pd_pdm_master_cpld_i = '1' and pd_pdm_data_last_i = '1'
+                 and p2l_data_cnt <= 1) then
             -- last word of read completion has been received
             if (l2p_last_packet = '0') then
               -- A new read request is needed, DMA size > max payload
@@ -375,6 +374,25 @@ begin
   end process p_read_req_fsm;
 
   ------------------------------------------------------------------------------
+  -- Received data counter
+  ------------------------------------------------------------------------------
+  p_recv_data_cnt : process (clk_i, rst_n_i)
+  begin
+    if (rst_n_i = c_RST_ACTIVE) then
+      p2l_data_cnt <= (others => '0');
+    elsif rising_edge(clk_i) then
+      if (dma_ctrl_start_p2l_i = '1' or dma_ctrl_start_next_i = '1') then
+        -- Store number of data (32-bit words) to be received
+        p2l_data_cnt <= unsigned(dma_ctrl_len_i(31 downto 2));  -- dma_ctrl_len_i is in byte
+      elsif (p2l_dma_current_state = P2L_WAIT_READ_COMPLETION
+             and pd_pdm_data_valid_i = '1') then
+        -- decrement number of data to be received
+        p2l_data_cnt <= p2l_data_cnt - 1;
+      end if;
+    end if;
+  end process p_recv_data_cnt;
+
+  ------------------------------------------------------------------------------
   -- Next DMA item retrieve
   ------------------------------------------------------------------------------
   p_next_item : process (clk_i, rst_n_i)
@@ -387,28 +405,24 @@ begin
       next_item_next_l_o       <= (others => '0');
       next_item_next_h_o       <= (others => '0');
       next_item_attrib_o       <= (others => '0');
-      next_item_data_cnt       <= (others => '0');
     elsif rising_edge(clk_i) then
-      if (dma_ctrl_start_next_i = '1') then
-        next_item_data_cnt <= (others => '0');
-      elsif (p2l_dma_current_state = P2L_WAIT_READ_COMPLETION
+      if (p2l_dma_current_state = P2L_WAIT_READ_COMPLETION
              and is_next_item = '1' and pd_pdm_data_valid_i = '1') then
-        next_item_data_cnt <= next_item_data_cnt + 1;
         -- next item data are supposed to be received in the rigth order !!
-        case next_item_data_cnt is
-          when "000" =>
+        case p2l_data_cnt(2 downto 0) is
+          when "111" =>
             next_item_carrier_addr_o <= pd_pdm_data_i;
-          when "001" =>
-            next_item_host_addr_l_o <= pd_pdm_data_i;
-          when "010" =>
-            next_item_host_addr_h_o <= pd_pdm_data_i;
-          when "011" =>
-            next_item_len_o <= pd_pdm_data_i;
-          when "100" =>
-            next_item_next_l_o <= pd_pdm_data_i;
-          when "101" =>
-            next_item_next_h_o <= pd_pdm_data_i;
           when "110" =>
+            next_item_host_addr_l_o <= pd_pdm_data_i;
+          when "101" =>
+            next_item_host_addr_h_o <= pd_pdm_data_i;
+          when "100" =>
+            next_item_len_o <= pd_pdm_data_i;
+          when "011" =>
+            next_item_next_l_o <= pd_pdm_data_i;
+          when "010" =>
+            next_item_next_h_o <= pd_pdm_data_i;
+          when "001" =>
             next_item_attrib_o <= pd_pdm_data_i;
           when others =>
             null;
