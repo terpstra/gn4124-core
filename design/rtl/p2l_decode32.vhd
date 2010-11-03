@@ -281,11 +281,11 @@ begin
 
       -- Generates data strobe
       -- For read completion, data are valid just after the header (no address)
-      if (master_cpld = '1') then
-        p2l_d_valid <= des_p2l_valid_i;
-      else
+      --if (master_cpld = '1') then
+      --  p2l_d_valid <= des_p2l_valid_i;
+      --else
         p2l_d_valid <= p2l_data_cycle and des_p2l_valid_i;
-      end if;
+      --end if;
 
       -- Generates last data signal
       p2l_d_last <= p2l_data_cycle and not(des_p2l_dframe_i);
