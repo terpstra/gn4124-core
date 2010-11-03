@@ -117,7 +117,11 @@ architecture behaviour of p2l_dma_master is
   -----------------------------------------------------------------------------
   -- Constants declaration
   -----------------------------------------------------------------------------
-  constant c_P2L_MAX_PAYLOAD       : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- MUST BE 1024
+
+  -- c_MAX_READ_REQ_SIZE is the maximum size (in 32-bit words) of the payload of a packet.
+  -- Allowed c_MAX_READ_REQ_SIZE values are: 32, 64, 128, 256, 512, 1024.
+  -- This constant must be set according to the GN4124 and motherboard chipset capabilities.
+  constant c_MAX_READ_REQ_SIZE     : unsigned(10 downto 0)        := to_unsigned(1024, 11);
   constant c_TO_WB_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
   -----------------------------------------------------------------------------
@@ -160,7 +164,7 @@ architecture behaviour of p2l_dma_master is
   -- P2L DMA read request FSM
   type   p2l_dma_state_type is (P2L_IDLE, P2L_HEADER, P2L_ADDR_H, P2L_ADDR_L, P2L_WAIT_READ_COMPLETION);
   signal p2l_dma_current_state : p2l_dma_state_type;
-  signal p2l_data_cnt          : unsigned(29 downto 0);
+  signal p2l_data_cnt          : unsigned(10 downto 0);
 
 
 begin
@@ -219,12 +223,13 @@ begin
       elsif (p2l_dma_current_state = P2L_HEADER) then
         -- if DMA length is bigger than the max PCIe payload size,
         -- we have to generate several read request
-        if (l2p_len_cnt > c_P2L_MAX_PAYLOAD) then
-          -- when payload length is 1024, the header length field = 0
-          l2p_len_header  <= (others => '0');
+        if (l2p_len_cnt > c_MAX_READ_REQ_SIZE) then
+          -- when max payload length is 1024, the header length field = 0
+          l2p_len_header  <= c_MAX_READ_REQ_SIZE(9 downto 0);
           l2p_last_packet <= '0';
-        elsif (l2p_len_cnt = c_P2L_MAX_PAYLOAD) then
-          l2p_len_header  <= (others => '0');
+        elsif (l2p_len_cnt = c_MAX_READ_REQ_SIZE) then
+          -- when max payload length is 1024, the header length field = 0
+          l2p_len_header  <= c_MAX_READ_REQ_SIZE(9 downto 0);
           l2p_last_packet <= '1';
         else
           l2p_len_header  <= l2p_len_cnt(9 downto 0);
@@ -233,23 +238,24 @@ begin
       elsif (p2l_dma_current_state = P2L_ADDR_L) then
         -- Subtract the number of word requested to generate a new read request if needed
         if (l2p_last_packet = '0') then
-          l2p_len_cnt <= l2p_len_cnt - c_P2L_MAX_PAYLOAD;
+          l2p_len_cnt <= l2p_len_cnt - c_MAX_READ_REQ_SIZE;
         else
           l2p_len_cnt <= (others => '0');
         end if;
-      elsif (l2p_last_packet = '0' and p2l_dma_current_state = P2L_WAIT_READ_COMPLETION) then
-        -- Load length of the next read request (if any)
-        if (l2p_len_cnt > c_P2L_MAX_PAYLOAD) then
-          -- when payload length is 1024, the header length field = 0
-          l2p_len_header  <= (others => '0');
-          l2p_last_packet <= '0';
-        elsif (l2p_len_cnt = c_P2L_MAX_PAYLOAD) then
-          l2p_len_header  <= (others => '0');
-          l2p_last_packet <= '1';
-        else
-          l2p_len_header  <= l2p_len_cnt(9 downto 0);
-          l2p_last_packet <= '1';
-        end if;
+        --elsif (l2p_last_packet = '0' and p2l_dma_current_state = P2L_WAIT_READ_COMPLETION) then
+        --  -- Load length of the next read request (if any)
+        --  if (l2p_len_cnt > c_MAX_READ_REQ_SIZE) then
+        --    -- when max payload length is 1024, the header length field = 0
+        --    l2p_len_header <= c_MAX_READ_REQ_SIZE(9 downto 0);
+        --    l2p_last_packet <= '0';
+        --  elsif (l2p_len_cnt = c_MAX_READ_REQ_SIZE) then
+        --    -- when max payload length is 1024, the header length field = 0
+        --    l2p_len_header <= c_MAX_READ_REQ_SIZE(9 downto 0);
+        --    l2p_last_packet <= '1';
+        --  else
+        --    l2p_len_header  <= l2p_len_cnt(9 downto 0);
+        --    l2p_last_packet <= '1';
+        --  end if;
       end if;
     end if;
   end process p_read_req;
@@ -368,6 +374,8 @@ begin
           pdm_arb_dframe_o      <= '0';
           dma_ctrl_done_o       <= '0';
           next_item_valid_o     <= '0';
+          completion_error      <= '0';
+          rx_error_o            <= '0';
 
       end case;
     end if;
@@ -381,9 +389,13 @@ begin
     if (rst_n_i = c_RST_ACTIVE) then
       p2l_data_cnt <= (others => '0');
     elsif rising_edge(clk_i) then
-      if (dma_ctrl_start_p2l_i = '1' or dma_ctrl_start_next_i = '1') then
-        -- Store number of data (32-bit words) to be received
-        p2l_data_cnt <= unsigned(dma_ctrl_len_i(31 downto 2));  -- dma_ctrl_len_i is in byte
+      if (p2l_dma_current_state = P2L_ADDR_L) then
+        -- Store number of 32-bit data words to be received for the current read request
+        if l2p_len_header = 0 then
+          p2l_data_cnt <= to_unsigned(1024, p2l_data_cnt'length);
+        else
+          p2l_data_cnt <= '0' & l2p_len_header;
+        end if;
       elsif (p2l_dma_current_state = P2L_WAIT_READ_COMPLETION
              and pd_pdm_data_valid_i = '1') then
         -- decrement number of data to be received
@@ -407,7 +419,7 @@ begin
       next_item_attrib_o       <= (others => '0');
     elsif rising_edge(clk_i) then
       if (p2l_dma_current_state = P2L_WAIT_READ_COMPLETION
-             and is_next_item = '1' and pd_pdm_data_valid_i = '1') then
+          and is_next_item = '1' and pd_pdm_data_valid_i = '1') then
         -- next item data are supposed to be received in the rigth order !!
         case p2l_data_cnt(2 downto 0) is
           when "111" =>
