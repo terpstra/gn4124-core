@@ -128,7 +128,11 @@ architecture behaviour of l2p_dma_master is
   -----------------------------------------------------------------------------
   -- Constants declaration
   -----------------------------------------------------------------------------
-  constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(1024, 11);  -- MUST be 1024
+
+  -- c_L2P_MAX_PAYLOAD is the maximum size (in 32-bit words) of the payload of a packet.
+  -- Allowed c_L2P_MAX_PAYLOAD values are: 32, 64, 128, 256, 512, 1024.
+  -- This constant must be set according to the GN4124 and motherboard chipset capabilities.
+  constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(32, 11);  -- in 32-bit words
   constant c_ADDR_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
   constant c_DATA_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
 
@@ -165,7 +169,7 @@ architecture behaviour of l2p_dma_master is
 
   -- L2P DMA Master FSM
   type l2p_dma_state_type is (L2P_IDLE, L2P_WAIT_DATA, L2P_HEADER, L2P_ADDR_H,
-                                L2P_ADDR_L, L2P_DATA, L2P_LAST_DATA, L2P_WAIT_RDY);
+                              L2P_ADDR_L, L2P_DATA, L2P_LAST_DATA, L2P_WAIT_RDY);
   signal l2p_dma_current_state : l2p_dma_state_type;
 
   -- L2P packet generator
@@ -176,9 +180,10 @@ architecture behaviour of l2p_dma_master is
   signal l2p_address_l   : unsigned(31 downto 0);
   signal l2p_data_cnt    : unsigned(10 downto 0);
   signal l2p_64b_address : std_logic;
-  signal l2p_len_header  : std_logic_vector(9 downto 0);
+  signal l2p_len_header  : unsigned(9 downto 0);
   signal l2p_byte_swap   : std_logic_vector(1 downto 0);
   signal l2p_last_packet : std_logic;
+  signal l2p_lbe_header  : std_logic_vector(3 downto 0);
 
 
 begin
@@ -228,7 +233,7 @@ begin
         target_addr_cnt <= target_addr_cnt + 1;
         dma_length_cnt  <= dma_length_cnt - 1;
         -- Adust data width, fifo width is 32 bits
-        addr_fifo_din <= "00" & std_logic_vector(target_addr_cnt);
+        addr_fifo_din   <= "00" & std_logic_vector(target_addr_cnt);
       else
         addr_fifo_wr <= '0';
       end if;
@@ -239,7 +244,7 @@ begin
   -- Packet generator
   ------------------------------------------------------------------------------
   -- Sends data to the host.
-  -- Split in several packets if amont of data exceeds max payload size.
+  -- Split in several packets if amount of data exceeds max payload size.
 
   p_pkt_gen : process (clk_i, rst_n_i)
   begin
@@ -267,17 +272,17 @@ begin
         -- the data is split in several packets
         if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
           l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
-          -- when payload length is 1024, the header length field = 0
-          l2p_len_header  <= (others => '0');
+          -- when max payload length is 1024, the header length field = 0
+          l2p_len_header  <= c_L2P_MAX_PAYLOAD(9 downto 0);
           l2p_last_packet <= '0';
         elsif (l2p_len_cnt = c_L2P_MAX_PAYLOAD) then
           l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
-          -- if payload length is 1024, the header length field = 0
-          l2p_len_header  <= (others => '0');
+          -- when max payload length is 1024, the header length field = 0
+          l2p_len_header  <= c_L2P_MAX_PAYLOAD(9 downto 0);
           l2p_last_packet <= '1';
         else
           l2p_data_cnt    <= l2p_len_cnt(10 downto 0);
-          l2p_len_header  <= std_logic_vector(l2p_len_cnt(9 downto 0));
+          l2p_len_header  <= l2p_len_cnt(9 downto 0);
           l2p_last_packet <= '1';
         end if;
         -- if host address is 64-bit, generates a 64-bit address memory write
@@ -296,39 +301,44 @@ begin
       elsif (l2p_dma_current_state = L2P_DATA) then
         l2p_data_cnt <= l2p_data_cnt - 1;
       elsif (l2p_last_packet = '0' and l2p_dma_current_state = L2P_LAST_DATA) then
+        -- load the host address of the next packet
+        l2p_address_l <= l2p_address_l + (c_L2P_MAX_PAYLOAD * 4);
         -- load the size of the next packet
         if (l2p_len_cnt > c_L2P_MAX_PAYLOAD) then
           l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
-          -- when payload length is 1024, the header length field = 0
-          l2p_len_header  <= (others => '0');
+          -- when max payload length is 1024, the header length field = 0
+          l2p_len_header  <= c_L2P_MAX_PAYLOAD(9 downto 0);
           l2p_last_packet <= '0';
         elsif (l2p_len_cnt = c_L2P_MAX_PAYLOAD) then
           l2p_data_cnt    <= c_L2P_MAX_PAYLOAD;
-          -- if payload length is 1024, the header length field = 0
-          l2p_len_header  <= (others => '0');
+          -- when max payload length is 1024, the header length field = 0
+          l2p_len_header  <= c_L2P_MAX_PAYLOAD(9 downto 0);
           l2p_last_packet <= '1';
         else
           l2p_data_cnt    <= l2p_len_cnt(10 downto 0);
-          l2p_len_header  <= std_logic_vector(l2p_len_cnt(9 downto 0));
+          l2p_len_header  <= l2p_len_cnt(9 downto 0);
           l2p_last_packet <= '1';
         end if;
       end if;
     end if;
   end process p_pkt_gen;
 
+  -- Last Byte Enable must be "0000" when length = 1
+  l2p_lbe_header <= "0000" when l2p_len_header = 1 else "1111";
+
   -- Packet header
-  s_l2p_header <= "000"                      -->  Traffic Class
-                  & '0'                      -->  Snoop
-                  & "001" & l2p_64b_address  -->  Header type,
-                                             --   memory write 32-bit or
-                                             --   memory write 64-bit
-                  & "1111"                   -->  LBE (Last Byte Enable)
-                  & "1111"                   -->  FBE (First Byte Enable)
-                  & "000"                    -->  Reserved
-                  & '0'                      -->  VC (Virtual Channel)
-                  & "00"                     -->  Reserved
-                  & l2p_len_header;          -->  Length (in 32-bit words)
-                                             --   0x000 => 1024 words (4096 bytes)
+  s_l2p_header <= "000"                                -->  Traffic Class
+                  & '0'                                -->  Snoop
+                  & "001" & l2p_64b_address            -->  Header type,
+                                                       --   memory write 32-bit or
+                                                       --   memory write 64-bit
+                  & l2p_lbe_header                     -->  LBE (Last Byte Enable)
+                  & "1111"                             -->  FBE (First Byte Enable)
+                  & "000"                              -->  Reserved
+                  & '0'                                -->  VC (Virtual Channel)
+                  & "00"                               -->  Reserved
+                  & std_logic_vector(l2p_len_header);  -->  Length (in 32-bit words)
+                                                       --   0x000 => 1024 words (4096 bytes)
 
   -----------------------------------------------------------------------------
   -- L2P packet write FSM
