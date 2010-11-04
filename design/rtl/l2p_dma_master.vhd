@@ -437,6 +437,8 @@ begin
             l2p_dma_current_state <= L2P_WAIT_RDY;
             -- Stop reading from fifo
             data_fifo_rd          <= '0';
+            -- Invalidate data
+            ldm_arb_valid_o       <= '0';
           end if;
 
         when L2P_WAIT_RDY =>
@@ -446,6 +448,8 @@ begin
             l2p_dma_current_state <= L2P_DATA;
             -- Re-start fifo reading
             data_fifo_rd          <= '1';
+            -- Validate last data read before de-assertion of l2p_rdy
+            ldm_arb_valid_o       <= '1';
           end if;
 
         when L2P_WAIT_DATA =>
