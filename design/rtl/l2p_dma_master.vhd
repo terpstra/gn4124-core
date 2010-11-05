@@ -424,6 +424,13 @@ begin
           if (dma_ctrl_abort_i = '1') then
             l2p_edb_o             <= '1';
             l2p_dma_current_state <= L2P_IDLE;
+          elsif (l2p_rdy_i = '0') then
+            -- GN4124 not able to receive more data, have to wait
+            l2p_dma_current_state <= L2P_WAIT_RDY;
+            -- Stop reading from fifo
+            data_fifo_rd          <= '0';
+            -- Invalidate data
+            ldm_arb_valid_o       <= '0';
           elsif(data_fifo_empty = '1') then
             -- data not ready yet, wait for it
             l2p_dma_current_state <= L2P_WAIT_DATA;
@@ -432,24 +439,23 @@ begin
             l2p_dma_current_state <= L2P_LAST_DATA;
             -- Stop reading from fifo
             data_fifo_rd          <= '0';
-          elsif (l2p_rdy_i = '0') then
-            -- GN4124 not able to receive more data, have to wait
-            l2p_dma_current_state <= L2P_WAIT_RDY;
-            -- Stop reading from fifo
-            data_fifo_rd          <= '0';
-            -- Invalidate data
-            ldm_arb_valid_o       <= '0';
           end if;
 
         when L2P_WAIT_RDY =>
           ldm_arb_valid_o <= '0';
           if (l2p_rdy_i = '1') then
             -- GN4124 is ready to receive more data
-            l2p_dma_current_state <= L2P_DATA;
-            -- Re-start fifo reading
-            data_fifo_rd          <= '1';
             -- Validate last data read before de-assertion of l2p_rdy
-            ldm_arb_valid_o       <= '1';
+            ldm_arb_valid_o  <= '1';
+            if (l2p_data_cnt <= 1) then
+              -- Last data word of the packet
+              l2p_dma_current_state <= L2P_LAST_DATA;
+            else
+              -- More data word to be sent
+              l2p_dma_current_state <= L2P_DATA;
+              -- Re-start fifo reading
+              data_fifo_rd          <= '1';
+            end if;
           end if;
 
         when L2P_WAIT_DATA =>
@@ -465,22 +471,28 @@ begin
           end if;
 
         when L2P_LAST_DATA =>
-          -- send last data word with byte swap if requested
-          ldm_arb_data_o   <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
-          ldm_arb_valid_o  <= '1';
-          -- clear dframe signal to indicate the end of packet
-          ldm_arb_dframe_o <= '0';
-          if(l2p_len_cnt > 0) then
-            -- There is still data to be send -> start a new packet
-            l2p_dma_current_state <= L2P_HEADER;
-            -- As the end of packet is used to delimit arbitration phases
-            -- we have to ask again for permission
-            ldm_arb_req_o         <= '1';
+          if (l2p_rdy_i = '0') then
+            -- GN4124 not able to receive more data, have to wait
+            -- Invalidate data
+            ldm_arb_valid_o <= '0';
           else
-            -- Nomore data to send, go back to sleep
-            l2p_dma_current_state <= L2P_IDLE;
-            -- Indicate that the DMA transfer is finished
-            dma_ctrl_done_o       <= '1';
+            -- send last data word with byte swap if requested
+            ldm_arb_data_o   <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
+            ldm_arb_valid_o  <= '1';
+            -- clear dframe signal to indicate the end of packet
+            ldm_arb_dframe_o <= '0';
+            if(l2p_len_cnt > 0) then
+              -- There is still data to be send -> start a new packet
+              l2p_dma_current_state <= L2P_HEADER;
+              -- As the end of packet is used to delimit arbitration phases
+              -- we have to ask again for permission
+              ldm_arb_req_o         <= '1';
+            else
+              -- Nomore data to send, go back to sleep
+              l2p_dma_current_state <= L2P_IDLE;
+              -- Indicate that the DMA transfer is finished
+              dma_ctrl_done_o       <= '1';
+            end if;
           end if;
 
         when others =>
