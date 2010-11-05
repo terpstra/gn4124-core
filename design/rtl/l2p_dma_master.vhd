@@ -19,11 +19,9 @@
 -- dependencies: Xilinx FIFOs (fifo_32x512.xco)
 --
 --------------------------------------------------------------------------------
--- last changes: 23-09-2010 (mcattin) Split wishbone and gn4124 clock domains
---               All signals crossing the clock domains are now going through fifos.
---               Dead times optimisation in packet generator.
+-- last changes: see svn log
 --------------------------------------------------------------------------------
--- TODO: - issue an error if ask DMA transfert of length = 0
+-- TODO: - byte enable support
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -88,42 +86,6 @@ end l2p_dma_master;
 
 architecture behaviour of l2p_dma_master is
 
-
-  -----------------------------------------------------------------------------
-  -- Byte swap function
-  -----------------------------------------------------------------------------
-  function f_byte_swap (
-    constant enable    : boolean;
-    signal   din       : std_logic_vector(31 downto 0);
-    signal   byte_swap : std_logic_vector(1 downto 0))
-    return std_logic_vector is
-    variable dout : std_logic_vector(31 downto 0) := din;
-  begin
-    if (enable = true) then
-      case byte_swap is
-        when "00" =>
-          dout := din;
-        when "01" =>
-          dout := din(23 downto 16)
-                  & din(31 downto 24)
-                  & din(7 downto 0)
-                  & din(15 downto 8);
-        when "10" =>
-          dout := din(15 downto 0)
-                  & din(31 downto 16);
-        when "11" =>
-          dout := din(7 downto 0)
-                  & din(15 downto 8)
-                  & din(23 downto 16)
-                  & din(31 downto 24);
-        when others =>
-          dout := din;
-      end case;
-    else
-      dout := din;
-    end if;
-    return dout;
-  end function f_byte_swap;
 
   -----------------------------------------------------------------------------
   -- Constants declaration

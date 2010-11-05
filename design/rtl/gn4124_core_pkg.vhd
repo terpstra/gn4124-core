@@ -37,6 +37,16 @@ package gn4124_core_pkg is
 
 
 --==============================================================================
+--! Functions declaration
+--==============================================================================
+  function f_byte_swap (
+    constant enable    : boolean;
+    signal   din       : std_logic_vector(31 downto 0);
+    signal   byte_swap : std_logic_vector(1 downto 0))
+    return std_logic_vector;
+
+
+--==============================================================================
 --! Components declaration
 --==============================================================================
 
@@ -312,6 +322,10 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
   component p2l_dma_master
 -----------------------------------------------------------------------------
+    generic (
+      -- Enable byte swap module (if false, no swap)
+      g_BYTE_SWAP : boolean := false
+      );
     port
       (
         ---------------------------------------------------------
@@ -466,5 +480,52 @@ package gn4124_core_pkg is
       prog_full               : out std_logic);
   end component;
 
+
+end gn4124_core_pkg;
+
+package body gn4124_core_pkg is
+
+  -----------------------------------------------------------------------------
+  -- Byte swap function
+  --
+  -- enable | byte_swap | din  | dout
+  -- false  | XX        | ABCD | ABCD
+  -- true   | 00        | ABCD | ABCD
+  -- true   | 01        | ABCD | BADC
+  -- true   | 10        | ABCD | CDAB
+  -- true   | 11        | ABCD | DCBA
+  -----------------------------------------------------------------------------
+  function f_byte_swap (
+    constant enable    : boolean;
+    signal   din       : std_logic_vector(31 downto 0);
+    signal   byte_swap : std_logic_vector(1 downto 0))
+    return std_logic_vector is
+    variable dout : std_logic_vector(31 downto 0) := din;
+  begin
+    if (enable = true) then
+      case byte_swap is
+        when "00" =>
+          dout := din;
+        when "01" =>
+          dout := din(23 downto 16)
+                  & din(31 downto 24)
+                  & din(7 downto 0)
+                  & din(15 downto 8);
+        when "10" =>
+          dout := din(15 downto 0)
+                  & din(31 downto 16);
+        when "11" =>
+          dout := din(7 downto 0)
+                  & din(15 downto 8)
+                  & din(23 downto 16)
+                  & din(31 downto 24);
+        when others =>
+          dout := din;
+      end case;
+    else
+      dout := din;
+    end if;
+    return dout;
+  end function f_byte_swap;
 
 end gn4124_core_pkg;

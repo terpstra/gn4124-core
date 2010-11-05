@@ -350,20 +350,28 @@ begin
           end if;
 
         when DMA_START_TRANSFER =>
-          if (dma_attrib_reg(1) = '0') then
-            -- L2P transfer (from target to PCIe)
-            dma_ctrl_start_l2p_o <= '1';
-          elsif (dma_attrib_reg(1) = '1') then
-            -- P2L transfer (from PCIe to target)
-            dma_ctrl_start_p2l_o <= '1';
+          -- Clear abort signal
+          dma_ctrl_abort_o <= '0';
+
+          if (unsigned(dma_len_reg(31 downto 2)) = 0) then
+            -- Requesting a DMA of 0 word length gives a error
+            dma_ctrl_current_state <= DMA_ERROR;
+          else
+            -- Start the DMA if the length is not 0
+            if (dma_attrib_reg(1) = '0') then
+              -- L2P transfer (from target to PCIe)
+              dma_ctrl_start_l2p_o <= '1';
+            elsif (dma_attrib_reg(1) = '1') then
+              -- P2L transfer (from PCIe to target)
+              dma_ctrl_start_p2l_o <= '1';
+            end if;
+            dma_ctrl_current_state  <= DMA_TRANSFER;
+            dma_ctrl_carrier_addr_o <= dma_cstart_reg;
+            dma_ctrl_host_addr_h_o  <= dma_hstarth_reg;
+            dma_ctrl_host_addr_l_o  <= dma_hstartl_reg;
+            dma_ctrl_len_o          <= dma_len_reg;
+            dma_status              <= c_BUSY;
           end if;
-          dma_ctrl_current_state  <= DMA_TRANSFER;
-          dma_ctrl_carrier_addr_o <= dma_cstart_reg;
-          dma_ctrl_host_addr_h_o  <= dma_hstarth_reg;
-          dma_ctrl_host_addr_l_o  <= dma_hstartl_reg;
-          dma_ctrl_len_o          <= dma_len_reg;
-          dma_status              <= c_BUSY;
-          dma_ctrl_abort_o        <= '0';
 
         when DMA_TRANSFER =>
           -- Clear start signals, to make them 1 tick pulses
