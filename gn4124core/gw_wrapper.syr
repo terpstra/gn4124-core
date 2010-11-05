@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 1.00 secs
-Total CPU time to Xst completion: 0.13 secs
+Total CPU time to Xst completion: 0.11 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 1.00 secs
-Total CPU time to Xst completion: 0.13 secs
+Total CPU time to Xst completion: 0.11 secs
  
 --> 
 Reading design: gw_wrapper.prj
@@ -114,24 +114,19 @@ Cores Search Directories           : {"design/ipcore_dir"  }
 =========================================================================
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core_pkg.vhd" in Library work.
 Package <gn4124_core_pkg> compiled.
+Package body <gn4124_core_pkg> compiled.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/ipcore_dir/fifo_64x512.vhd" in Library work.
-Entity <fifo_64x512> compiled.
-Entity <fifo_64x512> (Architecture <fifo_64x512_a>) compiled.
+Architecture fifo_64x512_a of Entity fifo_64x512 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/ipcore_dir/fifo_32x512.vhd" in Library work.
-Entity <fifo_32x512> compiled.
-Entity <fifo_32x512> (Architecture <fifo_32x512_a>) compiled.
+Architecture fifo_32x512_a of Entity fifo_32x512 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller_wb_slave.vhd" in Library work.
-Entity <dma_controller_wb_slave> compiled.
-Entity <dma_controller_wb_slave> (Architecture <syn>) compiled.
+Architecture syn of Entity dma_controller_wb_slave is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_des.vhd" in Library work.
-Entity <p2l_des> compiled.
-Entity <p2l_des> (Architecture <rtl>) compiled.
+Architecture rtl of Entity p2l_des is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_decode32.vhd" in Library work.
-Entity <p2l_decode32> compiled.
-Entity <p2l_decode32> (Architecture <rtl>) compiled.
+Architecture rtl of Entity p2l_decode32 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" in Library work.
-Entity <wbmaster32> compiled.
-Entity <wbmaster32> (Architecture <behaviour>) compiled.
+Architecture behaviour of Entity wbmaster32 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd" in Library work.
 Entity <dma_controller> compiled.
 Entity <dma_controller> (Architecture <behaviour>) compiled.
@@ -142,20 +137,15 @@ Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rt
 Entity <p2l_dma_master> compiled.
 Entity <p2l_dma_master> (Architecture <behaviour>) compiled.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_arbiter.vhd" in Library work.
-Entity <l2p_arbiter> compiled.
-Entity <l2p_arbiter> (Architecture <rtl>) compiled.
+Architecture rtl of Entity l2p_arbiter is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_ser.vhd" in Library work.
-Entity <l2p_ser> compiled.
-Entity <l2p_ser> (Architecture <rtl>) compiled.
+Architecture rtl of Entity l2p_ser is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core.vhd" in Library work.
-Entity <gn4124_core> compiled.
-Entity <gn4124_core> (Architecture <rtl>) compiled.
+Architecture rtl of Entity gn4124_core is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/ipcore_dir/ram_2048x32.vhd" in Library work.
-Entity <ram_2048x32> compiled.
-Entity <ram_2048x32> (Architecture <ram_2048x32_a>) compiled.
+Architecture ram_2048x32_a of Entity ram_2048x32 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gullwing_wrapper.vhd" in Library work.
-Entity <gw_wrapper> compiled.
-Entity <gw_wrapper> (Architecture <rtl>) compiled.
+Architecture rtl of Entity gw_wrapper is up to date.
 
 =========================================================================
 *                     Design Hierarchy Analysis                         *
@@ -182,7 +172,8 @@ Analyzing hierarchy for entity <dma_controller> in library <work> (architecture 
 Analyzing hierarchy for entity <l2p_dma_master> in library <work> (architecture <behaviour>) with generics.
 	g_BYTE_SWAP = false
 
-Analyzing hierarchy for entity <p2l_dma_master> in library <work> (architecture <behaviour>).
+Analyzing hierarchy for entity <p2l_dma_master> in library <work> (architecture <behaviour>) with generics.
+	g_BYTE_SWAP = false
 
 Analyzing hierarchy for entity <l2p_arbiter> in library <work> (architecture <rtl>).
 
@@ -280,15 +271,17 @@ Entity <dma_controller_wb_slave> analyzed. Unit <dma_controller_wb_slave> genera
 
 Analyzing generic Entity <l2p_dma_master> in library <work> (Architecture <behaviour>).
 	g_BYTE_SWAP = false
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 489: Unconnected output port 'full' of component 'fifo_32x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 489: Instantiating black box module <fifo_32x512>.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 505: Unconnected output port 'full' of component 'fifo_32x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 505: Instantiating black box module <fifo_32x512>.
+WARNING:Xst:1610 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 267: Width mismatch. <l2p_address_l> has a width of 32 bits but assigned expression is 43-bit wide.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 477: Unconnected output port 'full' of component 'fifo_32x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 477: Instantiating black box module <fifo_32x512>.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 493: Unconnected output port 'full' of component 'fifo_32x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 493: Instantiating black box module <fifo_32x512>.
 Entity <l2p_dma_master> analyzed. Unit <l2p_dma_master> generated.
 
-Analyzing Entity <p2l_dma_master> in library <work> (Architecture <behaviour>).
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" line 457: Unconnected output port 'full' of component 'fifo_64x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" line 457: Instantiating black box module <fifo_64x512>.
+Analyzing generic Entity <p2l_dma_master> in library <work> (Architecture <behaviour>).
+	g_BYTE_SWAP = false
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" line 475: Unconnected output port 'full' of component 'fifo_64x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" line 475: Instantiating black box module <fifo_64x512>.
 INFO:Xst:2679 - Register <to_wb_fifo_din<63>> in unit <p2l_dma_master> has a constant value of 0 during circuit operation. The register is replaced by logic.
 INFO:Xst:2679 - Register <to_wb_fifo_din<62>> in unit <p2l_dma_master> has a constant value of 0 during circuit operation. The register is replaced by logic.
 Entity <p2l_dma_master> analyzed. Unit <p2l_dma_master> generated.
@@ -319,7 +312,7 @@ WARNING:Xst:1780 - Signal <p2l_d_first> is never used or assigned. This unconnec
     Found 1-bit register for signal <master_cpld>.
     Found 1-bit register for signal <master_cpln>.
     Found 32-bit register for signal <p2l_addr>.
-    Found 30-bit adder for signal <p2l_addr_31_2$add0000> created at line 252.
+    Found 30-bit adder for signal <p2l_addr_31_2$add0000> created at line 254.
     Found 1-bit register for signal <p2l_addr_cycle>.
     Found 1-bit register for signal <p2l_addr_start>.
     Found 4-bit register for signal <p2l_be>.
@@ -560,8 +553,8 @@ WARNING:Xst:1780 - Signal <dma_stat> is never used or assigned. This unconnected
     Found finite state machine <FSM_2> for signal <dma_ctrl_current_state>.
     -----------------------------------------------------------------------
     | States             | 7                                              |
-    | Transitions        | 17                                             |
-    | Inputs             | 6                                              |
+    | Transitions        | 18                                             |
+    | Inputs             | 7                                              |
     | Outputs            | 7                                              |
     | Clock              | clk_i                     (rising_edge)        |
     | Reset              | rst_n_i                   (negative)           |
@@ -606,8 +599,8 @@ WARNING:Xst:646 - Signal <data_fifo_valid> is assigned but never used. This unco
     Found finite state machine <FSM_3> for signal <l2p_dma_current_state>.
     -----------------------------------------------------------------------
     | States             | 8                                              |
-    | Transitions        | 21                                             |
-    | Inputs             | 8                                              |
+    | Transitions        | 23                                             |
+    | Inputs             | 9                                              |
     | Outputs            | 12                                             |
     | Clock              | clk_i                     (rising_edge)        |
     | Reset              | rst_n_i                   (negative)           |
@@ -634,17 +627,19 @@ WARNING:Xst:646 - Signal <data_fifo_valid> is assigned but never used. This unco
     Found 1-bit register for signal <l2p_64b_address>.
     Found 32-bit register for signal <l2p_address_h>.
     Found 32-bit register for signal <l2p_address_l>.
+    Found 32-bit adder for signal <l2p_address_l$addsub0000> created at line 267.
     Found 11-bit register for signal <l2p_data_cnt>.
-    Found 11-bit subtractor for signal <l2p_data_cnt$addsub0000> created at line 297.
-    Found 30-bit comparator greater for signal <l2p_data_cnt$cmp_gt0000> created at line 300.
-    Found 30-bit comparator greater for signal <l2p_dma_current_state$cmp_gt0000> created at line 459.
-    Found 11-bit comparator lessequal for signal <l2p_dma_current_state$cmp_le0000> created at line 400.
+    Found 11-bit subtractor for signal <l2p_data_cnt$addsub0000> created at line 264.
+    Found 30-bit comparator greater for signal <l2p_data_cnt$cmp_gt0000> created at line 269.
+    Found 30-bit comparator greater for signal <l2p_dma_current_state$cmp_gt0000> created at line 446.
+    Found 11-bit comparator lessequal for signal <l2p_dma_current_state$cmp_le0000> created at line 372.
+    Found 11-bit comparator lessequal for signal <l2p_dma_current_state$cmp_le0001> created at line 398.
     Found 1-bit register for signal <l2p_dma_cyc_t>.
-    Found 7-bit subtractor for signal <l2p_dma_cyc_t$addsub0000> created at line 563.
-    Found 7-bit comparator equal for signal <l2p_dma_cyc_t$cmp_eq0000> created at line 563.
+    Found 7-bit subtractor for signal <l2p_dma_cyc_t$addsub0000> created at line 551.
+    Found 7-bit comparator equal for signal <l2p_dma_cyc_t$cmp_eq0000> created at line 551.
     Found 1-bit register for signal <l2p_last_packet>.
     Found 30-bit register for signal <l2p_len_cnt>.
-    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 292.
+    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 259.
     Found 10-bit register for signal <l2p_len_header>.
     Found 30-bit up counter for signal <target_addr_cnt>.
     Found 7-bit up counter for signal <wb_ack_cnt>.
@@ -653,15 +648,14 @@ WARNING:Xst:646 - Signal <data_fifo_valid> is assigned but never used. This unco
 	inferred   1 Finite State Machine(s).
 	inferred   4 Counter(s).
 	inferred 227 D-type flip-flop(s).
-	inferred   3 Adder/Subtractor(s).
-	inferred   4 Comparator(s).
+	inferred   4 Adder/Subtractor(s).
+	inferred   5 Comparator(s).
 Unit <l2p_dma_master> synthesized.
 
 
 Synthesizing Unit <p2l_dma_master>.
     Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd".
 WARNING:Xst:647 - Input <p2l_dma_dat_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-WARNING:Xst:647 - Input <dma_ctrl_byte_swap_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_pdm_hdr_length_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_pdm_be_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_pdm_hdr_cid_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -669,11 +663,13 @@ WARNING:Xst:647 - Input <dma_ctrl_carrier_addr_i<1:0>> is never used. This port 
 WARNING:Xst:647 - Input <dma_ctrl_len_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_pdm_hdr_start_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:646 - Signal <to_wb_fifo_dout<63:62>> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
+WARNING:Xst:646 - Signal <to_wb_fifo_byte_swap> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
+WARNING:Xst:1780 - Signal <dma_length_error> is never used or assigned. This unconnected signal will be trimmed during the optimization process.
     Found finite state machine <FSM_4> for signal <p2l_dma_current_state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
-    | Transitions        | 15                                             |
-    | Inputs             | 9                                              |
+    | Transitions        | 17                                             |
+    | Inputs             | 10                                             |
     | Outputs            | 7                                              |
     | Clock              | clk_i                     (rising_edge)        |
     | Reset              | rst_n_i                   (negative)           |
@@ -709,13 +705,14 @@ WARNING:Xst:646 - Signal <to_wb_fifo_dout<63:62>> is assigned but never used. Th
     Found 32-bit register for signal <l2p_address_l>.
     Found 1-bit register for signal <l2p_last_packet>.
     Found 30-bit register for signal <l2p_len_cnt>.
-    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 238.
+    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 244.
     Found 10-bit register for signal <l2p_len_header>.
-    Found 30-bit comparator greater for signal <l2p_len_header$cmp_gt0000> created at line 244.
-    Found 3-bit up counter for signal <next_item_data_cnt>.
+    Found 30-bit comparator greater for signal <l2p_len_header$cmp_gt0000> created at line 229.
+    Found 11-bit down counter for signal <p2l_data_cnt>.
+    Found 11-bit comparator lessequal for signal <p2l_dma_current_state$cmp_le0000> created at line 332.
     Found 1-bit register for signal <p2l_dma_cyc_t>.
-    Found 7-bit subtractor for signal <p2l_dma_cyc_t$addsub0000> created at line 512.
-    Found 7-bit comparator equal for signal <p2l_dma_cyc_t$cmp_eq0000> created at line 512.
+    Found 7-bit subtractor for signal <p2l_dma_cyc_t$addsub0000> created at line 530.
+    Found 7-bit comparator equal for signal <p2l_dma_cyc_t$cmp_eq0000> created at line 530.
     Found 30-bit up counter for signal <target_addr_cnt>.
     Found 62-bit register for signal <to_wb_fifo_din<61:0>>.
     Found 1-bit register for signal <to_wb_fifo_wr>.
@@ -726,7 +723,7 @@ WARNING:Xst:646 - Signal <to_wb_fifo_dout<63:62>> is assigned but never used. Th
 	inferred   4 Counter(s).
 	inferred 504 D-type flip-flop(s).
 	inferred   2 Adder/Subtractor(s).
-	inferred   2 Comparator(s).
+	inferred   3 Comparator(s).
 Unit <p2l_dma_master> synthesized.
 
 
@@ -913,14 +910,15 @@ Unit <gw_wrapper> synthesized.
 HDL Synthesis Report
 
 Macro Statistics
-# Adders/Subtractors                                   : 9
+# Adders/Subtractors                                   : 10
  11-bit subtractor                                     : 1
  30-bit adder                                          : 1
  30-bit subtractor                                     : 2
+ 32-bit adder                                          : 1
  4-bit adder                                           : 3
  7-bit subtractor                                      : 2
 # Counters                                             : 8
- 3-bit up counter                                      : 1
+ 11-bit down counter                                   : 1
  30-bit down counter                                   : 1
  30-bit up counter                                     : 2
  7-bit up counter                                      : 4
@@ -935,8 +933,8 @@ Macro Statistics
  31-bit register                                       : 1
  32-bit register                                       : 64
  4-bit register                                        : 7
-# Comparators                                          : 7
- 11-bit comparator lessequal                           : 1
+# Comparators                                          : 9
+ 11-bit comparator lessequal                           : 3
  30-bit comparator greater                             : 3
  4-bit comparator less                                 : 1
  7-bit comparator equal                                : 2
@@ -966,13 +964,13 @@ Optimizing FSM <cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state/FSM> on
  State         | Encoding
 ---------------------------
  l2p_idle      | 00000001
- l2p_wait_data | 01000000
+ l2p_wait_data | 10000000
  l2p_header    | 00000010
  l2p_addr_h    | 00000100
  l2p_addr_l    | 00001000
  l2p_data      | 00100000
  l2p_last_data | 00010000
- l2p_wait_rdy  | 10000000
+ l2p_wait_rdy  | 01000000
 ---------------------------
 Analyzing FSM <FSM_2> for best encoding.
 Optimizing FSM <cmp_gn4124_core/cmp_dma_controller/dma_ctrl_current_state/FSM> on signal <dma_ctrl_current_state[1:7]> with one-hot encoding.
@@ -981,11 +979,11 @@ Optimizing FSM <cmp_gn4124_core/cmp_dma_controller/dma_ctrl_current_state/FSM> o
 --------------------------------
  dma_idle           | 0000001
  dma_start_transfer | 0000010
- dma_transfer       | 0000100
+ dma_transfer       | 0001000
  dma_start_chain    | 0100000
  dma_chain          | 1000000
- dma_error          | 0010000
- dma_abort          | 0001000
+ dma_error          | 0000100
+ dma_abort          | 0010000
 --------------------------------
 Analyzing FSM <FSM_1> for best encoding.
 Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/l2p_read_cpl_current_state/FSM> on signal <l2p_read_cpl_current_state[1:2]> with user encoding.
@@ -1085,23 +1083,24 @@ Advanced HDL Synthesis Report
 
 Macro Statistics
 # FSMs                                                 : 5
-# Adders/Subtractors                                   : 9
+# Adders/Subtractors                                   : 10
  11-bit subtractor                                     : 1
  2-bit adder                                           : 1
  3-bit adder                                           : 1
  30-bit adder                                          : 1
  30-bit subtractor                                     : 2
+ 32-bit adder                                          : 1
  4-bit adder                                           : 1
  7-bit subtractor                                      : 2
 # Counters                                             : 8
- 3-bit up counter                                      : 1
+ 11-bit down counter                                   : 1
  30-bit down counter                                   : 1
  30-bit up counter                                     : 2
  7-bit up counter                                      : 4
 # Registers                                            : 2582
  Flip-Flops                                            : 2582
-# Comparators                                          : 7
- 11-bit comparator lessequal                           : 1
+# Comparators                                          : 9
+ 11-bit comparator lessequal                           : 3
  30-bit comparator greater                             : 3
  4-bit comparator less                                 : 1
  7-bit comparator equal                                : 2
@@ -1307,6 +1306,7 @@ WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_1> of sequent
 Mapping all equations...
 Building and optimizing final netlist ...
 Found area constraint ratio of 100 (+ 5) on block gw_wrapper, actual ratio is 20.
+Forward register balancing over carry chain cmp_gn4124_core/cmp_dma_controller/dma_ctrl_current_state_cmp_eq0000_wg_cy<0>
 INFO:Xst:2260 - The FF/Latch <U0/grf.rf/rstblk/wr_rst_reg_1> in Unit <BU2> is equivalent to the following FF/Latch : <U0/grf.rf/rstblk/wr_rst_reg_0> 
 INFO:Xst:2260 - The FF/Latch <U0/grf.rf/gl0.wr/gwas.wsts/ram_full_i> in Unit <BU2> is equivalent to the following FF/Latch : <U0/grf.rf/gl0.wr/gwas.wsts/ram_full_fb_i> 
 INFO:Xst:2260 - The FF/Latch <U0/grf.rf/gl0.rd/gras.rsts/ram_empty_fb_i> in Unit <BU2> is equivalent to the following FF/Latch : <U0/grf.rf/gl0.rd/gras.rsts/ram_empty_i> 
@@ -1353,10 +1353,6 @@ Pipelining and Register Balancing Report ...
 Processing Unit <gw_wrapper> :
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_ctrl_start_l2p_o has(ve) been forward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/dma_ctrl_start_l2p_i_inv1_FRB.
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_ctrl_start_p2l_o has(ve) been forward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/dma_ctrl_start_p2l_i_inv1_FRB.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/wb_read_cnt_0 cmp_gn4124_core/cmp_l2p_dma_master/wb_read_cnt_3 has(ve) been forward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_cyc_t_cmp_eq000052_SW0_FRB.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/wb_read_cnt_2 cmp_gn4124_core/cmp_l2p_dma_master/wb_read_cnt_1 cmp_gn4124_core/cmp_l2p_dma_master/wb_read_cnt_0 has(ve) been forward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_cyc_t_not0001187_SW0_FRB.
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_1 cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_0 has(ve) been forward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t_cmp_eq000052_SW0_FRB.
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_2 cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_1 cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_0 has(ve) been forward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t_not0001187_SW0_FRB.
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10 has(ve) been backward balanced into : cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB1 cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB2.
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_11 has(ve) been backward balanced into : cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_11_BRB1 cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_11_BRB2.
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_12 has(ve) been backward balanced into : cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_12_BRB1 cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_12_BRB2.
@@ -1471,11 +1467,20 @@ Processing Unit <gw_wrapper> :
 	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB2 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB4 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB5.
 	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o_BRB4 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o_BRB5.
 	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB3 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB4 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB5 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB6.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_10 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_10_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_10_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_10_BRB2 cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_10_BRB3.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_9 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_9_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_data_cnt_9_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd3 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd3_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd3_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd3_BRB2 cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd3_BRB3.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_last_packet has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_last_packet_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_last_packet_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_last_packet_BRB2 cmp_gn4124_core/cmp_l2p_dma_master/l2p_last_packet_BRB3.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_20 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_20_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_20_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_21 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_21_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_21_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_22 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_22_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_22_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_23 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_23_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_23_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_24 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_24_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_24_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_25 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_25_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_25_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_26 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_26_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_26_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_27 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_27_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_27_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_28 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_28_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_28_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_29 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_29_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_29_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_31 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_31_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_31_BRB2.
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18_BRB2 .
+	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19_BRB2 .
 	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20_BRB2 .
 	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21_BRB2 .
 	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22_BRB2 .
@@ -1486,17 +1491,6 @@ Processing Unit <gw_wrapper> :
 	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27_BRB2 .
 	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28_BRB2 .
 	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB2 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB3.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_0 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_0_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_0_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_0_BRB2 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_0_BRB3.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_1 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_1_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_1_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_2 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_2_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_2_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_3 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_3_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_3_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_4 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_4_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_4_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_5 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_5_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_5_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_6 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_6_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_6_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_7 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_7_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_7_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_8 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_8_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_8_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_9 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_9_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_header_9_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_req_o has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_req_o_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_req_o_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_req_o_BRB2 .
 	Register(s) cmp_gn4124_core/cmp_l2p_ser/dframe_d has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_ser/dframe_d_BRB0 cmp_gn4124_core/cmp_l2p_ser/dframe_d_BRB1 cmp_gn4124_core/cmp_l2p_ser/dframe_d_BRB2.
 	Register(s) cmp_gn4124_core/cmp_l2p_ser/valid_d has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_ser/valid_d_BRB0 cmp_gn4124_core/cmp_l2p_ser/valid_d_BRB1 .
 	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_17 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_17_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_17_BRB2.
@@ -1560,7 +1554,8 @@ Unit <gw_wrapper> processed.
 Replicating register cmp_gn4124_core/cmp_l2p_dma_master/l2p_edb_o to handle IOB=TRUE attribute
 Replicating register cmp_gn4124_core/cmp_p2l_dma_master/rx_error_o to handle IOB=TRUE attribute
 
-FlipFlop cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_current_state_FSM_FFd1 has been replicated 1 time(s)
+FlipFlop cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_in_progress has been replicated 1 time(s)
+FlipFlop cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_current_state_FSM_FFd2 has been replicated 1 time(s)
 FlipFlop cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_current_state_FSM_FFd3 has been replicated 1 time(s)
 
 Final Macro Processing ...
@@ -1575,8 +1570,8 @@ Unit <gw_wrapper> processed.
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 2737
- Flip-Flops                                            : 2737
+# Registers                                            : 2734
+ Flip-Flops                                            : 2734
 # Shift Registers                                      : 3
  4-bit shift register                                  : 3
 
@@ -1607,31 +1602,31 @@ Design Statistics
 # IOs                              : 273
 
 Cell Usage :
-# BELS                             : 3206
+# BELS                             : 3415
 #      GND                         : 7
-#      INV                         : 43
-#      LUT1                        : 125
-#      LUT2                        : 384
-#      LUT2_D                      : 5
-#      LUT2_L                      : 11
-#      LUT3                        : 678
-#      LUT3_D                      : 18
+#      INV                         : 51
+#      LUT1                        : 149
+#      LUT2                        : 380
+#      LUT2_D                      : 10
+#      LUT2_L                      : 22
+#      LUT3                        : 699
+#      LUT3_D                      : 37
 #      LUT3_L                      : 20
-#      LUT4                        : 831
-#      LUT4_D                      : 40
-#      LUT4_L                      : 181
-#      MUXCY                       : 526
-#      MUXF5                       : 24
+#      LUT4                        : 871
+#      LUT4_D                      : 39
+#      LUT4_L                      : 182
+#      MUXCY                       : 573
+#      MUXF5                       : 21
 #      VCC                         : 7
-#      XORCY                       : 306
-# FlipFlops/Latches                : 3560
-#      FD                          : 76
-#      FDC                         : 1042
-#      FDCE                        : 2174
+#      XORCY                       : 347
+# FlipFlops/Latches                : 3557
+#      FD                          : 67
+#      FDC                         : 1022
+#      FDCE                        : 2190
 #      FDDRRSE                     : 1
-#      FDE                         : 117
+#      FDE                         : 126
 #      FDP                         : 67
-#      FDPE                        : 49
+#      FDPE                        : 50
 #      IFDDRRSE                    : 18
 #      OFDDRRSE                    : 16
 # RAMS                             : 11
@@ -1653,10 +1648,10 @@ Device utilization summary:
 
 Selected Device : 3s1400afg484-5 
 
- Number of Slices:                     2319  out of  11264    20%  
- Number of Slice Flip Flops:           3551  out of  22528    15%  
- Number of 4 input LUTs:               2339  out of  22528    10%  
-    Number used as logic:              2336
+ Number of Slices:                     2364  out of  11264    20%  
+ Number of Slice Flip Flops:           3548  out of  22528    15%  
+ Number of 4 input LUTs:               2463  out of  22528    10%  
+    Number used as logic:              2460
     Number used as Shift registers:       3
  Number of IOs:                         273
  Number of bonded IOBs:                  71  out of    375    18%  
@@ -1685,7 +1680,7 @@ Clock Information:
 -----------------------------------+-----------------------------------------------------------------------------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)                                                                         | Load  |
 -----------------------------------+-----------------------------------------------------------------------------------------------+-------+
-L_CLKp                             | IBUFDS+BUFG                                                                                   | 980   |
+L_CLKp                             | IBUFDS+BUFG                                                                                   | 977   |
 cmp_test_ram/BU2/dbiterr           | NONE(cmp_test_ram/BU2/U0/blk_mem_generator/valid.cstr/ramloop[3].ram.r/s3a_init.ram/dpram.ram)| 4     |
 P2L_CLKp                           | IBUFGDS+BUFG                                                                                  | 2583  |
 P2L_CLKn                           | IBUFGDS+BUFG                                                                                  | 53    |
@@ -1697,12 +1692,12 @@ Asynchronous Control Signals Information:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+-------+
 Control Signal                                                                                                                                                             | Buffer(FF name)                                                                                           | Load  |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+-------+
-cmp_gn4124_core/rst_n_inv1_INV_0_5(cmp_gn4124_core/rst_n_inv1_INV_0_5:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_p2l_dma_master/completion_error)                                                 | 440   |
 cmp_gn4124_core/rst_n_inv1_INV_0_1(cmp_gn4124_core/rst_n_inv1_INV_0_1:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_attrib_load_o)                      | 439   |
 cmp_gn4124_core/rst_n_inv1_INV_0_2(cmp_gn4124_core/rst_n_inv1_INV_0_2:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_in_progress)                        | 439   |
 cmp_gn4124_core/rst_n_inv1_INV_0_3(cmp_gn4124_core/rst_n_inv1_INV_0_3:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_0)                                                 | 439   |
-cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/rst_n_i_inv(cmp_gn4124_core/rst_n_inv1_INV_0:O)                                                               | NONE(cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB1)                                           | 437   |
-cmp_gn4124_core/rst_n_inv1_INV_0_4(cmp_gn4124_core/rst_n_inv1_INV_0_4:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_wr)                                                     | 406   |
+cmp_gn4124_core/rst_n_inv1_INV_0_5(cmp_gn4124_core/rst_n_inv1_INV_0_5:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_p2l_dma_master/completion_error)                                                 | 439   |
+cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/rst_n_i_inv(cmp_gn4124_core/rst_n_inv1_INV_0:O)                                                               | NONE(cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB1)                                           | 436   |
+cmp_gn4124_core/rst_n_inv1_INV_0_4(cmp_gn4124_core/rst_n_inv1_INV_0_4:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_wr)                                                     | 405   |
 cmp_gn4124_core/cmp_l2p_dma_master/cmp_addr_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg<1>(cmp_gn4124_core/cmp_l2p_dma_master/cmp_addr_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg_1:Q)  | NONE(cmp_gn4124_core/cmp_l2p_dma_master/cmp_addr_fifo/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/diff_pntr_pad_1) | 45    |
 cmp_gn4124_core/cmp_l2p_dma_master/cmp_data_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg<1>(cmp_gn4124_core/cmp_l2p_dma_master/cmp_data_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg_1:Q)  | NONE(cmp_gn4124_core/cmp_l2p_dma_master/cmp_data_fifo/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/diff_pntr_pad_1) | 45    |
 cmp_gn4124_core/cmp_p2l_dma_master/cmp_to_wb_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg<1>(cmp_gn4124_core/cmp_p2l_dma_master/cmp_to_wb_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg_1:Q)| NONE(cmp_gn4124_core/cmp_p2l_dma_master/cmp_to_wb_fifo/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/diff_pntr_pad_1)| 45    |
@@ -1745,7 +1740,7 @@ Timing Summary:
 ---------------
 Speed Grade: -5
 
-   Minimum period: 6.188ns (Maximum Frequency: 161.610MHz)
+   Minimum period: 5.938ns (Maximum Frequency: 168.415MHz)
    Minimum input arrival time before clock: 1.378ns
    Maximum output required time after clock: 6.297ns
    Maximum combinational path delay: No path found
@@ -1756,53 +1751,53 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'L_CLKp'
-  Clock period: 6.188ns (frequency: 161.610MHz)
-  Total number of paths / destination ports: 9226 / 1806
+  Clock period: 5.780ns (frequency: 173.000MHz)
+  Total number of paths / destination ports: 9215 / 1800
 -------------------------------------------------------------------------
-Delay:               6.188ns (Levels of Logic = 4)
-  Source:            cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_in_progress (FF)
+Delay:               5.780ns (Levels of Logic = 4)
+  Source:            cmp_gn4124_core/cmp_wbmaster32/wb_cyc_t (FF)
   Destination:       cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_nexth_lw_delay (FF)
   Source Clock:      L_CLKp rising
   Destination Clock: L_CLKp rising
 
-  Data Path: cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_in_progress to cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_nexth_lw_delay
+  Data Path: cmp_gn4124_core/cmp_wbmaster32/wb_cyc_t to cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_nexth_lw_delay
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDCE:C->Q            23   0.495   1.024  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_in_progress (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_in_progress)
-     LUT4_D:I3->O          6   0.561   0.592  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_5_mux0003111 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_5_mux0003111)
-     LUT3:I2->O           10   0.561   0.752  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_lw_read_in_progress_not000111 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/N34)
+     FDC:C->Q              2   0.495   0.488  cmp_gn4124_core/cmp_wbmaster32/wb_cyc_t (cmp_gn4124_core/cmp_wbmaster32/wb_cyc_t)
+     LUT4_D:I0->O          6   0.561   0.677  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_5_mux0003123 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_5_mux0003123)
+     LUT3:I0->O           11   0.561   0.795  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_lw_read_in_progress_not000111 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/N34)
      LUT4:I3->O            3   0.561   0.474  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_rwsel_not00011 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_rwsel_not0001)
      LUT3:I2->O            3   0.561   0.451  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_lw_not00011 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_lw_not0001)
      FDCE:CE                   0.156          cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_lw_delay
     ----------------------------------------
-    Total                      6.188ns (2.895ns logic, 3.293ns route)
-                                       (46.8% logic, 53.2% route)
+    Total                      5.780ns (2.895ns logic, 2.885ns route)
+                                       (50.1% logic, 49.9% route)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'P2L_CLKp'
-  Clock period: 5.729ns (frequency: 174.545MHz)
-  Total number of paths / destination ports: 24696 / 4113
+  Clock period: 5.938ns (frequency: 168.415MHz)
+  Total number of paths / destination ports: 26478 / 4142
 -------------------------------------------------------------------------
-Delay:               5.729ns (Levels of Logic = 4)
-  Source:            cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2 (FF)
-  Destination:       cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_0 (FF)
+Delay:               5.938ns (Levels of Logic = 4)
+  Source:            cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_current_state_FSM_FFd1 (FF)
+  Destination:       cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_15 (FF)
   Source Clock:      P2L_CLKp rising
   Destination Clock: P2L_CLKp rising
 
-  Data Path: cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2 to cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_0
+  Data Path: cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_current_state_FSM_FFd1 to cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_15
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDCE:C->Q             2   0.495   0.488  cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2 (cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2)
-     LUT4:I0->O            1   0.561   0.423  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and000015 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and000015)
-     LUT4:I1->O            2   0.562   0.446  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000130 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000130)
-     LUT3:I1->O            2   0.562   0.403  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000198 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_wr_and0000)
-     LUT3:I2->O           30   0.561   1.072  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and00002 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000)
-     FDE:CE                    0.156          cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_0
+     FDC:C->Q             19   0.495   0.945  cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_current_state_FSM_FFd1 (cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_current_state_FSM_FFd1)
+     LUT3_D:I2->O          6   0.561   0.592  cmp_gn4124_core/cmp_p2l_dma_master/completion_error_mux000011 (cmp_gn4124_core/cmp_p2l_dma_master/N6)
+     LUT3:I2->O           69   0.561   1.085  cmp_gn4124_core/cmp_p2l_dma_master/pdm_arb_req_o_mux000021_2 (cmp_gn4124_core/cmp_p2l_dma_master/pdm_arb_req_o_mux000021_1)
+     LUT4:I3->O            1   0.561   0.380  cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_mux0001<17>_SW0 (N174)
+     LUT3:I2->O            1   0.561   0.000  cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_mux0001<17> (cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_mux0001<17>)
+     FDC:D                     0.197          cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_15
     ----------------------------------------
-    Total                      5.729ns (2.897ns logic, 2.832ns route)
-                                       (50.6% logic, 49.4% route)
+    Total                      5.938ns (2.936ns logic, 3.002ns route)
+                                       (49.4% logic, 50.6% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'P2L_CLKn'
@@ -1883,15 +1878,15 @@ Offset:              5.248ns (Levels of Logic = 1)
 =========================================================================
 
 
-Total REAL time to Xst completion: 126.00 secs
-Total CPU time to Xst completion: 123.63 secs
+Total REAL time to Xst completion: 132.00 secs
+Total CPU time to Xst completion: 129.39 secs
  
 --> 
 
 
-Total memory usage is 198400 kilobytes
+Total memory usage is 198868 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  416 (   0 filtered)
+Number of warnings :  418 (   0 filtered)
 Number of infos    :   79 (   0 filtered)
 
