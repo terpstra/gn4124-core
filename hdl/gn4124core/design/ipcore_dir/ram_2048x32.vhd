@@ -78,7 +78,7 @@ end component;
 			c_disable_warn_bhv_coll => 0,
 			c_use_softecc => 0,
 			c_write_mode_b => "WRITE_FIRST",
-			c_init_file_name => "/home/mcattin/projects/GN4124_core/GennumCore/Gn4124core/design/ipcore_dir/ram_2048x32.mif",
+			c_init_file_name => "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/ipcore_dir/ram_2048x32.mif",
 			c_write_mode_a => "WRITE_FIRST",
 			c_mux_pipeline_stages => 0,
 			c_has_softecc_output_regs_b => 0,

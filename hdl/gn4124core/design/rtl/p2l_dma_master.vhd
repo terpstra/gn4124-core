@@ -20,12 +20,9 @@
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: 29-09-2010 (mcattin) Add a wishbone clock,
---                                    clean useless entity ports
+-- last changes: see svn log
 --------------------------------------------------------------------------------
--- TODO: - byte swap
---       - byte enable support.
---       - issue an error if ask DMA transfert of length = 0
+-- TODO: - byte enable support.
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -35,6 +32,10 @@ use work.gn4124_core_pkg.all;
 
 
 entity p2l_dma_master is
+  generic (
+    -- Enable byte swap module (if false, no swap)
+    g_BYTE_SWAP : boolean := false
+    );
   port
     (
       ---------------------------------------------------------
@@ -132,6 +133,7 @@ architecture behaviour of p2l_dma_master is
   signal is_next_item     : std_logic;
   signal completion_error : std_logic;
   signal dma_busy_error   : std_logic;
+  signal dma_length_error : std_logic;
 
   -- L2P packet generator
   signal l2p_address_h   : std_logic_vector(31 downto 0);
@@ -148,13 +150,14 @@ architecture behaviour of p2l_dma_master is
   -- sync fifo
   signal fifo_rst : std_logic;
 
-  signal to_wb_fifo_empty : std_logic;
-  signal to_wb_fifo_full  : std_logic;
-  signal to_wb_fifo_rd    : std_logic;
-  signal to_wb_fifo_wr    : std_logic;
-  signal to_wb_fifo_din   : std_logic_vector(63 downto 0);
-  signal to_wb_fifo_dout  : std_logic_vector(63 downto 0);
-  signal to_wb_fifo_valid : std_logic;
+  signal to_wb_fifo_empty     : std_logic;
+  signal to_wb_fifo_full      : std_logic;
+  signal to_wb_fifo_rd        : std_logic;
+  signal to_wb_fifo_wr        : std_logic;
+  signal to_wb_fifo_din       : std_logic_vector(63 downto 0);
+  signal to_wb_fifo_dout      : std_logic_vector(63 downto 0);
+  signal to_wb_fifo_valid     : std_logic;
+  signal to_wb_fifo_byte_swap : std_logic_vector(1 downto 0);
 
   -- wishbone
   signal wb_write_cnt  : unsigned(6 downto 0);
@@ -242,20 +245,6 @@ begin
         else
           l2p_len_cnt <= (others => '0');
         end if;
-        --elsif (l2p_last_packet = '0' and p2l_dma_current_state = P2L_WAIT_READ_COMPLETION) then
-        --  -- Load length of the next read request (if any)
-        --  if (l2p_len_cnt > c_MAX_READ_REQ_SIZE) then
-        --    -- when max payload length is 1024, the header length field = 0
-        --    l2p_len_header <= c_MAX_READ_REQ_SIZE(9 downto 0);
-        --    l2p_last_packet <= '0';
-        --  elsif (l2p_len_cnt = c_MAX_READ_REQ_SIZE) then
-        --    -- when max payload length is 1024, the header length field = 0
-        --    l2p_len_header <= c_MAX_READ_REQ_SIZE(9 downto 0);
-        --    l2p_last_packet <= '1';
-        --  else
-        --    l2p_len_header  <= l2p_len_cnt(9 downto 0);
-        --    l2p_last_packet <= '1';
-        --  end if;
       end if;
     end if;
   end process p_read_req;
@@ -449,16 +438,19 @@ begin
   p_addr_cnt : process (clk_i, rst_n_i)
   begin
     if (rst_n_i = c_RST_ACTIVE) then
-      target_addr_cnt <= (others => '0');
-      dma_busy_error  <= '0';
-      to_wb_fifo_din  <= (others => '0');
-      to_wb_fifo_wr   <= '0';
+      target_addr_cnt      <= (others => '0');
+      dma_busy_error       <= '0';
+      to_wb_fifo_din       <= (others => '0');
+      to_wb_fifo_wr        <= '0';
+      to_wb_fifo_byte_swap <= (others => '0');
     elsif rising_edge(clk_i) then
       if (dma_ctrl_start_p2l_i = '1') then
         if (p2l_dma_current_state = P2L_IDLE) then
           -- dma_ctrl_target_addr_i is a byte address and target_addr_cnt is a
           -- 32-bit word address
           target_addr_cnt <= unsigned(dma_ctrl_carrier_addr_i(31 downto 2));
+          -- stores byte swap info for the current DMA transfer
+          to_wb_fifo_byte_swap <= dma_ctrl_byte_swap_i;
         else
           dma_busy_error <= '1';
         end if;
@@ -468,7 +460,7 @@ begin
         target_addr_cnt              <= target_addr_cnt + 1;
         -- write target address and data to the sync fifo
         to_wb_fifo_wr                <= '1';
-        to_wb_fifo_din(31 downto 0)  <= pd_pdm_data_i;
+        to_wb_fifo_din(31 downto 0)  <= f_byte_swap(g_BYTE_SWAP, pd_pdm_data_i, to_wb_fifo_byte_swap);
         to_wb_fifo_din(61 downto 32) <= std_logic_vector(target_addr_cnt);
       else
         dma_busy_error <= '0';
