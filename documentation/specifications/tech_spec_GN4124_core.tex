@@ -6,9 +6,13 @@
 \CernDocType{Technical Specification}
 \CernDocTitle{Gennum GN4124 Core For FMC Projects}
 \CernDocEditedBy{Simon Deprez}
+\CernDocEditedBy{Matthieu Cattin}
 \CernDocCheckedBy{}
 \CernDocDate{July 2010}
-\CernDocAbstract{This technical specification describes the HDL controller for Gennum GN4124 chip. It provides a Wishbone master for control and status registers access and a DMA controller for high speed data transfers.}
+\CernDocAbstract{
+  This technical specification describes the HDL controller for Gennum GN4124 chip.
+  It provides a Wishbone master for control and status registers access and a
+  DMA controller for high speed data transfers.}
 
 \begin{document}
   \cerntitle
@@ -30,7 +34,7 @@
 The GN4124 core is a controller for the GN4124 chip on the PCIe FMC Carrier\footnote{See \href{http://www.ohwr.org/projects/fmc-pci-carrier}{http://www.ohwr.org/projects/fmc-pci-carrier}.} (PFC) and the Simple PCIe FMC carrier\footnote{See \href{http://www.ohwr.org/projects/spec}{http://www.ohwr.org/projects/spec}.} (SPEC).
 The functional specification\footnote{See \href{http://svn.ohwr.org/gn4124-core/trunk/documentation/specifications/func_spec_GN4124_core.pdf}{http://svn.ohwr.org/gn4124-core/trunk/documentation/specifications/func\_spec\_GN4124\_core.pdf}.} describes the interfaces of the core and the configuration registers of the DMA controller.
 
-This specification describes how the core works internally. For each internal block, we give a summary description of its function. Figure \ref{fig:GN4124core_arch} show the core with all main blocks. 
+This specification describes how the core works internally. For each internal block, we give a summary description of its function. Figure \ref{fig:GN4124core_arch} show the core with all main blocks.
 
 
 
@@ -43,37 +47,46 @@ This specification describes how the core works internally. For each internal bl
 \end{figure}
 
 The structure of this cores and some signals names are based on the Gennum cores \emph{Lambo} and \emph{Lotus}.
- 
+
 The VHDL guidelines\footnote{See \href{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}{http://www.ohwr.org/attachments/27/VHDLcoding.pdf}.} describes the rules used for writing the HDL code and the signals naming conventions. The one-tick-long pulses are named with a \verb+_p1+ suffix.
 
   \section{De-multiplexer}
   This block takes the double data rate 16-bit P2L (PCI Express to Local Bus direction) bus from the GN4124 device and converts it to a single data rate 32-bit bus for use inside the GN4124 core.
-  
+
   \section{Multiplexer}
-  It takes the internal single data rate 32 bit data and transmits it as double data rate 16-bit data on the L2P (Local Bus to PCI Express direction) bus.
-  
+  It takes the internal single data rate 32-bit data and transmits it as double data rate 16-bit data on the L2P (Local Bus to PCI Express direction) bus.
+
   \section{Packet decoder}
     This block extracts header information, address, data, byte enables, and timing controls of the packets from the GN4124 chip. It provides signals like:
-    
-    
+
+
 \begin{packed_item}
-  \item Type of packet (target read request, target write request, master read completion \dots) 
-  \item Begin of packet  
+  \item Type of packet (target read request, target write request, master read completion \dots)
+  \item Begin of packet
   \item Address that will increment with data for data block transfer (e.g. DMA transfers)
   \item Data
-  \item End of packet   
+  \item End of packet
 \end{packed_item}
 
 \section{Wishbone master}
-  The Wishbone master implements a master for the Wishbone interconnection bus. It transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read. Only single word reads and writes are supported on the Wishbone interface. 
-  
-  Data are coming from the packet decoder. Wishbone signals are generated and the master waits for an acknowledge. Write cycles are queued up at full local bus speed into a small FIFO (16 words deep) so that the write cycles can be played out at the Wishbone bus speed. In order to prevent the FIFO from overflowing due to too many writes coming from the host, the \verb+p_wr_rdy_o+ signal is de-asserted to the GN4124 whenever the FIFO is not empty. 
-  
-  The \verb+p_wr_rdy_o+ signal prevents write requests from the PCI Express bus to the Wishbone configuration interface. The read completions of the P2L DMA transfers are not slowed down.
-  
-  
-  
-  
+The Wishbone master implements a master for the Wishbone interconnection bus.
+It transforms a PCIe write into a Wishbone write and a PCIe read into a Wishbone read.
+Only single word reads and writes are supported on the Wishbone interface.
+
+Data are coming from the packet decoder.
+Wishbone signals are generated and the master waits for an acknowledge.
+Write cycles are queued up at full local bus speed into a small FIFO (16 words deep)
+so that the write cycles can be played out at the Wishbone bus speed.
+In order to prevent the FIFO from overflowing due to too many writes coming from the host,
+the \verb+p_wr_rdy_o+ signal is de-asserted to the GN4124 whenever the FIFO is not empty.
+
+The \verb+p_wr_rdy_o+ signal prevents write requests from the PCI Express bus to the
+Wishbone configuration interface.
+The read completions of the P2L DMA transfers are not slowed down.
+
+
+
+
 
 \section{DMA Engine}
 
@@ -96,14 +109,14 @@ The VHDL guidelines\footnote{See \href{http://www.ohwr.org/attachments/27/VHDLco
   \caption{Register set for the DMA controller block}
   \label{tab:dma_control}
 \end{table}
-  
+
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.9\textwidth]{GN4124core_DMA_controller.pdf}
   \caption{DMA controller}
   \label{fig:GN4124core_dma_ctrl}
 \end{figure}
-  
+
 The DMA controller is a Wishbone slave controlled from the PCI Express host with the Wishbone master (see the functional specification). Figure \ref{fig:GN4124core_dma_ctrl} shows the internals of the DMA controller.
 
 The transfer starts when the first bit (LSB) of the DMACTRLR (See table  \ref{tab:dma_control}) register is asserted. One of the two signals, \verb+dma_ctrl_start_L2P_o+ and \verb+dma_ctrl_start_P2L_o+, is set to '1' for one clock cycle. The \verb+dma_ctrl_start_L2P_o+ signal controls the DMA L2P master that performs transfers from the carrier to the PCI Express host and the \verb+dma_ctrl_start_P2L_o+ signal controls the DMA P2L master that performs transfers from the PCI Express host to the carrier.
@@ -150,9 +163,9 @@ When the block of data is in the FIFO, the DMA master sends a master write reque
  \subsection{P2L DMA Master}
 The P2L DMA master (See figure \ref{fig:GN4124core_p2l_dma_master}) performs data transfers from the PCI Express host to the FMC carrier. The transfer is split in blocks of data with a maximal length of 4096 bytes.
 
-The P2L DMA master sends a memory read request toward the GN4124 chip and waits for the answer. This operation is clocked by the GN4124 Local Bus Clock. The received data are stocked in a FIFO. 
+The P2L DMA master sends a memory read request toward the GN4124 chip and waits for the answer. This operation is clocked by the GN4124 Local Bus Clock. The received data are stocked in a FIFO.
 
-When the block of data is in the FIFO, the DMA master starts a master write cycle on the DMA interface of this block. This transfer is clocked by the \verb+sys_clk_i+ signal. 
+When the block of data is in the FIFO, the DMA master starts a master write cycle on the DMA interface of this block. This transfer is clocked by the \verb+sys_clk_i+ signal.
 
   \begin{figure}[!ht]
 	\centering
@@ -171,4 +184,4 @@ The highest priority is for the Wishbone master, then for the P2L DMA master, an
 \end{document}
 
 
-% 
+%

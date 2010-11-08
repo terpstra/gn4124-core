@@ -57,18 +57,18 @@ clean:
 	$(TEXFILE_FUNC_SPEC:.tex=.toc) \
 	$(TEXFILE_FUNC_SPEC:.tex=.lof) \
 	$(TEXFILE_FUNC_SPEC:.tex=.lot) \
-	$(TEXFILE_FUNC_SPEC:.tex=.pdf) \
 	$(TEXFILE_TECH_SPEC:.tex=.aux) \
 	$(TEXFILE_TECH_SPEC:.tex=.log) \
 	$(TEXFILE_TECH_SPEC:.tex=.out) \
 	$(TEXFILE_TECH_SPEC:.tex=.toc) \
 	$(TEXFILE_TECH_SPEC:.tex=.lof) \
 	$(TEXFILE_TECH_SPEC:.tex=.lot) \
-	$(TEXFILE_TECH_SPEC:.tex=.pdf) \
 	$(DIAG_FUNC_SPEC:.svg=.pdf) \
-	$(DIAG_TECH_SPEC:.svg=.pdf) \
-	$(DIAG_ALL:.svg=.pdf) \
 	$(DIAG_ALL:.svg=.png) \
-	$(DOT_TECH_SPEC:.dot=.pdf)\
+#	$(DIAG_TECH_SPEC:.svg=.pdf) \
+#	$(DIAG_ALL:.svg=.pdf) \
+#	$(TEXFILE_TECH_SPEC:.tex=.pdf) \
+#	$(TEXFILE_FUNC_SPEC:.tex=.pdf) \
+#	$(DOT_TECH_SPEC:.dot=.pdf) \
 
 diag: $(DIAG_ALL:.svg=.pdf) $(DIAG_ALL:.svg=.png)
