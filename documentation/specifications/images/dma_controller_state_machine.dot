@@ -1,0 +1,14 @@
+digraph dma_controller{
+        Idle -> StartTransfer;
+        Error -> StartTransfer;
+        Abort -> StartTransfer;
+        StartTransfer -> Transfer;
+        Transfer -> Idle;
+        Transfer -> Error;
+        Transfer -> Abort;
+        Transfer -> StartChain;
+        StartChain -> Chain;
+        Chain -> StartTransfer;
+        Chain -> Error;
+        Chain -> Abort;
+}
