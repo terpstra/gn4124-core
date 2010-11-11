@@ -1415,6 +1415,13 @@
          d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
          transform="matrix(1.1,0,0,1.1,1.1,0)" />
     </marker>
+    <inkscape:perspective
+       id="perspective6603"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1423,9 +1430,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.90509668"
-     inkscape:cx="405.9951"
-     inkscape:cy="103.1137"
+     inkscape:zoom="1.8101934"
+     inkscape:cx="272.21549"
+     inkscape:cy="149.85724"
      inkscape:document-units="cm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2222,5 +2229,16 @@
        d="m 425.19685,937.20368 35.43308,0"
        id="path3113-6-7-2-1-6"
        sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="483.3114"
+       y="1002.7549"
+       id="text4792-17-2-2-9-7-4"><tspan
+         sodipodi:role="line"
+         x="483.3114"
+         y="1002.7549"
+         style="font-size:10px"
+         id="tspan2999-4-0">to GN4124 GPIO</tspan></text>
   </g>
 </svg>
