@@ -7,7 +7,8 @@ DIAG_TECH_SPEC= images/GN4124core_arch.svg \
 	        images/GN4124core_DMA_controller.svg \
 		images/State_Machine_DMA_controller.svg \
 		images/GN4124core_L2P_DMA_master.svg \
-		images/GN4124core_P2L_DMA_master.svg
+		images/GN4124core_P2L_DMA_master.svg \
+		images/GN4124core_wb_master.svg
 DOT_TECH_SPEC= images/dma_controller_state_machine.dot
 DIAG_ALL= images/GN4124core.svg \
 	images/GN4124core_arch.svg \
