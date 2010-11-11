@@ -27,6 +27,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
+use work.gn4124_core_pkg.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -160,8 +161,9 @@ architecture rtl of gw_wrapper is
 
   component gn4124_core
     generic(
+      g_BAR0_APERTURE     : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                            -- => number of bits to address periph on the board
       g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
-      g_CSR_WB_ADDR_WIDTH : integer := 27;  -- CSR wishbone address bus width
       g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
       g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
       );
@@ -212,7 +214,7 @@ architecture rtl of gw_wrapper is
         ---------------------------------------------------------
         -- Target interface (CSR wishbone master)
         wb_clk_i : in  std_logic;
-        wb_adr_o : out std_logic_vector(g_CSR_WB_ADDR_WIDTH-1 downto 0);
+        wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_CSR_WB_SLAVES_NB+1)-1 downto 0);
         wb_dat_o : out std_logic_vector(31 downto 0);                         -- Data out
         wb_sel_o : out std_logic_vector(3 downto 0);                          -- Byte select
         wb_stb_o : out std_logic;
@@ -236,6 +238,43 @@ architecture rtl of gw_wrapper is
         );
   end component;  --  gn4124_core
 
+  component dummy_stat_regs_wb_slave
+    port (
+      rst_n_i                 : in  std_logic;
+      wb_clk_i                : in  std_logic;
+      wb_addr_i               : in  std_logic_vector(1 downto 0);
+      wb_data_i               : in  std_logic_vector(31 downto 0);
+      wb_data_o               : out std_logic_vector(31 downto 0);
+      wb_cyc_i                : in  std_logic;
+      wb_sel_i                : in  std_logic_vector(3 downto 0);
+      wb_stb_i                : in  std_logic;
+      wb_we_i                 : in  std_logic;
+      wb_ack_o                : out std_logic;
+      dummy_stat_reg_1_i      : in  std_logic_vector(31 downto 0);
+      dummy_stat_reg_2_i      : in  std_logic_vector(31 downto 0);
+      dummy_stat_reg_3_i      : in  std_logic_vector(31 downto 0);
+      dummy_stat_reg_switch_i : in  std_logic_vector(31 downto 0)
+      );
+  end component;
+
+  component dummy_ctrl_regs_wb_slave
+    port (
+      rst_n_i         : in  std_logic;
+      wb_clk_i        : in  std_logic;
+      wb_addr_i       : in  std_logic_vector(1 downto 0);
+      wb_data_i       : in  std_logic_vector(31 downto 0);
+      wb_data_o       : out std_logic_vector(31 downto 0);
+      wb_cyc_i        : in  std_logic;
+      wb_sel_i        : in  std_logic_vector(3 downto 0);
+      wb_stb_i        : in  std_logic;
+      wb_we_i         : in  std_logic;
+      wb_ack_o        : out std_logic;
+      dummy_reg_1_o   : out std_logic_vector(31 downto 0);
+      dummy_reg_2_o   : out std_logic_vector(31 downto 0);
+      dummy_reg_3_o   : out std_logic_vector(31 downto 0);
+      dummy_reg_led_o : out std_logic_vector(31 downto 0)
+      );
+  end component;
 
   component ram_2048x32
     port (
@@ -250,8 +289,8 @@ architecture rtl of gw_wrapper is
   ------------------------------------------------------------------------------
   -- Constants declaration
   ------------------------------------------------------------------------------
-  constant c_CSR_WB_SLAVES_NB  : integer := 1;
-  constant c_CSR_WB_ADDR_WIDTH : integer := 27;
+  constant c_BAR0_APERTURE     : integer := 20;
+  constant c_CSR_WB_SLAVES_NB  : integer := 2;
   constant c_DMA_WB_SLAVES_NB  : integer := 1;
   constant c_DMA_WB_ADDR_WIDTH : integer := 26;
 
@@ -263,14 +302,14 @@ architecture rtl of gw_wrapper is
   signal l_clk : std_logic;
 
   -- CSR wishbone bus
-  signal wb_adr_o : std_logic_vector(c_CSR_WB_ADDR_WIDTH-1 downto 0);
+  signal wb_adr   : std_logic_vector(c_BAR0_APERTURE-log2_ceil(c_CSR_WB_SLAVES_NB+1)-1 downto 0);
   signal wb_dat_i : std_logic_vector((32*c_CSR_WB_SLAVES_NB)-1 downto 0);
   signal wb_dat_o : std_logic_vector(31 downto 0);
-  signal wb_sel_o : std_logic_vector(3 downto 0);
-  signal wb_cyc_o : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
-  signal wb_stb_o : std_logic;
-  signal wb_we_o  : std_logic;
-  signal wb_ack_i : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
+  signal wb_sel   : std_logic_vector(3 downto 0);
+  signal wb_cyc   : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
+  signal wb_stb   : std_logic;
+  signal wb_we    : std_logic;
+  signal wb_ack   : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
 
   -- DMA wishbone bus
   signal dma_adr_o   : std_logic_vector(31 downto 0);
@@ -282,12 +321,22 @@ architecture rtl of gw_wrapper is
   signal dma_we_o    : std_logic;
   signal dma_ack_i   : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
   signal dma_stall_i : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
-  signal ram_we   : std_logic_vector(0 downto 0);
+  signal ram_we      : std_logic_vector(0 downto 0);
 
   -- Interrupts stuff
   signal irq_sources   : std_logic_vector(1 downto 0);
   signal irq_to_gn4124 : std_logic;
 
+  -- CSR whisbone slaves for test
+  signal dummy_stat_reg_1      : std_logic_vector(31 downto 0);
+  signal dummy_stat_reg_2      : std_logic_vector(31 downto 0);
+  signal dummy_stat_reg_3      : std_logic_vector(31 downto 0);
+  signal dummy_stat_reg_switch : std_logic_vector(31 downto 0);
+
+  signal dummy_ctrl_reg_1   : std_logic_vector(31 downto 0);
+  signal dummy_ctrl_reg_2   : std_logic_vector(31 downto 0);
+  signal dummy_ctrl_reg_3   : std_logic_vector(31 downto 0);
+  signal dummy_ctrl_reg_led : std_logic_vector(31 downto 0);
 
 begin
 
@@ -320,16 +369,14 @@ begin
   SER_DVB_ASI      <= '0';
   GS4911_HOST_B    <= '0';
   SER_SMPTE_BYPASS <= '0';
-  LED <= (others => '1');
-
 
   ------------------------------------------------------------------------------
   -- GN4124 interface
   ------------------------------------------------------------------------------
   cmp_gn4124_core : gn4124_core
     generic map (
+      g_BAR0_APERTURE     => c_BAR0_APERTURE,
       g_CSR_WB_SLAVES_NB  => c_CSR_WB_SLAVES_NB,
-      g_CSR_WB_ADDR_WIDTH => c_CSR_WB_ADDR_WIDTH,
       g_DMA_WB_SLAVES_NB  => c_DMA_WB_SLAVES_NB,
       g_DMA_WB_ADDR_WIDTH => c_DMA_WB_ADDR_WIDTH
       )
@@ -382,14 +429,14 @@ begin
       ---------------------------------------------------------
       -- Target Interface (Wishbone master)
       wb_clk_i => l_clk,
-      wb_adr_o => wb_adr_o,
+      wb_adr_o => wb_adr,
       wb_dat_o => wb_dat_o,
-      wb_sel_o => wb_sel_o,
-      wb_stb_o => wb_stb_o,
-      wb_we_o  => wb_we_o,
-      wb_cyc_o => wb_cyc_o,
+      wb_sel_o => wb_sel,
+      wb_stb_o => wb_stb,
+      wb_we_o  => wb_we,
+      wb_cyc_o => wb_cyc,
       wb_dat_i => wb_dat_i,
-      wb_ack_i => wb_ack_i,
+      wb_ack_i => wb_ack,
 
       ---------------------------------------------------------
       -- L2P DMA Interface (Pipelined Wishbone master)
@@ -407,11 +454,50 @@ begin
 
 
   ------------------------------------------------------------------------------
-  -- UNUSED CSR wishbone bus
+  -- CSR wishbone bus slaves
   ------------------------------------------------------------------------------
-  wb_ack_i <= (others => '0');
-  wb_dat_i <= (others => '0');
+  cmp_dummy_stat_regs : dummy_stat_regs_wb_slave
+    port map(
+      rst_n_i                 => L_RST_N,
+      wb_clk_i                => l_clk,
+      wb_addr_i               => wb_adr(1 downto 0),
+      wb_data_i               => wb_dat_o,
+      wb_data_o               => wb_dat_i(31 downto 0),
+      wb_cyc_i                => wb_cyc(0),
+      wb_sel_i                => wb_sel,
+      wb_stb_i                => wb_stb,
+      wb_we_i                 => wb_we,
+      wb_ack_o                => wb_ack(0),
+      dummy_stat_reg_1_i      => dummy_stat_reg_1,
+      dummy_stat_reg_2_i      => dummy_stat_reg_2,
+      dummy_stat_reg_3_i      => dummy_stat_reg_3,
+      dummy_stat_reg_switch_i => dummy_stat_reg_switch
+      );
 
+  dummy_stat_reg_1      <= X"DEADBABE";
+  dummy_stat_reg_2      <= X"BEEFFACE";
+  dummy_stat_reg_3      <= X"12345678";
+  dummy_stat_reg_switch <= X"000000" & DEBUG;
+
+  cmp_dummy_ctrl_regs : dummy_ctrl_regs_wb_slave
+    port map(
+      rst_n_i         => L_RST_N,
+      wb_clk_i        => l_clk,
+      wb_addr_i       => wb_adr(1 downto 0),
+      wb_data_i       => wb_dat_o,
+      wb_data_o       => wb_dat_i(63 downto 32),
+      wb_cyc_i        => wb_cyc(1),
+      wb_sel_i        => wb_sel,
+      wb_stb_i        => wb_stb,
+      wb_we_i         => wb_we,
+      wb_ack_o        => wb_ack(1),
+      dummy_reg_1_o   => dummy_ctrl_reg_1,
+      dummy_reg_2_o   => dummy_ctrl_reg_2,
+      dummy_reg_3_o   => dummy_ctrl_reg_3,
+      dummy_reg_led_o => dummy_ctrl_reg_led
+      );
+
+  LED <= dummy_ctrl_reg_led(7 downto 0);
 
   ------------------------------------------------------------------------------
   -- DMA wishbone bus connected to a DPRAM

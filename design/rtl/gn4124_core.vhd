@@ -19,12 +19,11 @@
 -- dependencies:
 --
 --------------------------------------------------------------------------------
--- last changes: 23-09-2010 (mcattin) 
+-- last changes: see svn log
 --------------------------------------------------------------------------------
 -- TODO: - DMA wishbone bus address map
 --       - reset and clock signals
---       - wishbone timeout generic
---       - rename component instance -> cmp_xxx
+--       - wishbone timeout generic ??
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -41,8 +40,9 @@ use UNISIM.vcomponents.all;
 --==============================================================================
 entity gn4124_core is
   generic(
+    g_BAR0_APERTURE     : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                          -- => number of bits to address periph on the board
     g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
-    g_CSR_WB_ADDR_WIDTH : integer := 27;  -- CSR wishbone address bus width
     g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
     g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
     );
@@ -66,7 +66,7 @@ entity gn4124_core is
       p_wr_req_i   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
       p_wr_rdy_o   : out std_logic_vector(1 downto 0);   -- PCIe Write Ready
       rx_error_o   : out std_logic;                      -- Receive Error
-      vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Channel ready
+      vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Virtual channel ready
 
       ---------------------------------------------------------
       -- L2P Direction
@@ -93,7 +93,7 @@ entity gn4124_core is
       ---------------------------------------------------------
       -- Target interface (CSR wishbone master)
       wb_clk_i : in  std_logic;
-      wb_adr_o : out std_logic_vector(g_CSR_WB_ADDR_WIDTH-1 downto 0);
+      wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_CSR_WB_SLAVES_NB+1)-1 downto 0);
       wb_dat_o : out std_logic_vector(31 downto 0);                         -- Data out
       wb_sel_o : out std_logic_vector(3 downto 0);                          -- Byte select
       wb_stb_o : out std_logic;
@@ -242,7 +242,7 @@ architecture rtl of gn4124_core is
   ------------------------------------------------------------------------------
   -- CSR wishbone bus
   ------------------------------------------------------------------------------
-  signal wb_adr              : std_logic_vector(g_CSR_WB_ADDR_WIDTH-1 downto 0);
+  signal wb_adr              : std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_CSR_WB_SLAVES_NB+1)-1 downto 0);
   signal wb_dat_s2m          : std_logic_vector((32*(g_CSR_WB_SLAVES_NB+1))-1 downto 0);
   signal wb_dat_m2s          : std_logic_vector(31 downto 0);
   signal wb_sel              : std_logic_vector(3 downto 0);
@@ -424,8 +424,8 @@ begin
   cmp_wbmaster32 : wbmaster32
     generic map
     (
-      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1),  -- +1 for the DMA controller (wb slave always present)
-      g_WB_ADDR_WIDTH => g_CSR_WB_ADDR_WIDTH
+      g_BAR0_APERTURE => g_BAR0_APERTURE,
+      g_WB_SLAVES_NB => (g_CSR_WB_SLAVES_NB + 1)  -- +1 for the DMA controller (wb slave always present)
       )
     port map
     (
