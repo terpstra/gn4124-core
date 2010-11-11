@@ -81,6 +81,14 @@
     <file xil_pn:name="design/chipscope/cs_core.cdc" xil_pn:type="FILE_CDC">
       <association xil_pn:name="Implementation"/>
     </file>
+    <file xil_pn:name="design/rtl/dummy_ctrl_regs.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation"/>
+      <association xil_pn:name="Implementation"/>
+    </file>
+    <file xil_pn:name="design/rtl/dummy_stat_regs.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation"/>
+      <association xil_pn:name="Implementation"/>
+    </file>
     <file xil_pn:name="design/ipcore_dir/fifo_32x512.xise" xil_pn:type="FILE_COREGENISE">
       <association xil_pn:name="Implementation"/>
     </file>
