@@ -35,8 +35,9 @@ use work.gn4124_core_pkg.all;
 entity wbmaster32 is
   generic
     (
-      g_WB_SLAVES_NB  : integer := 2;
-      g_WB_ADDR_WIDTH : integer := 27
+      g_BAR0_APERTURE : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                        -- => number of bits to address periph on the board
+      g_WB_SLAVES_NB  : integer := 2
       );
   port
     (
@@ -82,15 +83,15 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- CSR wishbone interface
-      wb_clk_i : in  std_logic;                                         -- Wishbone bus clock
-      wb_adr_o : out std_logic_vector(g_WB_ADDR_WIDTH-1 downto 0);      -- Address
-      wb_dat_o : out std_logic_vector(31 downto 0);                     -- Data out
-      wb_sel_o : out std_logic_vector(3 downto 0);                      -- Byte select
-      wb_stb_o : out std_logic;                                         -- Strobe
-      wb_we_o  : out std_logic;                                         -- Write
-      wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);       -- Cycle
-      wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);  -- Data in
-      wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)        -- Acknowledge
+      wb_clk_i : in  std_logic;                                                  -- Wishbone bus clock
+      wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);  -- Address
+      wb_dat_o : out std_logic_vector(31 downto 0);                              -- Data out
+      wb_sel_o : out std_logic_vector(3 downto 0);                               -- Byte select
+      wb_stb_o : out std_logic;                                                  -- Strobe
+      wb_we_o  : out std_logic;                                                  -- Write
+      wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                -- Cycle
+      wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);           -- Data in
+      wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                 -- Acknowledge
       );
 end wbmaster32;
 
@@ -134,8 +135,8 @@ architecture behaviour of wbmaster32 is
 
   --signal s_wb_we : std_logic;
 
-  signal s_wb_periph_addr   : std_logic_vector(30-g_WB_ADDR_WIDTH downto 0);
-  signal wb_periph_addr     : std_logic_vector(30-g_WB_ADDR_WIDTH downto 0);
+  signal s_wb_periph_addr   : std_logic_vector(log2_ceil(g_WB_SLAVES_NB)-1 downto 0);
+  signal wb_periph_addr     : std_logic_vector(log2_ceil(g_WB_SLAVES_NB)-1 downto 0);
   signal s_wb_periph_select : std_logic_vector((2**s_wb_periph_addr'length)-1 downto 0);
   signal s_wb_ack_muxed     : std_logic;
   signal wb_ack_t           : std_logic;
@@ -421,7 +422,8 @@ begin
   ------------------------------------------------------------------------------
 
   -- Take the first N bits of the address to select the active wb peripheral
-  s_wb_periph_addr <= wb_adr_t(30 downto g_WB_ADDR_WIDTH);
+  -- g_BAR0_APERTURE represents byte address window, has to be shifted right by 2 to match wishbone 32-bit word addresses
+  s_wb_periph_addr <= wb_adr_t(g_BAR0_APERTURE-3 downto g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-2);
 
   -----------------------------------------------------------------------------
   -- One-hot decode function,  s_wb_periph_select <= onehot_decode(s_wb_periph_addr);
@@ -450,11 +452,11 @@ begin
       wb_periph_addr <= (others => '0');
       wb_dat_i_t     <= (others => '0');
       wb_ack_t       <= '0';
-     elsif rising_edge(wb_clk_i) then
+    elsif rising_edge(wb_clk_i) then
       wb_periph_addr <= s_wb_periph_addr;
       wb_dat_i_t     <= s_wb_dat_i_muxed;
       wb_ack_t       <= s_wb_ack_muxed;
-     end if;
+    end if;
   end process p_wb_in_regs;
 
   -- Select ack line of the active peripheral
@@ -487,7 +489,7 @@ begin
   wb_dat_o <= wb_dat_o_t;
   wb_stb_o <= wb_stb_t;
   wb_we_o  <= wb_we_t;
-  wb_adr_o <= wb_adr_t(g_WB_ADDR_WIDTH-1 downto 0);
+  wb_adr_o <= wb_adr_t(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);
   wb_sel_o <= wb_sel_t;
   wb_cyc_o <= s_wb_cyc_demuxed;
 

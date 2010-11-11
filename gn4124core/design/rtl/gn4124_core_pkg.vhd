@@ -45,6 +45,7 @@ package gn4124_core_pkg is
     signal   byte_swap : std_logic_vector(1 downto 0))
     return std_logic_vector;
 
+  function log2_ceil(N : natural) return positive;
 
 --==============================================================================
 --! Components declaration
@@ -153,8 +154,9 @@ package gn4124_core_pkg is
 -----------------------------------------------------------------------------
     generic
       (
-        g_WB_SLAVES_NB  : integer := 2;
-        g_WB_ADDR_WIDTH : integer := 27
+        g_BAR0_APERTURE : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                          -- => number of bits to address periph on the board
+        g_WB_SLAVES_NB  : integer := 2
         );
     port
       (
@@ -199,15 +201,15 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- CSR wishbone interface
-        wb_clk_i : in  std_logic;                                         -- Wishbone bus clock
-        wb_adr_o : out std_logic_vector(g_WB_ADDR_WIDTH-1 downto 0);      -- Address
-        wb_dat_o : out std_logic_vector(31 downto 0);                     -- Data out
-        wb_sel_o : out std_logic_vector(3 downto 0);                      -- Byte select
-        wb_stb_o : out std_logic;                                         -- Strobe
-        wb_we_o  : out std_logic;                                         -- Write
-        wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);       -- Cycle
-        wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);  -- Data in
-        wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)        -- Acknowledge
+        wb_clk_i : in  std_logic;                                                  -- Wishbone bus clock
+        wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);  -- Address
+        wb_dat_o : out std_logic_vector(31 downto 0);                              -- Data out
+        wb_sel_o : out std_logic_vector(3 downto 0);                               -- Byte select
+        wb_stb_o : out std_logic;                                                  -- Strobe
+        wb_we_o  : out std_logic;                                                  -- Write
+        wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                -- Cycle
+        wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);           -- Data in
+        wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                 -- Acknowledge
         );
   end component;  -- wbmaster32
 
@@ -527,5 +529,17 @@ package body gn4124_core_pkg is
     end if;
     return dout;
   end function f_byte_swap;
+
+  -----------------------------------------------------------------------------
+  -- Returns log of 2 of a natural number
+  -----------------------------------------------------------------------------
+  function log2_ceil(N : natural) return positive is
+  begin
+    if N < 2 then
+      return 1;
+    else
+      return 1 + log2_ceil(N/2);
+    end if;
+  end;
 
 end gn4124_core_pkg;
