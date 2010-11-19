@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<DARoots Version="1" Minor="6">
+	<FileSet Name="constrs_1" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1">
+		<Filter Type="Constrs"/>
+		<Root Path="/home/mcattin/projects/GN4124_core/hdl/pfc/ip_cores/fifo_32x512.ncf">
+		</Root>
+		<Root Path="/home/mcattin/projects/GN4124_core/hdl/pfc/ip_cores/fifo_64x512.ncf">
+		</Root>
+		<Root Path="/home/mcattin/projects/GN4124_core/hdl/pfc/ip_cores/ram_2048x32.ncf">
+		</Root>
+		<Root Path="/home/mcattin/projects/GN4124_core/hdl/pfc/pfc_wrapper.ucf">
+		</Root>
+		<Config>
+			<Option Name="TargetPart" Val="xc6slx150tfgg676-3"/>
+		</Config>
+	</FileSet>
+</DARoots>
+

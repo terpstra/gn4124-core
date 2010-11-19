@@ -1,0 +1,46 @@
+xst -intstyle ise -ifn "/home/mcattin/projects/GN4124_core/hdl/pfc/pfc_wrapper.xst" -ofn "/home/mcattin/projects/GN4124_core/hdl/pfc/pfc_wrapper.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+xst -intstyle ise -ifn "/home/mcattin/projects/GN4124_core/hdl/pfc/pfc_wrapper.xst" -ofn "/home/mcattin/projects/GN4124_core/hdl/pfc/pfc_wrapper.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 
+ngdbuild -intstyle ise -dd _ngo -sd ip_cores -nt timestamp -uc pfc_wrapper.ucf -p xc6slx150t-fgg676-3 pfc_wrapper.ngc pfc_wrapper.ngd  
+map -intstyle ise -p xc6slx150t-fgg676-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -global_opt off -mt off -ir off -pr b -lc off -power off -o pfc_wrapper_map.ncd pfc_wrapper.ngd pfc_wrapper.pcf 
+par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd pfc_wrapper.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml pfc_wrapper.twx pfc_wrapper.ncd -o pfc_wrapper.twr pfc_wrapper.pcf -ucf pfc_wrapper.ucf 

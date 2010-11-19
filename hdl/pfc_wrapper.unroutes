@@ -1,0 +1,18 @@
+Release 12.2 - par M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Fri Nov 19 10:18:52 2010
+
+All signals are completely routed.
+
+WARNING:ParHelpers:361 - There are 6 loadless signals in this design. This design will cause Bitgen to issue DRC
+   warnings.
+
+   GPIO<1>_IBUF
+   P_WR_REQ<0>_IBUF
+   P_WR_REQ<1>_IBUF
+   TX_ERROR_IBUF
+   VC_RDY<0>_IBUF
+   VC_RDY<1>_IBUF
+
+
