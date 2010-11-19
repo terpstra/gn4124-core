@@ -1,0 +1,284 @@
+
+****** PlanAhead v12.2
+  **** Build 65285 by hdbuild on Wed Jun 23 14:46:30 PDT 2010
+    ** Copyright 1986-1999, 2001-2010 Xilinx, Inc. All Rights Reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design pfc_wrapper.ngc ...
+WARNING:NetListWriters:298 - No output is written to pfc_wrapper.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_wbmaster32/wb_adr_t<17 : 0> on block pfc_wrapper is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus cmp_dummy_stat_regs/rddata_reg<31 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_p2l_decode32/p2l_addr<31 : 0> on block pfc_wrapper is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg<5 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt[9]_GND_76_o_mux_41_OUT<9 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_wbmaster32/to_wb_fifo_dout<63 : 0> on block pfc_wrapper
+   is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_dma_controller/dma_ctrl_current_state[2]_X_43_o_wide_mux_
+   56_OUT<2 : 0> on block pfc_wrapper is not reconstructed, because there are
+   some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_p2l_decode32/p2l_addr[31]_des_p2l_data_i[31]_mux_18_OUT<3
+   1 : 0> on block pfc_wrapper is not reconstructed, because there are some
+   missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_dummy_stat_regs/rwaddr_reg[1]_dummy_stat_reg_switch_i[31]_wide_mux_8_OUT<
+   31 : 0> on block pfc_wrapper is not reconstructed, because there are some
+   missing bus signals.
+  finished :Prep
+Writing EDIF netlist file pfc_wrapper.edif ...
+ngc2edif: Total memory usage is 29164 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design ram_2048x32.ngc ...
+WARNING:NetListWriters:298 - No output is written to ram_2048x32.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file ram_2048x32.edif ...
+ngc2edif: Total memory usage is 22756 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design fifo_32x512.ngc ...
+WARNING:NetListWriters:298 - No output is written to fifo_32x512.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file fifo_32x512.edif ...
+ngc2edif: Total memory usage is 23048 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design fifo_64x512.ngc ...
+WARNING:NetListWriters:298 - No output is written to fifo_64x512.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file fifo_64x512.edif ...
+ngc2edif: Total memory usage is 23136 kilobytes
+
+Release 12.2 - xdl M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Loading device for application Rf_Device from file '6slx150t.nph' in environment /opt/Xilinx/12.2/ISE_DS/ISE/.
+   "pfc_wrapper" is an NCD, version 3.2, device xc6slx150t, package fgg676, speed -3
+Successfully converted design '/home/mcattin/projects/GN4124_core/hdl/pfc/pfc_wrapper.ncd' to '/home/mcattin/projects/GN4124_core/hdl/pfc/pfc_wrapper.xdl'.
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design pfc_wrapper.ngc ...
+WARNING:NetListWriters:298 - No output is written to pfc_wrapper.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_wbmaster32/wb_adr_t<17 : 0> on block pfc_wrapper is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus cmp_dummy_stat_regs/rddata_reg<31 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_p2l_decode32/p2l_addr<31 : 0> on block pfc_wrapper is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg<5 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt[9]_GND_76_o_mux_41_OUT<9 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_wbmaster32/to_wb_fifo_dout<63 : 0> on block pfc_wrapper
+   is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_dma_controller/dma_ctrl_current_state[2]_X_43_o_wide_mux_
+   56_OUT<2 : 0> on block pfc_wrapper is not reconstructed, because there are
+   some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_p2l_decode32/p2l_addr[31]_des_p2l_data_i[31]_mux_18_OUT<3
+   1 : 0> on block pfc_wrapper is not reconstructed, because there are some
+   missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_dummy_stat_regs/rwaddr_reg[1]_dummy_stat_reg_switch_i[31]_wide_mux_8_OUT<
+   31 : 0> on block pfc_wrapper is not reconstructed, because there are some
+   missing bus signals.
+  finished :Prep
+Writing EDIF netlist file pfc_wrapper.edif ...
+ngc2edif: Total memory usage is 29180 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design ram_2048x32.ngc ...
+WARNING:NetListWriters:298 - No output is written to ram_2048x32.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file ram_2048x32.edif ...
+ngc2edif: Total memory usage is 22760 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design fifo_32x512.ngc ...
+WARNING:NetListWriters:298 - No output is written to fifo_32x512.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file fifo_32x512.edif ...
+ngc2edif: Total memory usage is 23048 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design fifo_64x512.ngc ...
+WARNING:NetListWriters:298 - No output is written to fifo_64x512.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file fifo_64x512.edif ...
+ngc2edif: Total memory usage is 23136 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design pfc_wrapper.ngc ...
+WARNING:NetListWriters:298 - No output is written to pfc_wrapper.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_wbmaster32/wb_adr_t<17 : 0> on block pfc_wrapper is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus cmp_dummy_stat_regs/rddata_reg<31 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_p2l_decode32/p2l_addr<31 : 0> on block pfc_wrapper is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg<5 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt[9]_GND_76_o_mux_41_OUT<9 : 0>
+   on block pfc_wrapper is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_wbmaster32/to_wb_fifo_dout<63 : 0> on block pfc_wrapper
+   is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_dma_controller/dma_ctrl_current_state[2]_X_43_o_wide_mux_
+   56_OUT<2 : 0> on block pfc_wrapper is not reconstructed, because there are
+   some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_gn4124_core/cmp_p2l_decode32/p2l_addr[31]_des_p2l_data_i[31]_mux_18_OUT<3
+   1 : 0> on block pfc_wrapper is not reconstructed, because there are some
+   missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   cmp_dummy_stat_regs/rwaddr_reg[1]_dummy_stat_reg_switch_i[31]_wide_mux_8_OUT<
+   31 : 0> on block pfc_wrapper is not reconstructed, because there are some
+   missing bus signals.
+  finished :Prep
+Writing EDIF netlist file pfc_wrapper.edif ...
+ngc2edif: Total memory usage is 29184 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design ram_2048x32.ngc ...
+WARNING:NetListWriters:298 - No output is written to ram_2048x32.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file ram_2048x32.edif ...
+ngc2edif: Total memory usage is 22756 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design fifo_32x512.ngc ...
+WARNING:NetListWriters:298 - No output is written to fifo_32x512.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file fifo_32x512.edif ...
+ngc2edif: Total memory usage is 23044 kilobytes
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+
+Release 12.2 - ngc2edif M.63c (lin)
+Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
+Reading design fifo_64x512.ngc ...
+WARNING:NetListWriters:298 - No output is written to fifo_64x512.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+  finished :Prep
+Writing EDIF netlist file fifo_64x512.edif ...
+ngc2edif: Total memory usage is 23132 kilobytes
+
+INFO: [HD-Licensing 0] Attempting to get a license: PlanAhead
+INFO: [HD-Licensing 1] Got a license: PlanAhead
+INFO: [HD-Licensing 3] Your PlanAhead license expires in -171 day(s)
+INFO: [HD-ArchReader 0] Loading parts and site information from /opt/Xilinx/12.2/ISE_DS/PlanAhead/parts/arch.xml
+INFO: [HD-RTPRIM 0] Parsing RTL primitives file '/opt/Xilinx/12.2/ISE_DS/PlanAhead/parts/xilinx/rtl/prims/rtl_prims.xml'
+INFO: [HD-RTPRIM 1] Finished Parsing RTL primitives file '/opt/Xilinx/12.2/ISE_DS/PlanAhead/parts/xilinx/rtl/prims/rtl_prims.xml'
+starting gui ...
+INFO: [HD-Application 0] Exiting PlanAhead...
+INFO: [HD-Licensing 2] Releasing license: PlanAhead
