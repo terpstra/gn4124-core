@@ -53,7 +53,9 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component p2l_des
------------------------------------------------------------------------------
+    generic (
+      g_IS_SPARTAN6 : boolean := false
+      );
     port
       (
         ---------------------------------------------------------
@@ -82,7 +84,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component p2l_decode32
------------------------------------------------------------------------------
     port
       (
         ---------------------------------------------------------
@@ -125,7 +126,9 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component l2p_ser
------------------------------------------------------------------------------
+    generic (
+      g_IS_SPARTAN6 : boolean := false
+      );
     port
       (
         ---------------------------------------------------------
@@ -151,7 +154,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component wbmaster32
------------------------------------------------------------------------------
     generic
       (
         g_BAR0_APERTURE : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
@@ -201,21 +203,20 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- CSR wishbone interface
-        wb_clk_i : in  std_logic;                                                  -- Wishbone bus clock
+        wb_clk_i : in  std_logic;                                                               -- Wishbone bus clock
         wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);  -- Address
-        wb_dat_o : out std_logic_vector(31 downto 0);                              -- Data out
-        wb_sel_o : out std_logic_vector(3 downto 0);                               -- Byte select
-        wb_stb_o : out std_logic;                                                  -- Strobe
-        wb_we_o  : out std_logic;                                                  -- Write
-        wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                -- Cycle
-        wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);           -- Data in
-        wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                 -- Acknowledge
+        wb_dat_o : out std_logic_vector(31 downto 0);                                           -- Data out
+        wb_sel_o : out std_logic_vector(3 downto 0);                                            -- Byte select
+        wb_stb_o : out std_logic;                                                               -- Strobe
+        wb_we_o  : out std_logic;                                                               -- Write
+        wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                             -- Cycle
+        wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);                        -- Data in
+        wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                              -- Acknowledge
         );
   end component;  -- wbmaster32
 
 -----------------------------------------------------------------------------
   component dma_controller
------------------------------------------------------------------------------
     port
       (
         ---------------------------------------------------------
@@ -268,7 +269,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component l2p_dma_master
------------------------------------------------------------------------------
     generic (
       -- Enable byte swap module (if false, no swap)
       g_BYTE_SWAP : boolean := false
@@ -323,7 +323,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component p2l_dma_master
------------------------------------------------------------------------------
     generic (
       -- Enable byte swap module (if false, no swap)
       g_BYTE_SWAP : boolean := false
@@ -405,7 +404,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component l2p_arbiter
------------------------------------------------------------------------------
     port (
       ---------------------------------------------------------
       -- Clock/Reset
@@ -446,7 +444,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component fifo_32x512
------------------------------------------------------------------------------
     port (
       rst                     : in  std_logic;
       wr_clk                  : in  std_logic;
@@ -465,7 +462,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component fifo_64x512
------------------------------------------------------------------------------
     port (
       rst                     : in  std_logic;
       wr_clk                  : in  std_logic;

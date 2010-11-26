@@ -40,11 +40,12 @@ use UNISIM.vcomponents.all;
 --==============================================================================
 entity gn4124_core is
   generic(
-    g_BAR0_APERTURE     : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                          -- => number of bits to address periph on the board
-    g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
-    g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
-    g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
+    g_IS_SPARTAN6       : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
+    g_BAR0_APERTURE     : integer := 20;     -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                             -- => number of bits to address periph on the board
+    g_CSR_WB_SLAVES_NB  : integer := 1;      -- Number of CSR wishbone slaves
+    g_DMA_WB_SLAVES_NB  : integer := 1;      -- Number of DMA wishbone slaves
+    g_DMA_WB_ADDR_WIDTH : integer := 26      -- DMA wishbone address bus width
     );
   port
     (
@@ -320,11 +321,18 @@ begin
     end if;
   end process p_core_rst;
 
-  cmp_rst_buf : BUFG
-    port map (
-      I => rst_reg,
-      O => rst_n
-      );
+  gen_rst : if g_IS_SPARTAN6 = false generate
+    cmp_rst_buf : BUFG
+      port map (
+        I => rst_reg,
+        O => rst_n
+        );
+  end generate gen_rst;
+
+  gen_rst_s6 : if g_IS_SPARTAN6 = true generate
+    rst_n <= rst_reg;
+  end generate gen_rst_s6;
+
 
   ------------------------------------------------------------------------------
   -- IRQ pulse forward to GN4124 GPIO
@@ -339,6 +347,9 @@ begin
   -- p2l_des: Deserialize the P2L DDR inputs
   -----------------------------------------------------------------------------
   cmp_p2l_des : p2l_des
+    generic map (
+      g_IS_SPARTAN6 => g_IS_SPARTAN6
+      )
     port map
     (
       ---------------------------------------------------------
@@ -425,7 +436,7 @@ begin
     generic map
     (
       g_BAR0_APERTURE => g_BAR0_APERTURE,
-      g_WB_SLAVES_NB => (g_CSR_WB_SLAVES_NB + 1)  -- +1 for the DMA controller (wb slave always present)
+      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1)  -- +1 for the DMA controller (wb slave always present)
       )
     port map
     (
@@ -754,6 +765,9 @@ begin
   -- L2P_SER: Generate the L2P DDR Outputs
   -----------------------------------------------------------------------------
   cmp_l2p_ser : l2p_ser
+    generic map (
+      g_IS_SPARTAN6 => g_IS_SPARTAN6
+      )
     port map
     (
       ---------------------------------------------------------
