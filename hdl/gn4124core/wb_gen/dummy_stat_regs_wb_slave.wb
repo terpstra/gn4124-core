@@ -1,0 +1,56 @@
+peripheral {
+  name = "Dummy status registers";
+  description = "Wishbone slave for test of the CSR wishbone of the GN4124 core";
+  hdl_entity = "dummy_stat_regs_wb_slave";
+
+  prefix = "dummy_stat_reg";
+
+  reg {
+    name = "DUMMY_1";
+    prefix = "1";
+    field {
+      name = "Dummy register 1";
+      type = SLV;
+      size = 32;
+      access_bus = READ_ONLY;
+      access_dev = WRITE_ONLY;
+    };
+  };
+
+  reg {
+    name = "DUMMY_2";
+    prefix = "2";
+    field {
+      name = "Dummy register 2";
+      type = SLV;
+      size = 32;
+      access_bus = READ_ONLY;
+      access_dev = WRITE_ONLY;
+    };
+  };
+
+  reg {
+    name = "DUMMY_3";
+    prefix = "3";
+    field {
+      name = "Dummy register 3";
+      type = SLV;
+      size = 32;
+      access_bus = READ_ONLY;
+      access_dev = WRITE_ONLY;
+    };
+  };
+
+  reg {
+    name = "DUMMY_SWITCH";
+    prefix = "switch";
+    field {
+      name = "Dummy register for switch status";
+      type = SLV;
+      size = 32;
+      access_bus = READ_ONLY;
+      access_dev = WRITE_ONLY;
+    };
+  };
+
+};

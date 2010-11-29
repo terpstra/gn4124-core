@@ -1,0 +1,221 @@
+
+#---------------------------------------------------------------------------------------------
+# IO standards
+#---------------------------------------------------------------------------------------------
+NET "l2p_data[0]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[1]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[2]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[3]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[4]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[5]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[6]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[7]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[8]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[9]"  IOSTANDARD = SSTL18_I;
+NET "l2p_data[10]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[11]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[12]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[13]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[14]" IOSTANDARD = SSTL18_I;
+NET "l2p_data[15]" IOSTANDARD = SSTL18_I;
+NET "l2p_clkp"     IOSTANDARD = DIFF_SSTL18_I;
+NET "l2p_clkn"     IOSTANDARD = DIFF_SSTL18_I;
+NET "l2p_rdy"      IOSTANDARD = SSTL18_I;
+NET "l_clkn"       IOSTANDARD = DIFF_SSTL18_I; #SSTL18_I;
+NET "l_clkp"       IOSTANDARD = DIFF_SSTL18_I; #SSTL18_I;
+NET "l_rst_n"      IOSTANDARD = SSTL18_I;
+NET "p2l_clkp"     IOSTANDARD = DIFF_SSTL18_I;
+NET "p2l_clkn"     IOSTANDARD = DIFF_SSTL18_I;
+NET "p2l_data[0]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[1]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[2]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[3]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[4]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[5]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[6]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[7]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[8]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[9]"  IOSTANDARD = SSTL18_I;
+NET "p2l_data[10]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[11]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[12]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[13]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[14]" IOSTANDARD = SSTL18_I;
+NET "p2l_data[15]" IOSTANDARD = SSTL18_I;
+NET "p2l_rdy"      IOSTANDARD = SSTL18_I;
+NET "l_wr_rdy[0]"    IOSTANDARD = SSTL18_I;
+NET "l_wr_rdy[1]"    IOSTANDARD = SSTL18_I;
+NET "p_rd_d_rdy[0]"  IOSTANDARD = SSTL18_I;
+NET "p_rd_d_rdy[1]"  IOSTANDARD = SSTL18_I;
+NET "l2p_dframe"   IOSTANDARD = SSTL18_I;
+NET "l2p_valid"    IOSTANDARD = SSTL18_I;
+NET "l2p_edb"      IOSTANDARD = SSTL18_I;
+NET "p2l_dframe"   IOSTANDARD = SSTL18_I;
+NET "p2l_valid"    IOSTANDARD = SSTL18_I;
+NET "p_wr_rdy[0]"    IOSTANDARD = SSTL18_I;
+NET "p_wr_rdy[1]"    IOSTANDARD = SSTL18_I;
+NET "rx_error"     IOSTANDARD = SSTL18_I;
+NET "tx_error"     IOSTANDARD = SSTL18_I;
+NET "vc_rdy[0]"    IOSTANDARD = SSTL18_I;
+NET "vc_rdy[1]"    IOSTANDARD = SSTL18_I;
+NET "p_wr_req[0]" IOSTANDARD = SSTL18_I;
+NET "p_wr_req[1]" IOSTANDARD = SSTL18_I;
+
+NET "l_rst_n"    IOSTANDARD = "LVCMOS18";
+
+# GPIO
+NET "gpio[*]" IOSTANDARD = "LVCMOS33";
+
+# Font panel LEDs
+NET "led_red"   IOSTANDARD = "LVCMOS15";
+NET "led_green"   IOSTANDARD = "LVCMOS15";
+
+# System clock
+NET "sys_clk_p" IOSTANDARD = "LVDS_33";
+
+#---------------------------------------------------------------------------------------------
+# Force DDR Flops into IOBs
+# Offset constraints shoudl force this although the input and output DDR primtives are
+# instantiated within the RTL.
+#---------------------------------------------------------------------------------------------
+#INST "lp2_data<*>" IOB=TRUE;
+#INST "l2p_dframe" IOB=TRUE;
+#INST "l2p_valid"  IOB=TRUE;
+#INST "l2p_edb"    IOB=TRUE;
+
+#---------------------------------------------------------------------------------------------
+# Local clock from GN4124
+#---------------------------------------------------------------------------------------------
+NET "L_CLKp" TNM_NET = "l_clkp_grp";
+TIMESPEC TS_l_clkp = PERIOD "l_clkp_grp" 5 ns HIGH 50%;
+
+#---------------------------------------------------------------------------------------------
+# P2L source synchronous interface
+#---------------------------------------------------------------------------------------------
+
+# Period constraint on incomming clock
+NET "P2L_CLKp" TNM_NET = "p2l_clkp_grp";
+TIMESPEC TS_p2l_clkp = PERIOD "p2l_clkp_grp" 5 ns HIGH 50%;
+NET "P2L_CLKn" TNM_NET = "p2l_clkn_grp";
+TIMESPEC TS_p2l_clkn = PERIOD "p2l_clkn_grp" 5 ns HIGH 50%;
+
+# Routing constraints on clock
+NET "P2L_CLKp" IBUF_DELAY_VALUE= 4; # Option: 0-16
+NET "P2L_CLKn" IBUF_DELAY_VALUE= 4; # Option: 0-16
+
+NET "P2L_CLKp" CLOCK_DEDICATED_ROUTE = FALSE;
+NET "P2L_CLKn" CLOCK_DEDICATED_ROUTE = FALSE;
+
+#NET "cmp_gn4124_core/clk_p_buf" MAXDELAY = 0.1 ns;
+#NET "cmp_gn4124_core/clk_n_buf" MAXDELAY = 0.1 ns;
+
+# Routing and input offset constaint on source synchronous data and control lines
+#NET "p2l_data*" IFD_DELAY_VALUE = 4;  # Option: 0-8
+NET "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
+# work around see Xilinx Answer Record 34634
+NET "p2l_data*" OFFSET = IN -3.7 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
+#NET "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKn" RISING;
+#NET "p2l_dframe" IFD_DELAY_VALUE = 4; # Option: 0-8
+NET "p2l_dframe" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
+#NET "p2l_valid" IFD_DELAY_VALUE = 4; # Option: 0-8
+NET "p2l_valid" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
+
+#---------------------------------------------------------------------------------------------
+# L2P source synchronous interface
+#---------------------------------------------------------------------------------------------
+# Ouput timing and bus skew will be reported
+# The delay is of a lesser concern than the skew of the output bus
+#NET "l2p_data*" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" RISING;
+#NET "l2p_data*" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
+
+#NET "l2p_dframe" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
+#NET "l2p_valid" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
+#NET "l2p_edb" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
+
+#---------------------------------------------------------------------------------------------
+# Constrain the other inputs
+#---------------------------------------------------------------------------------------------
+NET "vc_rdy*" maxdelay = 2 ns;
+NET "l_wr_rdy*" maxdelay = 2 ns;
+NET "p_rd_d_rdy[*]" maxdelay = 2 ns;
+NET "l2p_rdy" maxdelay = 2 ns;
+
+#---------------------------------------------------------------------------------------------
+# False Path
+#---------------------------------------------------------------------------------------------
+NET "l_rst_n" TIG;
+NET "cmp_gn4124_core/rst_*" TIG;
+
+#---------------------------------------------------------------------------------------------
+# The IO Location Constraints
+#---------------------------------------------------------------------------------------------
+
+NET "sys_clk_p" LOC = AE15;
+NET "sys_clk_n" LOC = AF15;
+
+NET "l_rst_n" LOC = P8;
+NET "l_clkp" LOC = R2;
+NET "l_clkn" LOC = R1;
+
+NET "l2p_data[0]" LOC = U3;
+NET "l2p_data[1]" LOC = U4;
+NET "l2p_data[2]" LOC = N8;
+NET "l2p_data[3]" LOC = U8;
+NET "l2p_data[4]" LOC = P6;
+NET "l2p_data[5]" LOC = T9;
+NET "l2p_data[6]" LOC = N5;
+NET "l2p_data[7]" LOC = R9;
+NET "l2p_data[8]" LOC = V6;
+NET "l2p_data[9]" LOC = T4;
+NET "l2p_data[10]" LOC = U7;
+NET "l2p_data[11]" LOC = R5;
+NET "l2p_data[12]" LOC = P3;
+NET "l2p_data[13]" LOC = T8;
+NET "l2p_data[14]" LOC = N4;
+NET "l2p_data[15]" LOC = R8;
+NET "l2p_dframe" LOC = P1;
+NET "l2p_valid" LOC = R3;
+NET "l2p_edb" LOC = P5;
+NET "l2p_clkp" LOC = P10;
+NET "l2p_clkn" LOC = N9;
+NET "l_wr_rdy[0]" LOC = V7;
+NET "l_wr_rdy[1]" LOC = R4;
+NET "p_rd_d_rdy[0]" LOC = U2;
+NET "p_rd_d_rdy[1]" LOC = U5;
+NET "l2p_rdy" LOC = U9;
+NET "tx_error" LOC = Y6;
+
+NET "p2l_data[0]" LOC = AA1;
+NET "p2l_data[1]" LOC = AE1;
+NET "p2l_data[2]" LOC = AA3;
+NET "p2l_data[3]" LOC = Y1;
+NET "p2l_data[4]" LOC = AC1;
+NET "p2l_data[5]" LOC = AC2;
+NET "p2l_data[6]" LOC = AB1;
+NET "p2l_data[7]" LOC = AB3;
+NET "p2l_data[8]" LOC = AD1;
+NET "p2l_data[9]" LOC = AE2;
+NET "p2l_data[10]" LOC = AA2;
+NET "p2l_data[11]" LOC = AD3;
+NET "p2l_data[12]" LOC = AA4;
+NET "p2l_data[13]" LOC = AB5;
+NET "p2l_data[14]" LOC = Y5;
+NET "p2l_data[15]" LOC = AB4;
+NET "p2l_dframe" LOC = Y3;
+NET "p2l_valid" LOC = AC3;
+NET "p2l_clkp" LOC = T3;
+NET "p2l_clkn" LOC = T1;
+NET "p_wr_req[0]" LOC = V1;
+NET "p_wr_req[1]" LOC = V3;
+NET "p_wr_rdy[0]" LOC = M4;
+NET "p_wr_rdy[1]" LOC = N20;
+NET "vc_rdy[0]" LOC = U1;
+NET "vc_rdy[1]" LOC = V5;
+NET "p2l_rdy" LOC = W2;
+NET "rx_error" LOC = W1;
+
+NET "gpio[0]" LOC = AA18;
+NET "gpio[1]" LOC = W17;
+
+NET "led_red" LOC = L20;
+NET "led_green" LOC = L21;
