@@ -1,0 +1,138 @@
+-- ./wbgen2 -l vhdl -V  ../testbench_lotus/fpga_project/lotus/rtl/dma_controller_wb_slave.vhd ../testbench_lotus/fpga_project/lotus/rtl/dma_controller_wb_slave.wb
+peripheral {
+  name = "GN4124 core DMA controller ";
+  description = "Wishbone slave for the DMA controller of the GN4124 core";
+  hdl_entity = "dma_controller_wb_slave";
+
+  prefix = "dma";
+
+  reg {
+    name = "DMACTRLR";
+    prefix = "ctrl";
+    field {
+      name = "DMA engine control";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMASTATR";
+    prefix = "stat";
+    field {
+      name = "DMA engine status";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMACSTARTR";
+    prefix = "cstart";
+    field {
+      name = "DMA start address in the carrier";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMAHSTARTLR";
+    prefix = "hstartl";
+    field {
+      name = "DMA start address (low) in the host";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMAHSTARTHR";
+    prefix = "hstarth";
+    field {
+      name = "DMA start address (high) in the host";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMALENR";
+    prefix = "len";
+    field {
+      name = "DMA read length in bytes";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMANEXTLR";
+    prefix = "nextl";
+    field {
+      name = "Pointer (low) to next item in list";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMANEXTHR";
+    prefix = "nexth";
+    field {
+      name = "Pointer (high) to next item in list";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+  reg {
+    name = "DMAATTRIBR";
+    prefix = "attrib";
+    field {
+      name = "DMA chain control";
+      type = SLV;
+      size = 32;
+      load = LOAD_EXT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      clock = "clk_i"
+    };
+  };
+
+
+
+
+};
