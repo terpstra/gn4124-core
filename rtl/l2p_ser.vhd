@@ -33,6 +33,9 @@ use UNISIM.vcomponents.all;
 
 
 entity l2p_ser is
+  generic (
+    g_IS_SPARTAN6 : boolean := false
+    );
   port
     (
       ---------------------------------------------------------
@@ -122,20 +125,44 @@ begin
   ------------------------------------------------------------------------------
   -- DDR FF instanciation for data
   ------------------------------------------------------------------------------
-  DDROUT : for i in 0 to 15 generate
-    U : OFDDRRSE
-      port map
-      (
-        Q  => l2p_data_o(i),
-        C0 => clk_n_i,
-        C1 => clk_p_i,
-        CE => '1',
-        D0 => data_d(i),
-        D1 => data_d(i+16),
-        R  => ff_rst,
-        S  => '0'
-        );
-  end generate;
+
+  -- Spartan3 primitives instanciation
+  gen_out_ddr_ff : if g_IS_SPARTAN6 = false generate
+    -- Data
+    DDROUT : for i in 0 to 15 generate
+      U : OFDDRRSE
+        port map
+        (
+          Q  => l2p_data_o(i),
+          C0 => clk_n_i,
+          C1 => clk_p_i,
+          CE => '1',
+          D0 => data_d(i),
+          D1 => data_d(i+16),
+          R  => ff_rst,
+          S  => '0'
+          );
+    end generate;
+  end generate gen_out_ddr_ff;
+
+  -- Spartan6 primitives instanciation
+  gen_out_ddr_ff_s6 : if g_IS_SPARTAN6 = true generate
+    -- Data
+    DDROUT : for i in 0 to 15 generate
+      U : ODDR2
+        port map
+        (
+          Q  => l2p_data_o(i),
+          C0 => clk_n_i,
+          C1 => clk_p_i,
+          CE => '1',
+          D0 => data_d(i),
+          D1 => data_d(i+16),
+          R  => ff_rst,
+          S  => '0'
+          );
+    end generate;
+  end generate gen_out_ddr_ff_s6;
 
   ------------------------------------------------------------------------------
   -- DDR source synchronous clock generation
@@ -146,16 +173,35 @@ begin
       OB => l2p_clk_n_o,
       I  => l2p_clk_sdr);
 
-  L2P_CLK_int : FDDRRSE
-    port map(
-      Q  => l2p_clk_sdr,
-      C0 => clk_n_i,
-      C1 => clk_p_i,
-      CE => '1',
-      D0 => '1',
-      D1 => '0',
-      R  => '0',
-      S  => '0');
+  -- Spartan3 primitives instanciation
+  gen_l2p_clk_ddr_ff : if g_IS_SPARTAN6 = false generate
+    -- L2P clock
+    L2P_CLK_int : FDDRRSE
+      port map(
+        Q  => l2p_clk_sdr,
+        C0 => clk_n_i,
+        C1 => clk_p_i,
+        CE => '1',
+        D0 => '1',
+        D1 => '0',
+        R  => '0',
+        S  => '0');
+  end generate gen_l2p_clk_ddr_ff;
+
+  -- Spartan6 primitives instanciation
+  gen_l2p_clk_ddr_ff_s6 : if g_IS_SPARTAN6 = true generate
+    -- L2P clock
+    L2P_CLK_int : ODDR2
+      port map(
+        Q  => l2p_clk_sdr,
+        C0 => clk_n_i,
+        C1 => clk_p_i,
+        CE => '1',
+        D0 => '1',
+        D1 => '0',
+        R  => '0',
+        S  => '0');
+  end generate gen_l2p_clk_ddr_ff_s6;
 
 end rtl;
 
