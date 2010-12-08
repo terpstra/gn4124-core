@@ -73,6 +73,13 @@ NET "led_green"   IOSTANDARD = "LVCMOS15";
 # System clock
 NET "sys_clk_p" IOSTANDARD = "LVDS_33";
 
+# User IO (eSATA connector)
+NET "user_io_0_p" IOSTANDARD = "LVCMOS33";
+NET "user_io_0_n" IOSTANDARD = "LVCMOS33";
+NET "user_io_1_p" IOSTANDARD = "LVCMOS18";
+NET "user_io_1_n" IOSTANDARD = "LVCMOS18";
+
+
 #---------------------------------------------------------------------------------------------
 # Force DDR Flops into IOBs
 # Offset constraints shoudl force this although the input and output DDR primtives are
@@ -100,25 +107,25 @@ NET "P2L_CLKn" TNM_NET = "p2l_clkn_grp";
 TIMESPEC TS_p2l_clkn = PERIOD "p2l_clkn_grp" 5 ns HIGH 50%;
 
 # Routing constraints on clock
-NET "P2L_CLKp" IBUF_DELAY_VALUE= 4; # Option: 0-16
-NET "P2L_CLKn" IBUF_DELAY_VALUE= 4; # Option: 0-16
+#NET "P2L_CLKp" IBUF_DELAY_VALUE= 4; # Option: 0-16
+#NET "P2L_CLKn" IBUF_DELAY_VALUE= 4; # Option: 0-16
 
-NET "P2L_CLKp" CLOCK_DEDICATED_ROUTE = FALSE;
-NET "P2L_CLKn" CLOCK_DEDICATED_ROUTE = FALSE;
+#NET "P2L_CLKp" CLOCK_DEDICATED_ROUTE = FALSE;
+#NET "P2L_CLKn" CLOCK_DEDICATED_ROUTE = FALSE;
 
 #NET "cmp_gn4124_core/clk_p_buf" MAXDELAY = 0.1 ns;
 #NET "cmp_gn4124_core/clk_n_buf" MAXDELAY = 0.1 ns;
 
 # Routing and input offset constaint on source synchronous data and control lines
 #NET "p2l_data*" IFD_DELAY_VALUE = 4;  # Option: 0-8
-NET "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
+#NET "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
 # work around see Xilinx Answer Record 34634
-NET "p2l_data*" OFFSET = IN -3.7 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
+#NET "p2l_data*" OFFSET = IN -3.7 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
 #NET "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKn" RISING;
 #NET "p2l_dframe" IFD_DELAY_VALUE = 4; # Option: 0-8
-NET "p2l_dframe" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
+#NET "p2l_dframe" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
 #NET "p2l_valid" IFD_DELAY_VALUE = 4; # Option: 0-8
-NET "p2l_valid" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
+#NET "p2l_valid" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
 
 #---------------------------------------------------------------------------------------------
 # L2P source synchronous interface
@@ -217,5 +224,10 @@ NET "rx_error" LOC = W1;
 NET "gpio[0]" LOC = AA18;
 NET "gpio[1]" LOC = W17;
 
-NET "led_red" LOC = L20;
-NET "led_green" LOC = L21;
+NET "led_red" LOC = L21;
+NET "led_green" LOC = L20;
+
+NET "user_io_0_p" LOC = AE13;
+NET "user_io_0_n" LOC = AF13;
+NET "user_io_1_p" LOC = Y26;
+NET "user_io_1_n" LOC = Y24;

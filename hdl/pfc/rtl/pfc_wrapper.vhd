@@ -84,7 +84,13 @@ entity pfc_wrapper is
 
       -- Font panel LEDs
       LED_RED   : out std_logic;
-      LED_GREEN : out std_logic
+      LED_GREEN : out std_logic;
+
+      -- User IO (eSATA connector)
+      USER_IO_0_P : out std_logic;
+      USER_IO_0_N : out std_logic;
+      USER_IO_1_P : out std_logic;
+      USER_IO_1_N : out std_logic
       );
 end pfc_wrapper;
 
@@ -97,17 +103,21 @@ architecture rtl of pfc_wrapper is
   component gn4124_core
     generic(
       g_IS_SPARTAN6       : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
-      g_BAR0_APERTURE     : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                            -- => number of bits to address periph on the board
-      g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
-      g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
-      g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
+      g_BAR0_APERTURE     : integer := 20;     -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                               -- => number of bits to address periph on the board
+      g_CSR_WB_SLAVES_NB  : integer := 1;      -- Number of CSR wishbone slaves
+      g_DMA_WB_SLAVES_NB  : integer := 1;      -- Number of DMA wishbone slaves
+      g_DMA_WB_ADDR_WIDTH : integer := 26      -- DMA wishbone address bus width
       );
     port
       (
         ---------------------------------------------------------
+        -- Control and status
+        --
         -- Asynchronous reset from GN4124
-        rst_n_a_i : in std_logic;
+        rst_n_a_i      : in  std_logic;
+        -- P2L clock PLL locked
+        p2l_pll_locked : out std_logic;
 
         ---------------------------------------------------------
         -- P2L Direction
@@ -240,6 +250,9 @@ architecture rtl of pfc_wrapper is
   -- LCLK from GN4124 used as system clock
   signal l_clk : std_logic;
 
+  -- P2L colck PLL status
+  signal p2l_pll_locked : std_logic;
+
   -- CSR wishbone bus
   signal wb_adr   : std_logic_vector(c_BAR0_APERTURE-log2_ceil(c_CSR_WB_SLAVES_NB+1)-1 downto 0);
   signal wb_dat_i : std_logic_vector((32*c_CSR_WB_SLAVES_NB)-1 downto 0);
@@ -276,6 +289,7 @@ architecture rtl of pfc_wrapper is
   signal dummy_ctrl_reg_2   : std_logic_vector(31 downto 0);
   signal dummy_ctrl_reg_3   : std_logic_vector(31 downto 0);
   signal dummy_ctrl_reg_led : std_logic_vector(31 downto 0);
+
 
 begin
 
@@ -321,8 +335,12 @@ begin
     port map
     (
       ---------------------------------------------------------
-      -- Reset from GN4124
-      rst_n_a_i => L_RST_N,
+      -- Control and status
+      --
+      -- Asynchronous reset from GN4124
+      rst_n_a_i      => L_RST_N,
+      -- P2L clock PLL locked
+      p2l_pll_locked => p2l_pll_locked,
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -435,8 +453,10 @@ begin
       dummy_reg_led_o => dummy_ctrl_reg_led
       );
 
-  LED_RED   <= dummy_ctrl_reg_led(0);
-  LED_GREEN <= dummy_ctrl_reg_led(1);
+  --LED_RED   <= dummy_ctrl_reg_led(0);
+  --LED_GREEN <= dummy_ctrl_reg_led(1);
+  LED_GREEN <= '1';
+  LED_RED   <= p2l_pll_locked;
 
   ------------------------------------------------------------------------------
   -- DMA wishbone bus connected to a DPRAM
@@ -474,6 +494,14 @@ begin
   -- just forward irq pulses for test
   irq_to_gn4124 <= irq_sources(1) or irq_sources(0);
 
+
+  ------------------------------------------------------------------------------
+  -- FOR TEST
+  ------------------------------------------------------------------------------
+  USER_IO_0_P <= '0';
+  USER_IO_0_N <= '0';
+  USER_IO_1_P <= '0';
+  USER_IO_1_N <= '0';
 
 end rtl;
 
