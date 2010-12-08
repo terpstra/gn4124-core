@@ -84,7 +84,7 @@ end component;
 			c_has_softecc_output_regs_b => 0,
 			c_has_mem_output_regs_b => 0,
 			c_has_mem_output_regs_a => 0,
-			c_load_init_file => 1,
+			c_load_init_file => 0,
 			c_xdevicefamily => "spartan6",
 			c_write_depth_b => 2048,
 			c_write_depth_a => 2048,

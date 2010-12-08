@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 12.2
-# Date: Thu Nov 18 17:52:13 2010
+# Date: Tue Dec  7 09:22:45 2010
 #
 ##############################################################
 #
@@ -50,7 +50,7 @@ CSET enable_a=Always_Enabled
 CSET enable_b=Always_Enabled
 CSET error_injection_type=Single_Bit_Error_Injection
 CSET fill_remaining_memory_locations=false
-CSET load_init_file=true
+CSET load_init_file=false
 CSET memory_type=Single_Port_RAM
 CSET operating_mode_a=WRITE_FIRST
 CSET operating_mode_b=WRITE_FIRST
@@ -90,4 +90,4 @@ CSET write_width_a=32
 CSET write_width_b=32
 # END Parameters
 GENERATE
-# CRC: 1fa2e52c
+# CRC: 41d4c4f0

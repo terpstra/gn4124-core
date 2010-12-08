@@ -103,7 +103,7 @@ Auto BRAM Packing                  : NO
 Slice Utilization Ratio Delta      : 5
 
 ---- Other Options
-Cores Search Directories           : {"ip_cores"  }
+Cores Search Directories           : {"../ip_cores"  }
 
 =========================================================================
 
@@ -111,46 +111,58 @@ Cores Search Directories           : {"ip_cores"  }
 =========================================================================
 *                          HDL Parsing                                  *
 =========================================================================
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/gn4124_core_pkg.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_n_to_1_s2_se.vhd" into library work
+Parsing entity <serdes_n_to_1_s2_se>.
+Parsing architecture <arch_serdes_n_to_1_s2_se> of entity <serdes_n_to_1_s2_se>.
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_n_to_1_s2_diff.vhd" into library work
+Parsing entity <serdes_n_to_1_s2_diff>.
+Parsing architecture <arch_serdes_n_to_1_s2_diff> of entity <serdes_n_to_1_s2_diff>.
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_1_to_n_data_s2_se.vhd" into library work
+Parsing entity <serdes_1_to_n_data_s2_se>.
+Parsing architecture <arch_serdes_1_to_n_data_s2_se> of entity <serdes_1_to_n_data_s2_se>.
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/gn4124_core_pkg_s6.vhd" into library work
 Parsing package <gn4124_core_pkg>.
 Parsing package body <gn4124_core_pkg>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller_wb_slave.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller_wb_slave.vhd" into library work
 Parsing entity <dma_controller_wb_slave>.
 Parsing architecture <syn> of entity <dma_controller_wb_slave>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/wbmaster32.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/wbmaster32.vhd" into library work
 Parsing entity <wbmaster32>.
 Parsing architecture <behaviour> of entity <wbmaster32>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/p2l_dma_master.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_1_to_n_clk_pll_s2_diff.vhd" into library work
+Parsing entity <serdes_1_to_n_clk_pll_s2_diff>.
+Parsing architecture <arch_serdes_1_to_n_clk_pll_s2_diff> of entity <serdes_1_to_n_clk_pll_s2_diff>.
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/p2l_dma_master.vhd" into library work
 Parsing entity <p2l_dma_master>.
 Parsing architecture <behaviour> of entity <p2l_dma_master>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/p2l_des.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/p2l_des_s6.vhd" into library work
 Parsing entity <p2l_des>.
 Parsing architecture <rtl> of entity <p2l_des>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/p2l_decode32.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/p2l_decode32.vhd" into library work
 Parsing entity <p2l_decode32>.
 Parsing architecture <rtl> of entity <p2l_decode32>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/l2p_ser.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/l2p_ser_s6.vhd" into library work
 Parsing entity <l2p_ser>.
 Parsing architecture <rtl> of entity <l2p_ser>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/l2p_dma_master.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/l2p_dma_master.vhd" into library work
 Parsing entity <l2p_dma_master>.
 Parsing architecture <behaviour> of entity <l2p_dma_master>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/l2p_arbiter.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/l2p_arbiter.vhd" into library work
 Parsing entity <l2p_arbiter>.
 Parsing architecture <rtl> of entity <l2p_arbiter>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller.vhd" into library work
 Parsing entity <dma_controller>.
 Parsing architecture <behaviour> of entity <dma_controller>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/gn4124_core.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/gn4124_core_s6.vhd" into library work
 Parsing entity <gn4124_core>.
 Parsing architecture <rtl> of entity <gn4124_core>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_stat_regs.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_stat_regs.vhd" into library work
 Parsing entity <dummy_stat_regs_wb_slave>.
 Parsing architecture <syn> of entity <dummy_stat_regs_wb_slave>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_ctrl_regs.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_ctrl_regs.vhd" into library work
 Parsing entity <dummy_ctrl_regs_wb_slave>.
 Parsing architecture <syn> of entity <dummy_ctrl_regs_wb_slave>.
-Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" into library work
+Parsing VHDL file "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../rtl/pfc_wrapper.vhd" into library work
 Parsing entity <pfc_wrapper>.
 Parsing architecture <rtl> of entity <pfc_wrapper>.
 
@@ -162,25 +174,34 @@ Elaborating entity <pfc_wrapper> (architecture <rtl>) with generics from library
 
 Elaborating entity <gn4124_core> (architecture <rtl>) with generics from library <work>.
 
-Elaborating entity <p2l_des> (architecture <rtl>) with generics from library <work>.
+Elaborating entity <serdes_1_to_n_clk_pll_s2_diff> (architecture <arch_serdes_1_to_n_clk_pll_s2_diff>) with generics from library <work>.
+
+Elaborating entity <p2l_des> (architecture <rtl>) from library <work>.
+
+Elaborating entity <serdes_1_to_n_data_s2_se> (architecture <arch_serdes_1_to_n_data_s2_se>) with generics from library <work>.
+WARNING:HDLCompiler:634 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_1_to_n_data_s2_se.vhd" Line 97: Net <busys[15]> does not have a driver.
+WARNING:HDLCompiler:634 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_1_to_n_data_s2_se.vhd" Line 111: Net <valid_data[15]> does not have a driver.
+WARNING:HDLCompiler:634 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_1_to_n_data_s2_se.vhd" Line 119: Net <incdec_data[15]> does not have a driver.
+
+Elaborating entity <serdes_1_to_n_data_s2_se> (architecture <arch_serdes_1_to_n_data_s2_se>) with generics from library <work>.
 
 Elaborating entity <p2l_decode32> (architecture <rtl>) from library <work>.
 
 Elaborating entity <wbmaster32> (architecture <behaviour>) with generics from library <work>.
 INFO:HDLCompiler:679 - Case statement is complete. Others clause is never selected and therefore discarded.
-WARNING:HDLCompiler:89 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/gn4124_core_pkg.vhd" Line 464: <fifo_64x512> remains a black-box since it has no binding entity.
-WARNING:HDLCompiler:89 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/gn4124_core_pkg.vhd" Line 446: <fifo_32x512> remains a black-box since it has no binding entity.
+WARNING:HDLCompiler:89 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/gn4124_core_pkg_s6.vhd" Line 459: <fifo_64x512> remains a black-box since it has no binding entity.
+WARNING:HDLCompiler:89 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/gn4124_core_pkg_s6.vhd" Line 441: <fifo_32x512> remains a black-box since it has no binding entity.
 INFO:HDLCompiler:679 - Case statement is complete. Others clause is never selected and therefore discarded.
 
 Elaborating entity <dma_controller> (architecture <behaviour>) from library <work>.
 
 Elaborating entity <dma_controller_wb_slave> (architecture <syn>) from library <work>.
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller_wb_slave.vhd" Line 167: Assignment to bwsel_reg ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller_wb_slave.vhd" Line 168: Assignment to bus_clock_int ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller_wb_slave.vhd" Line 169: Assignment to rd_int ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller_wb_slave.vhd" Line 170: Assignment to wr_int ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller_wb_slave.vhd" Line 171: Assignment to allones ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dma_controller_wb_slave.vhd" Line 172: Assignment to allzeros ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller_wb_slave.vhd" Line 167: Assignment to bwsel_reg ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller_wb_slave.vhd" Line 168: Assignment to bus_clock_int ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller_wb_slave.vhd" Line 169: Assignment to rd_int ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller_wb_slave.vhd" Line 170: Assignment to wr_int ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller_wb_slave.vhd" Line 171: Assignment to allones ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dma_controller_wb_slave.vhd" Line 172: Assignment to allzeros ignored, since the identifier is never used
 INFO:HDLCompiler:679 - Case statement is complete. Others clause is never selected and therefore discarded.
 
 Elaborating entity <l2p_dma_master> (architecture <behaviour>) with generics from library <work>.
@@ -191,25 +212,33 @@ INFO:HDLCompiler:679 - Case statement is complete. Others clause is never select
 
 Elaborating entity <l2p_arbiter> (architecture <rtl>) from library <work>.
 
-Elaborating entity <l2p_ser> (architecture <rtl>) with generics from library <work>.
+Elaborating entity <l2p_ser> (architecture <rtl>) from library <work>.
+
+Elaborating entity <serdes_n_to_1_s2_diff> (architecture <arch_serdes_n_to_1_s2_diff>) with generics from library <work>.
+WARNING:HDLCompiler:634 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_n_to_1_s2_diff.vhd" Line 93: Net <mdatainb[3]> does not have a driver.
+
+Elaborating entity <serdes_n_to_1_s2_se> (architecture <arch_serdes_n_to_1_s2_se>) with generics from library <work>.
+WARNING:HDLCompiler:634 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/serdes_n_to_1_s2_se.vhd" Line 92: Net <mdatainb[63]> does not have a driver.
+
+Elaborating entity <serdes_n_to_1_s2_se> (architecture <arch_serdes_n_to_1_s2_se>) with generics from library <work>.
 
 Elaborating entity <dummy_stat_regs_wb_slave> (architecture <syn>) from library <work>.
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_stat_regs.vhd" Line 56: Assignment to wrdata_reg ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_stat_regs.vhd" Line 57: Assignment to bwsel_reg ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_stat_regs.vhd" Line 59: Assignment to rd_int ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_stat_regs.vhd" Line 60: Assignment to wr_int ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_stat_regs.vhd" Line 61: Assignment to allones ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_stat_regs.vhd" Line 62: Assignment to allzeros ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_stat_regs.vhd" Line 56: Assignment to wrdata_reg ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_stat_regs.vhd" Line 57: Assignment to bwsel_reg ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_stat_regs.vhd" Line 59: Assignment to rd_int ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_stat_regs.vhd" Line 60: Assignment to wr_int ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_stat_regs.vhd" Line 61: Assignment to allones ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_stat_regs.vhd" Line 62: Assignment to allzeros ignored, since the identifier is never used
 INFO:HDLCompiler:679 - Case statement is complete. Others clause is never selected and therefore discarded.
 
 Elaborating entity <dummy_ctrl_regs_wb_slave> (architecture <syn>) from library <work>.
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_ctrl_regs.vhd" Line 61: Assignment to bwsel_reg ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_ctrl_regs.vhd" Line 63: Assignment to rd_int ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_ctrl_regs.vhd" Line 64: Assignment to wr_int ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_ctrl_regs.vhd" Line 65: Assignment to allones ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/../gn4124core/design/rtl/dummy_ctrl_regs.vhd" Line 66: Assignment to allzeros ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_ctrl_regs.vhd" Line 61: Assignment to bwsel_reg ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_ctrl_regs.vhd" Line 63: Assignment to rd_int ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_ctrl_regs.vhd" Line 64: Assignment to wr_int ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_ctrl_regs.vhd" Line 65: Assignment to allones ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../../gn4124core/rtl/dummy_ctrl_regs.vhd" Line 66: Assignment to allzeros ignored, since the identifier is never used
 INFO:HDLCompiler:679 - Case statement is complete. Others clause is never selected and therefore discarded.
-WARNING:HDLCompiler:89 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" Line 215: <ram_2048x32> remains a black-box since it has no binding entity.
+WARNING:HDLCompiler:89 - "/home/mcattin/projects/GN4124_core/hdl/pfc/ise_project/../rtl/pfc_wrapper.vhd" Line 225: <ram_2048x32> remains a black-box since it has no binding entity.
 
 =========================================================================
 *                           HDL Synthesis                               *
@@ -218,17 +247,18 @@ WARNING:HDLCompiler:89 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wra
 Synthesizing Unit <pfc_wrapper>.
     Related source file is "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd".
         TAR_ADDR_WDTH = 13
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 313: Output port <dma_sel_o> of the instance <cmp_gn4124_core> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 420: Output port <dummy_reg_1_o> of the instance <cmp_dummy_ctrl_regs> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 420: Output port <dummy_reg_2_o> of the instance <cmp_dummy_ctrl_regs> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 420: Output port <dummy_reg_3_o> of the instance <cmp_dummy_ctrl_regs> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 327: Output port <dma_sel_o> of the instance <cmp_gn4124_core> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 438: Output port <dummy_reg_1_o> of the instance <cmp_dummy_ctrl_regs> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 438: Output port <dummy_reg_2_o> of the instance <cmp_dummy_ctrl_regs> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 438: Output port <dummy_reg_3_o> of the instance <cmp_dummy_ctrl_regs> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/pfc/rtl/pfc_wrapper.vhd" line 438: Output port <dummy_reg_led_o> of the instance <cmp_dummy_ctrl_regs> is unconnected or connected to loadless signal.
     Found 1-bit register for signal <dma_ack_i>.
     Summary:
 	inferred   1 D-type flip-flop(s).
 Unit <pfc_wrapper> synthesized.
 
 Synthesizing Unit <gn4124_core>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_s6.vhd".
         g_IS_SPARTAN6 = true
         g_BAR0_APERTURE = 20
         g_CSR_WB_SLAVES_NB = 2
@@ -237,33 +267,166 @@ Synthesizing Unit <gn4124_core>.
 WARNING:Xst:647 - Input <p_wr_req_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <vc_rdy_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <tx_error_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core.vhd" line 387: Output port <p2l_hdr_stat_o> of the instance <cmp_p2l_decode32> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core.vhd" line 387: Output port <p2l_hdr_last_o> of the instance <cmp_p2l_decode32> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_s6.vhd" line 322: Output port <datain> of the instance <cmp_clk_in> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_s6.vhd" line 322: Output port <rx_pll_lckd> of the instance <cmp_clk_in> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_s6.vhd" line 322: Output port <rx_pllout_xs> of the instance <cmp_clk_in> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_s6.vhd" line 322: Output port <bitslip> of the instance <cmp_clk_in> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_s6.vhd" line 407: Output port <p2l_hdr_stat_o> of the instance <cmp_p2l_decode32> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_s6.vhd" line 407: Output port <p2l_hdr_last_o> of the instance <cmp_p2l_decode32> is unconnected or connected to loadless signal.
     Found 2-bit register for signal <l_wr_rdy_t>.
     Found 2-bit register for signal <l_wr_rdy>.
     Found 2-bit register for signal <p_rd_d_rdy_t>.
     Found 2-bit register for signal <p_rd_d_rdy>.
+    Found 1-bit register for signal <rst_reg>.
     Found 1-bit register for signal <l2p_rdy_t>.
     Found 1-bit register for signal <l2p_rdy>.
-    Found 1-bit register for signal <rst_reg>.
     Summary:
 	inferred  11 D-type flip-flop(s).
 	inferred   8 Multiplexer(s).
 Unit <gn4124_core> synthesized.
 
-Synthesizing Unit <p2l_des>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_des.vhd".
-        g_IS_SPARTAN6 = true
-    Found 1-bit register for signal <p2l_valid_o>.
-    Found 1-bit register for signal <p2l_dframe_o>.
-    Found 32-bit register for signal <p2l_data_o>.
-    Found 16-bit register for signal <p2l_data_sdr_l>.
+Synthesizing Unit <serdes_1_to_n_clk_pll_s2_diff>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/serdes_1_to_n_clk_pll_s2_diff.vhd".
+        PLLD = 1
+        PLLX = 2
+        CLKIN_PERIOD = 5.0
+        S = 2
+        BS = false
+        DIFF_TERM = false
+WARNING:Xst:647 - Input <pattern1<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <pattern2<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 1-bit register for signal <enable>.
+    Found 1-bit register for signal <cal_clk>.
+    Found 1-bit register for signal <rst_clk>.
+    Found 1-bit register for signal <bslip>.
+    Found 12-bit register for signal <counter>.
+    Found 3-bit register for signal <count>.
+    Found 4-bit register for signal <state>.
+    Found 1-bit register for signal <busyd>.
+    Found finite state machine <FSM_0> for signal <state>.
+    -----------------------------------------------------------------------
+    | States             | 9                                              |
+    | Transitions        | 24                                             |
+    | Inputs             | 4                                              |
+    | Outputs            | 9                                              |
+    | Clock              | rx_bufg_pll_x1_int (rising_edge)               |
+    | Reset              | not_rx_bufpll_lckd (positive)                  |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 0000                                           |
+    | Power Up State     | 0000                                           |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 12-bit adder for signal <counter[11]_GND_10_o_add_1_OUT> created at line 176.
+    Found 3-bit adder for signal <count[2]_GND_10_o_add_14_OUT> created at line 205.
     Summary:
-	inferred  50 D-type flip-flop(s).
+	inferred   2 Adder/Subtractor(s).
+	inferred  19 D-type flip-flop(s).
+	inferred   4 Multiplexer(s).
+	inferred   1 Finite State Machine(s).
+Unit <serdes_1_to_n_clk_pll_s2_diff> synthesized.
+
+Synthesizing Unit <p2l_des>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_des_s6.vhd".
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_des_s6.vhd" line 144: Output port <debug> of the instance <cmp_data_in> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_des_s6.vhd" line 188: Output port <debug> of the instance <cmp_dframe_in> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_des_s6.vhd" line 211: Output port <debug> of the instance <cmp_valid_in> is unconnected or connected to loadless signal.
+    Found 32-bit register for signal <p2l_data_o>.
+    Found 2-bit register for signal <p2l_data_bitslip>.
+    Found 1-bit register for signal <p2l_dframe_o>.
+    Found 1-bit register for signal <p2l_valid_o>.
+    Summary:
+	inferred  36 D-type flip-flop(s).
 Unit <p2l_des> synthesized.
 
+Synthesizing Unit <serdes_1_to_n_data_s2_se_1>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/serdes_1_to_n_data_s2_se.vhd".
+        USE_PD = false
+        S = 2
+        D = 16
+WARNING:Xst:653 - Signal <busys> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <valid_data> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <incdec_data> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+    Found 9-bit register for signal <counter>.
+    Found 4-bit register for signal <state>.
+    Found 16-bit register for signal <mux>.
+    Found 1-bit register for signal <cal_data_master>.
+    Found 1-bit register for signal <cal_data_sint>.
+    Found 1-bit register for signal <enable>.
+    Found 1-bit register for signal <rst_data>.
+    Found 1-bit register for signal <busy_data_d>.
+    Found 16-bit register for signal <ce_data>.
+    Found 1-bit register for signal <inc_data_int>.
+    Found finite state machine <FSM_1> for signal <state>.
+    -----------------------------------------------------------------------
+    | States             | 8                                              |
+    | Transitions        | 17                                             |
+    | Inputs             | 3                                              |
+    | Outputs            | 7                                              |
+    | Clock              | gclk (rising_edge)                             |
+    | Reset              | reset (positive)                               |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 0000                                           |
+    | Power Up State     | 0000                                           |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 9-bit adder for signal <counter[8]_GND_55_o_add_2_OUT> created at line 150.
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred  47 D-type flip-flop(s).
+	inferred   3 Multiplexer(s).
+	inferred   1 Finite State Machine(s).
+Unit <serdes_1_to_n_data_s2_se_1> synthesized.
+
+Synthesizing Unit <serdes_1_to_n_data_s2_se_2>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/serdes_1_to_n_data_s2_se.vhd".
+        USE_PD = false
+        S = 2
+        D = 1
+WARNING:Xst:653 - Signal <busys> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <valid_data> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <incdec_data> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+    Found 9-bit register for signal <counter>.
+    Found 5-bit register for signal <pdcounter>.
+    Found 4-bit register for signal <state>.
+    Found 1-bit register for signal <cal_data_master>.
+    Found 1-bit register for signal <cal_data_sint>.
+    Found 1-bit register for signal <enable>.
+    Found 1-bit register for signal <ce_data_inta>.
+    Found 1-bit register for signal <flag>.
+    Found 1-bit register for signal <rst_data>.
+    Found 1-bit register for signal <busy_data_d>.
+    Found 1-bit register for signal <incdec_data_d>.
+    Found 1-bit register for signal <valid_data_d>.
+    Found 1-bit register for signal <ce_data>.
+    Found 1-bit register for signal <inc_data_int>.
+    Found finite state machine <FSM_2> for signal <state>.
+    -----------------------------------------------------------------------
+    | States             | 8                                              |
+    | Transitions        | 17                                             |
+    | Inputs             | 3                                              |
+    | Outputs            | 9                                              |
+    | Clock              | gclk (rising_edge)                             |
+    | Reset              | reset (positive)                               |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 0000                                           |
+    | Power Up State     | 0000                                           |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 9-bit adder for signal <counter[8]_GND_124_o_add_1_OUT> created at line 150.
+    Found 5-bit adder for signal <pdcounter[4]_GND_124_o_add_34_OUT> created at line 242.
+    Found 5-bit subtractor for signal <GND_124_o_GND_124_o_sub_37_OUT<4:0>>.
+    Summary:
+	inferred   2 Adder/Subtractor(s).
+	inferred  24 D-type flip-flop(s).
+	inferred   9 Multiplexer(s).
+	inferred   1 Finite State Machine(s).
+Unit <serdes_1_to_n_data_s2_se_2> synthesized.
+
 Synthesizing Unit <p2l_decode32>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_decode32.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_decode32.vhd".
     Found 10-bit register for signal <p2l_hdr_length>.
     Found 2-bit register for signal <p2l_hdr_cid>.
     Found 2-bit register for signal <p2l_hdr_stat>.
@@ -285,7 +448,7 @@ Synthesizing Unit <p2l_decode32>.
     Found 1-bit register for signal <p2l_d_valid>.
     Found 1-bit register for signal <p2l_d_last>.
     Found 1-bit register for signal <des_p2l_dframe_d>.
-    Found 30-bit adder for signal <p2l_addr[31]_GND_27_o_add_17_OUT> created at line 1241.
+    Found 30-bit adder for signal <p2l_addr[31]_GND_139_o_add_17_OUT> created at line 1241.
     Summary:
 	inferred   1 Adder/Subtractor(s).
 	inferred 103 D-type flip-flop(s).
@@ -293,18 +456,18 @@ Synthesizing Unit <p2l_decode32>.
 Unit <p2l_decode32> synthesized.
 
 Synthesizing Unit <wbmaster32>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd".
         g_BAR0_APERTURE = 20
         g_WB_SLAVES_NB = 3
 WARNING:Xst:647 - Input <pd_wbm_hdr_length_i<9:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_wbm_addr_i<0:30>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_wbm_be_i<3:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_wbm_data_last_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 302: Output port <full> of the instance <cmp_fifo_to_wb> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 302: Output port <valid> of the instance <cmp_fifo_to_wb> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 323: Output port <full> of the instance <cmp_from_wb_fifo> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 323: Output port <valid> of the instance <cmp_from_wb_fifo> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 323: Output port <prog_full> of the instance <cmp_from_wb_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 302: Output port <full> of the instance <cmp_fifo_to_wb> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 302: Output port <valid> of the instance <cmp_fifo_to_wb> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 323: Output port <full> of the instance <cmp_from_wb_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 323: Output port <valid> of the instance <cmp_from_wb_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 323: Output port <prog_full> of the instance <cmp_from_wb_fifo> is unconnected or connected to loadless signal.
     Found 1-bit register for signal <to_wb_fifo_wr>.
     Found 1-bit register for signal <wbm_arb_req_o>.
     Found 1-bit register for signal <wbm_arb_valid_o>.
@@ -327,7 +490,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wb
     Found 4-bit register for signal <wb_sel_t>.
     Found 31-bit register for signal <wb_adr_t>.
     Found 64-bit register for signal <to_wb_fifo_din>.
-    Found finite state machine <FSM_0> for signal <l2p_read_cpl_current_state>.
+    Found finite state machine <FSM_3> for signal <l2p_read_cpl_current_state>.
     -----------------------------------------------------------------------
     | States             | 3                                              |
     | Transitions        | 6                                              |
@@ -341,7 +504,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wb
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found finite state machine <FSM_1> for signal <wishbone_current_state>.
+    Found finite state machine <FSM_4> for signal <wishbone_current_state>.
     -----------------------------------------------------------------------
     | States             | 4                                              |
     | Transitions        | 6                                              |
@@ -355,17 +518,17 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wb
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 2-bit adder for signal <s_wb_periph_addr[1]_GND_28_o_add_39_OUT> created at line 439.
+    Found 2-bit adder for signal <s_wb_periph_addr[1]_GND_140_o_add_39_OUT> created at line 439.
     Found 8-bit adder for signal <n0264> created at line 477.
-    Found 32-bit 3-to-1 multiplexer for signal <l2p_read_cpl_current_state[1]_X_10_o_wide_mux_11_OUT> created at line 256.
-    Found 1-bit 3-to-1 multiplexer for signal <wb_periph_addr[1]_X_10_o_Mux_46_o> created at line 466.
+    Found 32-bit 3-to-1 multiplexer for signal <l2p_read_cpl_current_state[1]_X_16_o_wide_mux_11_OUT> created at line 256.
+    Found 1-bit 3-to-1 multiplexer for signal <wb_periph_addr[1]_X_16_o_Mux_46_o> created at line 466.
     Found 1-bit 3-to-1 multiplexer for signal <_n0304> created at line 477.
     Found 1-bit 3-to-1 multiplexer for signal <_n0323> created at line 477.
     Found 1-bit 3-to-1 multiplexer for signal <_n0342> created at line 477.
-    Found 1-bit 3-to-1 multiplexer for signal <_n0362> created at line 477.
-    Found 1-bit 3-to-1 multiplexer for signal <_n0381> created at line 477.
-    Found 1-bit 3-to-1 multiplexer for signal <_n0400> created at line 477.
-    Found 1-bit 3-to-1 multiplexer for signal <_n0419> created at line 477.
+    Found 1-bit 3-to-1 multiplexer for signal <_n0361> created at line 477.
+    Found 1-bit 3-to-1 multiplexer for signal <_n0380> created at line 477.
+    Found 1-bit 3-to-1 multiplexer for signal <_n0399> created at line 477.
+    Found 1-bit 3-to-1 multiplexer for signal <_n0418> created at line 477.
     Found 1-bit 3-to-1 multiplexer for signal <_n0438> created at line 477.
     Found 1-bit 3-to-1 multiplexer for signal <_n0457> created at line 477.
     Found 1-bit 3-to-1 multiplexer for signal <_n0476> created at line 477.
@@ -423,7 +586,7 @@ WARNING:Xst:737 - Found 1-bit latch for signal <s_wb_dat_i_muxed<2>>. Latches ma
 WARNING:Xst:737 - Found 1-bit latch for signal <s_wb_dat_i_muxed<1>>. Latches may be generated from incomplete case or if statements. We do not recommend the use of latches in FPGA/CPLD designs, as they may lead to timing problems.
 WARNING:Xst:737 - Found 1-bit latch for signal <s_wb_dat_i_muxed<0>>. Latches may be generated from incomplete case or if statements. We do not recommend the use of latches in FPGA/CPLD designs, as they may lead to timing problems.
 WARNING:Xst:737 - Found 1-bit latch for signal <s_wb_dat_i_muxed<31>>. Latches may be generated from incomplete case or if statements. We do not recommend the use of latches in FPGA/CPLD designs, as they may lead to timing problems.
-    Found 2-bit comparator greater for signal <wb_periph_addr[1]_PWR_28_o_LessThan_48_o> created at line 465
+    Found 2-bit comparator greater for signal <wb_periph_addr[1]_PWR_57_o_LessThan_48_o> created at line 465
     Summary:
 	inferred   2 Adder/Subtractor(s).
 	inferred 242 D-type flip-flop(s).
@@ -434,9 +597,9 @@ WARNING:Xst:737 - Found 1-bit latch for signal <s_wb_dat_i_muxed<31>>. Latches m
 Unit <wbmaster32> synthesized.
 
 Synthesizing Unit <dma_controller>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd".
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd" line 204: Output port <dma_stat_o> of the instance <dma_controller_wb_slave_0> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd" line 204: Output port <dma_stat_load_o> of the instance <dma_controller_wb_slave_0> is unconnected or connected to loadless signal.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller.vhd".
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller.vhd" line 204: Output port <dma_stat_o> of the instance <dma_controller_wb_slave_0> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller.vhd" line 204: Output port <dma_stat_load_o> of the instance <dma_controller_wb_slave_0> is unconnected or connected to loadless signal.
     Found 32-bit register for signal <dma_cstart_reg>.
     Found 32-bit register for signal <dma_hstartl_reg>.
     Found 32-bit register for signal <dma_hstarth_reg>.
@@ -458,7 +621,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dm
     Found 1-bit register for signal <dma_error_irq>.
     Found 1-bit register for signal <dma_done_irq>.
     Found 1-bit register for signal <dma_ctrl_abort_o>.
-    Found finite state machine <FSM_2> for signal <dma_ctrl_current_state>.
+    Found finite state machine <FSM_5> for signal <dma_ctrl_current_state>.
     -----------------------------------------------------------------------
     | States             | 7                                              |
     | Transitions        | 18                                             |
@@ -480,7 +643,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dm
 Unit <dma_controller> synthesized.
 
 Synthesizing Unit <dma_controller_wb_slave>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller_wb_slave.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller_wb_slave.vhd".
 WARNING:Xst:647 - Input <wb_sel_i<3:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
     Found 9-bit register for signal <ack_sreg>.
     Found 32-bit register for signal <rddata_reg>.
@@ -591,14 +754,14 @@ WARNING:Xst:647 - Input <wb_sel_i<3:0>> is never used. This port will be preserv
 Unit <dma_controller_wb_slave> synthesized.
 
 Synthesizing Unit <l2p_dma_master>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd".
         g_BYTE_SWAP = false
 WARNING:Xst:647 - Input <dma_ctrl_target_addr_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <dma_ctrl_len_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <dma_ctrl_byte_swap_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 477: Output port <full> of the instance <cmp_addr_fifo> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 493: Output port <full> of the instance <cmp_data_fifo> is unconnected or connected to loadless signal.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 493: Output port <valid> of the instance <cmp_data_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 477: Output port <full> of the instance <cmp_addr_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 493: Output port <full> of the instance <cmp_data_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 493: Output port <valid> of the instance <cmp_data_fifo> is unconnected or connected to loadless signal.
     Found 1-bit register for signal <dma_ctrl_error_o>.
     Found 1-bit register for signal <addr_fifo_wr>.
     Found 1-bit register for signal <l2p_64b_address>.
@@ -625,7 +788,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2
     Found 7-bit register for signal <wb_read_cnt>.
     Found 7-bit register for signal <wb_ack_cnt>.
     Found 32-bit register for signal <addr_fifo_din>.
-    Found finite state machine <FSM_3> for signal <l2p_dma_current_state>.
+    Found finite state machine <FSM_6> for signal <l2p_dma_current_state>.
     -----------------------------------------------------------------------
     | States             | 8                                              |
     | Transitions        | 23                                             |
@@ -639,18 +802,18 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 30-bit adder for signal <target_addr_cnt[29]_GND_76_o_add_4_OUT> created at line 1241.
-    Found 32-bit adder for signal <l2p_address_l[31]_GND_76_o_add_35_OUT> created at line 267.
-    Found 7-bit adder for signal <wb_read_cnt[6]_GND_76_o_add_111_OUT> created at line 1241.
-    Found 7-bit adder for signal <wb_ack_cnt[6]_GND_76_o_add_114_OUT> created at line 1241.
-    Found 30-bit subtractor for signal <GND_76_o_GND_76_o_sub_6_OUT<29:0>>.
-    Found 30-bit subtractor for signal <GND_76_o_GND_76_o_sub_31_OUT<29:0>>.
-    Found 11-bit subtractor for signal <GND_76_o_GND_76_o_sub_34_OUT<10:0>>.
-    Found 7-bit subtractor for signal <GND_76_o_GND_76_o_sub_108_OUT<6:0>>.
-    Found 30-bit comparator greater for signal <GND_76_o_l2p_len_cnt[29]_LessThan_37_o> created at line 269
+    Found 30-bit adder for signal <target_addr_cnt[29]_GND_188_o_add_4_OUT> created at line 1241.
+    Found 32-bit adder for signal <l2p_address_l[31]_GND_188_o_add_35_OUT> created at line 267.
+    Found 7-bit adder for signal <wb_read_cnt[6]_GND_188_o_add_111_OUT> created at line 1241.
+    Found 7-bit adder for signal <wb_ack_cnt[6]_GND_188_o_add_114_OUT> created at line 1241.
+    Found 30-bit subtractor for signal <GND_188_o_GND_188_o_sub_6_OUT<29:0>>.
+    Found 30-bit subtractor for signal <GND_188_o_GND_188_o_sub_31_OUT<29:0>>.
+    Found 11-bit subtractor for signal <GND_188_o_GND_188_o_sub_34_OUT<10:0>>.
+    Found 7-bit subtractor for signal <GND_188_o_GND_188_o_sub_108_OUT<6:0>>.
+    Found 30-bit comparator greater for signal <GND_188_o_l2p_len_cnt[29]_LessThan_37_o> created at line 269
     Found 11-bit comparator greater for signal <n0097> created at line 399
     Found 11-bit comparator greater for signal <n0109> created at line 412
-    Found 7-bit comparator equal for signal <wb_ack_cnt[6]_GND_76_o_equal_109_o> created at line 552
+    Found 7-bit comparator equal for signal <wb_ack_cnt[6]_GND_188_o_equal_109_o> created at line 552
     Summary:
 	inferred   8 Adder/Subtractor(s).
 	inferred 301 D-type flip-flop(s).
@@ -660,7 +823,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2
 Unit <l2p_dma_master> synthesized.
 
 Synthesizing Unit <p2l_dma_master>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd".
         g_BYTE_SWAP = false
 WARNING:Xst:647 - Input <dma_ctrl_carrier_addr_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <dma_ctrl_len_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -670,7 +833,7 @@ WARNING:Xst:647 - Input <pd_pdm_hdr_cid_i<1:0>> is never used. This port will be
 WARNING:Xst:647 - Input <pd_pdm_be_i<3:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <p2l_dma_dat_i<31:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_pdm_hdr_start_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" line 475: Output port <full> of the instance <cmp_to_wb_fifo> is unconnected or connected to loadless signal.
+INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" line 475: Output port <full> of the instance <cmp_to_wb_fifo> is unconnected or connected to loadless signal.
     Found 1-bit register for signal <l2p_64b_address>.
     Found 1-bit register for signal <is_next_item>.
     Found 1-bit register for signal <l2p_last_packet>.
@@ -767,7 +930,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2
     Found 4-bit register for signal <p2l_dma_sel_o>.
     Found 7-bit register for signal <wb_write_cnt>.
     Found 7-bit register for signal <wb_ack_cnt>.
-    Found finite state machine <FSM_4> for signal <p2l_dma_current_state>.
+    Found finite state machine <FSM_7> for signal <p2l_dma_current_state>.
     -----------------------------------------------------------------------
     | States             | 5                                              |
     | Transitions        | 16                                             |
@@ -781,15 +944,15 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 30-bit adder for signal <target_addr_cnt[29]_GND_89_o_add_79_OUT> created at line 1241.
-    Found 7-bit adder for signal <wb_write_cnt[6]_GND_89_o_add_93_OUT> created at line 1241.
-    Found 7-bit adder for signal <wb_ack_cnt[6]_GND_89_o_add_96_OUT> created at line 1241.
-    Found 30-bit subtractor for signal <GND_89_o_GND_89_o_sub_12_OUT<29:0>>.
-    Found 11-bit subtractor for signal <GND_89_o_GND_89_o_sub_50_OUT<10:0>>.
-    Found 7-bit subtractor for signal <GND_89_o_GND_89_o_sub_89_OUT<6:0>>.
-    Found 30-bit comparator greater for signal <GND_89_o_l2p_len_cnt[29]_LessThan_7_o> created at line 229
+    Found 30-bit adder for signal <target_addr_cnt[29]_GND_201_o_add_79_OUT> created at line 1241.
+    Found 7-bit adder for signal <wb_write_cnt[6]_GND_201_o_add_93_OUT> created at line 1241.
+    Found 7-bit adder for signal <wb_ack_cnt[6]_GND_201_o_add_96_OUT> created at line 1241.
+    Found 30-bit subtractor for signal <GND_201_o_GND_201_o_sub_12_OUT<29:0>>.
+    Found 11-bit subtractor for signal <GND_201_o_GND_201_o_sub_50_OUT<10:0>>.
+    Found 7-bit subtractor for signal <GND_201_o_GND_201_o_sub_89_OUT<6:0>>.
+    Found 30-bit comparator greater for signal <GND_201_o_l2p_len_cnt[29]_LessThan_7_o> created at line 229
     Found 11-bit comparator greater for signal <n0047> created at line 334
-    Found 7-bit comparator equal for signal <wb_ack_cnt[6]_GND_89_o_equal_90_o> created at line 531
+    Found 7-bit comparator equal for signal <wb_ack_cnt[6]_GND_201_o_equal_90_o> created at line 531
     Summary:
 	inferred   6 Adder/Subtractor(s).
 	inferred 559 D-type flip-flop(s).
@@ -799,7 +962,7 @@ INFO:Xst:3010 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2
 Unit <p2l_dma_master> synthesized.
 
 Synthesizing Unit <l2p_arbiter>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_arbiter.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_arbiter.vhd".
     Found 32-bit register for signal <arb_ser_data_o>.
     Found 1-bit register for signal <arb_pdm_gnt>.
     Found 1-bit register for signal <arb_ldm_gnt>.
@@ -812,22 +975,58 @@ Synthesizing Unit <l2p_arbiter>.
 Unit <l2p_arbiter> synthesized.
 
 Synthesizing Unit <l2p_ser>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_ser.vhd".
-        g_IS_SPARTAN6 = true
-    Found 1-bit register for signal <valid_d>.
-    Found 1-bit register for signal <l2p_valid_o>.
-    Found 1-bit register for signal <l2p_dframe_o>.
-    Found 1-bit register for signal <dframe_d>.
-    Found 32-bit register for signal <data_d>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_ser_s6.vhd".
     Summary:
-	inferred  36 D-type flip-flop(s).
+	no macro.
 Unit <l2p_ser> synthesized.
 
+Synthesizing Unit <serdes_n_to_1_s2_diff>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/serdes_n_to_1_s2_diff.vhd".
+        S = 2
+        D = 1
+WARNING:Xst:653 - Signal <mdatainb<3:2>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+    Summary:
+	no macro.
+Unit <serdes_n_to_1_s2_diff> synthesized.
+
+Synthesizing Unit <serdes_n_to_1_s2_se_1>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/serdes_n_to_1_s2_se.vhd".
+        S = 2
+        D = 16
+WARNING:Xst:653 - Signal <mdatainb<63:62>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<59:58>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<55:54>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<51:50>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<47:46>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<43:42>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<39:38>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<35:34>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<31:30>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<27:26>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<23:22>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<19:18>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<15:14>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<11:10>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<7:6>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+WARNING:Xst:653 - Signal <mdatainb<3:2>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+    Summary:
+	no macro.
+Unit <serdes_n_to_1_s2_se_1> synthesized.
+
+Synthesizing Unit <serdes_n_to_1_s2_se_2>.
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/serdes_n_to_1_s2_se.vhd".
+        S = 2
+        D = 1
+WARNING:Xst:653 - Signal <mdatainb<3:2>> is used but never assigned. This sourceless signal will be automatically connected to value GND.
+    Summary:
+	no macro.
+Unit <serdes_n_to_1_s2_se_2> synthesized.
+
 Synthesizing Unit <dummy_stat_regs_wb_slave>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_stat_regs.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_stat_regs.vhd".
 WARNING:Xst:647 - Input <wb_data_i<31:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <wb_sel_i<3:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-    Found 6-bit register for signal <ack_sreg>.
+    Found 5-bit register for signal <ack_sreg>.
     Found 32-bit register for signal <rddata_reg>.
     Found 1-bit register for signal <ack_in_progress>.
     Found 32-bit 4-to-1 multiplexer for signal <rwaddr_reg[1]_dummy_stat_reg_switch_i[31]_wide_mux_8_OUT> created at line 82.
@@ -835,15 +1034,16 @@ WARNING:Xst:647 - Input <wb_sel_i<3:0>> is never used. This port will be preserv
     WARNING:Xst:2404 -  FFs/Latches <ack_sreg<8:8>> (without init value) have a constant value of 0 in block <dummy_stat_regs_wb_slave>.
     WARNING:Xst:2404 -  FFs/Latches <ack_sreg<7:7>> (without init value) have a constant value of 0 in block <dummy_stat_regs_wb_slave>.
     WARNING:Xst:2404 -  FFs/Latches <ack_sreg<6:6>> (without init value) have a constant value of 0 in block <dummy_stat_regs_wb_slave>.
+    WARNING:Xst:2404 -  FFs/Latches <ack_sreg<5:5>> (without init value) have a constant value of 0 in block <dummy_stat_regs_wb_slave>.
     Summary:
-	inferred  39 D-type flip-flop(s).
+	inferred  38 D-type flip-flop(s).
 	inferred   7 Multiplexer(s).
 Unit <dummy_stat_regs_wb_slave> synthesized.
 
 Synthesizing Unit <dummy_ctrl_regs_wb_slave>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_ctrl_regs.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_ctrl_regs.vhd".
 WARNING:Xst:647 - Input <wb_sel_i<3:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-    Found 8-bit register for signal <ack_sreg>.
+    Found 9-bit register for signal <ack_sreg>.
     Found 32-bit register for signal <rddata_reg>.
     Found 32-bit register for signal <dummy_reg_1_int>.
     Found 32-bit register for signal <dummy_reg_2_int>.
@@ -852,45 +1052,48 @@ WARNING:Xst:647 - Input <wb_sel_i<3:0>> is never used. This port will be preserv
     Found 1-bit register for signal <ack_in_progress>.
     Found 32-bit 4-to-1 multiplexer for signal <rwaddr_reg[1]_dummy_reg_led_int[31]_wide_mux_13_OUT> created at line 90.
     WARNING:Xst:2404 -  FFs/Latches <ack_sreg<9:9>> (without init value) have a constant value of 0 in block <dummy_ctrl_regs_wb_slave>.
-    WARNING:Xst:2404 -  FFs/Latches <ack_sreg<8:8>> (without init value) have a constant value of 0 in block <dummy_ctrl_regs_wb_slave>.
     Summary:
-	inferred 169 D-type flip-flop(s).
+	inferred 170 D-type flip-flop(s).
 	inferred   7 Multiplexer(s).
 Unit <dummy_ctrl_regs_wb_slave> synthesized.
-RTL-Simplification CPUSTAT: 1.85 
-RTL-BasicInf CPUSTAT: 2.90 
+RTL-Simplification CPUSTAT: 2.30 
+RTL-BasicInf CPUSTAT: 3.59 
 RTL-BasicOpt CPUSTAT: 0.03 
-RTL-Remain-Bus CPUSTAT: 0.14 
+RTL-Remain-Bus CPUSTAT: 0.13 
 
 =========================================================================
 HDL Synthesis Report
 
 Macro Statistics
-# Adders/Subtractors                                   : 17
+# Adders/Subtractors                                   : 24
  11-bit subtractor                                     : 2
+ 12-bit adder                                          : 1
  2-bit adder                                           : 1
+ 3-bit adder                                           : 1
  30-bit adder                                          : 3
  30-bit subtractor                                     : 3
  32-bit adder                                          : 1
+ 5-bit addsub                                          : 2
  7-bit adder                                           : 4
  7-bit subtractor                                      : 2
  8-bit adder                                           : 1
-# Registers                                            : 316
- 1-bit register                                        : 208
+ 9-bit adder                                           : 3
+# Registers                                            : 350
+ 1-bit register                                        : 234
  10-bit register                                       : 3
  11-bit register                                       : 2
- 16-bit register                                       : 1
- 2-bit register                                        : 8
- 3-bit register                                        : 2
+ 12-bit register                                       : 1
+ 16-bit register                                       : 2
+ 2-bit register                                        : 9
+ 3-bit register                                        : 3
  30-bit register                                       : 5
  31-bit register                                       : 1
- 32-bit register                                       : 72
+ 32-bit register                                       : 71
  4-bit register                                        : 6
- 6-bit register                                        : 1
+ 5-bit register                                        : 3
  64-bit register                                       : 1
  7-bit register                                        : 4
- 8-bit register                                        : 1
- 9-bit register                                        : 1
+ 9-bit register                                        : 5
 # Latches                                              : 32
  1-bit latch                                           : 32
 # Comparators                                          : 8
@@ -898,19 +1101,22 @@ Macro Statistics
  2-bit comparator greater                              : 1
  30-bit comparator greater                             : 2
  7-bit comparator equal                                : 2
-# Multiplexers                                         : 228
- 1-bit 2-to-1 multiplexer                              : 126
+# Multiplexers                                         : 253
+ 1-bit 2-to-1 multiplexer                              : 141
  1-bit 3-to-1 multiplexer                              : 33
  10-bit 2-to-1 multiplexer                             : 3
  11-bit 2-to-1 multiplexer                             : 6
+ 12-bit 2-to-1 multiplexer                             : 1
  2-bit 2-to-1 multiplexer                              : 1
  30-bit 2-to-1 multiplexer                             : 8
  32-bit 2-to-1 multiplexer                             : 44
  32-bit 3-to-1 multiplexer                             : 1
  32-bit 4-to-1 multiplexer                             : 2
  4-bit 2-to-1 multiplexer                              : 3
+ 5-bit 2-to-1 multiplexer                              : 6
  64-bit 2-to-1 multiplexer                             : 1
-# FSMs                                                 : 5
+ 9-bit 2-to-1 multiplexer                              : 3
+# FSMs                                                 : 9
 
 =========================================================================
 
@@ -918,9 +1124,9 @@ Macro Statistics
 *                       Advanced HDL Synthesis                          *
 =========================================================================
 
-Reading core <ip_cores/ram_2048x32.ngc>.
-Reading core <ip_cores/fifo_32x512.ngc>.
-Reading core <ip_cores/fifo_64x512.ngc>.
+Reading core <../ip_cores/ram_2048x32.ngc>.
+Reading core <../ip_cores/fifo_32x512.ngc>.
+Reading core <../ip_cores/fifo_64x512.ngc>.
 Loading core <ram_2048x32> for timing and area information for instance <cmp_test_ram>.
 Loading core <fifo_32x512> for timing and area information for instance <cmp_data_fifo>.
 Loading core <fifo_32x512> for timing and area information for instance <cmp_addr_fifo>.
@@ -929,6 +1135,17 @@ Loading core <fifo_64x512> for timing and area information for instance <cmp_fif
 Loading core <fifo_32x512> for timing and area information for instance <cmp_from_wb_fifo>.
 INFO:Xst:2261 - The FF/Latch <addr_fifo_din_30> in Unit <cmp_l2p_dma_master> is equivalent to the following FF/Latch, which will be removed : <addr_fifo_din_31> 
 INFO:Xst:2261 - The FF/Latch <p2l_dma_adr_o_30> in Unit <cmp_p2l_dma_master> is equivalent to the following FF/Latch, which will be removed : <p2l_dma_adr_o_31> 
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_7> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_8> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_9> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_10> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_11> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_12> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_13> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_14> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_15> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_16> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_17> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_18> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_19> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_20> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
@@ -944,34 +1161,45 @@ WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_29> (without init value) has a co
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_30> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_31> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <ack_sreg_8> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <ack_sreg_5> (without init value) has a constant value of 0 in block <cmp_dummy_stat_regs>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <ack_sreg_7> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <addr_fifo_din_30> (without init value) has a constant value of 0 in block <cmp_l2p_dma_master>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <p2l_dma_adr_o_30> (without init value) has a constant value of 0 in block <cmp_p2l_dma_master>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_3> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_4> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_5> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ack_sreg_4> (without init value) has a constant value of 0 in block <cmp_dummy_stat_regs>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ack_sreg_8> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <busy_data_d> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_0> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_1> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_2> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_3> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_4> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_5> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_6> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_7> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_8> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_9> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_10> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_11> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_12> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_6> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_7> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_8> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_17> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_16> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_15> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_14> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_9> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_10> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_11> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_12> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_13> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_5> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_4> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_3> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <p2l_dma_adr_o_30> (without init value) has a constant value of 0 in block <cmp_p2l_dma_master>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <addr_fifo_din_30> (without init value) has a constant value of 0 in block <cmp_l2p_dma_master>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <busy_data_d> (without init value) has a constant value of 0 in block <cmp_valid_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_13> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_14> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_15> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <inc_data_int> (without init value) has a constant value of 0 in block <cmp_data_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_0> (without init value) has a constant value of 0 in block <cmp_dframe_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <busy_data_d> (without init value) has a constant value of 0 in block <cmp_dframe_in>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <ce_data_0> (without init value) has a constant value of 0 in block <cmp_valid_in>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_7> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_4> (without init value) has a constant value of 0 in block <cmp_dummy_stat_regs>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_6> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_6> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_3> (without init value) has a constant value of 0 in block <cmp_dummy_stat_regs>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_5> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_7> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_6> (without init value) has a constant value of 0 in block <dma_controller_wb_slave_0>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_2> (without init value) has a constant value of 0 in block <cmp_dummy_stat_regs>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_4> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_6> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_1> (without init value) has a constant value of 0 in block <cmp_dummy_stat_regs>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_5> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_4> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_3> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_2> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_1> (without init value) has a constant value of 0 in block <cmp_dummy_ctrl_regs>. This FF/Latch will be trimmed during the optimization process.
@@ -1007,8 +1235,8 @@ WARNING:Xst:2677 - Node <dma_ctrl_len_o_1> of sequential type is unconnected in 
 WARNING:Xst:2404 -  FFs/Latches <addr_fifo_din<31:30>> (without init value) have a constant value of 0 in block <l2p_dma_master>.
 WARNING:Xst:2404 -  FFs/Latches <p2l_dma_adr_o<31:30>> (without init value) have a constant value of 0 in block <p2l_dma_master>.
 WARNING:Xst:2404 -  FFs/Latches <ack_sreg<8:6>> (without init value) have a constant value of 0 in block <dma_controller_wb_slave>.
-WARNING:Xst:2404 -  FFs/Latches <ack_sreg<5:1>> (without init value) have a constant value of 0 in block <dummy_stat_regs_wb_slave>.
-WARNING:Xst:2404 -  FFs/Latches <ack_sreg<7:1>> (without init value) have a constant value of 0 in block <dummy_ctrl_regs_wb_slave>.
+WARNING:Xst:2404 -  FFs/Latches <ack_sreg<4:1>> (without init value) have a constant value of 0 in block <dummy_stat_regs_wb_slave>.
+WARNING:Xst:2404 -  FFs/Latches <ack_sreg<8:1>> (without init value) have a constant value of 0 in block <dummy_ctrl_regs_wb_slave>.
 
 Synthesizing (advanced) Unit <l2p_dma_master>.
 The following registers are absorbed into counter <dma_length_cnt>: 1 register on signal <dma_length_cnt>.
@@ -1023,6 +1251,19 @@ The following registers are absorbed into counter <p2l_data_cnt>: 1 register on 
 The following registers are absorbed into counter <wb_write_cnt>: 1 register on signal <wb_write_cnt>.
 The following registers are absorbed into counter <wb_ack_cnt>: 1 register on signal <wb_ack_cnt>.
 Unit <p2l_dma_master> synthesized (advanced).
+
+Synthesizing (advanced) Unit <serdes_1_to_n_clk_pll_s2_diff>.
+The following registers are absorbed into counter <count>: 1 register on signal <count>.
+The following registers are absorbed into counter <counter>: 1 register on signal <counter>.
+Unit <serdes_1_to_n_clk_pll_s2_diff> synthesized (advanced).
+
+Synthesizing (advanced) Unit <serdes_1_to_n_data_s2_se_1>.
+The following registers are absorbed into counter <counter>: 1 register on signal <counter>.
+Unit <serdes_1_to_n_data_s2_se_1> synthesized (advanced).
+
+Synthesizing (advanced) Unit <serdes_1_to_n_data_s2_se_2>.
+The following registers are absorbed into counter <counter>: 1 register on signal <counter>.
+Unit <serdes_1_to_n_data_s2_se_2> synthesized (advanced).
 WARNING:Xst:2677 - Node <wb_adr_t_18> of sequential type is unconnected in block <wbmaster32>.
 WARNING:Xst:2677 - Node <wb_adr_t_19> of sequential type is unconnected in block <wbmaster32>.
 WARNING:Xst:2677 - Node <wb_adr_t_20> of sequential type is unconnected in block <wbmaster32>.
@@ -1041,28 +1282,32 @@ WARNING:Xst:2677 - Node <wb_adr_t_30> of sequential type is unconnected in block
 Advanced HDL Synthesis Report
 
 Macro Statistics
-# Adders/Subtractors                                   : 9
+# Adders/Subtractors                                   : 11
  11-bit subtractor                                     : 1
  2-bit adder                                           : 1
  30-bit adder                                          : 1
  30-bit subtractor                                     : 2
  32-bit adder                                          : 1
+ 5-bit addsub                                          : 2
  7-bit subtractor                                      : 2
  8-bit adder                                           : 1
-# Counters                                             : 8
+# Counters                                             : 13
  11-bit down counter                                   : 1
+ 12-bit up counter                                     : 1
+ 3-bit up counter                                      : 1
  30-bit down counter                                   : 1
  30-bit up counter                                     : 2
  7-bit up counter                                      : 4
-# Registers                                            : 2761
- Flip-Flops                                            : 2761
+ 9-bit up counter                                      : 3
+# Registers                                            : 2783
+ Flip-Flops                                            : 2783
 # Comparators                                          : 8
  11-bit comparator greater                             : 3
  2-bit comparator greater                              : 1
  30-bit comparator greater                             : 2
  7-bit comparator equal                                : 2
-# Multiplexers                                         : 566
- 1-bit 2-to-1 multiplexer                              : 478
+# Multiplexers                                         : 585
+ 1-bit 2-to-1 multiplexer                              : 491
  1-bit 3-to-1 multiplexer                              : 33
  10-bit 2-to-1 multiplexer                             : 3
  11-bit 2-to-1 multiplexer                             : 5
@@ -1072,19 +1317,70 @@ Macro Statistics
  32-bit 3-to-1 multiplexer                             : 1
  32-bit 4-to-1 multiplexer                             : 2
  4-bit 2-to-1 multiplexer                              : 3
-# FSMs                                                 : 5
+ 5-bit 2-to-1 multiplexer                              : 6
+# FSMs                                                 : 9
 
 =========================================================================
 
 =========================================================================
 *                         Low Level Synthesis                           *
 =========================================================================
+WARNING:Xst:1710 - FF/Latch <inc_data_int> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_15> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_14> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_13> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_12> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_11> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_10> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_9> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_8> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_7> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_6> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_5> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_4> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_3> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_2> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_1> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ce_data_0> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <busy_data_d> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_1>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <incdec_data_d> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <busy_data_d> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_2>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <valid_data_d> (without init value) has a constant value of 0 in block <serdes_1_to_n_data_s2_se_2>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <l2p_dma_sel_o_0> in Unit <l2p_dma_master> is equivalent to the following 4 FFs/Latches, which will be removed : <l2p_dma_sel_o_1> <l2p_dma_sel_o_2> <l2p_dma_sel_o_3> <l2p_dma_stb_o> 
 INFO:Xst:2261 - The FF/Latch <p2l_dma_stb_o> in Unit <p2l_dma_master> is equivalent to the following 4 FFs/Latches, which will be removed : <p2l_dma_sel_o_0> <p2l_dma_sel_o_1> <p2l_dma_sel_o_2> <p2l_dma_sel_o_3> 
 INFO:Xst:2261 - The FF/Latch <dma_stat_int_read_3> in Unit <dma_controller_wb_slave> is equivalent to the following 28 FFs/Latches, which will be removed : <dma_stat_int_read_4> <dma_stat_int_read_5> <dma_stat_int_read_6> <dma_stat_int_read_7> <dma_stat_int_read_8> <dma_stat_int_read_9> <dma_stat_int_read_10> <dma_stat_int_read_11> <dma_stat_int_read_12> <dma_stat_int_read_13> <dma_stat_int_read_14> <dma_stat_int_read_15> <dma_stat_int_read_16> <dma_stat_int_read_17> <dma_stat_int_read_18> <dma_stat_int_read_19> <dma_stat_int_read_20> <dma_stat_int_read_21> <dma_stat_int_read_22> <dma_stat_int_read_23> <dma_stat_int_read_24> <dma_stat_int_read_25> <dma_stat_int_read_26> <dma_stat_int_read_27> <dma_stat_int_read_28> <dma_stat_int_read_29> <dma_stat_int_read_30> <dma_stat_int_read_31> 
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_3> (without init value) has a constant value of 0 in block <dma_controller_wb_slave>. This FF/Latch will be trimmed during the optimization process.
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <cmp_gn4124_core/cmp_l2p_dma_master/FSM_3> on signal <l2p_dma_current_state[1:3]> with user encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/FSM_1> on signal <state[1:4]> with user encoding.
+-------------------
+ State | Encoding
+-------------------
+ 0000  | 0000
+ 0010  | 0010
+ 0011  | 0011
+ 0100  | 0100
+ 0101  | 0101
+ 0110  | 0110
+ 0111  | 0111
+ 0001  | 0001
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/FSM_2> on signal <state[1:4]> with user encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/FSM_2> on signal <state[1:4]> with user encoding.
+-------------------
+ State | Encoding
+-------------------
+ 0000  | 0000
+ 0010  | 0010
+ 0011  | 0011
+ 0100  | 0100
+ 0101  | 0101
+ 0110  | 0110
+ 0111  | 0111
+ 0001  | 0001
+-------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_l2p_dma_master/FSM_6> on signal <l2p_dma_current_state[1:3]> with user encoding.
 ---------------------------
  State         | Encoding
 ---------------------------
@@ -1098,7 +1394,7 @@ Optimizing FSM <cmp_gn4124_core/cmp_l2p_dma_master/FSM_3> on signal <l2p_dma_cur
  l2p_wait_rdy  | 111
 ---------------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <cmp_gn4124_core/cmp_p2l_dma_master/FSM_4> on signal <p2l_dma_current_state[1:3]> with user encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_p2l_dma_master/FSM_7> on signal <p2l_dma_current_state[1:3]> with user encoding.
 --------------------------------------
  State                    | Encoding
 --------------------------------------
@@ -1109,7 +1405,22 @@ Optimizing FSM <cmp_gn4124_core/cmp_p2l_dma_master/FSM_4> on signal <p2l_dma_cur
  p2l_wait_read_completion | 100
 --------------------------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/FSM_0> on signal <l2p_read_cpl_current_state[1:2]> with user encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_clk_in/FSM_0> on signal <state[1:9]> with one-hot encoding.
+--------------------
+ State | Encoding
+--------------------
+ 0000  | 000000001
+ 0001  | 000000010
+ 0010  | 000000100
+ 0011  | 000001000
+ 0100  | 000010000
+ 0101  | 000100000
+ 0111  | 001000000
+ 1001  | 010000000
+ 0110  | 100000000
+--------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/FSM_3> on signal <l2p_read_cpl_current_state[1:2]> with user encoding.
 ------------------------
  State      | Encoding
 ------------------------
@@ -1118,7 +1429,7 @@ Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/FSM_0> on signal <l2p_read_cpl_cu
  l2p_data   | 10
 ------------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/FSM_1> on signal <wishbone_current_state[1:2]> with user encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/FSM_4> on signal <wishbone_current_state[1:2]> with user encoding.
 --------------------------
  State        | Encoding
 --------------------------
@@ -1128,7 +1439,7 @@ Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/FSM_1> on signal <wishbone_curren
  wb_wait_ack  | 11
 --------------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <cmp_gn4124_core/cmp_dma_controller/FSM_2> on signal <dma_ctrl_current_state[1:3]> with user encoding.
+Optimizing FSM <cmp_gn4124_core/cmp_dma_controller/FSM_5> on signal <dma_ctrl_current_state[1:3]> with user encoding.
 --------------------------------
  State              | Encoding
 --------------------------------
@@ -1151,9 +1462,15 @@ Optimizing unit <gn4124_core> ...
 
 Optimizing unit <p2l_des> ...
 
+Optimizing unit <serdes_1_to_n_data_s2_se_1> ...
+
+Optimizing unit <serdes_1_to_n_data_s2_se_2> ...
+
 Optimizing unit <l2p_dma_master> ...
 
 Optimizing unit <p2l_dma_master> ...
+
+Optimizing unit <serdes_1_to_n_clk_pll_s2_diff> ...
 
 Optimizing unit <wbmaster32> ...
 
@@ -1165,11 +1482,38 @@ Optimizing unit <p2l_decode32> ...
 
 Optimizing unit <l2p_arbiter> ...
 
-Optimizing unit <l2p_ser> ...
+Optimizing unit <serdes_n_to_1_s2_se_1> ...
 
 Optimizing unit <dummy_stat_regs_wb_slave> ...
 
 Optimizing unit <dummy_ctrl_regs_wb_slave> ...
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/pdcounter_1> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/ce_data_inta> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/inc_data_int> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/ce_data_0> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/pdcounter_1> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/ce_data_inta> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/inc_data_int> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/ce_data_0> (without init value) has a constant value of 0 in block <pfc_wrapper>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/cal_data_sint> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_15> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_14> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_13> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_12> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_11> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_10> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_9> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_8> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_7> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_6> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_5> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_4> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_3> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_2> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_1> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_data_in/mux_0> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/cal_data_sint> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/cal_data_sint> of sequential type is unconnected in block <pfc_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_adr_o_31> of sequential type is unconnected in block <pfc_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_adr_o_30> of sequential type is unconnected in block <pfc_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_adr_o_29> of sequential type is unconnected in block <pfc_wrapper>.
@@ -1318,6 +1662,14 @@ WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_decode32/p2l_hdr_length_2> of s
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_decode32/p2l_hdr_length_1> of sequential type is unconnected in block <pfc_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_decode32/p2l_hdr_length_0> of sequential type is unconnected in block <pfc_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_1> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/pdcounter_4> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/pdcounter_3> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/pdcounter_2> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_valid_in/pdcounter_0> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/pdcounter_4> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/pdcounter_3> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/pdcounter_2> of sequential type is unconnected in block <pfc_wrapper>.
+WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_des/cmp_dframe_in/pdcounter_0> of sequential type is unconnected in block <pfc_wrapper>.
 
 Mapping all equations...
 Building and optimizing final netlist ...
@@ -1373,8 +1725,8 @@ Unit <pfc_wrapper> processed.
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 2708
- Flip-Flops                                            : 2708
+# Registers                                            : 2724
+ Flip-Flops                                            : 2724
 # Shift Registers                                      : 1
  4-bit shift register                                  : 1
 
@@ -1399,41 +1751,46 @@ Top Level Output File Name         : pfc_wrapper.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 2966
+# BELS                             : 3111
 #      GND                         : 7
-#      INV                         : 68
+#      INV                         : 71
 #      LUT1                        : 56
-#      LUT2                        : 357
-#      LUT3                        : 572
-#      LUT4                        : 369
-#      LUT5                        : 353
-#      LUT6                        : 516
-#      MUXCY                       : 403
-#      MUXF7                       : 12
+#      LUT2                        : 361
+#      LUT3                        : 618
+#      LUT4                        : 373
+#      LUT5                        : 360
+#      LUT6                        : 522
+#      MUXCY                       : 438
+#      MUXF7                       : 13
 #      VCC                         : 7
-#      XORCY                       : 246
-# FlipFlops/Latches                : 3560
-#      FD                          : 20
-#      FDC                         : 859
-#      FDCE                        : 2483
+#      XORCY                       : 285
+# FlipFlops/Latches                : 3541
+#      FD                          : 23
+#      FDC                         : 869
+#      FDCE                        : 2484
 #      FDE                         : 31
-#      FDP                         : 70
+#      FDP                         : 72
 #      FDPE                        : 30
-#      IDDR2                       : 18
 #      LDC                         : 32
-#      ODDR2                       : 17
 # RAMS                             : 11
 #      RAMB16BWER                  : 11
 # Shift Registers                  : 1
 #      SRLC16E                     : 1
-# Clock Buffers                    : 4
-#      BUFG                        : 4
-# IO Buffers                       : 55
+# Clock Buffers                    : 3
+#      BUFG                        : 3
+# IO Buffers                       : 59
+#      BUFIO2                      : 1
 #      IBUF                        : 24
-#      IBUFDS                      : 2
-#      IBUFGDS                     : 2
-#      OBUF                        : 26
+#      IBUFDS                      : 3
+#      OBUF                        : 30
 #      OBUFDS                      : 1
+# Others                           : 62
+#      BUFIO2FB                    : 1
+#      BUFPLL                      : 1
+#      IODELAY2                    : 20
+#      ISERDES2                    : 20
+#      OSERDES2                    : 19
+#      PLL_ADV                     : 1
 
 Device utilization summary:
 ---------------------------
@@ -1442,28 +1799,28 @@ Selected Device : 6slx150tfgg676-3
 
 
 Slice Logic Utilization: 
- Number of Slice Registers:            3558  out of  184304     1%  
- Number of Slice LUTs:                 2292  out of  92152     2%  
-    Number used as Logic:              2291  out of  92152     2%  
+ Number of Slice Registers:            3541  out of  184304     1%  
+ Number of Slice LUTs:                 2362  out of  92152     2%  
+    Number used as Logic:              2361  out of  92152     2%  
     Number used as Memory:                1  out of  21680     0%  
        Number used as SRL:                1
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   4400
-   Number with an unused Flip Flop:     842  out of   4400    19%  
-   Number with an unused LUT:          2108  out of   4400    47%  
-   Number of fully used LUT-FF pairs:  1450  out of   4400    32%  
-   Number of unique control sets:       166
+ Number of LUT Flip Flop pairs used:   4388
+   Number with an unused Flip Flop:     847  out of   4388    19%  
+   Number with an unused LUT:          2026  out of   4388    46%  
+   Number of fully used LUT-FF pairs:  1515  out of   4388    34%  
+   Number of unique control sets:       167
 
 IO Utilization: 
- Number of IOs:                          64
- Number of bonded IOBs:                  56  out of    396    14%  
-    IOB Flip Flops/Latches:               2
+ Number of IOs:                          68
+ Number of bonded IOBs:                  62  out of    396    15%  
 
 Specific Feature Utilization:
  Number of Block RAM/FIFO:               11  out of    268     4%  
     Number using Block RAM only:         11
- Number of BUFG/BUFGCTRLs:                4  out of     16    25%  
+ Number of BUFG/BUFGCTRLs:                3  out of     16    18%  
+ Number of PLL_ADVs:                      1  out of      6    16%  
 
 ---------------------------
 Partition Resource Summary:
@@ -1483,15 +1840,14 @@ NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
 
 Clock Information:
 ------------------
--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------+-------+
-Clock Signal                                                                   | Clock buffer(FF name)                                                                                   | Load  |
--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------+-------+
-L_CLKp                                                                         | IBUFDS+BUFG                                                                                             | 1111  |
-P2L_CLKp                                                                       | IBUFGDS+BUFG                                                                                            | 2418  |
-P2L_CLKn                                                                       | IBUFGDS+BUFG                                                                                            | 53    |
-cmp_gn4124_core/cmp_wbmaster32/_n0345(cmp_gn4124_core/cmp_wbmaster32/_n03451:O)| BUFG(*)(cmp_gn4124_core/cmp_wbmaster32/s_wb_dat_i_muxed_0)                                              | 32    |
-cmp_test_ram/BU2/doutb(0)                                                      | NONE(cmp_test_ram/BU2/U0/blk_mem_generator/valid.cstr/ramloop[0].ram.r/s6_init.ram/SP.SIMPLE_PRIM18.ram)| 4     |
--------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------+-------+
+-------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+-------+
+Clock Signal                                                                   | Clock buffer(FF name)                                                                                     | Load  |
+-------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+-------+
+L_CLKp                                                                         | IBUFDS+BUFG                                                                                               | 1111  |
+cmp_gn4124_core/cmp_clk_in/buf_P_clk                                           | cmp_gn4124_core/cmp_clk_in/rx_pll_adv_inst:CLKOUT2                                                        | 2417  |
+cmp_gn4124_core/cmp_wbmaster32/_n0421(cmp_gn4124_core/cmp_wbmaster32/_n04211:O)| BUFG(*)(cmp_gn4124_core/cmp_wbmaster32/s_wb_dat_i_muxed_0)                                                | 32    |
+cmp_test_ram/BU2/doutb(0)                                                      | NONE(cmp_test_ram/BU2/U0/blk_mem_generator/valid.cstr/ramloop[0].ram.r/s6_noinit.ram/SP.SIMPLE_PRIM18.ram)| 4     |
+-------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+-------+
 (*) This 1 clock signal(s) are generated by combinatorial logic,
 and XST is not able to identify which are the primary clock signals.
 Please use the CLOCK_SIGNAL constraint to specify the clock signal(s) generated by combinatorial logic.
@@ -1508,7 +1864,7 @@ Speed Grade: -3
    Minimum period: 6.848ns (Maximum Frequency: 146.022MHz)
    Minimum input arrival time before clock: 4.570ns
    Maximum output required time after clock: 4.828ns
-   Maximum combinational path delay: No path found
+   Maximum combinational path delay: 4.202ns
 
 Timing Details:
 ---------------
@@ -1530,7 +1886,7 @@ Delay:               5.849ns (Levels of Logic = 4)
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
      FDCE:C->Q            56   0.525   1.588  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_1 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_1)
-     LUT2:I1->O           31   0.254   1.506  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg[1]_dma_cstart_lw_read_in_progress_AND_57_o1 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg[1]_dma_cstart_lw_read_in_progress_AND_57_o)
+     LUT2:I1->O           31   0.254   1.506  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg[1]_dma_cstart_lw_read_in_progress_AND_109_o1 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg[1]_dma_cstart_lw_read_in_progress_AND_109_o)
      LUT6:I3->O            1   0.235   0.580  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/Mmux_rddata_reg[31]_dma_attrib_int_read[31]_mux_12_OUT962 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/Mmux_rddata_reg[31]_dma_attrib_int_read[31]_mux_12_OUT961)
      LUT6:I5->O            1   0.254   0.580  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/Mmux_rddata_reg[31]_dma_attrib_int_read[31]_mux_12_OUT963 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/Mmux_rddata_reg[31]_dma_attrib_int_read[31]_mux_12_OUT962)
      LUT6:I5->O            1   0.254   0.000  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/Mmux_rddata_reg[31]_dma_attrib_int_read[31]_mux_12_OUT964 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/rddata_reg[31]_dma_attrib_int_read[31]_mux_12_OUT<9>)
@@ -1540,15 +1896,15 @@ Delay:               5.849ns (Levels of Logic = 4)
                                        (27.3% logic, 72.7% route)
 
 =========================================================================
-Timing constraint: Default period analysis for Clock 'P2L_CLKp'
+Timing constraint: Default period analysis for Clock 'cmp_gn4124_core/cmp_clk_in/buf_P_clk'
   Clock period: 6.848ns (frequency: 146.022MHz)
-  Total number of paths / destination ports: 31030 / 6369
+  Total number of paths / destination ports: 31565 / 6396
 -------------------------------------------------------------------------
 Delay:               6.848ns (Levels of Logic = 3)
   Source:            cmp_gn4124_core/cmp_dma_controller/dma_len_reg_27 (FF)
   Destination:       cmp_gn4124_core/cmp_dma_controller/dma_ctrl_carrier_addr_o_31 (FF)
-  Source Clock:      P2L_CLKp rising
-  Destination Clock: P2L_CLKp rising
+  Source Clock:      cmp_gn4124_core/cmp_clk_in/buf_P_clk rising
+  Destination Clock: cmp_gn4124_core/cmp_clk_in/buf_P_clk rising
 
   Data Path: cmp_gn4124_core/cmp_dma_controller/dma_len_reg_27 to cmp_gn4124_core/cmp_dma_controller/dma_ctrl_carrier_addr_o_31
                                 Gate     Net
@@ -1584,13 +1940,13 @@ Offset:              4.570ns (Levels of Logic = 2)
                                        (42.5% logic, 57.5% route)
 
 =========================================================================
-Timing constraint: Default OFFSET IN BEFORE for Clock 'P2L_CLKp'
-  Total number of paths / destination ports: 6 / 6
+Timing constraint: Default OFFSET IN BEFORE for Clock 'cmp_gn4124_core/cmp_clk_in/buf_P_clk'
+  Total number of paths / destination ports: 63 / 63
 -------------------------------------------------------------------------
 Offset:              4.570ns (Levels of Logic = 2)
   Source:            L_RST_N (PAD)
   Destination:       cmp_gn4124_core/rst_reg (FF)
-  Destination Clock: P2L_CLKp rising
+  Destination Clock: cmp_gn4124_core/cmp_clk_in/buf_P_clk rising
 
   Data Path: L_RST_N to cmp_gn4124_core/rst_reg
                                 Gate     Net
@@ -1598,38 +1954,19 @@ Offset:              4.570ns (Levels of Logic = 2)
     ----------------------------------------  ------------
      IBUF:I->O             1   1.228   0.579  L_RST_N_IBUF (L_RST_N_IBUF)
      INV:I->O            196   0.255   2.049  L_RST_N_inv1_INV_0 (L_RST_N_inv)
-     FDC:CLR                   0.459          cmp_gn4124_core/rst_reg
+     FDCE:CLR                  0.459          cmp_gn4124_core/rst_reg
     ----------------------------------------
     Total                      4.570ns (1.942ns logic, 2.628ns route)
                                        (42.5% logic, 57.5% route)
 
 =========================================================================
-Timing constraint: Default OFFSET IN BEFORE for Clock 'P2L_CLKn'
-  Total number of paths / destination ports: 18 / 18
--------------------------------------------------------------------------
-Offset:              1.807ns (Levels of Logic = 1)
-  Source:            P2L_VALID (PAD)
-  Destination:       cmp_gn4124_core/cmp_p2l_des/gen_in_ddr_ff_s6.DDRFF_V (FF)
-  Destination Clock: P2L_CLKn rising
-
-  Data Path: P2L_VALID to cmp_gn4124_core/cmp_p2l_des/gen_in_ddr_ff_s6.DDRFF_V
-                                Gate     Net
-    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
-    ----------------------------------------  ------------
-     IBUF:I->O             1   1.228   0.579  P2L_VALID_IBUF (P2L_VALID_IBUF)
-     IDDR2:D                   0.000          cmp_gn4124_core/cmp_p2l_des/gen_in_ddr_ff_s6.DDRFF_V
-    ----------------------------------------
-    Total                      1.807ns (1.228ns logic, 0.579ns route)
-                                       (68.0% logic, 32.0% route)
-
-=========================================================================
-Timing constraint: Default OFFSET OUT AFTER for Clock 'P2L_CLKp'
-  Total number of paths / destination ports: 8 / 6
+Timing constraint: Default OFFSET OUT AFTER for Clock 'cmp_gn4124_core/cmp_clk_in/buf_P_clk'
+  Total number of paths / destination ports: 151 / 133
 -------------------------------------------------------------------------
 Offset:              4.828ns (Levels of Logic = 3)
   Source:            cmp_gn4124_core/cmp_wbmaster32/cmp_fifo_to_wb/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/prog_full_i (FF)
   Destination:       P2L_RDY (PAD)
-  Source Clock:      P2L_CLKp rising
+  Source Clock:      cmp_gn4124_core/cmp_clk_in/buf_P_clk rising
 
   Data Path: cmp_gn4124_core/cmp_wbmaster32/cmp_fifo_to_wb/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/prog_full_i to P2L_RDY
                                 Gate     Net
@@ -1645,55 +1982,36 @@ Offset:              4.828ns (Levels of Logic = 3)
                                        (72.3% logic, 27.7% route)
 
 =========================================================================
-Timing constraint: Default OFFSET OUT AFTER for Clock 'P2L_CLKn'
-  Total number of paths / destination ports: 2 / 2
+Timing constraint: Default path analysis
+  Total number of paths / destination ports: 166 / 164
 -------------------------------------------------------------------------
-Offset:              3.819ns (Levels of Logic = 1)
-  Source:            cmp_gn4124_core/cmp_l2p_ser/l2p_dframe_o (FF)
-  Destination:       L2P_DFRAME (PAD)
-  Source Clock:      P2L_CLKn rising
-
-  Data Path: cmp_gn4124_core/cmp_l2p_ser/l2p_dframe_o to L2P_DFRAME
-                                Gate     Net
-    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
-    ----------------------------------------  ------------
-     FDC:C->Q              1   0.525   0.579  cmp_gn4124_core/cmp_l2p_ser/l2p_dframe_o (cmp_gn4124_core/cmp_l2p_ser/l2p_dframe_o)
-     OBUF:I->O                 2.715          L2P_DFRAME_OBUF (L2P_DFRAME)
-    ----------------------------------------
-    Total                      3.819ns (3.240ns logic, 0.579ns route)
-                                       (84.8% logic, 15.2% route)
-
-=========================================================================
-Timing constraint: Default OFFSET OUT AFTER for Clock 'L_CLKp'
-  Total number of paths / destination ports: 2 / 2
--------------------------------------------------------------------------
-Offset:              3.856ns (Levels of Logic = 1)
-  Source:            cmp_dummy_ctrl_regs/dummy_reg_led_int_0 (FF)
+Delay:               4.202ns (Levels of Logic = 2)
+  Source:            cmp_gn4124_core/cmp_clk_in/rx_bufpll_inst:LOCK (PAD)
   Destination:       LED_RED (PAD)
-  Source Clock:      L_CLKp rising
 
-  Data Path: cmp_dummy_ctrl_regs/dummy_reg_led_int_0 to LED_RED
+  Data Path: cmp_gn4124_core/cmp_clk_in/rx_bufpll_inst:LOCK to LED_RED
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDCE:C->Q             2   0.525   0.616  cmp_dummy_ctrl_regs/dummy_reg_led_int_0 (cmp_dummy_ctrl_regs/dummy_reg_led_int_0)
+    BUFPLL:LOCK            2   0.000   0.617  cmp_gn4124_core/cmp_clk_in/rx_bufpll_inst (cmp_gn4124_core/cmp_clk_in/rx_bufplllckd)
+     LUT2:I1->O            2   0.254   0.616  cmp_gn4124_core/cmp_clk_in/rx_bufpll_lckd1 (LED_RED_OBUF)
      OBUF:I->O                 2.715          LED_RED_OBUF (LED_RED)
     ----------------------------------------
-    Total                      3.856ns (3.240ns logic, 0.616ns route)
-                                       (84.0% logic, 16.0% route)
+    Total                      4.202ns (2.969ns logic, 1.234ns route)
+                                       (70.6% logic, 29.4% route)
 
 =========================================================================
 
 
-Total REAL time to Xst completion: 78.00 secs
-Total CPU time to Xst completion: 77.19 secs
+Total REAL time to Xst completion: 87.00 secs
+Total CPU time to Xst completion: 86.13 secs
  
 --> 
 
 
-Total memory usage is 176216 kilobytes
+Total memory usage is 180828 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  326 (   0 filtered)
-Number of infos    :   72 (   0 filtered)
+Number of warnings :  435 (   0 filtered)
+Number of infos    :   80 (   0 filtered)
 

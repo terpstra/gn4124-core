@@ -15,93 +15,109 @@
   <version xil_pn:ise_version="12.2" xil_pn:schema_version="2"/>
 
   <files>
-    <file xil_pn:name="pfc_wrapper.ucf" xil_pn:type="FILE_UCF">
+    <file xil_pn:name="../pfc_wrapper.ucf" xil_pn:type="FILE_UCF">
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="rtl/pfc_wrapper.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../rtl/pfc_wrapper.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/fifo_32x512.ngc" xil_pn:type="FILE_NGC">
+    <file xil_pn:name="../ip_cores/fifo_32x512.ngc" xil_pn:type="FILE_NGC">
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/fifo_64x512.ngc" xil_pn:type="FILE_NGC">
+    <file xil_pn:name="../ip_cores/fifo_64x512.ngc" xil_pn:type="FILE_NGC">
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/ram_2048x32.ngc" xil_pn:type="FILE_NGC">
-      <association xil_pn:name="Implementation"/>
-    </file>
-    <file xil_pn:name="../gn4124core/design/rtl/p2l_decode32.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/p2l_decode32.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/p2l_des.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/p2l_dma_master.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/p2l_dma_master.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/wbmaster32.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/wbmaster32.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/dma_controller_wb_slave.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/dma_controller_wb_slave.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/dma_controller.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/dma_controller.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/dummy_ctrl_regs.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/dummy_ctrl_regs.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/dummy_stat_regs.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/dummy_stat_regs.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/l2p_arbiter.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/gn4124_core_pkg.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/l2p_dma_master.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/gn4124_core.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../ip_cores/fifo_32x512.xco" xil_pn:type="FILE_COREGEN">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/l2p_arbiter.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../ip_cores/fifo_64x512.xco" xil_pn:type="FILE_COREGEN">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/l2p_dma_master.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../ip_cores/ram_2048x32.xco" xil_pn:type="FILE_COREGEN">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../gn4124core/design/rtl/l2p_ser.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../gn4124core/rtl/gn4124_core_pkg_s6.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/fifo_32x512.xco" xil_pn:type="FILE_COREGEN">
+    <file xil_pn:name="../../gn4124core/rtl/gn4124_core_s6.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/fifo_64x512.xco" xil_pn:type="FILE_COREGEN">
+    <file xil_pn:name="../../gn4124core/rtl/l2p_ser_s6.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/ram_2048x32.xco" xil_pn:type="FILE_COREGEN">
+    <file xil_pn:name="../../gn4124core/rtl/p2l_des_s6.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/fifo_32x512.xise" xil_pn:type="FILE_COREGENISE">
+    <file xil_pn:name="../../gn4124core/rtl/serdes_1_to_n_clk_pll_s2_diff.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/fifo_64x512.xise" xil_pn:type="FILE_COREGENISE">
+    <file xil_pn:name="../../gn4124core/rtl/serdes_1_to_n_data_s2_se.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="ip_cores/ram_2048x32.xise" xil_pn:type="FILE_COREGENISE">
+    <file xil_pn:name="../../gn4124core/rtl/serdes_n_to_1_s2_diff.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation"/>
+      <association xil_pn:name="Implementation"/>
+    </file>
+    <file xil_pn:name="../../gn4124core/rtl/serdes_n_to_1_s2_se.vhd" xil_pn:type="FILE_VHDL">
+      <association xil_pn:name="BehavioralSimulation"/>
+      <association xil_pn:name="Implementation"/>
+    </file>
+    <file xil_pn:name="../chipscope/gn4124_core_tst.cdc" xil_pn:type="FILE_CDC">
+      <association xil_pn:name="Implementation"/>
+    </file>
+    <file xil_pn:name="../ip_cores/fifo_32x512.xise" xil_pn:type="FILE_COREGENISE">
+      <association xil_pn:name="Implementation"/>
+    </file>
+    <file xil_pn:name="../ip_cores/fifo_64x512.xise" xil_pn:type="FILE_COREGENISE">
+      <association xil_pn:name="Implementation"/>
+    </file>
+    <file xil_pn:name="../ip_cores/ram_2048x32.xise" xil_pn:type="FILE_COREGENISE">
       <association xil_pn:name="Implementation"/>
     </file>
   </files>
@@ -161,6 +177,7 @@
     <property xil_pn:name="Enable Cyclic Redundancy Checking (CRC) spartan6" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="Enable Debugging of Serial Mode BitStream" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Enable External Master Clock spartan6" xil_pn:value="false" xil_pn:valueState="default"/>
+    <property xil_pn:name="Enable Hardware Co-Simulation" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Enable Internal Done Pipe" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Enable Message Filtering" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Enable Multi-Pin Wake-Up Suspend Mode spartan6" xil_pn:value="false" xil_pn:valueState="default"/>
@@ -213,7 +230,7 @@
     <property xil_pn:name="Ignore User Timing Constraints Map" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Ignore User Timing Constraints Par" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Implementation Top" xil_pn:value="Architecture|pfc_wrapper|rtl" xil_pn:valueState="non-default"/>
-    <property xil_pn:name="Implementation Top File" xil_pn:value="rtl/pfc_wrapper.vhd" xil_pn:valueState="non-default"/>
+    <property xil_pn:name="Implementation Top File" xil_pn:value="../rtl/pfc_wrapper.vhd" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Implementation Top Instance Path" xil_pn:value="/pfc_wrapper" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Include 'uselib Directive in Verilog File" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Include SIMPRIM Models in Verilog File" xil_pn:value="false" xil_pn:valueState="default"/>
