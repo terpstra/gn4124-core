@@ -359,7 +359,7 @@ begin
     CLKOUT1_PHASE      => 0.0,           -- phase shift (degrees) for clkout1 (0.0 to 360.0)
     CLKOUT2_DIVIDE     => S,             -- division factor for clkout2 (1 to 128)
     CLKOUT2_DUTY_CYCLE => 0.5,           -- duty cycle for clkout2 (0.01 to 0.99)
-    CLKOUT2_PHASE      => 0.0,           -- phase shift (degrees) for clkout2 (0.0 to 360.0)
+    CLKOUT2_PHASE      => 90.0,           -- phase shift (degrees) for clkout2 (0.0 to 360.0)
     CLKOUT3_DIVIDE     => 7,             -- division factor for clkout3 (1 to 128)
     CLKOUT3_DUTY_CYCLE => 0.5,           -- duty cycle for clkout3 (0.01 to 0.99)
     CLKOUT3_PHASE      => 0.0,           -- phase shift (degrees) for clkout3 (0.0 to 360.0)
