@@ -427,7 +427,7 @@ begin
 --        SERDES_MODE    => "MASTER",     -- <DEFAULT>, MASTER, SLAVE
         INTERFACE_TYPE => "RETIMED")    -- NETWORKING, NETWORKING_PIPELINED, <RETIMED>
         port map (
-          D         => ddly_m(i),
+          D         => rx_data_in_fix(i),--ddly_m(i),
           CE0       => '1',
           CLK0      => rxioclk,
           CLK1      => '0',

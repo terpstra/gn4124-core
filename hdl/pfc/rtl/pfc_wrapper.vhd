@@ -118,6 +118,8 @@ architecture rtl of pfc_wrapper is
         rst_n_a_i      : in  std_logic;
         -- P2L clock PLL locked
         p2l_pll_locked : out std_logic;
+        -- Debug ouputs
+        debug_o        : out std_logic_vector(7 downto 0);
 
         ---------------------------------------------------------
         -- P2L Direction
@@ -290,6 +292,11 @@ architecture rtl of pfc_wrapper is
   signal dummy_ctrl_reg_3   : std_logic_vector(31 downto 0);
   signal dummy_ctrl_reg_led : std_logic_vector(31 downto 0);
 
+  -- FOR TESTS
+  signal debug : std_logic_vector(7 downto 0);
+  signal clk_div_cnt : unsigned(3 downto 0);
+  signal clk_div     : std_logic;
+
 
 begin
 
@@ -341,6 +348,8 @@ begin
       rst_n_a_i      => L_RST_N,
       -- P2L clock PLL locked
       p2l_pll_locked => p2l_pll_locked,
+      -- Debug outputs
+      debug_o => debug,
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -433,7 +442,7 @@ begin
   dummy_stat_reg_1      <= X"DEADBABE";
   dummy_stat_reg_2      <= X"BEEFFACE";
   dummy_stat_reg_3      <= X"12345678";
-  dummy_stat_reg_switch <= X"00000001";
+  dummy_stat_reg_switch <= X"0000000" & "000" & p2l_pll_locked;
 
   cmp_dummy_ctrl_regs : dummy_ctrl_regs_wb_slave
     port map(
@@ -453,10 +462,10 @@ begin
       dummy_reg_led_o => dummy_ctrl_reg_led
       );
 
-  --LED_RED   <= dummy_ctrl_reg_led(0);
-  --LED_GREEN <= dummy_ctrl_reg_led(1);
-  LED_GREEN <= '1';
-  LED_RED   <= p2l_pll_locked;
+  LED_RED   <= dummy_ctrl_reg_led(0);
+  LED_GREEN <= dummy_ctrl_reg_led(1);
+  --LED_GREEN <= '1';
+  --LED_RED   <= p2l_pll_locked;
 
   ------------------------------------------------------------------------------
   -- DMA wishbone bus connected to a DPRAM
@@ -498,7 +507,23 @@ begin
   ------------------------------------------------------------------------------
   -- FOR TEST
   ------------------------------------------------------------------------------
-  USER_IO_0_P <= '0';
+  p_div_clk : process (l_clk, L_RST_N)
+  begin
+    if L_RST_N = '0' then
+      clk_div     <= '0';
+      clk_div_cnt <= (others => '0');
+    elsif rising_edge(l_clk) then
+      if clk_div_cnt = 4 then
+        clk_div     <= not (clk_div);
+        clk_div_cnt <= (others => '0');
+      else
+        clk_div_cnt <= clk_div_cnt + 1;
+      end if;
+    end if;
+  end process p_div_clk;
+
+
+  USER_IO_0_P <= clk_div;
   USER_IO_0_N <= '0';
   USER_IO_1_P <= '0';
   USER_IO_1_N <= '0';

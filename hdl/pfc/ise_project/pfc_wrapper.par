@@ -1,7 +1,7 @@
 Release 12.2 par M.63c (lin)
 Copyright (c) 1995-2010 Xilinx, Inc.  All rights reserved.
 
-ABPC10853::  Wed Dec 08 08:53:55 2010
+ABPC10853::  Fri Dec 10 09:45:57 2010
 
 par -w -intstyle ise -ol high -mt off pfc_wrapper_map.ncd pfc_wrapper.ncd
 pfc_wrapper.pcf 
@@ -10,17 +10,17 @@ pfc_wrapper.pcf
 Constraints file: pfc_wrapper.pcf.
 Loading device for application Rf_Device from file '6slx150t.nph' in environment /opt/Xilinx/12.2/ISE_DS/ISE/.
    "pfc_wrapper" is an NCD, version 3.2, device xc6slx150t, package fgg676, speed -3
-WARNING:ConstraintSystem:64 - Constraint <NET "L_WR_RDY_1_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18156)] overrides
-   constraint <NET "L_WR_RDY_1_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18155)] on the design object 'L_WR_RDY_1_IBUF'.
+WARNING:ConstraintSystem:64 - Constraint <NET "L_WR_RDY_1_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9225)] overrides
+   constraint <NET "L_WR_RDY_1_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9224)] on the design object 'L_WR_RDY_1_IBUF'.
 
-WARNING:ConstraintSystem:64 - Constraint <NET "L_WR_RDY_0_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18158)] overrides
-   constraint <NET "L_WR_RDY_0_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18157)] on the design object 'L_WR_RDY_0_IBUF'.
+WARNING:ConstraintSystem:64 - Constraint <NET "L_WR_RDY_0_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9227)] overrides
+   constraint <NET "L_WR_RDY_0_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9226)] on the design object 'L_WR_RDY_0_IBUF'.
 
-WARNING:ConstraintSystem:64 - Constraint <NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18162)] overrides
-   constraint <NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18161)] on the design object 'VC_RDY<1>_IBUF'.
+WARNING:ConstraintSystem:64 - Constraint <NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9231)] overrides
+   constraint <NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9230)] on the design object 'VC_RDY<1>_IBUF'.
 
-WARNING:ConstraintSystem:64 - Constraint <NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18164)] overrides
-   constraint <NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(18163)] on the design object 'VC_RDY<0>_IBUF'.
+WARNING:ConstraintSystem:64 - Constraint <NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9233)] overrides
+   constraint <NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns;> [pfc_wrapper.pcf(9232)] on the design object 'VC_RDY<0>_IBUF'.
 
 
 Initializing temperature to 85.000 Celsius. (default - Range: 0.000 to 85.000 Celsius)
@@ -34,35 +34,35 @@ Device speed data version:  "PRELIMINARY 1.10 2010-06-28".
 Device Utilization Summary:
 
 Slice Logic Utilization:
-  Number of Slice Registers:                 4,379 out of 184,304    2%
-    Number used as Flip Flops:               4,346
-    Number used as Latches:                     33
+  Number of Slice Registers:                 3,476 out of 184,304    1%
+    Number used as Flip Flops:               3,444
+    Number used as Latches:                     32
     Number used as Latch-thrus:                  0
     Number used as AND/OR logics:                0
-  Number of Slice LUTs:                      2,988 out of  92,152    3%
-    Number used as logic:                    2,180 out of  92,152    2%
-      Number using O6 output only:           1,312
-      Number using O5 output only:             193
-      Number using O5 and O6:                  675
+  Number of Slice LUTs:                      2,209 out of  92,152    2%
+    Number used as logic:                    1,793 out of  92,152    1%
+      Number using O6 output only:           1,131
+      Number using O5 output only:              66
+      Number using O5 and O6:                  596
       Number used as ROM:                        0
-    Number used as Memory:                     280 out of  21,680    1%
+    Number used as Memory:                       1 out of  21,680    1%
       Number used as Dual Port RAM:              0
       Number used as Single Port RAM:            0
-      Number used as Shift Register:           280
-        Number using O6 output only:           245
-        Number using O5 output only:             2
-        Number using O5 and O6:                 33
-    Number used exclusively as route-thrus:    528
-      Number with same-slice register load:    508
-      Number with same-slice carry load:        20
+      Number used as Shift Register:             1
+        Number using O6 output only:             1
+        Number using O5 output only:             0
+        Number using O5 and O6:                  0
+    Number used exclusively as route-thrus:    415
+      Number with same-slice register load:    413
+      Number with same-slice carry load:         2
       Number with other load:                    0
 
 Slice Logic Distribution:
-  Number of occupied Slices:                 1,544 out of  23,038    6%
-  Number of LUT Flip Flop pairs used:        4,459
-    Number with an unused Flip Flop:           896 out of   4,459   20%
-    Number with an unused LUT:               1,471 out of   4,459   32%
-    Number of fully used LUT-FF pairs:       2,092 out of   4,459   46%
+  Number of occupied Slices:                 1,111 out of  23,038    4%
+  Number of LUT Flip Flop pairs used:        3,337
+    Number with an unused Flip Flop:           529 out of   3,337   15%
+    Number with an unused LUT:               1,128 out of   3,337   33%
+    Number of fully used LUT-FF pairs:       1,680 out of   3,337   50%
     Number of slice register sites lost
       to control set restrictions:               0 out of 184,304    0%
 
@@ -78,29 +78,29 @@ IO Utilization:
     IOB Flip Flops:                              5
 
 Specific Feature Utilization:
-  Number of RAMB16BWERs:                        15 out of     268    5%
-  Number of RAMB8BWERs:                          1 out of     536    1%
+  Number of RAMB16BWERs:                        11 out of     268    4%
+  Number of RAMB8BWERs:                          0 out of     536    0%
   Number of BUFIO2/BUFIO2_2CLKs:                 1 out of      32    3%
     Number used as BUFIO2s:                      1
     Number used as BUFIO2_2CLKs:                 0
   Number of BUFIO2FB/BUFIO2FB_2CLKs:             1 out of      32    3%
     Number used as BUFIO2FBs:                    1
     Number used as BUFIO2FB_2CLKs:               0
-  Number of BUFG/BUFGMUXs:                       4 out of      16   25%
-    Number used as BUFGs:                        4
+  Number of BUFG/BUFGMUXs:                       3 out of      16   18%
+    Number used as BUFGs:                        3
     Number used as BUFGMUX:                      0
   Number of DCM/DCM_CLKGENs:                     0 out of      12    0%
   Number of ILOGIC2/ISERDES2s:                  25 out of     586    4%
     Number used as ILOGIC2s:                     5
     Number used as ISERDES2s:                   20
-  Number of IODELAY2/IODRP2/IODRP2_MCBs:        20 out of     586    3%
-    Number used as IODELAY2s:                   20
+  Number of IODELAY2/IODRP2/IODRP2_MCBs:         2 out of     586    1%
+    Number used as IODELAY2s:                    2
     Number used as IODRP2s:                      0
     Number used as IODRP2_MCBs:                  0
   Number of OLOGIC2/OSERDES2s:                  20 out of     586    3%
     Number used as OLOGIC2s:                     0
     Number used as OSERDES2s:                   20
-  Number of BSCANs:                              1 out of       4   25%
+  Number of BSCANs:                              0 out of       4    0%
   Number of BUFHs:                               0 out of     384    0%
   Number of BUFPLLs:                             1 out of       8   12%
   Number of BUFPLL_MCBs:                         0 out of       4    0%
@@ -121,8 +121,8 @@ Router effort level (-rl):    High
 
 INFO:Timing:3386 - Intersecting Constraints found and resolved.  For more information, see the TSI report.  Please consult the Xilinx
    Command Line Tools User Guide for information on generating a TSI report.
-Starting initial Timing Analysis.  REAL time: 38 secs 
-Finished initial Timing Analysis.  REAL time: 38 secs 
+Starting initial Timing Analysis.  REAL time: 32 secs 
+Finished initial Timing Analysis.  REAL time: 32 secs 
 
 WARNING:Par:288 - The signal VC_RDY<0>_IBUF has no load.  PAR will not attempt to route this signal.
 WARNING:Par:288 - The signal VC_RDY<1>_IBUF has no load.  PAR will not attempt to route this signal.
@@ -133,29 +133,29 @@ WARNING:Par:288 - The signal GPIO<1>_IBUF has no load.  PAR will not attempt to 
 Starting Router
 
 
-Phase  1  : 20564 unrouted;      REAL time: 44 secs 
+Phase  1  : 15115 unrouted;      REAL time: 37 secs 
 
-Phase  2  : 15873 unrouted;      REAL time: 56 secs 
+Phase  2  : 12467 unrouted;      REAL time: 46 secs 
 
-Phase  3  : 3873 unrouted;      REAL time: 1 mins 46 secs 
+Phase  3  : 3144 unrouted;      REAL time: 1 mins 25 secs 
 
-Phase  4  : 3909 unrouted; (Setup:23352, Hold:386, Component Switching Limit:0)     REAL time: 2 mins 17 secs 
+Phase  4  : 3162 unrouted; (Setup:1730, Hold:0, Component Switching Limit:0)     REAL time: 1 mins 46 secs 
 
 Updating file: pfc_wrapper.ncd with current fully routed design.
 
-Phase  5  : 0 unrouted; (Setup:24878, Hold:386, Component Switching Limit:0)     REAL time: 3 mins 5 secs 
+Phase  5  : 0 unrouted; (Setup:1736, Hold:0, Component Switching Limit:0)     REAL time: 2 mins 36 secs 
 
-Phase  6  : 0 unrouted; (Setup:24878, Hold:386, Component Switching Limit:0)     REAL time: 3 mins 7 secs 
+Phase  6  : 0 unrouted; (Setup:1736, Hold:0, Component Switching Limit:0)     REAL time: 2 mins 38 secs 
 
-Phase  7  : 0 unrouted; (Setup:24878, Hold:386, Component Switching Limit:0)     REAL time: 4 mins 25 secs 
+Phase  7  : 0 unrouted; (Setup:948, Hold:0, Component Switching Limit:0)     REAL time: 4 mins 11 secs 
 
-Phase  8  : 0 unrouted; (Setup:24878, Hold:386, Component Switching Limit:0)     REAL time: 4 mins 25 secs 
+Phase  8  : 0 unrouted; (Setup:948, Hold:0, Component Switching Limit:0)     REAL time: 4 mins 11 secs 
 
-Phase  9  : 0 unrouted; (Setup:24878, Hold:0, Component Switching Limit:0)     REAL time: 4 mins 26 secs 
+Phase  9  : 0 unrouted; (Setup:948, Hold:0, Component Switching Limit:0)     REAL time: 4 mins 11 secs 
 
-Phase 10  : 0 unrouted; (Setup:13606, Hold:0, Component Switching Limit:0)     REAL time: 4 mins 31 secs 
-Total REAL time to Router completion: 4 mins 31 secs 
-Total CPU time to Router completion: 4 mins 37 secs 
+Phase 10  : 0 unrouted; (Setup:579, Hold:0, Component Switching Limit:0)     REAL time: 4 mins 15 secs 
+Total REAL time to Router completion: 4 mins 15 secs 
+Total CPU time to Router completion: 4 mins 27 secs 
 
 Partition Implementation Status
 -------------------------------
@@ -174,23 +174,16 @@ Generating Clock Report
 |        Clock Net    |   Resource   |Locked|Fanout|Net Skew(ns)|Max Delay(ns)|
 +---------------------+--------------+------+------+------------+-------------+
 |cmp_gn4124_core/sys_ |              |      |      |            |             |
-|                 clk |  BUFGMUX_X2Y2| No   |  939 |  0.816     |  2.191      |
+|                 clk | BUFGMUX_X3Y13| No   |  680 |  0.807     |  2.177      |
 +---------------------+--------------+------+------+------------+-------------+
-|          l_clk_BUFG | BUFGMUX_X3Y15| No   |  329 |  0.148     |  1.696      |
-+---------------------+--------------+------+------+------------+-------------+
-|    icon_control0<0> | BUFGMUX_X3Y13| No   |  154 |  0.325     |  1.696      |
+|          l_clk_BUFG | BUFGMUX_X3Y15| No   |  345 |  0.347     |  1.714      |
 +---------------------+--------------+------+------+------------+-------------+
 |cmp_gn4124_core/cmp_ |              |      |      |            |             |
-|wbmaster32/_n0421_BU |              |      |      |            |             |
-|                  FG |  BUFGMUX_X2Y3| No   |    8 |  0.005     |  1.692      |
-+---------------------+--------------+------+------+------------+-------------+
-|   icon_control0<13> |         Local|      |    5 |  0.000     |  1.733      |
+|wbmaster32/_n0440_BU |              |      |      |            |             |
+|                  FG |  BUFGMUX_X2Y3| No   |    8 |  0.005     |  1.638      |
 +---------------------+--------------+------+------+------------+-------------+
 |cmp_gn4124_core/io_c |              |      |      |            |             |
-|                  lk |         Local|      |   59 |  0.064     |  2.164      |
-+---------------------+--------------+------+------+------------+-------------+
-|U_icon_pro/U0/iUPDAT |              |      |      |            |             |
-|               E_OUT |         Local|      |    1 |  0.000     |  3.359      |
+|                  lk |         Local|      |   41 |  0.043     |  2.143      |
 +---------------------+--------------+------+------+------------+-------------+
 
 * Net Skew is the difference between the minimum and maximum routing
@@ -198,7 +191,7 @@ only delays for the net. Note this is different from Clock Skew which
 is reported in TRCE timing report. Clock Skew is the difference between
 the minimum and maximum path delays which includes logic delays.
 
-Timing Score: 13606 (Setup: 13606, Hold: 0, Component Switching Limit: 0)
+Timing Score: 579 (Setup: 579, Hold: 0, Component Switching Limit: 0)
 
 WARNING:Par:468 - Your design did not meet timing.  The following are some suggestions to assist you to meet timing in your design.
 
@@ -225,20 +218,20 @@ Asterisk (*) preceding a constraint indicates it was not met.
   Constraint                                |    Check    | Worst Case |  Best Case | Timing |   Timing   
                                             |             |    Slack   | Achievable | Errors |    Score   
 ----------------------------------------------------------------------------------------------------------
-* TS_cmp_gn4124_core_cmp_clk_in_rx_pllout_x | SETUP       |    -1.472ns|     6.472ns|      42|       13606
-  1_0 = PERIOD TIMEGRP         "cmp_gn4124_ | HOLD        |     0.215ns|            |       0|           0
+* TS_cmp_gn4124_core_cmp_clk_in_rx_pllout_x | SETUP       |    -0.579ns|     5.579ns|       1|         579
+  1_0 = PERIOD TIMEGRP         "cmp_gn4124_ | HOLD        |     0.274ns|            |       0|           0
   core_cmp_clk_in_rx_pllout_x1_0"         T |             |            |            |        |            
   S_cmp_gn4124_core_cmp_clk_in_buf_P_clk_0  |             |            |            |        |            
-  HIGH 50%                                  |             |            |            |        |            
+  PHASE 1.25 ns HIGH 50%                    |             |            |            |        |            
 ----------------------------------------------------------------------------------------------------------
-  TS_l_clkp = PERIOD TIMEGRP "l_clkp_grp" 5 | SETUP       |     0.189ns|     4.811ns|       0|           0
-   ns HIGH 50%                              | HOLD        |     0.376ns|            |       0|           0
+  TS_l_clkp = PERIOD TIMEGRP "l_clkp_grp" 5 | SETUP       |     0.205ns|     4.795ns|       0|           0
+   ns HIGH 50%                              | HOLD        |     0.382ns|            |       0|           0
 ----------------------------------------------------------------------------------------------------------
   TS_cmp_gn4124_core_cmp_clk_in_rx_pllout_x | MINPERIOD   |     1.430ns|     3.570ns|       0|           0
   1 = PERIOD TIMEGRP         "cmp_gn4124_co |             |            |            |        |            
   re_cmp_clk_in_rx_pllout_x1"         TS_cm |             |            |            |        |            
-  p_gn4124_core_cmp_clk_in_buf_P_clk HIGH 5 |             |            |            |        |            
-  0%                                        |             |            |            |        |            
+  p_gn4124_core_cmp_clk_in_buf_P_clk PHASE  |             |            |            |        |            
+  1.25 ns HIGH 50%                          |             |            |            |        |            
 ----------------------------------------------------------------------------------------------------------
   TS_cmp_gn4124_core_cmp_clk_in_buf_P_clk_0 | MINLOWPULSE |     2.200ns|     2.800ns|       0|           0
    = PERIOD TIMEGRP         "cmp_gn4124_cor |             |            |            |        |            
@@ -252,17 +245,17 @@ Asterisk (*) preceding a constraint indicates it was not met.
 ----------------------------------------------------------------------------------------------------------
   NET "P_RD_D_RDY_0_IBUF" MAXDELAY = 2 ns   | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
 ----------------------------------------------------------------------------------------------------------
-  NET "L2P_RDY_IBUF" MAXDELAY = 2 ns        | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
-----------------------------------------------------------------------------------------------------------
-  NET "L_WR_RDY_1_IBUF" MAXDELAY = 2 ns     | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
+  NET "P_RD_D_RDY_1_IBUF" MAXDELAY = 2 ns   | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
 ----------------------------------------------------------------------------------------------------------
   NET "L_WR_RDY_0_IBUF" MAXDELAY = 2 ns     | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
 ----------------------------------------------------------------------------------------------------------
-  NET "P_RD_D_RDY_1_IBUF" MAXDELAY = 2 ns   | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
+  NET "L_WR_RDY_1_IBUF" MAXDELAY = 2 ns     | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
 ----------------------------------------------------------------------------------------------------------
-  NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns      | MAXDELAY    |     2.000ns|     0.000ns|       0|           0
+  NET "L2P_RDY_IBUF" MAXDELAY = 2 ns        | MAXDELAY    |     1.676ns|     0.324ns|       0|           0
 ----------------------------------------------------------------------------------------------------------
   NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns      | MAXDELAY    |     2.000ns|     0.000ns|       0|           0
+----------------------------------------------------------------------------------------------------------
+  NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns      | MAXDELAY    |     2.000ns|     0.000ns|       0|           0
 ----------------------------------------------------------------------------------------------------------
   TS_p2l_clkp = PERIOD TIMEGRP "p2l_clkp_gr | MINPERIOD   |     3.096ns|     1.904ns|       0|           0
   p" 5 ns HIGH 50%                          |             |            |            |        |            
@@ -270,24 +263,11 @@ Asterisk (*) preceding a constraint indicates it was not met.
   TS_p2l_clkn = PERIOD TIMEGRP "p2l_clkn_gr | MINPERIOD   |     3.096ns|     1.904ns|       0|           0
   p" 5 ns HIGH 50%                          |             |            |            |        |            
 ----------------------------------------------------------------------------------------------------------
-  TS_U_TO_J = MAXDELAY FROM TIMEGRP "U_CLK" | SETUP       |     7.635ns|     7.365ns|       0|           0
-   TO TIMEGRP "J_CLK" 15 ns                 | HOLD        |     1.829ns|            |       0|           0
-----------------------------------------------------------------------------------------------------------
-  TS_J_CLK = PERIOD TIMEGRP "J_CLK" 30 ns H | SETUP       |    13.802ns|    16.198ns|       0|           0
-  IGH 50%                                   | HOLD        |     0.339ns|            |       0|           0
-----------------------------------------------------------------------------------------------------------
-  TS_U_TO_U = MAXDELAY FROM TIMEGRP "U_CLK" | SETUP       |    13.884ns|     1.116ns|       0|           0
-   TO TIMEGRP "U_CLK" 15 ns                 | HOLD        |     0.500ns|            |       0|           0
+  NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns      | N/A         |         N/A|         N/A|     N/A|         N/A
 ----------------------------------------------------------------------------------------------------------
   NET "VC_RDY<0>_IBUF" MAXDELAY = 2 ns      | N/A         |         N/A|         N/A|     N/A|         N/A
 ----------------------------------------------------------------------------------------------------------
-  PATH "TS_J_TO_D_path" TIG                 | SETUP       |         N/A|    14.916ns|     N/A|           0
-----------------------------------------------------------------------------------------------------------
-  PATH "TS_D_TO_J_path" TIG                 | SETUP       |         N/A|     4.721ns|     N/A|           0
-----------------------------------------------------------------------------------------------------------
   NET "L_WR_RDY_0_IBUF" MAXDELAY = 2 ns     | N/A         |         N/A|         N/A|     N/A|         N/A
-----------------------------------------------------------------------------------------------------------
-  NET "VC_RDY<1>_IBUF" MAXDELAY = 2 ns      | N/A         |         N/A|         N/A|     N/A|         N/A
 ----------------------------------------------------------------------------------------------------------
   TS_cmp_gn4124_core_cmp_clk_in_rx_pllout_x | N/A         |         N/A|         N/A|     N/A|         N/A
   s_int = PERIOD TIMEGRP         "cmp_gn412 |             |            |            |        |            
@@ -330,12 +310,12 @@ Derived Constraints for TS_p2l_clkn
 |           Constraint          | Requirement |-------------+-------------|-------------+-------------|-------------+-------------|
 |                               |             |   Direct    | Derivative  |   Direct    | Derivative  |   Direct    | Derivative  |
 +-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
-|TS_p2l_clkn                    |      5.000ns|      1.904ns|      6.472ns|            0|           42|            0|        33981|
-| TS_cmp_gn4124_core_cmp_clk_in_|      5.000ns|      2.800ns|      6.472ns|            0|           42|            0|        33981|
+|TS_p2l_clkn                    |      5.000ns|      1.904ns|      5.579ns|            0|            1|            0|        29021|
+| TS_cmp_gn4124_core_cmp_clk_in_|      5.000ns|      2.800ns|      5.579ns|            0|            1|            0|        29021|
 | buf_P_clk_0                   |             |             |             |             |             |             |             |
 |  TS_cmp_gn4124_core_cmp_clk_in|      2.500ns|          N/A|          N/A|            0|            0|            0|            0|
 |  _rx_pllout_xs_int_0          |             |             |             |             |             |             |             |
-|  TS_cmp_gn4124_core_cmp_clk_in|      5.000ns|      6.472ns|          N/A|           42|            0|        33981|            0|
+|  TS_cmp_gn4124_core_cmp_clk_in|      5.000ns|      5.579ns|          N/A|            1|            0|        29021|            0|
 |  _rx_pllout_x1_0              |             |             |             |             |             |             |             |
 +-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
 
@@ -353,14 +333,14 @@ All signals are completely routed.
 
 WARNING:Par:283 - There are 6 loadless signals in this design. This design will cause Bitgen to issue DRC warnings.
 
-Total REAL time to PAR completion: 4 mins 37 secs 
-Total CPU time to PAR completion: 4 mins 44 secs 
+Total REAL time to PAR completion: 4 mins 21 secs 
+Total CPU time to PAR completion: 4 mins 33 secs 
 
-Peak Memory Usage:  429 MB
+Peak Memory Usage:  412 MB
 
 Placer: Placement generated during map.
 Routing: Completed - No errors found.
-Timing: Completed - 42 errors found.
+Timing: Completed - 1 errors found.
 
 Number of error messages: 0
 Number of warning messages: 13

@@ -124,6 +124,7 @@ begin
     rst <= rst_n_i;
   end generate;
 
+
   ------------------------------------------------------------------------------
   -- data input bit slip
   ------------------------------------------------------------------------------
@@ -132,7 +133,7 @@ begin
     if rst_n_i = c_RST_ACTIVE then
       p2l_data_bitslip <= (others => '0');
     elsif rising_edge(sys_clk_i) then
-      p2l_data_bitslip    <= p2l_data_bitslip(0) & '1';
+      p2l_data_bitslip <= p2l_data_bitslip(0) & '1';
     end if;
   end process p_din_bitslip;
 
@@ -152,35 +153,11 @@ begin
       rxioclk            => io_clk_i,
       rxserdesstrobe     => serdes_strobe_i,
       gclk               => sys_clk_i,
-      bitslip            => p2l_data_bitslip_p,
+      bitslip            => '0',        --p2l_data_bitslip_p,
       reset              => rst,
       data_out           => p2l_data_t,
       debug_in           => "00",
       debug              => open);
-
-  ------------------------------------------------------------------------------
-  -- dframe and valid inputs
-  ------------------------------------------------------------------------------
-  --cmp_ctrl_in : serdes_1_to_n_data_s2_se
-  --  generic map(
-  --    USE_PD => false,
-  --    S      => S,
-  --    D      => 2)
-  --  port map (
-  --    use_phase_detector => '0',        -- '1' enables the phase detector logic
-  --    datain             => p2l_ctrl_v,
-  --    rxioclk            => io_clk_i,
-  --    rxserdesstrobe     => serdes_strobe_i,
-  --    gclk               => sys_clk_i,
-  --    bitslip            => '0',
-  --    reset              => rst,
-  --    data_out           => p2l_ctrl_t,
-  --    debug_in           => "00",
-  --    debug              => open);
-
-  -- Type conversion, std_logic to std_logic_vector
-  --p2l_ctrl_v(0) <= p2l_dframe_i;
-  --p2l_ctrl_v(1) <= p2l_valid_i;
 
   ------------------------------------------------------------------------------
   -- dframe input
@@ -227,6 +204,7 @@ begin
 
   -- Type conversion, std_logic to std_logic_vector
   p2l_valid_v(0) <= p2l_valid_i;
+
 
   p_in_sys_sync : process (sys_clk_i, rst_n_i)
   begin
