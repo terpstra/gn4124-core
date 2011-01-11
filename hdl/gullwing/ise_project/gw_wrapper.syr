@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.14 secs
+Total CPU time to Xst completion: 0.12 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.14 secs
+Total CPU time to Xst completion: 0.12 secs
  
 --> 
 Reading design: gw_wrapper.prj
@@ -104,7 +104,7 @@ Auto BRAM Packing                  : NO
 Slice Utilization Ratio Delta      : 5
 
 ---- Other Options
-Cores Search Directories           : {"design/ipcore_dir"  }
+Cores Search Directories           : {"../ip_cores"  }
 
 =========================================================================
 
@@ -112,41 +112,57 @@ Cores Search Directories           : {"design/ipcore_dir"  }
 =========================================================================
 *                          HDL Compilation                              *
 =========================================================================
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core_pkg.vhd" in Library work.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_pkg.vhd" in Library work.
 Package <gn4124_core_pkg> compiled.
 Package body <gn4124_core_pkg> compiled.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/ipcore_dir/fifo_64x512.vhd" in Library work.
-Architecture fifo_64x512_a of Entity fifo_64x512 is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/ipcore_dir/fifo_32x512.vhd" in Library work.
-Architecture fifo_32x512_a of Entity fifo_32x512 is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller_wb_slave.vhd" in Library work.
-Architecture syn of Entity dma_controller_wb_slave is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_des.vhd" in Library work.
-Architecture rtl of Entity p2l_des is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_decode32.vhd" in Library work.
-Architecture rtl of Entity p2l_decode32 is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" in Library work.
-Architecture behaviour of Entity wbmaster32 is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd" in Library work.
-Architecture behaviour of Entity dma_controller is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" in Library work.
-Architecture behaviour of Entity l2p_dma_master is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" in Library work.
-Architecture behaviour of Entity p2l_dma_master is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_arbiter.vhd" in Library work.
-Architecture rtl of Entity l2p_arbiter is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_ser.vhd" in Library work.
-Architecture rtl of Entity l2p_ser is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core.vhd" in Library work.
-Architecture rtl of Entity gn4124_core is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_stat_regs.vhd" in Library work.
-Architecture syn of Entity dummy_stat_regs_wb_slave is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_ctrl_regs.vhd" in Library work.
-Architecture syn of Entity dummy_ctrl_regs_wb_slave is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/ipcore_dir/ram_2048x32.vhd" in Library work.
-Architecture ram_2048x32_a of Entity ram_2048x32 is up to date.
-Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gullwing_wrapper.vhd" in Library work.
-Architecture rtl of Entity gw_wrapper is up to date.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/ip_cores/fifo_64x512.vhd" in Library work.
+Entity <fifo_64x512> compiled.
+Entity <fifo_64x512> (Architecture <fifo_64x512_a>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/ip_cores/fifo_32x512.vhd" in Library work.
+Entity <fifo_32x512> compiled.
+Entity <fifo_32x512> (Architecture <fifo_32x512_a>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller_wb_slave.vhd" in Library work.
+Entity <dma_controller_wb_slave> compiled.
+Entity <dma_controller_wb_slave> (Architecture <syn>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_des.vhd" in Library work.
+Entity <p2l_des> compiled.
+Entity <p2l_des> (Architecture <rtl>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_decode32.vhd" in Library work.
+Entity <p2l_decode32> compiled.
+Entity <p2l_decode32> (Architecture <rtl>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" in Library work.
+Entity <wbmaster32> compiled.
+Entity <wbmaster32> (Architecture <behaviour>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller.vhd" in Library work.
+Entity <dma_controller> compiled.
+Entity <dma_controller> (Architecture <behaviour>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" in Library work.
+Entity <l2p_dma_master> compiled.
+Entity <l2p_dma_master> (Architecture <behaviour>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" in Library work.
+Entity <p2l_dma_master> compiled.
+Entity <p2l_dma_master> (Architecture <behaviour>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_arbiter.vhd" in Library work.
+Entity <l2p_arbiter> compiled.
+Entity <l2p_arbiter> (Architecture <rtl>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_ser.vhd" in Library work.
+Entity <l2p_ser> compiled.
+Entity <l2p_ser> (Architecture <rtl>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core.vhd" in Library work.
+Entity <gn4124_core> compiled.
+Entity <gn4124_core> (Architecture <rtl>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_stat_regs.vhd" in Library work.
+Entity <dummy_stat_regs_wb_slave> compiled.
+Entity <dummy_stat_regs_wb_slave> (Architecture <syn>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_ctrl_regs.vhd" in Library work.
+Entity <dummy_ctrl_regs_wb_slave> compiled.
+Entity <dummy_ctrl_regs_wb_slave> (Architecture <syn>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/ip_cores/ram_2048x32.vhd" in Library work.
+Entity <ram_2048x32> compiled.
+Entity <ram_2048x32> (Architecture <ram_2048x32_a>) compiled.
+Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/rtl/gullwing_wrapper.vhd" in Library work.
+Entity <gw_wrapper> compiled.
+Entity <gw_wrapper> (Architecture <rtl>) compiled.
 
 =========================================================================
 *                     Design Hierarchy Analysis                         *
@@ -159,12 +175,14 @@ Analyzing hierarchy for entity <gn4124_core> in library <work> (architecture <rt
 	g_CSR_WB_SLAVES_NB = 2
 	g_DMA_WB_ADDR_WIDTH = 26
 	g_DMA_WB_SLAVES_NB = 1
+	g_IS_SPARTAN6 = false
 
 Analyzing hierarchy for entity <dummy_stat_regs_wb_slave> in library <work> (architecture <syn>).
 
 Analyzing hierarchy for entity <dummy_ctrl_regs_wb_slave> in library <work> (architecture <syn>).
 
-Analyzing hierarchy for entity <p2l_des> in library <work> (architecture <rtl>).
+Analyzing hierarchy for entity <p2l_des> in library <work> (architecture <rtl>) with generics.
+	g_IS_SPARTAN6 = false
 
 Analyzing hierarchy for entity <p2l_decode32> in library <work> (architecture <rtl>).
 
@@ -182,7 +200,8 @@ Analyzing hierarchy for entity <p2l_dma_master> in library <work> (architecture 
 
 Analyzing hierarchy for entity <l2p_arbiter> in library <work> (architecture <rtl>).
 
-Analyzing hierarchy for entity <l2p_ser> in library <work> (architecture <rtl>).
+Analyzing hierarchy for entity <l2p_ser> in library <work> (architecture <rtl>) with generics.
+	g_IS_SPARTAN6 = false
 
 Analyzing hierarchy for entity <dma_controller_wb_slave> in library <work> (architecture <syn>).
 
@@ -198,7 +217,7 @@ Analyzing generic Entity <gw_wrapper> in library <work> (Architecture <rtl>).
     Set user-defined property "IBUF_LOW_PWR =  TRUE" for instance <cmp_sysclk_buf> in unit <gw_wrapper>.
     Set user-defined property "IFD_DELAY_VALUE =  AUTO" for instance <cmp_sysclk_buf> in unit <gw_wrapper>.
     Set user-defined property "IOSTANDARD =  DEFAULT" for instance <cmp_sysclk_buf> in unit <gw_wrapper>.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gullwing_wrapper.vhd" line 522: Instantiating black box module <ram_2048x32>.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gullwing/rtl/gullwing_wrapper.vhd" line 522: Instantiating black box module <ram_2048x32>.
 Entity <gw_wrapper> analyzed. Unit <gw_wrapper> generated.
 
 Analyzing generic Entity <gn4124_core> in library <work> (Architecture <rtl>).
@@ -206,6 +225,7 @@ Analyzing generic Entity <gn4124_core> in library <work> (Architecture <rtl>).
 	g_CSR_WB_SLAVES_NB = 2
 	g_DMA_WB_ADDR_WIDTH = 26
 	g_DMA_WB_SLAVES_NB = 1
+	g_IS_SPARTAN6 = false
     Set user-defined property "CAPACITANCE =  DONT_CARE" for instance <CLK_ibuf> in unit <gn4124_core>.
     Set user-defined property "DIFF_TERM =  FALSE" for instance <CLK_ibuf> in unit <gn4124_core>.
     Set user-defined property "IBUF_DELAY_VALUE =  0" for instance <CLK_ibuf> in unit <gn4124_core>.
@@ -218,7 +238,8 @@ Analyzing generic Entity <gn4124_core> in library <work> (Architecture <rtl>).
     Set user-defined property "IOSTANDARD =  DEFAULT" for instance <CLKn_ibuf> in unit <gn4124_core>.
 Entity <gn4124_core> analyzed. Unit <gn4124_core> generated.
 
-Analyzing Entity <p2l_des> in library <work> (Architecture <rtl>).
+Analyzing generic Entity <p2l_des> in library <work> (Architecture <rtl>).
+	g_IS_SPARTAN6 = false
 Entity <p2l_des> analyzed. Unit <p2l_des> generated.
 
 Analyzing Entity <p2l_decode32> in library <work> (Architecture <rtl>).
@@ -227,18 +248,18 @@ Entity <p2l_decode32> analyzed. Unit <p2l_decode32> generated.
 Analyzing generic Entity <wbmaster32> in library <work> (Architecture <behaviour>).
 	g_BAR0_APERTURE = 20
 	g_WB_SLAVES_NB = 3
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 302: Unconnected output port 'full' of component 'fifo_64x512'.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 302: Unconnected output port 'valid' of component 'fifo_64x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 302: Instantiating black box module <fifo_64x512>.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 323: Unconnected output port 'full' of component 'fifo_32x512'.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 323: Unconnected output port 'valid' of component 'fifo_32x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 323: Instantiating black box module <fifo_32x512>.
-WARNING:Xst:790 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd" line 466: Index value(s) does not match array range, simulation mismatch.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 302: Unconnected output port 'full' of component 'fifo_64x512'.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 302: Unconnected output port 'valid' of component 'fifo_64x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 302: Instantiating black box module <fifo_64x512>.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 323: Unconnected output port 'full' of component 'fifo_32x512'.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 323: Unconnected output port 'valid' of component 'fifo_32x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 323: Instantiating black box module <fifo_32x512>.
+WARNING:Xst:790 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" line 466: Index value(s) does not match array range, simulation mismatch.
 Entity <wbmaster32> analyzed. Unit <wbmaster32> generated.
 
 Analyzing Entity <dma_controller> in library <work> (Architecture <behaviour>).
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd" line 204: Unconnected output port 'dma_stat_o' of component 'dma_controller_wb_slave'.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd" line 204: Unconnected output port 'dma_stat_load_o' of component 'dma_controller_wb_slave'.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller.vhd" line 204: Unconnected output port 'dma_stat_o' of component 'dma_controller_wb_slave'.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller.vhd" line 204: Unconnected output port 'dma_stat_load_o' of component 'dma_controller_wb_slave'.
 INFO:Xst:2679 - Register <dma_stat_reg<31>> in unit <dma_controller> has a constant value of 0 during circuit operation. The register is replaced by logic.
 INFO:Xst:2679 - Register <dma_stat_reg<30>> in unit <dma_controller> has a constant value of 0 during circuit operation. The register is replaced by logic.
 INFO:Xst:2679 - Register <dma_stat_reg<29>> in unit <dma_controller> has a constant value of 0 during circuit operation. The register is replaced by logic.
@@ -276,17 +297,17 @@ Entity <dma_controller_wb_slave> analyzed. Unit <dma_controller_wb_slave> genera
 
 Analyzing generic Entity <l2p_dma_master> in library <work> (Architecture <behaviour>).
 	g_BYTE_SWAP = false
-WARNING:Xst:1610 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 267: Width mismatch. <l2p_address_l> has a width of 32 bits but assigned expression is 43-bit wide.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 477: Unconnected output port 'full' of component 'fifo_32x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 477: Instantiating black box module <fifo_32x512>.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 493: Unconnected output port 'full' of component 'fifo_32x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd" line 493: Instantiating black box module <fifo_32x512>.
+WARNING:Xst:1610 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 267: Width mismatch. <l2p_address_l> has a width of 32 bits but assigned expression is 43-bit wide.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 477: Unconnected output port 'full' of component 'fifo_32x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 477: Instantiating black box module <fifo_32x512>.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 493: Unconnected output port 'full' of component 'fifo_32x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 493: Instantiating black box module <fifo_32x512>.
 Entity <l2p_dma_master> analyzed. Unit <l2p_dma_master> generated.
 
 Analyzing generic Entity <p2l_dma_master> in library <work> (Architecture <behaviour>).
 	g_BYTE_SWAP = false
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" line 475: Unconnected output port 'full' of component 'fifo_64x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd" line 475: Instantiating black box module <fifo_64x512>.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" line 475: Unconnected output port 'full' of component 'fifo_64x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" line 475: Instantiating black box module <fifo_64x512>.
 INFO:Xst:2679 - Register <to_wb_fifo_din<63>> in unit <p2l_dma_master> has a constant value of 0 during circuit operation. The register is replaced by logic.
 INFO:Xst:2679 - Register <to_wb_fifo_din<62>> in unit <p2l_dma_master> has a constant value of 0 during circuit operation. The register is replaced by logic.
 Entity <p2l_dma_master> analyzed. Unit <p2l_dma_master> generated.
@@ -294,19 +315,20 @@ Entity <p2l_dma_master> analyzed. Unit <p2l_dma_master> generated.
 Analyzing Entity <l2p_arbiter> in library <work> (Architecture <rtl>).
 Entity <l2p_arbiter> analyzed. Unit <l2p_arbiter> generated.
 
-Analyzing Entity <l2p_ser> in library <work> (Architecture <rtl>).
+Analyzing generic Entity <l2p_ser> in library <work> (Architecture <rtl>).
+	g_IS_SPARTAN6 = false
     Set user-defined property "CAPACITANCE =  DONT_CARE" for instance <L2P_CLK_BUF> in unit <l2p_ser>.
     Set user-defined property "IOSTANDARD =  DEFAULT" for instance <L2P_CLK_BUF> in unit <l2p_ser>.
-    Set user-defined property "INIT =  0" for instance <L2P_CLK_int> in unit <l2p_ser>.
+    Set user-defined property "INIT =  0" for instance <gen_l2p_clk_ddr_ff.L2P_CLK_int> in unit <l2p_ser>.
 Entity <l2p_ser> analyzed. Unit <l2p_ser> generated.
 
 Analyzing Entity <dummy_stat_regs_wb_slave> in library <work> (Architecture <syn>).
-INFO:Xst:1561 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_stat_regs.vhd" line 110: Mux is complete : default of case is discarded
+INFO:Xst:1561 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_stat_regs.vhd" line 110: Mux is complete : default of case is discarded
 INFO:Xst:2679 - Register <ack_sreg<9>> in unit <dummy_stat_regs_wb_slave> has a constant value of 0 during circuit operation. The register is replaced by logic.
 Entity <dummy_stat_regs_wb_slave> analyzed. Unit <dummy_stat_regs_wb_slave> generated.
 
 Analyzing Entity <dummy_ctrl_regs_wb_slave> in library <work> (Architecture <syn>).
-INFO:Xst:1561 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_ctrl_regs.vhd" line 122: Mux is complete : default of case is discarded
+INFO:Xst:1561 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_ctrl_regs.vhd" line 122: Mux is complete : default of case is discarded
 INFO:Xst:2679 - Register <ack_sreg<9>> in unit <dummy_ctrl_regs_wb_slave> has a constant value of 0 during circuit operation. The register is replaced by logic.
 Entity <dummy_ctrl_regs_wb_slave> analyzed. Unit <dummy_ctrl_regs_wb_slave> generated.
 
@@ -321,7 +343,7 @@ INFO:Xst:2679 - Register <ack_sreg<8>> in unit <dummy_stat_regs_wb_slave> has a 
 INFO:Xst:2679 - Register <ack_sreg<8>> in unit <dummy_ctrl_regs_wb_slave> has a constant value of 0 during circuit operation. The register is replaced by logic.
 
 Synthesizing Unit <dummy_stat_regs_wb_slave>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_stat_regs.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_stat_regs.vhd".
 WARNING:Xst:646 - Signal <wrdata_reg> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <wr_int> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <rd_int> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
@@ -339,7 +361,7 @@ Unit <dummy_stat_regs_wb_slave> synthesized.
 
 
 Synthesizing Unit <dummy_ctrl_regs_wb_slave>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dummy_ctrl_regs.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_ctrl_regs.vhd".
 WARNING:Xst:646 - Signal <wr_int> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <rd_int> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <bwsel_reg> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
@@ -360,7 +382,7 @@ Unit <dummy_ctrl_regs_wb_slave> synthesized.
 
 
 Synthesizing Unit <p2l_decode32>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_decode32.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_decode32.vhd".
 WARNING:Xst:1780 - Signal <p2l_packet_start_d> is never used or assigned. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:1780 - Signal <p2l_d_first> is never used or assigned. This unconnected signal will be trimmed during the optimization process.
     Found 1-bit register for signal <des_p2l_dframe_d>.
@@ -392,7 +414,7 @@ Unit <p2l_decode32> synthesized.
 
 
 Synthesizing Unit <l2p_arbiter>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_arbiter.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_arbiter.vhd".
     Found 1-bit register for signal <arb_ser_dframe_o>.
     Found 1-bit register for signal <arb_ser_valid_o>.
     Found 32-bit register for signal <arb_ser_data_o>.
@@ -405,7 +427,7 @@ Unit <l2p_arbiter> synthesized.
 
 
 Synthesizing Unit <dma_controller_wb_slave>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller_wb_slave.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller_wb_slave.vhd".
 WARNING:Xst:646 - Signal <wr_int> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <rd_int> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <bwsel_reg> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
@@ -520,9 +542,10 @@ Unit <dma_controller_wb_slave> synthesized.
 
 
 Synthesizing Unit <p2l_des>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_des.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_des.vhd".
 WARNING:Xst:646 - Signal <p2l_valid_n> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <p2l_dframe_n> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
+WARNING:Xst:1780 - Signal <p2l_data_d> is never used or assigned. This unconnected signal will be trimmed during the optimization process.
     Found 1-bit register for signal <p2l_dframe_o>.
     Found 32-bit register for signal <p2l_data_o>.
     Found 1-bit register for signal <p2l_valid_o>.
@@ -533,7 +556,7 @@ Unit <p2l_des> synthesized.
 
 
 Synthesizing Unit <wbmaster32>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/wbmaster32.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd".
 WARNING:Xst:647 - Input <pd_wbm_addr_i<1>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_wbm_hdr_length_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_wbm_data_last_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -600,7 +623,7 @@ Unit <wbmaster32> synthesized.
 
 
 Synthesizing Unit <dma_controller>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/dma_controller.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller.vhd".
 WARNING:Xst:1780 - Signal <dma_stat_load> is never used or assigned. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:1780 - Signal <dma_stat> is never used or assigned. This unconnected signal will be trimmed during the optimization process.
     Found finite state machine <FSM_2> for signal <dma_ctrl_current_state>.
@@ -644,7 +667,7 @@ Unit <dma_controller> synthesized.
 
 
 Synthesizing Unit <l2p_dma_master>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_dma_master.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd".
 WARNING:Xst:647 - Input <dma_ctrl_len_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <dma_ctrl_target_addr_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:646 - Signal <l2p_byte_swap> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
@@ -707,7 +730,7 @@ Unit <l2p_dma_master> synthesized.
 
 
 Synthesizing Unit <p2l_dma_master>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/p2l_dma_master.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd".
 WARNING:Xst:647 - Input <p2l_dma_dat_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_pdm_hdr_length_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <pd_pdm_be_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -781,7 +804,7 @@ Unit <p2l_dma_master> synthesized.
 
 
 Synthesizing Unit <l2p_ser>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/l2p_ser.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_ser.vhd".
     Found 1-bit register for signal <l2p_valid_o>.
     Found 1-bit register for signal <l2p_dframe_o>.
     Found 32-bit register for signal <data_d>.
@@ -793,7 +816,7 @@ Unit <l2p_ser> synthesized.
 
 
 Synthesizing Unit <gn4124_core>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gn4124_core.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core.vhd".
 WARNING:Xst:647 - Input <p_wr_req_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <vc_rdy_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <tx_error_i> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
@@ -816,7 +839,7 @@ Unit <gn4124_core> synthesized.
 
 
 Synthesizing Unit <gw_wrapper>.
-    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gn4124core/design/rtl/gullwing_wrapper.vhd".
+    Related source file is "/home/mcattin/projects/GN4124_core/hdl/gullwing/rtl/gullwing_wrapper.vhd".
 WARNING:Xst:2565 - Inout <CNTRL0_DDR2_DQ<17>> is never assigned.
 WARNING:Xst:2565 - Inout <CNTRL0_DDR2_DQ<22>> is never assigned.
 WARNING:Xst:2565 - Inout <MIC_DATA<3>> is never assigned.
@@ -1055,9 +1078,9 @@ Optimizing FSM <cmp_gn4124_core/cmp_wbmaster32/wishbone_current_state/FSM> on si
  wb_cycle     | 0100
  wb_wait_ack  | 1000
 --------------------------
-Reading core <design/ipcore_dir/ram_2048x32.ngc>.
-Reading core <design/ipcore_dir/fifo_64x512.ngc>.
-Reading core <design/ipcore_dir/fifo_32x512.ngc>.
+Reading core <../ip_cores/ram_2048x32.ngc>.
+Reading core <../ip_cores/fifo_64x512.ngc>.
+Reading core <../ip_cores/fifo_32x512.ngc>.
 Loading core <ram_2048x32> for timing and area information for instance <cmp_test_ram>.
 Loading core <fifo_64x512> for timing and area information for instance <cmp_fifo_to_wb>.
 Loading core <fifo_32x512> for timing and area information for instance <cmp_from_wb_fifo>.
@@ -1889,14 +1912,14 @@ Timing constraint: Default OFFSET IN BEFORE for Clock 'P2L_CLKn'
 -------------------------------------------------------------------------
 Offset:              1.021ns (Levels of Logic = 0)
   Source:            P2L_DATA<15> (PAD)
-  Destination:       cmp_gn4124_core/cmp_p2l_des/DDRFF_D[15].U (UNKNOWN)
+  Destination:       cmp_gn4124_core/cmp_p2l_des/gen_in_ddr_ff.DDRFF_D[15].U (UNKNOWN)
   Destination Clock: P2L_CLKn rising
 
-  Data Path: P2L_DATA<15> to cmp_gn4124_core/cmp_p2l_des/DDRFF_D[15].U
+  Data Path: P2L_DATA<15> to cmp_gn4124_core/cmp_p2l_des/gen_in_ddr_ff.DDRFF_D[15].U
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IFDDRRSE:D                1.021          cmp_gn4124_core/cmp_p2l_des/DDRFF_D[15].U
+     IFDDRRSE:D                1.021          cmp_gn4124_core/cmp_p2l_des/gen_in_ddr_ff.DDRFF_D[15].U
     ----------------------------------------
     Total                      1.021ns (1.021ns logic, 0.000ns route)
                                        (100.0% logic, 0.0% route)
@@ -1982,14 +2005,14 @@ Offset:              5.248ns (Levels of Logic = 1)
 
 
 Total REAL time to Xst completion: 144.00 secs
-Total CPU time to Xst completion: 141.58 secs
+Total CPU time to Xst completion: 141.91 secs
  
 --> 
 
 
-Total memory usage is 201616 kilobytes
+Total memory usage is 201472 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  462 (   0 filtered)
+Number of warnings :  463 (   0 filtered)
 Number of infos    :   85 (   0 filtered)
 
