@@ -526,10 +526,14 @@ package body gn4124_core_pkg is
   -----------------------------------------------------------------------------
   function log2_ceil(N : natural) return positive is
   begin
-    if N < 2 then
+    if N <= 2 then
       return 1;
     else
-      return 1 + log2_ceil(N/2);
+      if N mod 2 = 0 then
+        return 1 + log2_ceil(N/2);
+      else
+        return 1 + log2_ceil(N+1/2);
+      end if;
     end if;
   end;
 
