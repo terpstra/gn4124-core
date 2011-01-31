@@ -49,10 +49,10 @@ entity dma_controller is
       dma_ctrl_start_l2p_o    : out std_logic;  -- To the L2P DMA master
       dma_ctrl_start_p2l_o    : out std_logic;  -- To the P2L DMA master
       dma_ctrl_start_next_o   : out std_logic;  -- To the P2L DMA master
-      dma_ctrl_done_i         : in  std_logic;
-      dma_ctrl_error_i        : in  std_logic;
       dma_ctrl_byte_swap_o    : out std_logic_vector(1 downto 0);
       dma_ctrl_abort_o        : out std_logic;
+      dma_ctrl_done_i         : in  std_logic;
+      dma_ctrl_error_i        : in  std_logic;
 
       ---------------------------------------------------------
       -- From P2L DMA master
