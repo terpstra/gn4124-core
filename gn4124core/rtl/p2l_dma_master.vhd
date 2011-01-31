@@ -134,6 +134,8 @@ architecture behaviour of p2l_dma_master is
   signal completion_error : std_logic;
   signal dma_busy_error   : std_logic;
   signal dma_length_error : std_logic;
+  signal dma_ctrl_done_t  : std_logic;
+  signal rx_error_t       : std_logic;
 
   -- L2P packet generator
   signal l2p_address_h   : std_logic_vector(31 downto 0);
@@ -271,19 +273,19 @@ begin
       pdm_arb_data_o        <= (others => '0');
       pdm_arb_valid_o       <= '0';
       pdm_arb_dframe_o      <= '0';
-      dma_ctrl_done_o       <= '0';
+      dma_ctrl_done_t       <= '0';
       next_item_valid_o     <= '0';
       completion_error      <= '0';
-      rx_error_o            <= '0';
+      rx_error_t            <= '0';
     elsif rising_edge(clk_i) then
       case p2l_dma_current_state is
 
         when P2L_IDLE =>
           -- Clear status bits
-          dma_ctrl_done_o   <= '0';
+          dma_ctrl_done_t   <= '0';
           next_item_valid_o <= '0';
           completion_error  <= '0';
-          rx_error_o        <= '0';
+          rx_error_t        <= '0';
           -- Start a read request when a P2L DMA is initated or when the DMA
           -- controller asks for the next DMA info (in a chained DMA).
           if (dma_ctrl_start_p2l_i = '1' or dma_ctrl_start_next_i = '1') then
@@ -328,7 +330,7 @@ begin
           -- End of the read request packet
           pdm_arb_valid_o <= '0';
           if (dma_ctrl_abort_i = '1') then
-            rx_error_o            <= '1';
+            rx_error_t            <= '1';
             p2l_dma_current_state <= P2L_IDLE;
           elsif (pd_pdm_master_cpld_i = '1' and pd_pdm_data_last_i = '1'
                  and p2l_data_cnt <= 1) then
@@ -344,7 +346,7 @@ begin
               if (is_next_item = '1') then
                 next_item_valid_o <= '1';
               else
-                dma_ctrl_done_o <= '1';
+                dma_ctrl_done_t <= '1';
               end if;
               p2l_dma_current_state <= P2L_IDLE;
             end if;
@@ -361,14 +363,28 @@ begin
           pdm_arb_data_o        <= (others => '0');
           pdm_arb_valid_o       <= '0';
           pdm_arb_dframe_o      <= '0';
-          dma_ctrl_done_o       <= '0';
+          dma_ctrl_done_t       <= '0';
           next_item_valid_o     <= '0';
           completion_error      <= '0';
-          rx_error_o            <= '0';
+          rx_error_t            <= '0';
 
       end case;
     end if;
   end process p_read_req_fsm;
+
+  ------------------------------------------------------------------------------
+  -- Pipeline control signals
+  ------------------------------------------------------------------------------
+  p_ctrl_pipe : process (clk_i, rst_n_i)
+  begin
+    if (rst_n_i = c_RST_ACTIVE) then
+      rx_error_o      <= '0';
+      dma_ctrl_done_o <= '0';
+    elsif rising_edge(clk_i) then
+      rx_error_o      <= rx_error_t;
+      dma_ctrl_done_o <= dma_ctrl_done_t;
+    end if;
+  end process p_ctrl_pipe;
 
   ------------------------------------------------------------------------------
   -- Received data counter
@@ -448,7 +464,7 @@ begin
         if (p2l_dma_current_state = P2L_IDLE) then
           -- dma_ctrl_target_addr_i is a byte address and target_addr_cnt is a
           -- 32-bit word address
-          target_addr_cnt <= unsigned(dma_ctrl_carrier_addr_i(31 downto 2));
+          target_addr_cnt      <= unsigned(dma_ctrl_carrier_addr_i(31 downto 2));
           -- stores byte swap info for the current DMA transfer
           to_wb_fifo_byte_swap <= dma_ctrl_byte_swap_i;
         else
