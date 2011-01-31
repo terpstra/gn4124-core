@@ -79,7 +79,8 @@ entity l2p_dma_master is
       l2p_dma_stb_o   : out std_logic;                      -- Read or write strobe
       l2p_dma_we_o    : out std_logic;                      -- Write
       l2p_dma_ack_i   : in  std_logic;                      -- Acknowledge
-      l2p_dma_stall_i : in  std_logic                       -- for pipelined Wishbone
+      l2p_dma_stall_i : in  std_logic;                      -- for pipelined Wishbone
+      p2l_dma_cyc_i   : in  std_logic                       -- P2L dma wb cycle (for bus arbitration)
       );
 end l2p_dma_master;
 
@@ -523,7 +524,8 @@ begin
   -- Read address FIFO
   addr_fifo_rd <= not(addr_fifo_empty)
                   and not(l2p_dma_stall_i)
-                  and not(data_fifo_full);
+                  and not(data_fifo_full)
+                  and not(p2l_dma_cyc_i);
 
   -- Wishbone master process
   p_wb_master : process (l2p_dma_clk_i, rst_n_i)

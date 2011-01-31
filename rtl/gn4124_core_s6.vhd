@@ -622,7 +622,8 @@ begin
       l2p_dma_stb_o   => l2p_dma_stb,
       l2p_dma_we_o    => l2p_dma_we,
       l2p_dma_ack_i   => l2p_dma_ack,
-      l2p_dma_stall_i => l2p_dma_stall
+      l2p_dma_stall_i => l2p_dma_stall,
+      p2l_dma_cyc_i   => p2l_dma_cyc
       );
 
   -----------------------------------------------------------------------------
@@ -675,6 +676,7 @@ begin
       p2l_dma_we_o    => p2l_dma_we,
       p2l_dma_ack_i   => p2l_dma_ack,
       p2l_dma_stall_i => p2l_dma_stall,
+      l2p_dma_cyc_i   => l2p_dma_cyc,
 
       next_item_carrier_addr_o => next_item_carrier_addr,
       next_item_host_addr_h_o  => next_item_host_addr_h,
