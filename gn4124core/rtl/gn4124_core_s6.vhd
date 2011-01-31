@@ -212,12 +212,18 @@ architecture rtl of gn4124_core is
   signal arb_ser_data   : std_logic_vector(31 downto 0);
 
   -- Local bus control
-  signal l_wr_rdy_t   : std_logic_vector(1 downto 0);
-  signal l_wr_rdy     : std_logic_vector(1 downto 0);
-  signal p_rd_d_rdy_t : std_logic_vector(1 downto 0);
-  signal p_rd_d_rdy   : std_logic_vector(1 downto 0);
-  signal l2p_rdy_t    : std_logic;
-  signal l2p_rdy      : std_logic;
+  signal l_wr_rdy_t    : std_logic_vector(1 downto 0);
+  signal l_wr_rdy_t2   : std_logic_vector(1 downto 0);
+  signal l_wr_rdy      : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy_t  : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy_t2 : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy    : std_logic_vector(1 downto 0);
+  signal l2p_rdy_t     : std_logic;
+  signal l2p_rdy_t2    : std_logic;
+  signal l2p_rdy       : std_logic;
+  signal l2p_edb       : std_logic;
+  signal l2p_edb_t     : std_logic;
+  signal l2p_edb_t2    : std_logic;
 
   -------------------------------------------------------------
   -- CSR wishbone master to arbiter
@@ -603,7 +609,7 @@ begin
       ldm_arb_req_o    => ldm_arb_req,
       arb_ldm_gnt_i    => arb_ldm_gnt,
 
-      l2p_edb_o  => l2p_edb_o,
+      l2p_edb_o  => l2p_edb,
       l_wr_rdy_i => l_wr_rdy,
       l2p_rdy_i  => l2p_rdy,
 
@@ -726,24 +732,38 @@ begin
   p_l2p_status_sync : process (sys_clk, rst_n)
   begin
     if(rst_n = c_RST_ACTIVE) then
-      l_wr_rdy_t   <= "00";
-      l_wr_rdy     <= "00";
-      p_rd_d_rdy_t <= "00";
-      p_rd_d_rdy   <= "00";
-      l2p_rdy_t    <= '0';
-      l2p_rdy      <= '0';
+      l_wr_rdy_t    <= "00";
+      l_wr_rdy_t2   <= "00";
+      l_wr_rdy      <= "00";
+      p_rd_d_rdy_t  <= "00";
+      p_rd_d_rdy_t2 <= "00";
+      p_rd_d_rdy    <= "00";
+      l2p_rdy_t     <= '0';
+      l2p_rdy_t2    <= '0';
+      l2p_rdy       <= '0';
+      l2p_edb_o     <= '0';
+      l2p_edb_t     <= '0';
+      l2p_edb_t2    <= '0';
     elsif rising_edge(sys_clk) then
       -- must be checked before l2p_dma_master issues a master write
-      l_wr_rdy_t <= l_wr_rdy_i;
-      l_wr_rdy   <= l_wr_rdy_t;
+      l_wr_rdy_t  <= l_wr_rdy_i;
+      l_wr_rdy_t2 <= l_wr_rdy_t;
+      l_wr_rdy    <= l_wr_rdy_t2;
 
       -- must be checked before wbmaster32 sends read completion with data
-      p_rd_d_rdy_t <= p_rd_d_rdy_i;
-      p_rd_d_rdy   <= p_rd_d_rdy_t;
+      p_rd_d_rdy_t  <= p_rd_d_rdy_i;
+      p_rd_d_rdy_t2 <= p_rd_d_rdy_t;
+      p_rd_d_rdy    <= p_rd_d_rdy_t2;
 
       -- when de-asserted, l2p_dma_master must stop sending data (de-assert l2p_valid) within 3 (or 7 ?) clock cycles
-      l2p_rdy_t <= l2p_rdy_i;
-      l2p_rdy   <= l2p_rdy_t;
+      l2p_rdy_t  <= l2p_rdy_i;
+      l2p_rdy_t2 <= l2p_rdy_t;
+      l2p_rdy    <= l2p_rdy_t2;
+
+      --assert when packet badly ends (e.g. dma abort)
+      l2p_edb_t  <= l2p_edb;
+      l2p_edb_t2 <= l2p_edb_t;
+      l2p_edb_o  <= l2p_edb_t2;
     end if;
   end process p_l2p_status_sync;
 
