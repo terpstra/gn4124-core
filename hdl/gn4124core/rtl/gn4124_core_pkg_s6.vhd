@@ -312,7 +312,8 @@ package gn4124_core_pkg is
         l2p_dma_stb_o   : out std_logic;                      -- Read or write strobe
         l2p_dma_we_o    : out std_logic;                      -- Write
         l2p_dma_ack_i   : in  std_logic;                      -- Acknowledge
-        l2p_dma_stall_i : in  std_logic                       -- for pipelined Wishbone
+        l2p_dma_stall_i : in  std_logic;                      -- for pipelined Wishbone
+        p2l_dma_cyc_i   : in  std_logic                       -- P2L dma wb cycle (for bus arbitration)
         );
   end component;  -- l2p_dma_master
 
@@ -383,6 +384,7 @@ package gn4124_core_pkg is
         p2l_dma_we_o    : out std_logic;                      -- Write
         p2l_dma_ack_i   : in  std_logic;                      -- Acknowledge
         p2l_dma_stall_i : in  std_logic;                      -- for pipelined Wishbone
+        l2p_dma_cyc_i   : in  std_logic;                      -- L2P dma wb cycle (for bus arbitration)
 
         ---------------------------------------------------------
         -- From P2L DMA MASTER

@@ -97,6 +97,7 @@ entity p2l_dma_master is
       p2l_dma_we_o    : out std_logic;                      -- Write
       p2l_dma_ack_i   : in  std_logic;                      -- Acknowledge
       p2l_dma_stall_i : in  std_logic;                      -- for pipelined Wishbone
+      l2p_dma_cyc_i   : in  std_logic;                      -- L2P dma wb cycle (for bus arbitration)
 
       ---------------------------------------------------------
       -- To the DMA controller
@@ -513,7 +514,8 @@ begin
 
   -- fifo read
   to_wb_fifo_rd <= not(to_wb_fifo_empty)
-                   and not(p2l_dma_stall_i);
+                   and not(p2l_dma_stall_i)
+                   and not(l2p_dma_cyc_i);
 
   -- write only
   p2l_dma_we_o <= '1';
