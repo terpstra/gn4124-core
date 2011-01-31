@@ -83,6 +83,9 @@ architecture rtl of l2p_arbiter is
   signal arb_pdm_gnt       : std_logic;
   signal arb_ldm_gnt       : std_logic;
   signal eop               : std_logic;  -- End of packet
+  signal arb_ser_valid_t   : std_logic;
+  signal arb_ser_dframe_t  : std_logic;
+  signal arb_ser_data_t    : std_logic_vector(31 downto 0);
 
 
 begin
@@ -138,27 +141,40 @@ begin
   process (clk_i, rst_n_i)
   begin
     if rst_n_i = '0' then
+      arb_ser_valid_t  <= '0';
+      arb_ser_dframe_t <= '0';
+      arb_ser_data_t   <= (others => '0');
+    elsif rising_edge(clk_i) then
+      if arb_wbm_gnt = '1' then
+        arb_ser_valid_t  <= wbm_arb_valid_i;
+        arb_ser_dframe_t <= wbm_arb_dframe_i;
+        arb_ser_data_t   <= wbm_arb_data_i;
+      elsif arb_pdm_gnt = '1' then
+        arb_ser_valid_t  <= pdm_arb_valid_i;
+        arb_ser_dframe_t <= pdm_arb_dframe_i;
+        arb_ser_data_t   <= pdm_arb_data_i;
+      elsif arb_ldm_gnt = '1' then
+        arb_ser_valid_t  <= ldm_arb_valid_i;
+        arb_ser_dframe_t <= ldm_arb_dframe_i;
+        arb_ser_data_t   <= ldm_arb_data_i;
+      else
+        arb_ser_valid_t  <= '0';
+        arb_ser_dframe_t <= '0';
+        arb_ser_data_t   <= (others => '0');
+      end if;
+    end if;
+  end process;
+
+  process (clk_i, rst_n_i)
+  begin
+    if rst_n_i = '0' then
       arb_ser_valid_o  <= '0';
       arb_ser_dframe_o <= '0';
       arb_ser_data_o   <= (others => '0');
     elsif rising_edge(clk_i) then
-      if arb_wbm_gnt = '1' then
-        arb_ser_valid_o  <= wbm_arb_valid_i;
-        arb_ser_dframe_o <= wbm_arb_dframe_i;
-        arb_ser_data_o   <= wbm_arb_data_i;
-      elsif arb_pdm_gnt = '1' then
-        arb_ser_valid_o  <= pdm_arb_valid_i;
-        arb_ser_dframe_o <= pdm_arb_dframe_i;
-        arb_ser_data_o   <= pdm_arb_data_i;
-      elsif arb_ldm_gnt = '1' then
-        arb_ser_valid_o  <= ldm_arb_valid_i;
-        arb_ser_dframe_o <= ldm_arb_dframe_i;
-        arb_ser_data_o   <= ldm_arb_data_i;
-      else
-        arb_ser_valid_o  <= '0';
-        arb_ser_dframe_o <= '0';
-        arb_ser_data_o   <= (others => '0');
-      end if;
+      arb_ser_valid_o  <= arb_ser_valid_t;
+      arb_ser_dframe_o <= arb_ser_dframe_t;
+      arb_ser_data_o   <= arb_ser_data_t;
     end if;
   end process;
 
