@@ -104,6 +104,9 @@ architecture rtl of p2l_des is
   signal p2l_valid_t        : std_logic_vector(1 downto 0);
   signal p2l_dframe_t       : std_logic_vector(1 downto 0);
   signal p2l_data_t         : std_logic_vector(p2l_data_o'range);
+  signal p2l_valid_t2       : std_logic;
+  signal p2l_dframe_t2      : std_logic;
+  signal p2l_data_t2        : std_logic_vector(p2l_data_o'range);
   signal p2l_data_bitslip   : std_logic_vector(1 downto 0);
   signal p2l_data_bitslip_p : std_logic;
   --signal p2l_ctrl_v   : std_logic_vector(1 downto 0);
@@ -209,13 +212,19 @@ begin
   p_in_sys_sync : process (sys_clk_i, rst_n_i)
   begin
     if rst_n_i = c_RST_ACTIVE then
-      p2l_data_o   <= (others => '0');
-      p2l_dframe_o <= '0';
-      p2l_valid_o  <= '0';
+      p2l_data_o    <= (others => '0');
+      p2l_dframe_o  <= '0';
+      p2l_valid_o   <= '0';
+      p2l_data_t2   <= (others => '0');
+      p2l_dframe_t2 <= '0';
+      p2l_valid_t2  <= '0';
     elsif rising_edge(sys_clk_i) then
-      p2l_data_o   <= p2l_data_t;
-      p2l_dframe_o <= p2l_dframe_t(0);
-      p2l_valid_o  <= p2l_valid_t(0);
+      p2l_data_t2   <= p2l_data_t;
+      p2l_dframe_t2 <= p2l_dframe_t(0);
+      p2l_valid_t2  <= p2l_valid_t(0);
+      p2l_data_o    <= p2l_data_t2;
+      p2l_dframe_o  <= p2l_dframe_t2;
+      p2l_valid_o   <= p2l_valid_t2;
     end if;
   end process p_in_sys_sync;
 
