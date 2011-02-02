@@ -129,6 +129,7 @@ architecture behaviour of l2p_dma_master is
   signal wb_read_cnt   : unsigned(6 downto 0);
   signal wb_ack_cnt    : unsigned(6 downto 0);
   signal l2p_dma_cyc_t : std_logic;
+  signal l2p_dma_stb_t : std_logic;
 
   -- L2P DMA Master FSM
   type l2p_dma_state_type is (L2P_IDLE, L2P_WAIT_DATA, L2P_HEADER, L2P_ADDR_H,
@@ -424,13 +425,15 @@ begin
         when L2P_WAIT_DATA =>
           ldm_arb_valid_o <= '0';
           if(data_fifo_empty = '0') then
-            -- data ready to be send again
-            l2p_dma_current_state <= L2P_DATA;
-          elsif(l2p_data_cnt <= 2) then
-            -- Only one 32-bit data word to send
-            l2p_dma_current_state <= L2P_LAST_DATA;
-            -- Stop reading from fifo
-            data_fifo_rd          <= '0';
+            if(l2p_data_cnt <= 2) then
+              -- Only one 32-bit data word to send
+              l2p_dma_current_state <= L2P_LAST_DATA;
+              -- Stop reading from fifo
+              data_fifo_rd          <= '0';
+            else
+              -- data ready to be send again
+              l2p_dma_current_state <= L2P_DATA;
+            end if;
           end if;
 
         when L2P_LAST_DATA =>
@@ -532,7 +535,7 @@ begin
   begin
     if (rst_n_i = c_RST_ACTIVE) then
       l2p_dma_adr_o <= (others => '0');
-      l2p_dma_stb_o <= '0';
+      l2p_dma_stb_t <= '0';
       l2p_dma_cyc_t <= '0';
       l2p_dma_sel_o <= (others => '0');
     elsif rising_edge(l2p_dma_clk_i) then
@@ -541,11 +544,11 @@ begin
         l2p_dma_adr_o <= addr_fifo_dout;
       end if;
       -- stb and sel signals management
-      if (addr_fifo_valid = '1' or l2p_dma_stall_i = '1') then
-        l2p_dma_stb_o <= '1';
+      if (addr_fifo_valid = '1') then --or (l2p_dma_stall_i = '1' and l2p_dma_stb_t = '1') then
+        l2p_dma_stb_t <= '1';
         l2p_dma_sel_o <= (others => '1');
       else
-        l2p_dma_stb_o <= '0';
+        l2p_dma_stb_t <= '0';
         l2p_dma_sel_o <= (others => '0');
       end if;
       -- cyc signal management
@@ -560,6 +563,7 @@ begin
 
   -- for read back
   l2p_dma_cyc_o <= l2p_dma_cyc_t;
+  l2p_dma_stb_o <= l2p_dma_stb_t;
 
   -- Wishbone read cycle counter
   p_wb_read_cnt : process (l2p_dma_clk_i, rst_n_i)
