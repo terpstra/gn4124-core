@@ -707,12 +707,12 @@ begin
       dma_stb_o <= p2l_dma_stb;
       dma_we_o  <= p2l_dma_we;
     else
-      dma_adr_o <= (others => 'X');
-      dma_dat_o <= (others => 'X');
-      dma_sel_o <= (others => 'X');
+      dma_adr_o <= (others => '0');
+      dma_dat_o <= (others => '0');
+      dma_sel_o <= (others => '0');
       dma_cyc_o <= '0';
       dma_stb_o <= '0';
-      dma_we_o  <= 'X';
+      dma_we_o  <= '0';
     end if;
   end process p_dma_wb_mux;
 
