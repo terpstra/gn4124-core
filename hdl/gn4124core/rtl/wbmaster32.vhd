@@ -83,15 +83,15 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- CSR wishbone interface
-      wb_clk_i : in  std_logic;                                                  -- Wishbone bus clock
+      wb_clk_i : in  std_logic;                                                               -- Wishbone bus clock
       wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);  -- Address
-      wb_dat_o : out std_logic_vector(31 downto 0);                              -- Data out
-      wb_sel_o : out std_logic_vector(3 downto 0);                               -- Byte select
-      wb_stb_o : out std_logic;                                                  -- Strobe
-      wb_we_o  : out std_logic;                                                  -- Write
-      wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                -- Cycle
-      wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);           -- Data in
-      wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                 -- Acknowledge
+      wb_dat_o : out std_logic_vector(31 downto 0);                                           -- Data out
+      wb_sel_o : out std_logic_vector(3 downto 0);                                            -- Byte select
+      wb_stb_o : out std_logic;                                                               -- Strobe
+      wb_we_o  : out std_logic;                                                               -- Write
+      wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                             -- Cycle
+      wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);                        -- Data in
+      wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                              -- Acknowledge
       );
 end wbmaster32;
 
@@ -388,6 +388,7 @@ begin
           wishbone_current_state <= WB_WAIT_ACK;
 
         when WB_WAIT_ACK =>
+          wb_stb_t <= '0';
           if (wb_ack_t = '1') then
             -- for read cycles write read data to fifo
             if (wb_we_t = '0') then
@@ -395,7 +396,6 @@ begin
               from_wb_fifo_wr  <= '1';
             end if;
             -- end of the bus cycle
-            wb_stb_t               <= '0';
             wb_cyc_t               <= '0';
             wishbone_current_state <= WB_IDLE;
           end if;
