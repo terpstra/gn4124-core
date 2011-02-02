@@ -530,12 +530,10 @@ package body gn4124_core_pkg is
   begin
     if N <= 2 then
       return 1;
+    elsif N mod 2 = 0 then
+      return 1 + log2_ceil(N/2);
     else
-      if N mod 2 = 0 then
-        return 1 + log2_ceil(N/2);
-      else
-        return 1 + log2_ceil(N+1/2);
-      end if;
+      return 1 + log2_ceil((N+1)/2);
     end if;
   end;
 
