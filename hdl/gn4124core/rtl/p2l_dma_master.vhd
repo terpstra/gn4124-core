@@ -166,6 +166,7 @@ architecture behaviour of p2l_dma_master is
   signal wb_write_cnt  : unsigned(6 downto 0);
   signal wb_ack_cnt    : unsigned(6 downto 0);
   signal p2l_dma_cyc_t : std_logic;
+  signal p2l_dma_stb_t : std_logic;
 
   -- P2L DMA read request FSM
   type   p2l_dma_state_type is (P2L_IDLE, P2L_HEADER, P2L_ADDR_H, P2L_ADDR_L, P2L_WAIT_READ_COMPLETION);
@@ -525,7 +526,7 @@ begin
   begin
     if (rst_n_i = c_RST_ACTIVE) then
       p2l_dma_cyc_t <= '0';
-      p2l_dma_stb_o <= '0';
+      p2l_dma_stb_t <= '0';
       p2l_dma_sel_o <= "0000";
       p2l_dma_adr_o <= (others => '0');
       p2l_dma_dat_o <= (others => '0');
@@ -536,11 +537,11 @@ begin
         p2l_dma_dat_o <= to_wb_fifo_dout(31 downto 0);
       end if;
       -- stb and sel signals management
-      if (to_wb_fifo_valid = '1' or p2l_dma_stall_i = '1') then
-        p2l_dma_stb_o <= '1';
+      if (to_wb_fifo_valid = '1') then --or (p2l_dma_stall_i = '1' and p2l_dma_stb_t = '1') then
+        p2l_dma_stb_t <= '1';
         p2l_dma_sel_o <= (others => '1');
       else
-        p2l_dma_stb_o <= '0';
+        p2l_dma_stb_t <= '0';
         p2l_dma_sel_o <= (others => '0');
       end if;
       -- cyc signal management
@@ -555,6 +556,7 @@ begin
 
   -- for read back
   p2l_dma_cyc_o <= p2l_dma_cyc_t;
+  p2l_dma_stb_o <= p2l_dma_stb_t;
 
   -- Wishbone write cycle counter
   p_wb_write_cnt : process (p2l_dma_clk_i, rst_n_i)
