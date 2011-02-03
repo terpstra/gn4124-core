@@ -262,7 +262,7 @@ begin
         else
           l2p_len_cnt <= (others => '0');
         end if;
-      elsif (l2p_dma_current_state = L2P_DATA) then
+      elsif (l2p_dma_current_state = L2P_DATA and data_fifo_valid = '1') then
         l2p_data_cnt <= l2p_data_cnt - 1;
       elsif (l2p_last_packet = '0' and l2p_dma_current_state = L2P_LAST_DATA) then
         -- load the host address of the next packet
@@ -382,9 +382,14 @@ begin
           end if;
 
         when L2P_DATA =>
-          -- send data with byte swap if requested
-          ldm_arb_data_o  <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
-          ldm_arb_valid_o <= '1';
+          if (data_fifo_valid = '1') then
+            -- send data with byte swap if requested
+            ldm_arb_data_o  <= f_byte_swap(g_BYTE_SWAP, data_fifo_dout, l2p_byte_swap);
+            ldm_arb_valid_o <= '1';
+          else
+            ldm_arb_valid_o <= '0';
+          end if;
+
           if (dma_ctrl_abort_i = '1') then
             l2p_edb_o             <= '1';
             l2p_dma_current_state <= L2P_IDLE;
@@ -425,7 +430,7 @@ begin
         when L2P_WAIT_DATA =>
           ldm_arb_valid_o <= '0';
           if(data_fifo_empty = '0') then
-            if(l2p_data_cnt <= 2) then
+            if(l2p_data_cnt <= 1) then
               -- Only one 32-bit data word to send
               l2p_dma_current_state <= L2P_LAST_DATA;
               -- Stop reading from fifo
@@ -544,7 +549,7 @@ begin
         l2p_dma_adr_o <= addr_fifo_dout;
       end if;
       -- stb and sel signals management
-      if (addr_fifo_valid = '1') then --or (l2p_dma_stall_i = '1' and l2p_dma_stb_t = '1') then
+      if (addr_fifo_valid = '1') then   --or (l2p_dma_stall_i = '1' and l2p_dma_stb_t = '1') then
         l2p_dma_stb_t <= '1';
         l2p_dma_sel_o <= (others => '1');
       else
