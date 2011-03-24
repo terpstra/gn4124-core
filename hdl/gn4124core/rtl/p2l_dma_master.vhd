@@ -163,8 +163,8 @@ architecture behaviour of p2l_dma_master is
   signal to_wb_fifo_byte_swap : std_logic_vector(1 downto 0);
 
   -- wishbone
-  signal wb_write_cnt  : unsigned(6 downto 0);
-  signal wb_ack_cnt    : unsigned(6 downto 0);
+  signal wb_write_cnt  : unsigned(31 downto 0);
+  signal wb_ack_cnt    : unsigned(31 downto 0);
   signal p2l_dma_cyc_t : std_logic;
   signal p2l_dma_stb_t : std_logic;
 
@@ -537,7 +537,7 @@ begin
         p2l_dma_dat_o <= to_wb_fifo_dout(31 downto 0);
       end if;
       -- stb and sel signals management
-      if (to_wb_fifo_valid = '1') then --or (p2l_dma_stall_i = '1' and p2l_dma_stb_t = '1') then
+      if (to_wb_fifo_valid = '1') then  --or (p2l_dma_stall_i = '1' and p2l_dma_stb_t = '1') then
         p2l_dma_stb_t <= '1';
         p2l_dma_sel_o <= (others => '1');
       else
