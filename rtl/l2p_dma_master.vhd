@@ -126,8 +126,8 @@ architecture behaviour of l2p_dma_master is
   signal data_fifo_full  : std_logic;
 
   -- Wishbone
-  signal wb_read_cnt   : unsigned(6 downto 0);
-  signal wb_ack_cnt    : unsigned(6 downto 0);
+  signal wb_read_cnt   : unsigned(31 downto 0);
+  signal wb_ack_cnt    : unsigned(31 downto 0);
   signal l2p_dma_cyc_t : std_logic;
   signal l2p_dma_stb_t : std_logic;
 
@@ -582,7 +582,7 @@ begin
     end if;
   end process p_wb_read_cnt;
 
--- Wishbone ack counter
+  -- Wishbone ack counter
   p_wb_ack_cnt : process (l2p_dma_clk_i, rst_n_i)
   begin
     if (rst_n_i = c_RST_ACTIVE) then
