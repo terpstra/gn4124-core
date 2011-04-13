@@ -330,7 +330,7 @@ begin
           ldm_arb_dframe_o <= '0';
           l2p_edb_o        <= '0';
 
-          if (data_fifo_empty = '0' and l_wr_rdy_i = "11") then
+          if (data_fifo_empty = '0') then
             -- We have data to send -> prepare a packet, first the header
             l2p_dma_current_state <= L2P_HEADER;
             -- request access to PCIe bus
@@ -338,7 +338,7 @@ begin
           end if;
 
         when L2P_HEADER =>
-          if(arb_ldm_gnt_i = '1') then
+          if(arb_ldm_gnt_i = '1' and l_wr_rdy_i = "11") then
             -- clear access request to the arbiter
             -- access is granted until dframe is cleared
             ldm_arb_req_o    <= '0';
@@ -357,6 +357,9 @@ begin
               -- 1 cycle delay until data are available
               data_fifo_rd          <= '1';
             end if;
+          else
+            -- arbiter or GN4124 not ready to receive a new packet
+            ldm_arb_valid_o  <= '0';
           end if;
 
         when L2P_ADDR_H =>
