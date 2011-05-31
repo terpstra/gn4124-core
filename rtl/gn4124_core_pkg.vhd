@@ -4,16 +4,8 @@ use ieee.std_logic_1164.all;
 
 package gn4124_core_pkg is
 
-  function priv_log2_ceil(N : natural) return positive is
-  begin
-    if N <= 2 then
-      return 1;
-    elsif N mod 2 = 0 then
-      return 1 + priv_log2_ceil(N/2);
-    else
-      return 1 + priv_log2_ceil((N+1)/2);
-    end if;
-  end;
+  function priv_log2_ceil(N : natural) return positive;
+
 
   component gn4124_core
     generic (
@@ -69,5 +61,21 @@ package gn4124_core_pkg is
       dma_ack_i      : in  std_logic;
       dma_stall_i    : in  std_logic);
   end component;
+
+end gn4124_core_pkg;
+
+package body gn4124_core_pkg is
+
+    function priv_log2_ceil(N : natural) return positive  is
+  begin
+    if N <= 2 then
+      return 1;
+    elsif N mod 2 = 0 then
+      return 1 + priv_log2_ceil(N/2);
+    else
+      return 1 + priv_log2_ceil((N+1)/2);
+    end if;
+  end;
+
 
 end gn4124_core_pkg;
