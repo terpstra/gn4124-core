@@ -148,12 +148,17 @@ package gn4124_core_private_pkg is
 
 
 -----------------------------------------------------------------------------
+
+  
+
+  
   component wbmaster32
     generic
       (
         g_BAR0_APERTURE : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
                                           -- => number of bits to address periph on the board
-        g_WB_SLAVES_NB  : integer := 2
+        g_WB_SLAVES_NB  : integer := 2;
+        g_WB_MODE : string
         );
     port
       (
