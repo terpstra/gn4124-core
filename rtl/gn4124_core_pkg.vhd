@@ -1,3 +1,7 @@
+library ieee;
+
+use ieee.std_logic_1164.all;
+
 package gn4124_core_pkg is
 
   function priv_log2_ceil(N : natural) return positive is
