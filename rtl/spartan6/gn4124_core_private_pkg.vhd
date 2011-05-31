@@ -1,5 +1,5 @@
 --==============================================================================
---! @file gn4124_core_pkg_s6.vhd
+--! @file gn4124_core_private_pkg_s6.vhd
 --==============================================================================
 
 --! Standard library
@@ -28,7 +28,7 @@ use IEEE.NUMERIC_STD.all;
 --==============================================================================
 --! Package declaration
 --==============================================================================
-package gn4124_core_pkg is
+package gn4124_core_private_pkg is
 
 
 --==============================================================================
@@ -476,9 +476,9 @@ package gn4124_core_pkg is
   end component;
 
 
-end gn4124_core_pkg;
+end gn4124_core_private_pkg;
 
-package body gn4124_core_pkg is
+package body gn4124_core_private_pkg is
 
   -----------------------------------------------------------------------------
   -- Byte swap function
@@ -537,4 +537,4 @@ package body gn4124_core_pkg is
     end if;
   end;
 
-end gn4124_core_pkg;
+end gn4124_core_private_pkg;

@@ -43,6 +43,7 @@ entity gn4124_core is
     g_BAR0_APERTURE     : integer := 20;     -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
                                              -- => number of bits to address periph on the board
     g_CSR_WB_SLAVES_NB  : integer := 1;      -- Number of CSR wishbone slaves
+    g_CSR_WB_MODE : string := "pipelined";
     g_DMA_WB_SLAVES_NB  : integer := 1;      -- Number of DMA wishbone slaves
     g_DMA_WB_ADDR_WIDTH : integer := 26      -- DMA wishbone address bus width
     );
@@ -471,7 +472,8 @@ begin
     generic map
     (
       g_BAR0_APERTURE => g_BAR0_APERTURE,
-      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1)  -- +1 for the DMA controller (wb slave always present)
+      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1),
+      g_WB_MODE => g_CSR_WB_MODE -- +1 for the DMA controller (wb slave always present)
       )
     port map
     (

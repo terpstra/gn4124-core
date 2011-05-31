@@ -29,7 +29,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
-use work.gn4124_core_pkg.all;
+use work.gn4124_core_private_pkg.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -40,12 +40,14 @@ use UNISIM.vcomponents.all;
 --==============================================================================
 entity gn4124_core is
   generic(
-    g_IS_SPARTAN6       : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
-    g_BAR0_APERTURE     : integer := 20;     -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                             -- => number of bits to address periph on the board
-    g_CSR_WB_SLAVES_NB  : integer := 1;      -- Number of CSR wishbone slaves
-    g_DMA_WB_SLAVES_NB  : integer := 1;      -- Number of DMA wishbone slaves
-    g_DMA_WB_ADDR_WIDTH : integer := 26      -- DMA wishbone address bus width
+    g_IS_SPARTAN6      : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
+    g_BAR0_APERTURE    : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                         -- => number of bits to address periph on the board
+    g_CSR_WB_SLAVES_NB : integer := 1;  -- Number of CSR wishbone slaves
+    g_CSR_WB_MODE      : string  := "pipelined";
+
+    g_DMA_WB_SLAVES_NB  : integer := 1;  -- Number of DMA wishbone slaves
+    g_DMA_WB_ADDR_WIDTH : integer := 26  -- DMA wishbone address bus width
     );
   port
     (
@@ -57,46 +59,46 @@ entity gn4124_core is
       -- P2L Direction
       --
       -- Source Sync DDR related signals
-      p2l_clk_p_i  : in  std_logic;                      -- Receiver Source Synchronous Clock+
-      p2l_clk_n_i  : in  std_logic;                      -- Receiver Source Synchronous Clock-
+      p2l_clk_p_i  : in  std_logic;     -- Receiver Source Synchronous Clock+
+      p2l_clk_n_i  : in  std_logic;     -- Receiver Source Synchronous Clock-
       p2l_data_i   : in  std_logic_vector(15 downto 0);  -- Parallel receive data
-      p2l_dframe_i : in  std_logic;                      -- Receive Frame
-      p2l_valid_i  : in  std_logic;                      -- Receive Data Valid
+      p2l_dframe_i : in  std_logic;     -- Receive Frame
+      p2l_valid_i  : in  std_logic;     -- Receive Data Valid
       -- P2L Control
-      p2l_rdy_o    : out std_logic;                      -- Rx Buffer Full Flag
-      p_wr_req_i   : in  std_logic_vector(1 downto 0);   -- PCIe Write Request
-      p_wr_rdy_o   : out std_logic_vector(1 downto 0);   -- PCIe Write Ready
-      rx_error_o   : out std_logic;                      -- Receive Error
-      vc_rdy_i     : in  std_logic_vector(1 downto 0);   -- Virtual channel ready
+      p2l_rdy_o    : out std_logic;     -- Rx Buffer Full Flag
+      p_wr_req_i   : in  std_logic_vector(1 downto 0);  -- PCIe Write Request
+      p_wr_rdy_o   : out std_logic_vector(1 downto 0);  -- PCIe Write Ready
+      rx_error_o   : out std_logic;     -- Receive Error
+      vc_rdy_i     : in  std_logic_vector(1 downto 0);  -- Virtual channel ready
 
       ---------------------------------------------------------
       -- L2P Direction
       --
       -- Source Sync DDR related signals
-      l2p_clk_p_o  : out std_logic;                      -- Transmitter Source Synchronous Clock+
-      l2p_clk_n_o  : out std_logic;                      -- Transmitter Source Synchronous Clock-
+      l2p_clk_p_o  : out std_logic;  -- Transmitter Source Synchronous Clock+
+      l2p_clk_n_o  : out std_logic;  -- Transmitter Source Synchronous Clock-
       l2p_data_o   : out std_logic_vector(15 downto 0);  -- Parallel transmit data
-      l2p_dframe_o : out std_logic;                      -- Transmit Data Frame
-      l2p_valid_o  : out std_logic;                      -- Transmit Data Valid
-      l2p_edb_o    : out std_logic;                      -- Packet termination and discard
+      l2p_dframe_o : out std_logic;     -- Transmit Data Frame
+      l2p_valid_o  : out std_logic;     -- Transmit Data Valid
+      l2p_edb_o    : out std_logic;     -- Packet termination and discard
       -- L2P Control
-      l2p_rdy_i    : in  std_logic;                      -- Tx Buffer Full Flag
-      l_wr_rdy_i   : in  std_logic_vector(1 downto 0);   -- Local-to-PCIe Write
-      p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);   -- PCIe-to-Local Read Response Data Ready
-      tx_error_i   : in  std_logic;                      -- Transmit Error
+      l2p_rdy_i    : in  std_logic;     -- Tx Buffer Full Flag
+      l_wr_rdy_i   : in  std_logic_vector(1 downto 0);  -- Local-to-PCIe Write
+      p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);  -- PCIe-to-Local Read Response Data Ready
+      tx_error_i   : in  std_logic;     -- Transmit Error
 
       ---------------------------------------------------------
       -- Interrupt interface
       dma_irq_o : out std_logic_vector(1 downto 0);  -- Interrupts sources to IRQ manager
-      irq_p_i   : in  std_logic;                     -- Interrupt request pulse from IRQ manager
-      irq_p_o   : out std_logic;                     -- Interrupt request pulse to GN4124 GPIO
+      irq_p_i   : in  std_logic;  -- Interrupt request pulse from IRQ manager
+      irq_p_o   : out std_logic;  -- Interrupt request pulse to GN4124 GPIO
 
       ---------------------------------------------------------
       -- Target interface (CSR wishbone master)
       wb_clk_i : in  std_logic;
       wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_CSR_WB_SLAVES_NB+1)-1 downto 0);
-      wb_dat_o : out std_logic_vector(31 downto 0);                         -- Data out
-      wb_sel_o : out std_logic_vector(3 downto 0);                          -- Byte select
+      wb_dat_o : out std_logic_vector(31 downto 0);  -- Data out
+      wb_sel_o : out std_logic_vector(3 downto 0);   -- Byte select
       wb_stb_o : out std_logic;
       wb_we_o  : out std_logic;
       wb_cyc_o : out std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
@@ -107,13 +109,13 @@ entity gn4124_core is
       -- DMA interface (Pipelined wishbone master)
       dma_clk_i   : in  std_logic;
       dma_adr_o   : out std_logic_vector(31 downto 0);
-      dma_dat_o   : out std_logic_vector(31 downto 0);                         -- Data out
-      dma_sel_o   : out std_logic_vector(3 downto 0);                          -- Byte select
+      dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
+      dma_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
       dma_stb_o   : out std_logic;
       dma_we_o    : out std_logic;
-      dma_cyc_o   : out std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
+      dma_cyc_o   : out std_logic;  --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
       dma_dat_i   : in  std_logic_vector((32*g_DMA_WB_SLAVES_NB)-1 downto 0);  -- Data in
-      dma_ack_i   : in  std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
+      dma_ack_i   : in  std_logic;  --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
       dma_stall_i : in  std_logic--_vector(g_DMA_WB_SLAVES_NB-1 downto 0)        -- for pipelined Wishbone
       );
 end gn4124_core;
@@ -284,6 +286,11 @@ architecture rtl of gn4124_core is
 begin
 
 
+  gen_check_CSR_WB_MODE: if(g_CSR_WB_MODE /= "classic" and g_CSR_WB_MODE /= "pipelined") generate
+    report "gn4124_core: g_CSR_WB_MODE generic must be either set to 'classic' or 'pipelined'" severity failure;
+  end generate gen_check_CSR_WB_MODE;
+  
+    
   -----------------------------------------------------------------------------
   -- The Internal Core Clock is Derived from the P2L_CLK
   -----------------------------------------------------------------------------
@@ -436,7 +443,8 @@ begin
     generic map
     (
       g_BAR0_APERTURE => g_BAR0_APERTURE,
-      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1)  -- +1 for the DMA controller (wb slave always present)
+      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1),  -- +1 for the DMA controller (wb slave always present)
+      g_WB_MODE       => g_CSR_WB_MODE
       )
     port map
     (

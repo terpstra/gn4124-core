@@ -16,10 +16,12 @@
 -- description: Provides a pipelined Wishbone interface to performs DMA
 --              transfers from local application to PCI express host.
 --
--- dependencies: Xilinx FIFOs (fifo_32x512.xco)
+-- dependencies:  general-cores library (genrams package)
 --
 --------------------------------------------------------------------------------
 -- last changes: see svn log
+--               10-05-1011 (twlostow) Replaced Xilinx Coregen FIFOs with genrams
+--               library cores.
 --------------------------------------------------------------------------------
 -- TODO: - byte enable support
 --------------------------------------------------------------------------------
@@ -27,8 +29,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
-use work.gn4124_core_pkg.all;
 
+use work.gn4124_core_private_pkg.all;
+use work.genram_pkg.all;
 
 entity l2p_dma_master is
   generic (
@@ -96,8 +99,8 @@ architecture behaviour of l2p_dma_master is
   -- Allowed c_L2P_MAX_PAYLOAD values are: 32, 64, 128, 256, 512, 1024.
   -- This constant must be set according to the GN4124 and motherboard chipset capabilities.
   constant c_L2P_MAX_PAYLOAD      : unsigned(10 downto 0)        := to_unsigned(32, 11);  -- in 32-bit words
-  constant c_ADDR_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
-  constant c_DATA_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
+  constant c_ADDR_FIFO_FULL_THRES : integer := 500;
+  constant c_DATA_FIFO_FULL_THRES : integer := 500;
 
   -----------------------------------------------------------------------------
   -- Signals declaration
@@ -108,7 +111,7 @@ architecture behaviour of l2p_dma_master is
   signal dma_length_cnt  : unsigned(29 downto 0);
 
   -- Sync FIFOs
-  signal fifo_rst        : std_logic;
+  signal fifo_rst_n        : std_logic;
   signal addr_fifo_rd    : std_logic;
   signal addr_fifo_valid : std_logic;
   signal addr_fifo_empty : std_logic;
@@ -158,11 +161,11 @@ begin
   ------------------------------------------------------------------------------
   -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    fifo_rst <= not(rst_n_i);
+    fifo_rst_n <= rst_n_i;
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    fifo_rst <= rst_n_i;
+    fifo_rst_n <= (not rst_n_i);
   end generate;
 
   ------------------------------------------------------------------------------
@@ -486,37 +489,92 @@ begin
   ------------------------------------------------------------------------------
   -- FIFOs for transition between GN4124 core and wishbone clock domain
   ------------------------------------------------------------------------------
-  cmp_addr_fifo : fifo_32x512
-    port map (
-      rst                     => fifo_rst,
-      wr_clk                  => clk_i,
-      rd_clk                  => l2p_dma_clk_i,
-      din                     => addr_fifo_din,
-      wr_en                   => addr_fifo_wr,
-      rd_en                   => addr_fifo_rd,
-      prog_full_thresh_assert => c_ADDR_FIFO_FULL_THRES,
-      prog_full_thresh_negate => c_ADDR_FIFO_FULL_THRES,
-      dout                    => addr_fifo_dout,
-      full                    => open,
-      empty                   => addr_fifo_empty,
-      valid                   => addr_fifo_valid,
-      prog_full               => addr_fifo_full);
 
-  cmp_data_fifo : fifo_32x512
+  cmp_addr_fifo : generic_async_fifo
+    generic map (
+      g_data_width             => 32,
+      g_size                   => 512,
+      g_show_ahead             => false,
+      g_with_rd_empty          => true,
+      g_with_rd_full           => false,
+      g_with_rd_almost_empty   => false,
+      g_with_rd_almost_full    => false,
+      g_with_rd_count          => false,
+      g_with_wr_empty          => false,
+      g_with_wr_full           => false,
+      g_with_wr_almost_empty   => false,
+      g_with_wr_almost_full    => true,
+      g_with_wr_count          => false,
+      g_almost_empty_threshold => 0,
+      g_almost_full_threshold  => c_ADDR_FIFO_FULL_THRES)
     port map (
-      rst                     => fifo_rst,
-      wr_clk                  => l2p_dma_clk_i,
-      rd_clk                  => clk_i,
-      din                     => data_fifo_din,
-      wr_en                   => data_fifo_wr,
-      rd_en                   => data_fifo_rd,
-      prog_full_thresh_assert => c_DATA_FIFO_FULL_THRES,
-      prog_full_thresh_negate => c_DATA_FIFO_FULL_THRES,
-      dout                    => data_fifo_dout,
-      full                    => open,
-      empty                   => data_fifo_empty,
-      valid                   => data_fifo_valid,
-      prog_full               => data_fifo_full);
+      rst_n_i           => fifo_rst_n,
+      clk_wr_i          => clk_i,
+      d_i               => addr_fifo_din,
+      we_i              => addr_fifo_wr,
+      wr_empty_o        => open,
+      wr_full_o         => open,
+      wr_almost_empty_o => open,
+      wr_almost_full_o  => addr_fifo_full,
+      wr_count_o        => open,
+      clk_rd_i          => l2p_dma_clk_i,
+      q_o               => addr_fifo_dout,
+      rd_i              => addr_fifo_rd,
+      rd_empty_o        => addr_fifo_empty,
+      rd_full_o         => open,
+      rd_almost_empty_o => open,
+      rd_almost_full_o  => open,
+      rd_count_o        => open);
+
+  p_gen_addr_fifo_valid : process(l2p_dma_clk_i)
+  begin
+    if rising_edge(l2p_dma_clk_i) then
+      addr_fifo_valid <= addr_fifo_rd and (not addr_fifo_empty);
+    end if;
+  end process;
+
+  cmp_data_fifo : generic_async_fifo
+      generic map (
+      g_data_width             => 32,
+      g_size                   => 512,
+      g_show_ahead             => false,
+      g_with_rd_empty          => true,
+      g_with_rd_full           => false,
+      g_with_rd_almost_empty   => false,
+      g_with_rd_almost_full    => false,
+      g_with_rd_count          => false,
+      g_with_wr_empty          => false,
+      g_with_wr_full           => false,
+      g_with_wr_almost_empty   => false,
+      g_with_wr_almost_full    => true,
+      g_with_wr_count          => false,
+      g_almost_empty_threshold => 0,
+      g_almost_full_threshold  => c_DATA_FIFO_FULL_THRES)
+    port map (
+      rst_n_i           => fifo_rst_n,
+      clk_wr_i          => l2p_dma_clk_i,
+      d_i               => data_fifo_din,
+      we_i              => data_fifo_wr,
+      wr_empty_o        => open,
+      wr_full_o         => open,
+      wr_almost_empty_o => open,
+      wr_almost_full_o  => data_fifo_full,
+      wr_count_o        => open,
+      clk_rd_i          => clk_i,
+      q_o               => data_fifo_dout,
+      rd_i              => data_fifo_rd,
+      rd_empty_o        => data_fifo_empty,
+      rd_full_o         => open,
+      rd_almost_empty_o => open,
+      rd_almost_full_o  => open,
+      rd_count_o        => open);
+
+  p_gen_data_fifo_valid : process(clk_i)
+  begin
+    if rising_edge(clk_i) then
+      data_fifo_valid <= data_fifo_rd and (not data_fifo_empty);
+    end if;
+  end process;
 
   data_fifo_din <= l2p_dma_dat_i;
   -- latch data when receiving ack and the cycle has been initiated by this master

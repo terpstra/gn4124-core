@@ -17,10 +17,12 @@
 --              transfers from PCI express host to local application.
 --              This entity is also used to catch the next item in chained DMA.
 --
--- dependencies:
+-- dependencies: general-cores library (genrams package)
 --
 --------------------------------------------------------------------------------
 -- last changes: see svn log
+--               10-05-1011 (twlostow) Replaced Xilinx Coregen FIFOs with genrams
+--               library cores.
 --------------------------------------------------------------------------------
 -- TODO: - byte enable support.
 --------------------------------------------------------------------------------
@@ -28,8 +30,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
-use work.gn4124_core_pkg.all;
 
+use work.gn4124_core_private_pkg.all;
+use work.genram_pkg.all;
 
 entity p2l_dma_master is
   generic (
@@ -60,21 +63,21 @@ entity p2l_dma_master is
       -- From P2L Decoder (receive the read completion)
       --
       -- Header
-      pd_pdm_hdr_start_i   : in std_logic;                      -- Header strobe
-      pd_pdm_hdr_length_i  : in std_logic_vector(9 downto 0);   -- Packet length in 32-bit words multiples
-      pd_pdm_hdr_cid_i     : in std_logic_vector(1 downto 0);   -- Completion ID
-      pd_pdm_master_cpld_i : in std_logic;                      -- Master read completion with data
-      pd_pdm_master_cpln_i : in std_logic;                      -- Master read completion without data
+      pd_pdm_hdr_start_i   : in std_logic;  -- Header strobe
+      pd_pdm_hdr_length_i  : in std_logic_vector(9 downto 0);  -- Packet length in 32-bit words multiples
+      pd_pdm_hdr_cid_i     : in std_logic_vector(1 downto 0);  -- Completion ID
+      pd_pdm_master_cpld_i : in std_logic;  -- Master read completion with data
+      pd_pdm_master_cpln_i : in std_logic;  -- Master read completion without data
       --
       -- Data
-      pd_pdm_data_valid_i  : in std_logic;                      -- Indicates Data is valid
-      pd_pdm_data_last_i   : in std_logic;                      -- Indicates end of the packet
+      pd_pdm_data_valid_i  : in std_logic;  -- Indicates Data is valid
+      pd_pdm_data_last_i   : in std_logic;  -- Indicates end of the packet
       pd_pdm_data_i        : in std_logic_vector(31 downto 0);  -- Data
-      pd_pdm_be_i          : in std_logic_vector(3 downto 0);   -- Byte Enable for data
+      pd_pdm_be_i          : in std_logic_vector(3 downto 0);  -- Byte Enable for data
 
       ---------------------------------------------------------
       -- P2L control
-      p2l_rdy_o  : out std_logic;       -- De-asserted to pause transfer already in progress
+      p2l_rdy_o  : out std_logic;  -- De-asserted to pause transfer already in progress
       rx_error_o : out std_logic;       -- Asserted when transfer is aborted
 
       ---------------------------------------------------------
@@ -87,17 +90,17 @@ entity p2l_dma_master is
 
       ---------------------------------------------------------
       -- DMA Interface (Pipelined Wishbone)
-      p2l_dma_clk_i   : in  std_logic;                      -- Bus clock
+      p2l_dma_clk_i   : in  std_logic;  -- Bus clock
       p2l_dma_adr_o   : out std_logic_vector(31 downto 0);  -- Adress
       p2l_dma_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
       p2l_dma_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
       p2l_dma_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
-      p2l_dma_cyc_o   : out std_logic;                      -- Read or write cycle
-      p2l_dma_stb_o   : out std_logic;                      -- Read or write strobe
-      p2l_dma_we_o    : out std_logic;                      -- Write
-      p2l_dma_ack_i   : in  std_logic;                      -- Acknowledge
-      p2l_dma_stall_i : in  std_logic;                      -- for pipelined Wishbone
-      l2p_dma_cyc_i   : in  std_logic;                      -- L2P dma wb cycle (for bus arbitration)
+      p2l_dma_cyc_o   : out std_logic;  -- Read or write cycle
+      p2l_dma_stb_o   : out std_logic;  -- Read or write strobe
+      p2l_dma_we_o    : out std_logic;  -- Write
+      p2l_dma_ack_i   : in  std_logic;  -- Acknowledge
+      p2l_dma_stall_i : in  std_logic;  -- for pipelined Wishbone
+      l2p_dma_cyc_i   : in  std_logic;  -- L2P dma wb cycle (for bus arbitration)
 
       ---------------------------------------------------------
       -- To the DMA controller
@@ -123,8 +126,8 @@ architecture behaviour of p2l_dma_master is
   -- c_MAX_READ_REQ_SIZE is the maximum size (in 32-bit words) of the payload of a packet.
   -- Allowed c_MAX_READ_REQ_SIZE values are: 32, 64, 128, 256, 512, 1024.
   -- This constant must be set according to the GN4124 and motherboard chipset capabilities.
-  constant c_MAX_READ_REQ_SIZE     : unsigned(10 downto 0)        := to_unsigned(1024, 11);
-  constant c_TO_WB_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
+  constant c_MAX_READ_REQ_SIZE     : unsigned(10 downto 0) := to_unsigned(1024, 11);
+  constant c_TO_WB_FIFO_FULL_THRES : integer               := 500;
 
   -----------------------------------------------------------------------------
   -- Signals declaration
@@ -151,7 +154,8 @@ architecture behaviour of p2l_dma_master is
   signal target_addr_cnt : unsigned(29 downto 0);
 
   -- sync fifo
-  signal fifo_rst : std_logic;
+  signal fifo_rst   : std_logic;
+  signal fifo_rst_n : std_logic;
 
   signal to_wb_fifo_empty     : std_logic;
   signal to_wb_fifo_full      : std_logic;
@@ -169,7 +173,7 @@ architecture behaviour of p2l_dma_master is
   signal p2l_dma_stb_t : std_logic;
 
   -- P2L DMA read request FSM
-  type   p2l_dma_state_type is (P2L_IDLE, P2L_HEADER, P2L_ADDR_H, P2L_ADDR_L, P2L_WAIT_READ_COMPLETION);
+  type p2l_dma_state_type is (P2L_IDLE, P2L_HEADER, P2L_ADDR_H, P2L_ADDR_L, P2L_WAIT_READ_COMPLETION);
   signal p2l_dma_current_state : p2l_dma_state_type;
   signal p2l_data_cnt          : unsigned(10 downto 0);
 
@@ -178,15 +182,15 @@ begin
 
 
   ------------------------------------------------------------------------------
-  -- Active high reset for fifo
+  -- Active low reset for fifo
   ------------------------------------------------------------------------------
-  -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
+  -- Creates an active low reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    fifo_rst <= not(rst_n_i);
+    fifo_rst_n <= (rst_n_i);
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    fifo_rst <= rst_n_i;
+    fifo_rst_n <= not (rst_n_i);
   end generate;
 
   -- Errors to DMA controller
@@ -216,7 +220,7 @@ begin
           l2p_len_cnt   <= unsigned(dma_ctrl_len_i(31 downto 2));  -- dma_ctrl_len_i is in byte
           if (dma_ctrl_start_next_i = '1') then
             -- Catching next DMA item
-            is_next_item <= '1';                                   -- flag for data retrieve block
+            is_next_item <= '1';        -- flag for data retrieve block
           else
             -- P2L DMA transfer
             is_next_item <= '0';
@@ -253,16 +257,16 @@ begin
     end if;
   end process p_read_req;
 
-  s_l2p_header <= "000"                                -->  Traffic Class
-                  & '0'                                -->  Snoop
-                  & "000" & l2p_64b_address            -->  Packet type = read request (32 or 64 bits)
-                  & "1111"                             -->  LBE (Last Byte Enable)
-                  & "1111"                             -->  FBE (First Byte Enable)
-                  & "000"                              -->  Reserved
-                  & '0'                                -->  VC (Virtual Channel)
-                  & "01"                               -->  CID
+  s_l2p_header <= "000"                 -->  Traffic Class
+                  & '0'                 -->  Snoop
+                  & "000" & l2p_64b_address  -->  Packet type = read request (32 or 64 bits)
+                  & "1111"              -->  LBE (Last Byte Enable)
+                  & "1111"              -->  FBE (First Byte Enable)
+                  & "000"               -->  Reserved
+                  & '0'                 -->  VC (Virtual Channel)
+                  & "01"                -->  CID
                   & std_logic_vector(l2p_len_header);  -->  Length (in 32-bit words)
-                                                       --   0x000 => 1024 words (4096 bytes)
+                                        --   0x000 => 1024 words (4096 bytes)
 
   -----------------------------------------------------------------------------
   -- PCIe read request FSM
@@ -490,21 +494,64 @@ begin
   ------------------------------------------------------------------------------
   -- FIFOs for transition between GN4124 core and wishbone clock domain
   ------------------------------------------------------------------------------
-  cmp_to_wb_fifo : fifo_64x512
+  cmp_to_wb_fifo : generic_async_fifo
+    generic map (
+      g_data_width             => 64,
+      g_size                   => 512,
+      g_show_ahead             => false,
+      g_with_rd_empty          => true,
+      g_with_rd_full           => false,
+      g_with_rd_almost_empty   => false,
+      g_with_rd_almost_full    => false,
+      g_with_rd_count          => false,
+      g_with_wr_empty          => false,
+      g_with_wr_full           => false,
+      g_with_wr_almost_empty   => false,
+      g_with_wr_almost_full    => true,
+      g_with_wr_count          => false,
+      g_almost_empty_threshold => 0,
+      g_almost_full_threshold  => c_TO_WB_FIFO_FULL_THRES)
     port map (
-      rst                     => fifo_rst,
-      wr_clk                  => clk_i,
-      rd_clk                  => p2l_dma_clk_i,
-      din                     => to_wb_fifo_din,
-      wr_en                   => to_wb_fifo_wr,
-      rd_en                   => to_wb_fifo_rd,
-      prog_full_thresh_assert => c_TO_WB_FIFO_FULL_THRES,
-      prog_full_thresh_negate => c_TO_WB_FIFO_FULL_THRES,
-      dout                    => to_wb_fifo_dout,
-      full                    => open,
-      empty                   => to_wb_fifo_empty,
-      valid                   => to_wb_fifo_valid,
-      prog_full               => to_wb_fifo_full);
+      rst_n_i           => fifo_rst_n,
+      clk_wr_i          => clk_i,
+      d_i               => to_wb_fifo_din,
+      we_i              => to_wb_fifo_wr,
+      wr_empty_o        => open,
+      wr_full_o         => open,
+      wr_almost_empty_o => open,
+      wr_almost_full_o  => to_wb_fifo_full,
+      wr_count_o        => open,
+      clk_rd_i          => p2l_dma_clk_i,
+      q_o               => to_wb_fifo_dout,
+      rd_i              => to_wb_fifo_rd,
+      rd_empty_o        => to_wb_fifo_empty,
+      rd_full_o         => open,
+      rd_almost_empty_o => open,
+      rd_almost_full_o  => open,
+      rd_count_o        => open);
+
+  p_gen_fifo_valid : process(p2l_dma_clk_i)
+  begin
+    if rising_edge(p2l_dma_clk_i) then
+      to_wb_fifo_valid <= to_wb_fifo_rd and (not to_wb_fifo_empty);
+    end if;
+  end process;
+
+  --fifo_64x512
+  --port map (
+  --  rst                     => fifo_rst,
+  --  wr_clk                  => clk_i,
+  --  rd_clk                  => p2l_dma_clk_i,
+  --  din                     => to_wb_fifo_din,
+  --  wr_en                   => to_wb_fifo_wr,
+  --  rd_en                   => to_wb_fifo_rd,
+  --  prog_full_thresh_assert => c_TO_WB_FIFO_FULL_THRES,
+  --  prog_full_thresh_negate => c_TO_WB_FIFO_FULL_THRES,
+  --  dout                    => to_wb_fifo_dout,
+  --  full                    => open,
+  --  empty                   => to_wb_fifo_empty,
+  --  valid                   => to_wb_fifo_valid,
+  --  prog_full               => to_wb_fifo_full);
 
   -- pause transfer from GN4124 if fifo is (almost) full
   p2l_rdy_o <= not(to_wb_fifo_full);
