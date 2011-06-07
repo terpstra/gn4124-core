@@ -434,9 +434,6 @@ begin
           wishbone_current_state <= WB_WAIT_ACK;
 
         when WB_WAIT_ACK =>
-          if(g_WB_MODE = "pipelined") then
-            wb_stb_t <= '0';
-          end if;
 
           if (wb_ack_t = '1') then
             wb_stb_t <= '0';
@@ -532,12 +529,9 @@ begin
 
   -- Assert the cyc line of the selected peripheral
 
-
-  cyc_mask <= '1' when (g_WB_MODE = "classic") else (not wb_ack_t);
-  
-   gen_cyc_demux : for i in 0 to g_WB_SLAVES_NB-1 generate
-      s_wb_cyc_demuxed(i) <= wb_cyc_t and s_wb_periph_select(i) and cyc_mask;
-   end generate gen_cyc_demux;
+ gen_cyc_demux : for i in 0 to g_WB_SLAVES_NB-1 generate
+    s_wb_cyc_demuxed(i) <= wb_cyc_t and s_wb_periph_select(i) and not(wb_ack_t or s_wb_ack_muxed);
+  end generate gen_cyc_demux;
 
   -- Wishbone bus outputs
   wb_dat_o <= wb_dat_o_t;
