@@ -161,7 +161,8 @@ architecture behaviour of wbmaster32 is
 
   signal p2l_cid      : std_logic_vector(1 downto 0);
   signal s_l2p_header : std_logic_vector(31 downto 0);
-
+  signal cyc_mask : std_logic;
+  
 
 begin
 
@@ -302,7 +303,7 @@ begin
   -----------------------------------------------------------------------------
   -- FIFOs for transition between GN4124 core and wishbone clock domain
   -----------------------------------------------------------------------------
-  cmp_fifo_to_wb: generic_async_fifo
+  cmp_fifo_to_wb : generic_async_fifo
     generic map (
       g_data_width             => 64,
       g_size                   => 512,
@@ -331,12 +332,12 @@ begin
       wr_count_o        => open,
       clk_rd_i          => wb_clk_i,
       q_o               => to_wb_fifo_dout,
-      rd_i              => to_wb_fifo_rd,       
+      rd_i              => to_wb_fifo_rd,
       rd_empty_o        => to_wb_fifo_empty,
       rd_full_o         => open,
       rd_almost_empty_o => open,
       rd_almost_full_o  => open,
-      rd_count_o        => open );
+      rd_count_o        => open);
 
 
 
@@ -345,8 +346,8 @@ begin
   to_wb_fifo_data <= to_wb_fifo_dout(31 downto 0);   -- 32-bit
 
 
-  cmp_from_wb_fifo: generic_async_fifo
-     generic map (
+  cmp_from_wb_fifo : generic_async_fifo
+    generic map (
       g_data_width             => 32,
       g_size                   => 512,
       g_show_ahead             => false,
@@ -530,9 +531,13 @@ begin
   end process p_din_mux;
 
   -- Assert the cyc line of the selected peripheral
-  gen_cyc_demux : for i in 0 to g_WB_SLAVES_NB-1 generate
-    s_wb_cyc_demuxed(i) <= wb_cyc_t and s_wb_periph_select(i) and not(wb_ack_t);
-  end generate gen_cyc_demux;
+
+
+  cyc_mask <= '1' when (g_WB_MODE = "classic") else (not wb_ack_t);
+  
+   gen_cyc_demux : for i in 0 to g_WB_SLAVES_NB-1 generate
+      s_wb_cyc_demuxed(i) <= wb_cyc_t and s_wb_periph_select(i) and cyc_mask;
+   end generate gen_cyc_demux;
 
   -- Wishbone bus outputs
   wb_dat_o <= wb_dat_o_t;
