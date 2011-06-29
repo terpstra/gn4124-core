@@ -21,29 +21,14 @@
 
   <sourceproject xmlns="http://www.xilinx.com/XMLSchema" xil_pn:fileType="FILE_XISE" xil_pn:name="fifo_64x512.xise"/>
 
-  <files xmlns="http://www.xilinx.com/XMLSchema"/>
+  <files xmlns="http://www.xilinx.com/XMLSchema">
+    <file xil_pn:fileType="FILE_ASY" xil_pn:name="fifo_64x512.asy" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_SYMBOL" xil_pn:name="fifo_64x512.sym" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_VEO" xil_pn:name="fifo_64x512.veo" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_VHO" xil_pn:name="fifo_64x512.vho" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_USERDOC" xil_pn:name="fifo_generator_readme.txt" xil_pn:origination="imported"/>
+  </files>
 
-  <transforms xmlns="http://www.xilinx.com/XMLSchema">
-    <transform xil_pn:end_ts="1290103788" xil_pn:name="TRAN_copyInitialToXSTAbstractSynthesis" xil_pn:start_ts="1290103788">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-    <transform xil_pn:end_ts="1290103788" xil_pn:name="TRAN_schematicsToHdl" xil_pn:prop_ck="-5972887507274424632" xil_pn:start_ts="1290103788">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-    <transform xil_pn:end_ts="1290103788" xil_pn:name="TRAN_regenerateCores" xil_pn:prop_ck="-551874233002477861" xil_pn:start_ts="1290103788">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-    <transform xil_pn:end_ts="1290103788" xil_pn:name="TRAN_SubProjectAbstractToPreProxy" xil_pn:start_ts="1290103788">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-    <transform xil_pn:end_ts="1290103788" xil_pn:name="TRAN_xawsTohdl" xil_pn:prop_ck="5324370023856713354" xil_pn:start_ts="1290103788">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-    </transform>
-  </transforms>
+  <transforms xmlns="http://www.xilinx.com/XMLSchema"/>
 
 </generated_project>

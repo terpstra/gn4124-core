@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 12.2
-# Date: Tue Dec  7 09:22:45 2010
+# Date: Fri Jan  7 10:41:56 2011
 #
 ##############################################################
 #
@@ -27,7 +27,7 @@ SET implementationfiletype = Ngc
 SET package = fgg676
 SET removerpms = false
 SET simulationfiles = Behavioral
-SET speedgrade = -3
+SET speedgrade = -2
 SET verilogsim = true
 SET vhdlsim = true
 # END Project Options
@@ -39,7 +39,7 @@ CSET additional_inputs_for_power_estimation=false
 CSET algorithm=Minimum_Area
 CSET assume_synchronous_clk=false
 CSET byte_size=9
-CSET coe_file=./ram_2048x32_init.coe
+CSET coe_file=no_coe_file_loaded
 CSET collision_warnings=ALL
 CSET component_name=ram_2048x32
 CSET disable_collision_warnings=false
@@ -90,4 +90,4 @@ CSET write_width_a=32
 CSET write_width_b=32
 # END Parameters
 GENERATE
-# CRC: 41d4c4f0
+# CRC: 9849e069

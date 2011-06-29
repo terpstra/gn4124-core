@@ -5,14 +5,14 @@ Parameter TMPDIR set to xst/projnav.tmp
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.12 secs
+Total CPU time to Xst completion: 0.13 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.12 secs
+Total CPU time to Xst completion: 0.13 secs
  
 --> 
 Reading design: gw_wrapper.prj
@@ -113,23 +113,17 @@ Cores Search Directories           : {"../ip_cores"  }
 *                          HDL Compilation                              *
 =========================================================================
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core_pkg.vhd" in Library work.
-Package <gn4124_core_pkg> compiled.
-Package body <gn4124_core_pkg> compiled.
+Architecture gn4124_core_pkg of Entity gn4124_core_pkg is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/ip_cores/fifo_64x512.vhd" in Library work.
-Entity <fifo_64x512> compiled.
-Entity <fifo_64x512> (Architecture <fifo_64x512_a>) compiled.
+Architecture fifo_64x512_a of Entity fifo_64x512 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/ip_cores/fifo_32x512.vhd" in Library work.
-Entity <fifo_32x512> compiled.
-Entity <fifo_32x512> (Architecture <fifo_32x512_a>) compiled.
+Architecture fifo_32x512_a of Entity fifo_32x512 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dma_controller_wb_slave.vhd" in Library work.
-Entity <dma_controller_wb_slave> compiled.
-Entity <dma_controller_wb_slave> (Architecture <syn>) compiled.
+Architecture syn of Entity dma_controller_wb_slave is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_des.vhd" in Library work.
-Entity <p2l_des> compiled.
-Entity <p2l_des> (Architecture <rtl>) compiled.
+Architecture rtl of Entity p2l_des is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_decode32.vhd" in Library work.
-Entity <p2l_decode32> compiled.
-Entity <p2l_decode32> (Architecture <rtl>) compiled.
+Architecture rtl of Entity p2l_decode32 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/wbmaster32.vhd" in Library work.
 Entity <wbmaster32> compiled.
 Entity <wbmaster32> (Architecture <behaviour>) compiled.
@@ -146,20 +140,16 @@ Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_a
 Entity <l2p_arbiter> compiled.
 Entity <l2p_arbiter> (Architecture <rtl>) compiled.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_ser.vhd" in Library work.
-Entity <l2p_ser> compiled.
-Entity <l2p_ser> (Architecture <rtl>) compiled.
+Architecture rtl of Entity l2p_ser is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core.vhd" in Library work.
-Entity <gn4124_core> compiled.
-Entity <gn4124_core> (Architecture <rtl>) compiled.
+Architecture rtl of Entity gn4124_core is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_stat_regs.vhd" in Library work.
-Entity <dummy_stat_regs_wb_slave> compiled.
-Entity <dummy_stat_regs_wb_slave> (Architecture <syn>) compiled.
+Architecture syn of Entity dummy_stat_regs_wb_slave is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_ctrl_regs.vhd" in Library work.
 Entity <dummy_ctrl_regs_wb_slave> compiled.
 Entity <dummy_ctrl_regs_wb_slave> (Architecture <syn>) compiled.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/ip_cores/ram_2048x32.vhd" in Library work.
-Entity <ram_2048x32> compiled.
-Entity <ram_2048x32> (Architecture <ram_2048x32_a>) compiled.
+Architecture ram_2048x32_a of Entity ram_2048x32 is up to date.
 Compiling vhdl file "/home/mcattin/projects/GN4124_core/hdl/gullwing/rtl/gullwing_wrapper.vhd" in Library work.
 Entity <gw_wrapper> compiled.
 Entity <gw_wrapper> (Architecture <rtl>) compiled.
@@ -217,6 +207,7 @@ Analyzing generic Entity <gw_wrapper> in library <work> (Architecture <rtl>).
     Set user-defined property "IBUF_LOW_PWR =  TRUE" for instance <cmp_sysclk_buf> in unit <gw_wrapper>.
     Set user-defined property "IFD_DELAY_VALUE =  AUTO" for instance <cmp_sysclk_buf> in unit <gw_wrapper>.
     Set user-defined property "IOSTANDARD =  DEFAULT" for instance <cmp_sysclk_buf> in unit <gw_wrapper>.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gullwing/rtl/gullwing_wrapper.vhd" line 482: Unconnected output port 'dummy_reg_1_wr_o' of component 'dummy_ctrl_regs_wb_slave'.
 WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gullwing/rtl/gullwing_wrapper.vhd" line 522: Instantiating black box module <ram_2048x32>.
 Entity <gw_wrapper> analyzed. Unit <gw_wrapper> generated.
 
@@ -236,6 +227,8 @@ Analyzing generic Entity <gn4124_core> in library <work> (Architecture <rtl>).
     Set user-defined property "IBUF_DELAY_VALUE =  0" for instance <CLKn_ibuf> in unit <gn4124_core>.
     Set user-defined property "IBUF_LOW_PWR =  TRUE" for instance <CLKn_ibuf> in unit <gn4124_core>.
     Set user-defined property "IOSTANDARD =  DEFAULT" for instance <CLKn_ibuf> in unit <gn4124_core>.
+WARNING:Xst:752 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core.vhd" line 554: Unconnected input port 'p2l_dma_cyc_i' of component 'l2p_dma_master' is tied to default value.
+WARNING:Xst:752 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/gn4124_core.vhd" line 595: Unconnected input port 'l2p_dma_cyc_i' of component 'p2l_dma_master' is tied to default value.
 Entity <gn4124_core> analyzed. Unit <gn4124_core> generated.
 
 Analyzing generic Entity <p2l_des> in library <work> (Architecture <rtl>).
@@ -297,17 +290,17 @@ Entity <dma_controller_wb_slave> analyzed. Unit <dma_controller_wb_slave> genera
 
 Analyzing generic Entity <l2p_dma_master> in library <work> (Architecture <behaviour>).
 	g_BYTE_SWAP = false
-WARNING:Xst:1610 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 267: Width mismatch. <l2p_address_l> has a width of 32 bits but assigned expression is 43-bit wide.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 477: Unconnected output port 'full' of component 'fifo_32x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 477: Instantiating black box module <fifo_32x512>.
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 493: Unconnected output port 'full' of component 'fifo_32x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 493: Instantiating black box module <fifo_32x512>.
+WARNING:Xst:1610 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 269: Width mismatch. <l2p_address_l> has a width of 32 bits but assigned expression is 43-bit wide.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 489: Unconnected output port 'full' of component 'fifo_32x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 489: Instantiating black box module <fifo_32x512>.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 505: Unconnected output port 'full' of component 'fifo_32x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/l2p_dma_master.vhd" line 505: Instantiating black box module <fifo_32x512>.
 Entity <l2p_dma_master> analyzed. Unit <l2p_dma_master> generated.
 
 Analyzing generic Entity <p2l_dma_master> in library <work> (Architecture <behaviour>).
 	g_BYTE_SWAP = false
-WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" line 475: Unconnected output port 'full' of component 'fifo_64x512'.
-WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" line 475: Instantiating black box module <fifo_64x512>.
+WARNING:Xst:753 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" line 493: Unconnected output port 'full' of component 'fifo_64x512'.
+WARNING:Xst:2211 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/p2l_dma_master.vhd" line 493: Instantiating black box module <fifo_64x512>.
 INFO:Xst:2679 - Register <to_wb_fifo_din<63>> in unit <p2l_dma_master> has a constant value of 0 during circuit operation. The register is replaced by logic.
 INFO:Xst:2679 - Register <to_wb_fifo_din<62>> in unit <p2l_dma_master> has a constant value of 0 during circuit operation. The register is replaced by logic.
 Entity <p2l_dma_master> analyzed. Unit <p2l_dma_master> generated.
@@ -328,7 +321,7 @@ INFO:Xst:2679 - Register <ack_sreg<9>> in unit <dummy_stat_regs_wb_slave> has a 
 Entity <dummy_stat_regs_wb_slave> analyzed. Unit <dummy_stat_regs_wb_slave> generated.
 
 Analyzing Entity <dummy_ctrl_regs_wb_slave> in library <work> (Architecture <syn>).
-INFO:Xst:1561 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_ctrl_regs.vhd" line 122: Mux is complete : default of case is discarded
+INFO:Xst:1561 - "/home/mcattin/projects/GN4124_core/hdl/gn4124core/rtl/dummy_ctrl_regs.vhd" line 155: Mux is complete : default of case is discarded
 INFO:Xst:2679 - Register <ack_sreg<9>> in unit <dummy_ctrl_regs_wb_slave> has a constant value of 0 during circuit operation. The register is replaced by logic.
 Entity <dummy_ctrl_regs_wb_slave> analyzed. Unit <dummy_ctrl_regs_wb_slave> generated.
 
@@ -367,16 +360,47 @@ WARNING:Xst:646 - Signal <rd_int> is assigned but never used. This unconnected s
 WARNING:Xst:646 - Signal <bwsel_reg> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <allzeros> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <allones> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
+    Found 1-bit register for signal <dummy_reg_1_wr_o>.
     Found 1-bit register for signal <ack_in_progress>.
     Found 8-bit register for signal <ack_sreg<7:0>>.
-    Found 32-bit register for signal <dummy_reg_1_int>.
     Found 32-bit register for signal <dummy_reg_2_int>.
     Found 32-bit register for signal <dummy_reg_3_int>.
     Found 32-bit register for signal <dummy_reg_led_int>.
     Found 32-bit register for signal <rddata_reg>.
-    Found 32-bit 4-to-1 multiplexer for signal <rddata_reg$mux0000> created at line 90.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_0$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_1$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_10$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_11$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_12$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_13$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_14$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_15$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_16$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_17$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_18$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_19$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_2$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_20$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_21$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_22$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_23$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_24$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_25$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_26$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_27$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_28$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_29$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_3$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_30$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_31$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_4$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_5$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_6$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_7$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_8$mux0000> created at line 92.
+    Found 1-bit 4-to-1 multiplexer for signal <rddata_reg_9$mux0000> created at line 92.
     Summary:
-	inferred 169 D-type flip-flop(s).
+	inferred 138 D-type flip-flop(s).
 	inferred  32 Multiplexer(s).
 Unit <dummy_ctrl_regs_wb_slave> synthesized.
 
@@ -420,9 +444,12 @@ Synthesizing Unit <l2p_arbiter>.
     Found 32-bit register for signal <arb_ser_data_o>.
     Found 1-bit register for signal <arb_ldm_gnt>.
     Found 1-bit register for signal <arb_pdm_gnt>.
+    Found 32-bit register for signal <arb_ser_data_t>.
+    Found 1-bit register for signal <arb_ser_dframe_t>.
+    Found 1-bit register for signal <arb_ser_valid_t>.
     Found 1-bit register for signal <arb_wbm_gnt>.
     Summary:
-	inferred  37 D-type flip-flop(s).
+	inferred  71 D-type flip-flop(s).
 Unit <l2p_arbiter> synthesized.
 
 
@@ -671,7 +698,6 @@ Synthesizing Unit <l2p_dma_master>.
 WARNING:Xst:647 - Input <dma_ctrl_len_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:647 - Input <dma_ctrl_target_addr_i<1:0>> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:646 - Signal <l2p_byte_swap> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
-WARNING:Xst:646 - Signal <data_fifo_valid> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
     Found finite state machine <FSM_3> for signal <l2p_dma_current_state>.
     -----------------------------------------------------------------------
     | States             | 8                                              |
@@ -690,7 +716,6 @@ WARNING:Xst:646 - Signal <data_fifo_valid> is assigned but never used. This unco
     Found 32-bit register for signal <l2p_dma_adr_o>.
     Found 4-bit register for signal <l2p_dma_sel_o>.
     Found 32-bit register for signal <ldm_arb_data_o>.
-    Found 1-bit register for signal <l2p_dma_stb_o>.
     Found 1-bit register for signal <l2p_edb_o>.
     Found 1-bit register for signal <ldm_arb_req_o>.
     Found 1-bit register for signal <dma_ctrl_error_o>.
@@ -703,23 +728,24 @@ WARNING:Xst:646 - Signal <data_fifo_valid> is assigned but never used. This unco
     Found 1-bit register for signal <l2p_64b_address>.
     Found 32-bit register for signal <l2p_address_h>.
     Found 32-bit register for signal <l2p_address_l>.
-    Found 32-bit adder for signal <l2p_address_l$addsub0000> created at line 267.
+    Found 32-bit adder for signal <l2p_address_l$addsub0000> created at line 269.
     Found 11-bit register for signal <l2p_data_cnt>.
-    Found 11-bit subtractor for signal <l2p_data_cnt$addsub0000> created at line 264.
-    Found 30-bit comparator greater for signal <l2p_data_cnt$cmp_gt0000> created at line 269.
-    Found 30-bit comparator greater for signal <l2p_dma_current_state$cmp_gt0000> created at line 446.
-    Found 11-bit comparator lessequal for signal <l2p_dma_current_state$cmp_le0000> created at line 372.
-    Found 11-bit comparator lessequal for signal <l2p_dma_current_state$cmp_le0001> created at line 398.
+    Found 11-bit subtractor for signal <l2p_data_cnt$addsub0000> created at line 266.
+    Found 30-bit comparator greater for signal <l2p_data_cnt$cmp_gt0000> created at line 271.
+    Found 30-bit comparator greater for signal <l2p_dma_current_state$cmp_gt0000> created at line 458.
+    Found 11-bit comparator lessequal for signal <l2p_dma_current_state$cmp_le0000> created at line 377.
+    Found 11-bit comparator lessequal for signal <l2p_dma_current_state$cmp_le0001> created at line 408.
     Found 1-bit register for signal <l2p_dma_cyc_t>.
-    Found 7-bit subtractor for signal <l2p_dma_cyc_t$addsub0000> created at line 551.
-    Found 7-bit comparator equal for signal <l2p_dma_cyc_t$cmp_eq0000> created at line 551.
+    Found 32-bit subtractor for signal <l2p_dma_cyc_t$addsub0000> created at line 564.
+    Found 32-bit comparator equal for signal <l2p_dma_cyc_t$cmp_eq0000> created at line 564.
+    Found 1-bit register for signal <l2p_dma_stb_t>.
     Found 1-bit register for signal <l2p_last_packet>.
     Found 30-bit register for signal <l2p_len_cnt>.
-    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 259.
+    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 261.
     Found 10-bit register for signal <l2p_len_header>.
     Found 30-bit up counter for signal <target_addr_cnt>.
-    Found 7-bit up counter for signal <wb_ack_cnt>.
-    Found 7-bit up counter for signal <wb_read_cnt>.
+    Found 32-bit up counter for signal <wb_ack_cnt>.
+    Found 32-bit up counter for signal <wb_read_cnt>.
     Summary:
 	inferred   1 Finite State Machine(s).
 	inferred   4 Counter(s).
@@ -765,7 +791,6 @@ WARNING:Xst:1780 - Signal <dma_length_error> is never used or assigned. This unc
     Found 32-bit register for signal <next_item_attrib_o>.
     Found 32-bit register for signal <next_item_host_addr_l_o>.
     Found 1-bit register for signal <next_item_valid_o>.
-    Found 1-bit register for signal <p2l_dma_stb_o>.
     Found 1-bit register for signal <pdm_arb_dframe_o>.
     Found 1-bit register for signal <pdm_arb_valid_o>.
     Found 32-bit register for signal <next_item_next_h_o>.
@@ -775,29 +800,32 @@ WARNING:Xst:1780 - Signal <dma_length_error> is never used or assigned. This unc
     Found 32-bit register for signal <next_item_host_addr_h_o>.
     Found 1-bit register for signal <completion_error>.
     Found 1-bit register for signal <dma_busy_error>.
+    Found 1-bit register for signal <dma_ctrl_done_t>.
     Found 1-bit register for signal <is_next_item>.
     Found 1-bit register for signal <l2p_64b_address>.
     Found 32-bit register for signal <l2p_address_h>.
     Found 32-bit register for signal <l2p_address_l>.
     Found 1-bit register for signal <l2p_last_packet>.
     Found 30-bit register for signal <l2p_len_cnt>.
-    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 244.
+    Found 30-bit subtractor for signal <l2p_len_cnt$addsub0000> created at line 248.
     Found 10-bit register for signal <l2p_len_header>.
-    Found 30-bit comparator greater for signal <l2p_len_header$cmp_gt0000> created at line 229.
+    Found 30-bit comparator greater for signal <l2p_len_header$cmp_gt0000> created at line 233.
     Found 11-bit down counter for signal <p2l_data_cnt>.
-    Found 11-bit comparator lessequal for signal <p2l_dma_current_state$cmp_le0000> created at line 332.
+    Found 11-bit comparator lessequal for signal <p2l_dma_current_state$cmp_le0000> created at line 336.
     Found 1-bit register for signal <p2l_dma_cyc_t>.
-    Found 7-bit subtractor for signal <p2l_dma_cyc_t$addsub0000> created at line 530.
-    Found 7-bit comparator equal for signal <p2l_dma_cyc_t$cmp_eq0000> created at line 530.
+    Found 32-bit subtractor for signal <p2l_dma_cyc_t$addsub0000> created at line 549.
+    Found 32-bit comparator equal for signal <p2l_dma_cyc_t$cmp_eq0000> created at line 549.
+    Found 1-bit register for signal <p2l_dma_stb_t>.
+    Found 1-bit register for signal <rx_error_t>.
     Found 30-bit up counter for signal <target_addr_cnt>.
     Found 62-bit register for signal <to_wb_fifo_din<61:0>>.
     Found 1-bit register for signal <to_wb_fifo_wr>.
-    Found 7-bit up counter for signal <wb_ack_cnt>.
-    Found 7-bit up counter for signal <wb_write_cnt>.
+    Found 32-bit up counter for signal <wb_ack_cnt>.
+    Found 32-bit up counter for signal <wb_write_cnt>.
     Summary:
 	inferred   1 Finite State Machine(s).
 	inferred   4 Counter(s).
-	inferred 504 D-type flip-flop(s).
+	inferred 506 D-type flip-flop(s).
 	inferred   2 Adder/Subtractor(s).
 	inferred   3 Comparator(s).
 Unit <p2l_dma_master> synthesized.
@@ -971,7 +999,7 @@ WARNING:Xst:646 - Signal <wb_adr<17:2>> is assigned but never used. This unconne
 WARNING:Xst:646 - Signal <dummy_ctrl_reg_led<31:8>> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <dummy_ctrl_reg_3> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <dummy_ctrl_reg_2> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
-WARNING:Xst:646 - Signal <dummy_ctrl_reg_1> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
+WARNING:Xst:646 - Signal <dummy_ctrl_reg_1<31:1>> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <dma_sel_o> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
 WARNING:Xst:646 - Signal <dma_adr_o<31:11>> is assigned but never used. This unconnected signal will be trimmed during the optimization process.
     Found 1-bit register for signal <dma_ack_i>.
@@ -990,14 +1018,14 @@ Macro Statistics
  30-bit adder                                          : 1
  30-bit subtractor                                     : 2
  32-bit adder                                          : 1
- 7-bit subtractor                                      : 2
+ 32-bit subtractor                                     : 2
 # Counters                                             : 8
  11-bit down counter                                   : 1
  30-bit down counter                                   : 1
  30-bit up counter                                     : 2
- 7-bit up counter                                      : 4
-# Registers                                            : 456
- 1-bit register                                        : 363
+ 32-bit up counter                                     : 4
+# Registers                                            : 492
+ 1-bit register                                        : 400
  10-bit register                                       : 3
  11-bit register                                       : 1
  16-bit register                                       : 1
@@ -1005,15 +1033,16 @@ Macro Statistics
  3-bit register                                        : 1
  30-bit register                                       : 2
  31-bit register                                       : 1
- 32-bit register                                       : 70
+ 32-bit register                                       : 69
  4-bit register                                        : 6
 # Comparators                                          : 9
  11-bit comparator lessequal                           : 3
  2-bit comparator less                                 : 1
  30-bit comparator greater                             : 3
- 7-bit comparator equal                                : 2
-# Multiplexers                                         : 4
- 32-bit 4-to-1 multiplexer                             : 4
+ 32-bit comparator equal                               : 2
+# Multiplexers                                         : 35
+ 1-bit 4-to-1 multiplexer                              : 32
+ 32-bit 4-to-1 multiplexer                             : 3
 
 =========================================================================
 
@@ -1192,21 +1221,22 @@ Macro Statistics
  30-bit adder                                          : 1
  30-bit subtractor                                     : 2
  32-bit adder                                          : 1
- 7-bit subtractor                                      : 2
+ 32-bit subtractor                                     : 2
 # Counters                                             : 8
  11-bit down counter                                   : 1
  30-bit down counter                                   : 1
  30-bit up counter                                     : 2
- 7-bit up counter                                      : 4
-# Registers                                            : 2777
- Flip-Flops                                            : 2777
+ 32-bit up counter                                     : 4
+# Registers                                            : 2782
+ Flip-Flops                                            : 2782
 # Comparators                                          : 9
  11-bit comparator lessequal                           : 3
  2-bit comparator less                                 : 1
  30-bit comparator greater                             : 3
- 7-bit comparator equal                                : 2
-# Multiplexers                                         : 4
- 32-bit 4-to-1 multiplexer                             : 4
+ 32-bit comparator equal                               : 2
+# Multiplexers                                         : 35
+ 1-bit 4-to-1 multiplexer                              : 32
+ 32-bit 4-to-1 multiplexer                             : 3
 
 =========================================================================
 
@@ -1229,8 +1259,8 @@ WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_2> (withou
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_1> (without init value) has a constant value of 0 in block <dummy_ctrl_regs_wb_slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <ack_sreg_7> (without init value) has a constant value of 0 in block <dma_controller_wb_slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <ack_sreg_6> (without init value) has a constant value of 0 in block <dma_controller_wb_slave>. This FF/Latch will be trimmed during the optimization process.
-INFO:Xst:2261 - The FF/Latch <l2p_dma_sel_o_0> in Unit <l2p_dma_master> is equivalent to the following 4 FFs/Latches, which will be removed : <l2p_dma_sel_o_1> <l2p_dma_sel_o_2> <l2p_dma_sel_o_3> <l2p_dma_stb_o> 
-INFO:Xst:2261 - The FF/Latch <p2l_dma_sel_o_0> in Unit <p2l_dma_master> is equivalent to the following 4 FFs/Latches, which will be removed : <p2l_dma_sel_o_1> <p2l_dma_sel_o_2> <p2l_dma_sel_o_3> <p2l_dma_stb_o> 
+INFO:Xst:2261 - The FF/Latch <l2p_dma_sel_o_0> in Unit <l2p_dma_master> is equivalent to the following 4 FFs/Latches, which will be removed : <l2p_dma_sel_o_1> <l2p_dma_sel_o_2> <l2p_dma_sel_o_3> <l2p_dma_stb_t> 
+INFO:Xst:2261 - The FF/Latch <p2l_dma_sel_o_0> in Unit <p2l_dma_master> is equivalent to the following 4 FFs/Latches, which will be removed : <p2l_dma_sel_o_1> <p2l_dma_sel_o_2> <p2l_dma_sel_o_3> <p2l_dma_stb_t> 
 INFO:Xst:2261 - The FF/Latch <dma_stat_int_read_3> in Unit <dma_controller_wb_slave> is equivalent to the following 28 FFs/Latches, which will be removed : <dma_stat_int_read_4> <dma_stat_int_read_5> <dma_stat_int_read_6> <dma_stat_int_read_7> <dma_stat_int_read_8> <dma_stat_int_read_9> <dma_stat_int_read_10> <dma_stat_int_read_11> <dma_stat_int_read_12> <dma_stat_int_read_13> <dma_stat_int_read_14> <dma_stat_int_read_15> <dma_stat_int_read_16> <dma_stat_int_read_17> <dma_stat_int_read_18> <dma_stat_int_read_19> <dma_stat_int_read_20> <dma_stat_int_read_21> <dma_stat_int_read_22> <dma_stat_int_read_23> <dma_stat_int_read_24> <dma_stat_int_read_25> <dma_stat_int_read_26> <dma_stat_int_read_27> <dma_stat_int_read_28> <dma_stat_int_read_29> <dma_stat_int_read_30> <dma_stat_int_read_31> 
 WARNING:Xst:1710 - FF/Latch <dma_stat_int_read_3> (without init value) has a constant value of 0 in block <dma_controller_wb_slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <rddata_reg_8> (without init value) has a constant value of 0 in block <dummy_stat_regs_wb_slave>. This FF/Latch will be trimmed during the optimization process.
@@ -1261,6 +1291,7 @@ Optimizing unit <l2p_ser> ...
 Optimizing unit <dma_controller> ...
 
 Optimizing unit <gn4124_core> ...
+WARNING:Xst:2677 - Node <cmp_dummy_ctrl_regs/dummy_reg_1_wr_o> of sequential type is unconnected in block <gw_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_dma_controller/dma_ctrl_carrier_addr_o_0> of sequential type is unconnected in block <gw_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_dma_controller/dma_ctrl_carrier_addr_o_1> of sequential type is unconnected in block <gw_wrapper>.
 WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_dma_controller/dma_ctrl_len_o_0> of sequential type is unconnected in block <gw_wrapper>.
@@ -1415,7 +1446,7 @@ WARNING:Xst:2677 - Node <cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_1> of sequent
 
 Mapping all equations...
 Building and optimizing final netlist ...
-Found area constraint ratio of 100 (+ 5) on block gw_wrapper, actual ratio is 22.
+Found area constraint ratio of 100 (+ 5) on block gw_wrapper, actual ratio is 23.
 Forward register balancing over carry chain cmp_gn4124_core/cmp_dma_controller/dma_ctrl_current_state_cmp_eq0000_wg_cy<0>
 INFO:Xst:2260 - The FF/Latch <U0/grf.rf/rstblk/wr_rst_reg_1> in Unit <BU2> is equivalent to the following FF/Latch : <U0/grf.rf/rstblk/wr_rst_reg_0> 
 INFO:Xst:2260 - The FF/Latch <U0/grf.rf/gl0.wr/gwas.wsts/ram_full_i> in Unit <BU2> is equivalent to the following FF/Latch : <U0/grf.rf/gl0.wr/gwas.wsts/ram_full_fb_i> 
@@ -1461,8 +1492,6 @@ INFO:Xst:2260 - The FF/Latch <U0/grf.rf/gl0.wr/gwas.wsts/ram_full_i> in Unit <BU
 Pipelining and Register Balancing Report ...
 
 Processing Unit <gw_wrapper> :
-	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_ctrl_start_l2p_o has(ve) been forward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/dma_ctrl_start_l2p_i_inv1_FRB.
-	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_ctrl_start_p2l_o has(ve) been forward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/dma_ctrl_start_p2l_i_inv1_FRB.
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10 has(ve) been backward balanced into : cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB1 cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB2.
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_11 has(ve) been backward balanced into : cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_11_BRB1 cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_11_BRB2.
 	Register(s) cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_12 has(ve) been backward balanced into : cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_12_BRB1 cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_12_BRB2.
@@ -1544,60 +1573,44 @@ Processing Unit <gw_wrapper> :
 	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_7 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_7_BRB0 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_7_BRB1 .
 	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_8 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_8_BRB0 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_8_BRB1 .
 	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_9 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_9_BRB0 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_o_9_BRB1 .
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0_BRB2 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0_BRB4 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0_BRB5 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0_BRB6 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_0_BRB8.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_1 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_1_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_1_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_1_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_10 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_10_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_10_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_10_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_11 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_11_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_11_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_11_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_12 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_12_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_12_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_12_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_13 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_13_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_13_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_13_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_14 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_14_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_14_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_14_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_15 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_15_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_15_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_15_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_16 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_16_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_16_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_16_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_17 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_17_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_17_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_17_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_18 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_18_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_18_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_18_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_19 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_19_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_19_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_19_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_2 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_2_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_2_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_2_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_20 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_20_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_20_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_20_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_21 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_21_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_21_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_21_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_22 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_22_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_22_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_22_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_23 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_23_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_23_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_23_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_24 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_24_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_24_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_24_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_25 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_25_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_25_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_25_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_26 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_26_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_26_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_26_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_27 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_27_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_27_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_27_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_28 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_28_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_28_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_28_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_29 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_29_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_29_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_29_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_3 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_3_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_3_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_3_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_30 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_30_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_30_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_30_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_31 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_31_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_31_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_31_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_4 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_4_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_4_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_4_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_5 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_5_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_5_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_5_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_6 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_6_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_6_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_6_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_7 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_7_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_7_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_7_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_8 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_8_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_8_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_8_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_9 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_9_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_9_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_data_t_9_BRB5.
 	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB2 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB4 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB5.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_t has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_t_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_t_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_t_BRB5.
 	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o_BRB5.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB3 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB4 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB5 cmp_gn4124_core/cmp_l2p_dma_master/data_fifo_rd_BRB6.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_20 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_20_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_20_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_21 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_21_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_21_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_22 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_22_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_22_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_23 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_23_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_23_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_24 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_24_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_24_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_25 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_25_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_25_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_26 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_26_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_26_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_27 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_27_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_27_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_28 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_28_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_28_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_29 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_29_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_29_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_30_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_31 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_31_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_address_l_31_BRB2.
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_18_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_19_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_20_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_21_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_22_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_23 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_23_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_23_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_23_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_24 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_24_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_24_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_24_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_25 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_25_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_25_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_25_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_26 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_26_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_26_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_26_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_27_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_28_BRB2 .
-	Register(s) cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29 has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB0 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB1 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB2 cmp_gn4124_core/cmp_l2p_dma_master/l2p_len_cnt_29_BRB3.
+	Register(s) cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_t has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_t_BRB1 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_t_BRB3 cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_t_BRB5.
 	Register(s) cmp_gn4124_core/cmp_l2p_ser/dframe_d has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_ser/dframe_d_BRB0 cmp_gn4124_core/cmp_l2p_ser/dframe_d_BRB1 cmp_gn4124_core/cmp_l2p_ser/dframe_d_BRB2.
 	Register(s) cmp_gn4124_core/cmp_l2p_ser/valid_d has(ve) been backward balanced into : cmp_gn4124_core/cmp_l2p_ser/valid_d_BRB0 cmp_gn4124_core/cmp_l2p_ser/valid_d_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_17 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_17_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_17_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_18 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_18_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_18_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_19 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_19_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_19_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_20 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_20_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_20_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_21 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_21_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_21_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_22 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_22_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_22_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_23 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_23_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_23_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_24 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_24_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_24_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_25 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_25_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_25_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_26 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_26_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_26_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_27 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_27_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_27_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_28 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_28_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_28_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_29 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_29_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_29_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_30 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_30_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_30_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_31 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_31_BRB0 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_31_BRB1 cmp_gn4124_core/cmp_p2l_decode32/p2l_addr_31_BRB2.
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_20 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_20_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_20_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_21 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_21_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_21_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_22 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_22_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_22_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_23 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_23_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_23_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_24 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_24_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_24_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_25 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_25_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_25_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_26 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_26_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_26_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_27 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_27_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_27_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_28 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_28_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_28_BRB1 .
-	Register(s) cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_29 has(ve) been backward balanced into : cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_29_BRB0 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_29_BRB1 cmp_gn4124_core/cmp_p2l_dma_master/l2p_len_cnt_29_BRB2.
 	Register(s) cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_0 has(ve) been backward balanced into : cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_0_BRB0 cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_0_BRB1 cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_0_BRB2 cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_0_BRB3.
 	Register(s) cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_1 has(ve) been backward balanced into : cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_1_BRB1 cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_1_BRB3.
 	Register(s) cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_10 has(ve) been backward balanced into : cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_10_BRB1 cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_10_BRB3.
@@ -1632,7 +1645,6 @@ Processing Unit <gw_wrapper> :
 	Register(s) cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_9 has(ve) been backward balanced into : cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_9_BRB1 cmp_gn4124_core/cmp_wbmaster32/wb_dat_i_t_9_BRB3.
 Unit <gw_wrapper> processed.
 Replicating register cmp_gn4124_core/cmp_l2p_dma_master/l2p_edb_o to handle IOB=TRUE attribute
-Replicating register cmp_gn4124_core/cmp_p2l_dma_master/rx_error_o to handle IOB=TRUE attribute
 Replicating register cmp_dummy_ctrl_regs/dummy_reg_led_int_7 to handle IOB=TRUE attribute
 Replicating register cmp_dummy_ctrl_regs/dummy_reg_led_int_6 to handle IOB=TRUE attribute
 Replicating register cmp_dummy_ctrl_regs/dummy_reg_led_int_5 to handle IOB=TRUE attribute
@@ -1650,15 +1662,18 @@ Processing Unit <gw_wrapper> :
 	Found 4-bit shift register for signal <cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_2_BRB0>.
 	Found 4-bit shift register for signal <cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_2_BRB1>.
 	Found 4-bit shift register for signal <cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_2_BRB2>.
+	Found 2-bit shift register for signal <cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_dframe_o_BRB5>.
+	Found 2-bit shift register for signal <cmp_gn4124_core/cmp_l2p_arbiter/arb_ser_valid_o_BRB5>.
 Unit <gw_wrapper> processed.
 
 =========================================================================
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 2933
- Flip-Flops                                            : 2933
-# Shift Registers                                      : 3
+# Registers                                            : 3032
+ Flip-Flops                                            : 3032
+# Shift Registers                                      : 5
+ 2-bit shift register                                  : 2
  4-bit shift register                                  : 3
 
 =========================================================================
@@ -1688,37 +1703,37 @@ Design Statistics
 # IOs                              : 273
 
 Cell Usage :
-# BELS                             : 3658
+# BELS                             : 4209
 #      GND                         : 7
-#      INV                         : 53
-#      LUT1                        : 149
-#      LUT2                        : 388
-#      LUT2_D                      : 8
-#      LUT2_L                      : 22
-#      LUT3                        : 822
-#      LUT3_D                      : 37
-#      LUT3_L                      : 34
-#      LUT4                        : 946
-#      LUT4_D                      : 35
-#      LUT4_L                      : 168
-#      MUXCY                       : 573
-#      MUXF5                       : 62
+#      INV                         : 140
+#      LUT1                        : 275
+#      LUT2                        : 372
+#      LUT2_D                      : 7
+#      LUT2_L                      : 13
+#      LUT3                        : 755
+#      LUT3_D                      : 10
+#      LUT3_L                      : 9
+#      LUT4                        : 939
+#      LUT4_D                      : 23
+#      LUT4_L                      : 239
+#      MUXCY                       : 791
+#      MUXF5                       : 83
 #      VCC                         : 7
-#      XORCY                       : 347
-# FlipFlops/Latches                : 3756
-#      FD                          : 70
-#      FDC                         : 1022
-#      FDCE                        : 2390
+#      XORCY                       : 539
+# FlipFlops/Latches                : 3857
+#      FD                          : 99
+#      FDC                         : 1089
+#      FDCE                        : 2424
 #      FDDRRSE                     : 1
-#      FDE                         : 93
-#      FDP                         : 96
+#      FDE                         : 66
+#      FDP                         : 94
 #      FDPE                        : 50
 #      IFDDRRSE                    : 18
 #      OFDDRRSE                    : 16
 # RAMS                             : 11
 #      RAMB16BWE                   : 11
-# Shift Registers                  : 3
-#      SRL16                       : 3
+# Shift Registers                  : 5
+#      SRL16                       : 5
 # Clock Buffers                    : 4
 #      BUFG                        : 4
 # IO Buffers                       : 45
@@ -1734,11 +1749,11 @@ Device utilization summary:
 
 Selected Device : 3s1400afg484-5 
 
- Number of Slices:                     2510  out of  11264    22%  
- Number of Slice Flip Flops:           3739  out of  22528    16%  
- Number of 4 input LUTs:               2665  out of  22528    11%  
-    Number used as logic:              2662
-    Number used as Shift registers:       3
+ Number of Slices:                     2669  out of  11264    23%  
+ Number of Slice Flip Flops:           3840  out of  22528    17%  
+ Number of 4 input LUTs:               2787  out of  22528    12%  
+    Number used as logic:              2782
+    Number used as Shift registers:       5
  Number of IOs:                         273
  Number of bonded IOBs:                  79  out of    375    21%  
     IOB Flip Flops:                      17
@@ -1766,9 +1781,9 @@ Clock Information:
 -----------------------------------+-----------------------------------------------------------------------------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)                                                                         | Load  |
 -----------------------------------+-----------------------------------------------------------------------------------------------+-------+
-L_CLKp                             | IBUFDS+BUFG                                                                                   | 1178  |
+L_CLKp                             | IBUFDS+BUFG                                                                                   | 1246  |
 cmp_test_ram/BU2/dbiterr           | NONE(cmp_test_ram/BU2/U0/blk_mem_generator/valid.cstr/ramloop[3].ram.r/s3a_init.ram/dpram.ram)| 4     |
-P2L_CLKp                           | IBUFGDS+BUFG                                                                                  | 2581  |
+P2L_CLKp                           | IBUFGDS+BUFG                                                                                  | 2616  |
 P2L_CLKn                           | IBUFGDS+BUFG                                                                                  | 53    |
 -----------------------------------+-----------------------------------------------------------------------------------------------+-------+
 INFO:Xst:2169 - HDL ADVISOR - Some clock signals were not automatically buffered by XST with BUFG/BUFR resources. Please use the buffer_type constraint in order to insert these buffers to the clock signals to help prevent skew problems.
@@ -1778,13 +1793,13 @@ Asynchronous Control Signals Information:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+-------+
 Control Signal                                                                                                                                                             | Buffer(FF name)                                                                                           | Load  |
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------+-------+
-cmp_gn4124_core/rst_n_inv1_INV_0_5(cmp_gn4124_core/rst_n_inv1_INV_0_5:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_p2l_dma_master/completion_error)                                                 | 444   |
-cmp_gn4124_core/rst_n_inv1_INV_0_1(cmp_gn4124_core/rst_n_inv1_INV_0_1:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_attrib_load_o)                      | 443   |
-cmp_gn4124_core/rst_n_inv1_INV_0_2(cmp_gn4124_core/rst_n_inv1_INV_0_2:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_0)                             | 443   |
-cmp_gn4124_core/rst_n_inv1_INV_0_3(cmp_gn4124_core/rst_n_inv1_INV_0_3:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_0)                                                 | 443   |
-cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/rst_n_i_inv(cmp_gn4124_core/rst_n_inv1_INV_0:O)                                                               | NONE(cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB1)                                           | 441   |
-cmp_gn4124_core/rst_n_inv1_INV_0_4(cmp_gn4124_core/rst_n_inv1_INV_0_4:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_wr)                                                     | 410   |
-L_RST_N_inv(cmp_gn4124_core/rst_n_a_i_inv1_INV_0:O)                                                                                                                        | NONE(cmp_dummy_ctrl_regs/ack_in_progress)                                                                 | 204   |
+cmp_gn4124_core/rst_n_inv1_INV_0_5(cmp_gn4124_core/rst_n_inv1_INV_0_5:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_p2l_dma_master/completion_error)                                                 | 466   |
+cmp_gn4124_core/rst_n_inv1_INV_0_1(cmp_gn4124_core/rst_n_inv1_INV_0_1:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_attrib_load_o)                      | 465   |
+cmp_gn4124_core/rst_n_inv1_INV_0_2(cmp_gn4124_core/rst_n_inv1_INV_0_2:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_in_progress)                        | 465   |
+cmp_gn4124_core/rst_n_inv1_INV_0_3(cmp_gn4124_core/rst_n_inv1_INV_0_3:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_0)                                                 | 465   |
+cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/rst_n_i_inv(cmp_gn4124_core/rst_n_inv1_INV_0:O)                                                               | NONE(cmp_gn4124_core/cmp_dma_controller/dma_attrib_reg_10_BRB1)                                           | 463   |
+cmp_gn4124_core/rst_n_inv1_INV_0_4(cmp_gn4124_core/rst_n_inv1_INV_0_4:O)                                                                                                   | NONE(cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_wr)                                                     | 431   |
+L_RST_N_inv(cmp_gn4124_core/rst_n_a_i_inv1_INV_0:O)                                                                                                                        | NONE(cmp_dummy_ctrl_regs/ack_in_progress)                                                                 | 172   |
 cmp_gn4124_core/cmp_l2p_dma_master/cmp_addr_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg<1>(cmp_gn4124_core/cmp_l2p_dma_master/cmp_addr_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg_1:Q)  | NONE(cmp_gn4124_core/cmp_l2p_dma_master/cmp_addr_fifo/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/diff_pntr_pad_1) | 45    |
 cmp_gn4124_core/cmp_l2p_dma_master/cmp_data_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg<1>(cmp_gn4124_core/cmp_l2p_dma_master/cmp_data_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg_1:Q)  | NONE(cmp_gn4124_core/cmp_l2p_dma_master/cmp_data_fifo/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/diff_pntr_pad_1) | 45    |
 cmp_gn4124_core/cmp_p2l_dma_master/cmp_to_wb_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg<1>(cmp_gn4124_core/cmp_p2l_dma_master/cmp_to_wb_fifo/BU2/U0/grf.rf/rstblk/wr_rst_reg_1:Q)| NONE(cmp_gn4124_core/cmp_p2l_dma_master/cmp_to_wb_fifo/BU2/U0/grf.rf/gl0.wr/gwas.gpf.wrpf/diff_pntr_pad_1)| 45    |
@@ -1826,9 +1841,9 @@ Timing Summary:
 ---------------
 Speed Grade: -5
 
-   Minimum period: 6.966ns (Maximum Frequency: 143.550MHz)
+   Minimum period: 7.682ns (Maximum Frequency: 130.175MHz)
    Minimum input arrival time before clock: 2.030ns
-   Maximum output required time after clock: 6.297ns
+   Maximum output required time after clock: 6.668ns
    Maximum combinational path delay: No path found
 
 Timing Detail:
@@ -1837,54 +1852,86 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'L_CLKp'
-  Clock period: 6.966ns (frequency: 143.550MHz)
-  Total number of paths / destination ports: 10717 / 2168
+  Clock period: 7.682ns (frequency: 130.175MHz)
+  Total number of paths / destination ports: 13373 / 2304
 -------------------------------------------------------------------------
-Delay:               6.966ns (Levels of Logic = 5)
-  Source:            cmp_gn4124_core/cmp_wbmaster32/wb_ack_t (FF)
-  Destination:       cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_nexth_lw_delay (FF)
+Delay:               7.682ns (Levels of Logic = 35)
+  Source:            cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_0 (FF)
+  Destination:       cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t (FF)
   Source Clock:      L_CLKp rising
   Destination Clock: L_CLKp rising
 
-  Data Path: cmp_gn4124_core/cmp_wbmaster32/wb_ack_t to cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_nexth_lw_delay
+  Data Path: cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_0 to cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDC:C->Q              8   0.495   0.666  cmp_gn4124_core/cmp_wbmaster32/wb_ack_t (cmp_gn4124_core/cmp_wbmaster32/wb_ack_t)
-     LUT3:I2->O            1   0.561   0.359  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_5_mux00031_SW0 (N269)
-     LUT4:I3->O           11   0.561   0.859  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/ack_sreg_5_mux00031 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/N42)
-     LUT2:I1->O            9   0.562   0.699  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_cstart_lw_read_in_progress_not000111 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/N34)
-     LUT4:I3->O            3   0.561   0.474  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_stat_rwsel_not00011 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_stat_rwsel_not0001)
-     LUT3:I2->O            3   0.561   0.451  cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_stat_lw_delay_not00011 (cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_stat_lw_delay_not0001)
-     FDCE:CE                   0.156          cmp_gn4124_core/cmp_dma_controller/dma_controller_wb_slave_0/dma_stat_lw_delay
+     FDCE:C->Q             2   0.495   0.488  cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_0 (cmp_gn4124_core/cmp_p2l_dma_master/wb_write_cnt_0)
+     LUT1:I0->O            1   0.561   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<0>_rt (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<0>_rt)
+     MUXCY:S->O            1   0.523   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<0> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<0>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<1> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<1>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<2> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<2>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<3> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<3>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<4> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<4>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<5> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<5>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<6> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<6>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<7> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<7>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<8> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<8>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<9> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<9>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<10> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<10>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<11> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<11>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<12> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<12>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<13> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<13>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<14> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<14>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<15> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<15>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<16> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<16>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<17> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<17>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<18> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<18>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<19> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<19>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<20> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<20>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<21> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<21>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<22> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<22>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<23> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<23>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<24> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<24>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<25> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<25>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<26> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<26>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<27> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<27>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<28> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<28>)
+     MUXCY:CI->O           1   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<29> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<29>)
+     MUXCY:CI->O           0   0.065   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<30> (cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_cy<30>)
+     XORCY:CI->O           1   0.654   0.359  cmp_gn4124_core/cmp_p2l_dma_master/Msub_p2l_dma_cyc_t_addsub0000_xor<31> (cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t_addsub0000<31>)
+     LUT4:I3->O            1   0.561   0.000  cmp_gn4124_core/cmp_p2l_dma_master/Mcompar_p2l_dma_cyc_t_cmp_eq0000_lut<15> (cmp_gn4124_core/cmp_p2l_dma_master/Mcompar_p2l_dma_cyc_t_cmp_eq0000_lut<15>)
+     MUXCY:S->O            1   0.637   0.380  cmp_gn4124_core/cmp_p2l_dma_master/Mcompar_p2l_dma_cyc_t_cmp_eq0000_cy<15> (cmp_gn4124_core/cmp_p2l_dma_master/Mcompar_p2l_dma_cyc_t_cmp_eq0000_cy<15>)
+     LUT3:I2->O            1   0.561   0.357  cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t_not00011 (cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t_not0001)
+     FDCE:CE                   0.156          cmp_gn4124_core/cmp_p2l_dma_master/p2l_dma_cyc_t
     ----------------------------------------
-    Total                      6.966ns (3.457ns logic, 3.509ns route)
-                                       (49.6% logic, 50.4% route)
+    Total                      7.682ns (6.098ns logic, 1.584ns route)
+                                       (79.4% logic, 20.6% route)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'P2L_CLKp'
-  Clock period: 5.729ns (frequency: 174.545MHz)
-  Total number of paths / destination ports: 26455 / 4140
+  Clock period: 6.300ns (frequency: 158.734MHz)
+  Total number of paths / destination ports: 25073 / 4114
 -------------------------------------------------------------------------
-Delay:               5.729ns (Levels of Logic = 4)
-  Source:            cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2 (FF)
-  Destination:       cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_0 (FF)
+Delay:               6.300ns (Levels of Logic = 5)
+  Source:            cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7 (FF)
+  Destination:       cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_10 (FF)
   Source Clock:      P2L_CLKp rising
   Destination Clock: P2L_CLKp rising
 
-  Data Path: cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2 to cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_0
+  Data Path: cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7 to cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_10
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDCE:C->Q             2   0.495   0.488  cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2 (cmp_gn4124_core/cmp_l2p_dma_master/dma_length_cnt_2)
-     LUT4:I0->O            1   0.561   0.423  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and000015 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and000015)
-     LUT4:I1->O            2   0.562   0.446  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000130 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000130)
-     LUT3:I1->O            2   0.562   0.403  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000198 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_wr_and0000)
-     LUT3:I2->O           30   0.561   1.072  cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and00002 (cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_and0000)
-     FDE:CE                    0.156          cmp_gn4124_core/cmp_l2p_dma_master/addr_fifo_din_0
+     FDC:C->Q             45   0.495   1.078  cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7 (cmp_gn4124_core/cmp_l2p_dma_master/l2p_dma_current_state_FSM_FFd7)
+     LUT4_D:I3->O          2   0.561   0.382  cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_req_o_mux0000121 (cmp_gn4124_core/cmp_l2p_dma_master/N49)
+     LUT4_L:I3->LO         1   0.561   0.102  cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_mux0000<0>1_SW0 (N257)
+     LUT4:I3->O           27   0.561   1.138  cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_mux0000<0>1 (cmp_gn4124_core/cmp_l2p_dma_master/N0)
+     LUT2_L:I1->LO         1   0.562   0.102  cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_mux0000<31>5 (cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_mux0000<31>5)
+     LUT4:I3->O            1   0.561   0.000  cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_mux0000<31>14 (cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_mux0000<31>)
+     FDC:D                     0.197          cmp_gn4124_core/cmp_l2p_dma_master/ldm_arb_data_o_31
     ----------------------------------------
-    Total                      5.729ns (2.897ns logic, 2.832ns route)
-                                       (50.6% logic, 49.4% route)
+    Total                      6.300ns (3.498ns logic, 2.802ns route)
+                                       (55.5% logic, 44.5% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'L_CLKp'
@@ -1948,20 +1995,40 @@ Timing constraint: Default OFFSET OUT AFTER for Clock 'P2L_CLKp'
   Total number of paths / destination ports: 8 / 6
 -------------------------------------------------------------------------
 Offset:              6.297ns (Levels of Logic = 2)
-  Source:            cmp_gn4124_core/cmp_dma_controller/dma_error_irq (FF)
+  Source:            cmp_gn4124_core/cmp_dma_controller/dma_done_irq (FF)
   Destination:       GPIO<8> (PAD)
   Source Clock:      P2L_CLKp rising
 
-  Data Path: cmp_gn4124_core/cmp_dma_controller/dma_error_irq to GPIO<8>
+  Data Path: cmp_gn4124_core/cmp_dma_controller/dma_done_irq to GPIO<8>
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDC:C->Q              2   0.495   0.488  cmp_gn4124_core/cmp_dma_controller/dma_error_irq (cmp_gn4124_core/cmp_dma_controller/dma_error_irq)
-     LUT2:I0->O            1   0.561   0.357  irq_to_gn41241 (irq_to_gn4124)
+     FDC:C->Q              2   0.495   0.488  cmp_gn4124_core/cmp_dma_controller/dma_done_irq (cmp_gn4124_core/cmp_dma_controller/dma_done_irq)
+     LUT3:I0->O            1   0.561   0.357  irq_to_gn41241 (irq_to_gn4124)
      OBUF:I->O                 4.396          GPIO_8_OBUF (GPIO<8>)
     ----------------------------------------
     Total                      6.297ns (5.452ns logic, 0.845ns route)
                                        (86.6% logic, 13.4% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'L_CLKp'
+  Total number of paths / destination ports: 9 / 9
+-------------------------------------------------------------------------
+Offset:              6.668ns (Levels of Logic = 2)
+  Source:            cmp_gn4124_core/cmp_wbmaster32/wb_dat_o_t_0 (FF)
+  Destination:       GPIO<8> (PAD)
+  Source Clock:      L_CLKp rising
+
+  Data Path: cmp_gn4124_core/cmp_wbmaster32/wb_dat_o_t_0 to GPIO<8>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FDCE:C->Q            13   0.495   0.859  cmp_gn4124_core/cmp_wbmaster32/wb_dat_o_t_0 (cmp_gn4124_core/cmp_wbmaster32/wb_dat_o_t_0)
+     LUT3:I2->O            1   0.561   0.357  irq_to_gn41241 (irq_to_gn4124)
+     OBUF:I->O                 4.396          GPIO_8_OBUF (GPIO<8>)
+    ----------------------------------------
+    Total                      6.668ns (5.452ns logic, 1.216ns route)
+                                       (81.8% logic, 18.2% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'P2L_CLKn'
@@ -1983,36 +2050,17 @@ Offset:              5.248ns (Levels of Logic = 1)
                                        (93.2% logic, 6.8% route)
 
 =========================================================================
-Timing constraint: Default OFFSET OUT AFTER for Clock 'L_CLKp'
-  Total number of paths / destination ports: 8 / 8
--------------------------------------------------------------------------
-Offset:              5.248ns (Levels of Logic = 1)
-  Source:            cmp_dummy_ctrl_regs/dummy_reg_led_int_7 (FF)
-  Destination:       LED<7> (PAD)
-  Source Clock:      L_CLKp rising
-
-  Data Path: cmp_dummy_ctrl_regs/dummy_reg_led_int_7 to LED<7>
-                                Gate     Net
-    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
-    ----------------------------------------  ------------
-     FDCE:C->Q             1   0.495   0.357  cmp_dummy_ctrl_regs/dummy_reg_led_int_7 (cmp_dummy_ctrl_regs/dummy_reg_led_int_7)
-     OBUF:I->O                 4.396          LED_7_OBUF (LED<7>)
-    ----------------------------------------
-    Total                      5.248ns (4.891ns logic, 0.357ns route)
-                                       (93.2% logic, 6.8% route)
-
-=========================================================================
 
 
-Total REAL time to Xst completion: 144.00 secs
-Total CPU time to Xst completion: 141.91 secs
+Total REAL time to Xst completion: 137.00 secs
+Total CPU time to Xst completion: 132.48 secs
  
 --> 
 
 
-Total memory usage is 201472 kilobytes
+Total memory usage is 205136 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  463 (   0 filtered)
+Number of warnings :  466 (   0 filtered)
 Number of infos    :   85 (   0 filtered)
 

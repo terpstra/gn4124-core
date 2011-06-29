@@ -89,13 +89,13 @@
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../ip_cores/fifo_32x512.xise" xil_pn:type="FILE_ISE">
+    <file xil_pn:name="../ip_cores/fifo_32x512.xise" xil_pn:type="FILE_COREGENISE">
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../ip_cores/fifo_64x512.xise" xil_pn:type="FILE_ISE">
+    <file xil_pn:name="../ip_cores/fifo_64x512.xise" xil_pn:type="FILE_COREGENISE">
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../ip_cores/ram_2048x32.xise" xil_pn:type="FILE_ISE">
+    <file xil_pn:name="../ip_cores/ram_2048x32.xise" xil_pn:type="FILE_COREGENISE">
       <association xil_pn:name="Implementation"/>
     </file>
   </files>
