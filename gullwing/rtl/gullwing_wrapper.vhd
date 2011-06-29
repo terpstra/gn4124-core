@@ -533,7 +533,7 @@ begin
   -- Interrupt stuff
   ------------------------------------------------------------------------------
   -- just forward irq pulses for test
-  irq_to_gn4124 <= irq_sources(1) or irq_sources(0);
+  irq_to_gn4124 <= irq_sources(1) or irq_sources(0) or dummy_ctrl_reg_1(0);
 
 
 end rtl;

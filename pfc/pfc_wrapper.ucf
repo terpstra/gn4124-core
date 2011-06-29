@@ -81,16 +81,6 @@ NET "user_io_1_n" IOSTANDARD = "LVCMOS18";
 
 
 #---------------------------------------------------------------------------------------------
-# Force DDR Flops into IOBs
-# Offset constraints shoudl force this although the input and output DDR primtives are
-# instantiated within the RTL.
-#---------------------------------------------------------------------------------------------
-#INST "lp2_data<*>" IOB=TRUE;
-#INST "l2p_dframe" IOB=TRUE;
-#INST "l2p_valid"  IOB=TRUE;
-#INST "l2p_edb"    IOB=TRUE;
-
-#---------------------------------------------------------------------------------------------
 # Local clock from GN4124
 #---------------------------------------------------------------------------------------------
 NET "L_CLKp" TNM_NET = "l_clkp_grp";
@@ -99,53 +89,11 @@ TIMESPEC TS_l_clkp = PERIOD "l_clkp_grp" 5 ns HIGH 50%;
 #---------------------------------------------------------------------------------------------
 # P2L source synchronous interface
 #---------------------------------------------------------------------------------------------
-
 # Period constraint on incomming clock
 NET "P2L_CLKp" TNM_NET = "p2l_clkp_grp";
 TIMESPEC TS_p2l_clkp = PERIOD "p2l_clkp_grp" 5 ns HIGH 50%;
 NET "P2L_CLKn" TNM_NET = "p2l_clkn_grp";
 TIMESPEC TS_p2l_clkn = PERIOD "p2l_clkn_grp" 5 ns HIGH 50%;
-
-# Routing constraints on clock
-#NET "P2L_CLKp" IBUF_DELAY_VALUE= 4; # Option: 0-16
-#NET "P2L_CLKn" IBUF_DELAY_VALUE= 4; # Option: 0-16
-
-#NET "P2L_CLKp" CLOCK_DEDICATED_ROUTE = FALSE;
-#NET "P2L_CLKn" CLOCK_DEDICATED_ROUTE = FALSE;
-
-#NET "cmp_gn4124_core/clk_p_buf" MAXDELAY = 0.1 ns;
-#NET "cmp_gn4124_core/clk_n_buf" MAXDELAY = 0.1 ns;
-
-# Routing and input offset constaint on source synchronous data and control lines
-#NET "p2l_data*" IFD_DELAY_VALUE = 4;  # Option: 0-8
-#NET "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
-# work around see Xilinx Answer Record 34634
-#NET "p2l_data*" OFFSET = IN -3.7 ns VALID 1.6 ns BEFORE "P2L_CLKp" RISING;
-#NET "p2l_data*" OFFSET = IN 1.2 ns VALID 1.6 ns BEFORE "P2L_CLKn" RISING;
-#NET "p2l_dframe" IFD_DELAY_VALUE = 4; # Option: 0-8
-#NET "p2l_dframe" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
-#NET "p2l_valid" IFD_DELAY_VALUE = 4; # Option: 0-8
-#NET "p2l_valid" OFFSET = IN 1.2 ns VALID 3.0 ns BEFORE "P2L_CLKp" RISING;
-
-#---------------------------------------------------------------------------------------------
-# L2P source synchronous interface
-#---------------------------------------------------------------------------------------------
-# Ouput timing and bus skew will be reported
-# The delay is of a lesser concern than the skew of the output bus
-#NET "l2p_data*" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" RISING;
-#NET "l2p_data*" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
-
-#NET "l2p_dframe" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
-#NET "l2p_valid" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
-#NET "l2p_edb" OFFSET = OUT AFTER "P2L_CLKp" REFERENCE_PIN "L2P_CLKp" FALLING;
-
-#---------------------------------------------------------------------------------------------
-# Constrain the other inputs
-#---------------------------------------------------------------------------------------------
-NET "vc_rdy*" maxdelay = 2 ns;
-NET "l_wr_rdy*" maxdelay = 2 ns;
-NET "p_rd_d_rdy[*]" maxdelay = 2 ns;
-NET "l2p_rdy" maxdelay = 2 ns;
 
 #---------------------------------------------------------------------------------------------
 # False Path
@@ -156,7 +104,6 @@ NET "cmp_gn4124_core/rst_*" TIG;
 #---------------------------------------------------------------------------------------------
 # The IO Location Constraints
 #---------------------------------------------------------------------------------------------
-
 NET "sys_clk_p" LOC = AE15;
 NET "sys_clk_n" LOC = AF15;
 
