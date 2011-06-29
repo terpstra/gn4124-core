@@ -81,11 +81,11 @@
     <file xil_pn:name="../chipscope/cs_core.cdc" xil_pn:type="FILE_CDC">
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../../gn4124core/rtl/dummy_ctrl_regs.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../common/rtl/dummy_ctrl_regs.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../../gn4124core/rtl/dummy_stat_regs.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../common/rtl/dummy_stat_regs.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
