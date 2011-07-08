@@ -26,6 +26,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
+use work.gn4124_core_pkg.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -83,6 +84,8 @@ entity spec_gn4124_test is
       pcb_ver_i : in std_logic_vector(3 downto 0)
       );
 end spec_gn4124_test;
+
+
 
 architecture rtl of spec_gn4124_test is
 
@@ -290,19 +293,6 @@ architecture rtl of spec_gn4124_test is
 
 begin
 
-  ------------------------------------------------------------------------------
-  -- System clock from 25MHz TCXO
-  ------------------------------------------------------------------------------
-  cmp_sysclk_buf : IBUFDS
-    generic map (
-      DIFF_TERM    => false,            -- Differential Termination
-      IBUF_LOW_PWR => true,             -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
-      IOSTANDARD   => "DEFAULT")
-    port map (
-      O  => sys_clk,                    -- Buffer output
-      I  => sys_clk_p,                  -- Diff_p buffer input (connect directly to top-level port)
-      IB => sys_clk_n                   -- Diff_n buffer input (connect directly to top-level port)
-      );
 
   ------------------------------------------------------------------------------
   -- Local clock from gennum LCLK
@@ -452,10 +442,8 @@ begin
       dummy_reg_led_o => dummy_ctrl_reg_led
       );
 
-  LED_RED   <= dummy_ctrl_reg_led(0);
-  LED_GREEN <= dummy_ctrl_reg_led(1);
-  --LED_GREEN <= '1';
-  --LED_RED   <= p2l_pll_locked;
+  led_red_o   <= dummy_ctrl_reg_led(0);
+  led_green_o <= dummy_ctrl_reg_led(1);
 
   ------------------------------------------------------------------------------
   -- DMA wishbone bus connected to a DPRAM
