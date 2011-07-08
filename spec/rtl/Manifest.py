@@ -1,5 +1,4 @@
-files = ["spec_gn4124_test.vhd",
-         "../spec_gn4124_test.ucf"]
+files = ["spec_gn4124_test.vhd",]
 
 modules = {"local" : ["../../common/rtl",
-                      '../../gn4124/rtl']}
+                      '../../gn4124core/rtl']}
