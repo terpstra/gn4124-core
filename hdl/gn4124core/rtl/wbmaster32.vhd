@@ -16,12 +16,14 @@
 -- description: Provides a Wishbone interface for single read and write
 --              control and status registers
 --
--- dependencies: Xilinx FIFOs (fifo_32x512.xco, fifo_64x512.xco)
+-- dependencies: general-cores library (genrams package)
 --
 --------------------------------------------------------------------------------
 -- last changes: 27-09-2010 (mcattin) Split wishbone and gn4124 clock domains
 --               All signals crossing the clock domains are now going through fifos.
 --               Dead times optimisation in packet generator.
+--               11-07-2011 (mcattin) Replaced Xilinx Coregen FIFOs with genrams
+--               library cores from ohwr.org
 --------------------------------------------------------------------------------
 -- TODO: - byte enable support.
 --------------------------------------------------------------------------------
@@ -30,6 +32,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
+use work.genram_pkg.all;
 
 
 entity wbmaster32 is
@@ -102,15 +105,15 @@ architecture behaviour of wbmaster32 is
   -----------------------------------------------------------------------------
   -- Constants declaration
   -----------------------------------------------------------------------------
-  constant c_TO_WB_FIFO_FULL_THRES   : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
-  constant c_FROM_WB_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
+  constant c_TO_WB_FIFO_FULL_THRES   : integer := 500;
+  constant c_FROM_WB_FIFO_FULL_THRES : integer := 500;
 
   -----------------------------------------------------------------------------
   -- Signals declaration
   -----------------------------------------------------------------------------
 
   -- Sync fifos
-  signal fifo_rst : std_logic;
+  signal fifo_rst_n : std_logic;
 
   signal to_wb_fifo_empty : std_logic;
   signal to_wb_fifo_full  : std_logic;
@@ -166,11 +169,11 @@ begin
   ------------------------------------------------------------------------------
   -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    fifo_rst <= not(rst_n_i);
+    fifo_rst_n <= rst_n_i;
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    fifo_rst <= rst_n_i;
+    fifo_rst_n <= not(rst_n_i);
   end generate;
 
   ------------------------------------------------------------------------------
@@ -299,42 +302,82 @@ begin
   -----------------------------------------------------------------------------
 
   -- fifo for PCIe to WB transfer
-  cmp_fifo_to_wb : fifo_64x512
+  cmp_fifo_to_wb : generic_async_fifo
+    generic map (
+      g_data_width             => 64,
+      g_size                   => 512,
+      g_show_ahead             => false,
+      g_with_rd_empty          => true,
+      g_with_rd_full           => false,
+      g_with_rd_almost_empty   => false,
+      g_with_rd_almost_full    => false,
+      g_with_rd_count          => false,
+      g_with_wr_empty          => false,
+      g_with_wr_full           => false,
+      g_with_wr_almost_empty   => false,
+      g_with_wr_almost_full    => true,
+      g_with_wr_count          => false,
+      g_almost_empty_threshold => 0,
+      g_almost_full_threshold  => c_TO_WB_FIFO_FULL_THRES)
     port map (
-      rst                     => fifo_rst,
-      wr_clk                  => clk_i,
-      rd_clk                  => wb_clk_i,
-      din                     => to_wb_fifo_din,
-      wr_en                   => to_wb_fifo_wr,
-      rd_en                   => to_wb_fifo_rd,
-      prog_full_thresh_assert => c_TO_WB_FIFO_FULL_THRES,
-      prog_full_thresh_negate => c_TO_WB_FIFO_FULL_THRES,
-      dout                    => to_wb_fifo_dout,
-      full                    => open,
-      empty                   => to_wb_fifo_empty,
-      valid                   => open,
-      prog_full               => to_wb_fifo_full);
+      rst_n_i           => fifo_rst_n,
+      clk_wr_i          => clk_i,
+      d_i               => to_wb_fifo_din,
+      we_i              => to_wb_fifo_wr,
+      wr_empty_o        => open,
+      wr_full_o         => open,
+      wr_almost_empty_o => open,
+      wr_almost_full_o  => to_wb_fifo_full,
+      wr_count_o        => open,
+      clk_rd_i          => wb_clk_i,
+      q_o               => to_wb_fifo_dout,
+      rd_i              => to_wb_fifo_rd,
+      rd_empty_o        => to_wb_fifo_empty,
+      rd_full_o         => open,
+      rd_almost_empty_o => open,
+      rd_almost_full_o  => open,
+      rd_count_o        => open);
 
   to_wb_fifo_rw   <= to_wb_fifo_dout(63);
   to_wb_fifo_addr <= to_wb_fifo_dout(62 downto 32);  -- 31-bit
   to_wb_fifo_data <= to_wb_fifo_dout(31 downto 0);   -- 32-bit
 
   -- fifo for WB to PCIe transfer
-  cmp_from_wb_fifo : fifo_32x512
+  cmp_from_wb_fifo : generic_async_fifo
+    generic map (
+      g_data_width             => 32,
+      g_size                   => 512,
+      g_show_ahead             => false,
+      g_with_rd_empty          => true,
+      g_with_rd_full           => false,
+      g_with_rd_almost_empty   => false,
+      g_with_rd_almost_full    => false,
+      g_with_rd_count          => false,
+      g_with_wr_empty          => false,
+      g_with_wr_full           => false,
+      g_with_wr_almost_empty   => false,
+      g_with_wr_almost_full    => true,
+      g_with_wr_count          => false,
+      g_almost_empty_threshold => 0,
+      g_almost_full_threshold  => c_FROM_WB_FIFO_FULL_THRES)
     port map (
-      rst                     => fifo_rst,
-      wr_clk                  => wb_clk_i,
-      rd_clk                  => clk_i,
-      din                     => from_wb_fifo_din,
-      wr_en                   => from_wb_fifo_wr,
-      rd_en                   => from_wb_fifo_rd,
-      prog_full_thresh_assert => c_FROM_WB_FIFO_FULL_THRES,
-      prog_full_thresh_negate => c_FROM_WB_FIFO_FULL_THRES,
-      dout                    => from_wb_fifo_dout,
-      full                    => open,
-      empty                   => from_wb_fifo_empty,
-      valid                   => open,
-      prog_full               => from_wb_fifo_full);
+      rst_n_i           => fifo_rst_n,
+      clk_wr_i          => wb_clk_i,
+      d_i               => from_wb_fifo_din,
+      we_i              => from_wb_fifo_wr,
+      wr_empty_o        => open,
+      wr_full_o         => open,
+      wr_almost_empty_o => open,
+      wr_almost_full_o  => from_wb_fifo_full,
+      wr_count_o        => open,
+      clk_rd_i          => clk_i,
+      q_o               => from_wb_fifo_dout,
+      rd_i              => from_wb_fifo_rd,
+      rd_empty_o        => from_wb_fifo_empty,
+      rd_full_o         => open,
+      rd_almost_empty_o => open,
+      rd_almost_full_o  => open,
+      rd_count_o        => open);
 
   -----------------------------------------------------------------------------
   -- Wishbone master FSM

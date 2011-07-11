@@ -17,10 +17,11 @@
 --              transfers from PCI express host to local application.
 --              This entity is also used to catch the next item in chained DMA.
 --
--- dependencies:
+-- dependencies: general-cores library (genrams package)
 --
 --------------------------------------------------------------------------------
--- last changes: see svn log
+-- last changes: 11-07-2011 (mcattin) Replaced Xilinx Coregen FIFOs with genrams
+--               library cores from ohwr.org
 --------------------------------------------------------------------------------
 -- TODO: - byte enable support.
 --------------------------------------------------------------------------------
@@ -29,6 +30,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
+use work.genram_pkg.all;
 
 
 entity p2l_dma_master is
@@ -123,8 +125,8 @@ architecture behaviour of p2l_dma_master is
   -- c_MAX_READ_REQ_SIZE is the maximum size (in 32-bit words) of the payload of a packet.
   -- Allowed c_MAX_READ_REQ_SIZE values are: 32, 64, 128, 256, 512, 1024.
   -- This constant must be set according to the GN4124 and motherboard chipset capabilities.
-  constant c_MAX_READ_REQ_SIZE     : unsigned(10 downto 0)        := to_unsigned(1024, 11);
-  constant c_TO_WB_FIFO_FULL_THRES : std_logic_vector(8 downto 0) := std_logic_vector(to_unsigned(500, 9));
+  constant c_MAX_READ_REQ_SIZE     : unsigned(10 downto 0) := to_unsigned(1024, 11);
+  constant c_TO_WB_FIFO_FULL_THRES : integer               := 500;
 
   -----------------------------------------------------------------------------
   -- Signals declaration
@@ -151,7 +153,7 @@ architecture behaviour of p2l_dma_master is
   signal target_addr_cnt : unsigned(29 downto 0);
 
   -- sync fifo
-  signal fifo_rst : std_logic;
+  signal fifo_rst_n : std_logic;
 
   signal to_wb_fifo_empty     : std_logic;
   signal to_wb_fifo_full      : std_logic;
@@ -182,11 +184,11 @@ begin
   ------------------------------------------------------------------------------
   -- Creates an active high reset for fifos regardless of c_RST_ACTIVE value
   gen_fifo_rst_n : if c_RST_ACTIVE = '0' generate
-    fifo_rst <= not(rst_n_i);
+    fifo_rst_n <= rst_n_i;
   end generate;
 
   gen_fifo_rst : if c_RST_ACTIVE = '1' generate
-    fifo_rst <= rst_n_i;
+    fifo_rst_n <= not(rst_n_i);
   end generate;
 
   -- Errors to DMA controller
@@ -490,21 +492,48 @@ begin
   ------------------------------------------------------------------------------
   -- FIFOs for transition between GN4124 core and wishbone clock domain
   ------------------------------------------------------------------------------
-  cmp_to_wb_fifo : fifo_64x512
+  cmp_to_wb_fifo : generic_async_fifo
+    generic map (
+      g_data_width             => 64,
+      g_size                   => 512,
+      g_show_ahead             => false,
+      g_with_rd_empty          => true,
+      g_with_rd_full           => false,
+      g_with_rd_almost_empty   => false,
+      g_with_rd_almost_full    => false,
+      g_with_rd_count          => false,
+      g_with_wr_empty          => false,
+      g_with_wr_full           => false,
+      g_with_wr_almost_empty   => false,
+      g_with_wr_almost_full    => true,
+      g_with_wr_count          => false,
+      g_almost_empty_threshold => 0,
+      g_almost_full_threshold  => c_TO_WB_FIFO_FULL_THRES)
     port map (
-      rst                     => fifo_rst,
-      wr_clk                  => clk_i,
-      rd_clk                  => p2l_dma_clk_i,
-      din                     => to_wb_fifo_din,
-      wr_en                   => to_wb_fifo_wr,
-      rd_en                   => to_wb_fifo_rd,
-      prog_full_thresh_assert => c_TO_WB_FIFO_FULL_THRES,
-      prog_full_thresh_negate => c_TO_WB_FIFO_FULL_THRES,
-      dout                    => to_wb_fifo_dout,
-      full                    => open,
-      empty                   => to_wb_fifo_empty,
-      valid                   => to_wb_fifo_valid,
-      prog_full               => to_wb_fifo_full);
+      rst_n_i           => fifo_rst_n,
+      clk_wr_i          => clk_i,
+      d_i               => to_wb_fifo_din,
+      we_i              => to_wb_fifo_wr,
+      wr_empty_o        => open,
+      wr_full_o         => open,
+      wr_almost_empty_o => open,
+      wr_almost_full_o  => to_wb_fifo_full,
+      wr_count_o        => open,
+      clk_rd_i          => p2l_dma_clk_i,
+      q_o               => to_wb_fifo_dout,
+      rd_i              => to_wb_fifo_rd,
+      rd_empty_o        => to_wb_fifo_empty,
+      rd_full_o         => open,
+      rd_almost_empty_o => open,
+      rd_almost_full_o  => open,
+      rd_count_o        => open);
+
+  p_gen_fifo_valid : process(p2l_dma_clk_i)
+  begin
+    if rising_edge(p2l_dma_clk_i) then
+      to_wb_fifo_valid <= to_wb_fifo_rd and (not to_wb_fifo_empty);
+    end if;
+  end process;
 
   -- pause transfer from GN4124 if fifo is (almost) full
   p2l_rdy_o <= not(to_wb_fifo_full);
