@@ -1,6 +1,5 @@
 files = ["dma_controller.vhd",
          "dma_controller_wb_slave.vhd",
-         "gn4124_core_pkg.vhd",
          "l2p_arbiter.vhd",
          "l2p_dma_master.vhd",
          "p2l_decode32.vhd",
