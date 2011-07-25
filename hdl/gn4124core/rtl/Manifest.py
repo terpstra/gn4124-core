@@ -9,5 +9,5 @@ files = ["dma_controller.vhd",
 modules = { "local" : "spartan6",
             "git" : "git://ohwr.org/hdl-core-lib/general-cores.git" }
 
-fetchto = "ip_cores"
+fetchto = "../ip_cores"
 

@@ -27,6 +27,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 use work.gn4124_core_pkg.all;
+use work.genram_pkg.all;
 
 library UNISIM;
 use UNISIM.vcomponents.all;
@@ -217,15 +218,6 @@ architecture rtl of spec_gn4124_test is
       );
   end component;
 
-  component ram_2048x32
-    port (
-      clka  : in  std_logic;
-      wea   : in  std_logic_vector(0 downto 0);
-      addra : in  std_logic_vector(10 downto 0);
-      dina  : in  std_logic_vector(31 downto 0);
-      douta : out std_logic_vector(31 downto 0)
-      );
-  end component;
 
   ------------------------------------------------------------------------------
   -- Constants declaration
@@ -268,7 +260,7 @@ architecture rtl of spec_gn4124_test is
   signal dma_we_o    : std_logic;
   signal dma_ack_i   : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
   signal dma_stall_i : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
-  signal ram_we      : std_logic_vector(0 downto 0);
+  signal ram_we      : std_logic;
 
   -- Interrupts stuff
   signal irq_sources   : std_logic_vector(1 downto 0);
@@ -286,7 +278,7 @@ architecture rtl of spec_gn4124_test is
   signal dummy_ctrl_reg_led : std_logic_vector(31 downto 0);
 
   -- FOR TESTS
-  signal debug : std_logic_vector(7 downto 0);
+  signal debug       : std_logic_vector(7 downto 0);
   signal clk_div_cnt : unsigned(3 downto 0);
   signal clk_div     : std_logic;
 
@@ -329,7 +321,7 @@ begin
       -- P2L clock PLL locked
       p2l_pll_locked => p2l_pll_locked,
       -- Debug outputs
-      debug_o => debug,
+      debug_o        => debug,
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -463,15 +455,23 @@ begin
 
   dma_stall_i <= '0';
 
-  ram_we(0) <= dma_we_o and dma_cyc_o and dma_stb_o;
+  ram_we <= dma_we_o and dma_cyc_o and dma_stb_o;
 
-  cmp_test_ram : ram_2048x32
-    port map (
-      clka  => l_clk,
-      wea   => ram_we,
-      addra => dma_adr_o(10 downto 0),
-      dina  => dma_dat_o,
-      douta => dma_dat_i
+  cmp_test_ram : generic_spram
+    generic map(
+      g_data_width               => 32,
+      g_size                     => 2048,
+      g_with_byte_enable         => false,
+      g_addr_conflict_resolution => "write_first"
+      )
+    port map(
+      rst_n_i => L_RST_N,
+      clk_i   => l_clk,
+      bwe_i   => "0000",
+      we_i    => ram_we,
+      a_i     => dma_adr_o(10 downto 0),
+      d_i     => dma_dat_o,
+      q_o     => dma_dat_i
       );
 
 
