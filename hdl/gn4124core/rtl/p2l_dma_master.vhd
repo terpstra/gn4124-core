@@ -148,6 +148,7 @@ architecture behaviour of p2l_dma_master is
   signal l2p_64b_address : std_logic;
   signal s_l2p_header    : std_logic_vector(31 downto 0);
   signal l2p_last_packet : std_logic;
+  signal l2p_lbe_header  : std_logic_vector(3 downto 0);
 
   -- Target address counter
   signal target_addr_cnt : unsigned(29 downto 0);
@@ -255,10 +256,13 @@ begin
     end if;
   end process p_read_req;
 
+  -- Last Byte Enable must be "0000" when length = 1
+  l2p_lbe_header <= "0000" when l2p_len_header = 1 else "1111";
+
   s_l2p_header <= "000"                                -->  Traffic Class
                   & '0'                                -->  Snoop
                   & "000" & l2p_64b_address            -->  Packet type = read request (32 or 64 bits)
-                  & "1111"                             -->  LBE (Last Byte Enable)
+                  & l2p_lbe_header                     -->  LBE (Last Byte Enable)
                   & "1111"                             -->  FBE (First Byte Enable)
                   & "000"                              -->  Reserved
                   & '0'                                -->  VC (Virtual Channel)
