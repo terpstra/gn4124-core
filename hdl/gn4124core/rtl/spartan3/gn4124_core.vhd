@@ -4,7 +4,7 @@
 --                       http://www.ohwr.org/projects/gn4124-core             --
 --------------------------------------------------------------------------------
 --
--- unit name: Gn4124 core main block (gn4124-core.vhd)
+-- unit name: Gn4124 core main block (gn4124_core.vhd)
 --
 -- authors: Simon Deprez (simon.deprez@cern.ch)
 --          Matthieu Cattin (matthieu.cattin@cern.ch)
@@ -50,8 +50,14 @@ entity gn4124_core is
   port
     (
       ---------------------------------------------------------
+      -- Control and status
+      --
       -- Asynchronous reset from GN4124
-      rst_n_a_i : in std_logic;
+      rst_n_a_i      : in  std_logic;
+      -- P2L clock PLL locked
+      p2l_pll_locked : out std_logic;
+      -- Debug ouputs
+      debug_o        : out std_logic_vector(7 downto 0);
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -130,13 +136,19 @@ architecture rtl of gn4124_core is
   ------------------------------------------------------------------------------
 
   -- Clock
-  signal clk_p     : std_logic;
-  signal clk_n     : std_logic;
-  signal clk_p_buf : std_logic;
-  signal clk_n_buf : std_logic;
+  signal clk_p         : std_logic;
+  signal clk_n         : std_logic;
+  signal clk_p_buf     : std_logic;
+  signal clk_n_buf     : std_logic;
+  signal clk_p_io      : std_logic;
+  signal clk_n_io      : std_logic;
+  signal clk_sys_buf   : std_logic;
+  signal clk_sys       : std_logic;
+  signal clk_sys_n_buf : std_logic;
+  signal clk_sys_n     : std_logic;
   -- Reset for all clk_p logic
-  signal rst_reg   : std_logic;
-  signal rst_n     : std_logic;
+  signal rst_reg       : std_logic;
+  signal rst_n         : std_logic;
 
   -------------------------------------------------------------
   -- P2L DataPath (from deserializer to packet decoder)
@@ -177,12 +189,18 @@ architecture rtl of gn4124_core is
   signal arb_ser_data   : std_logic_vector(31 downto 0);
 
   -- Local bus control
-  signal l_wr_rdy_t   : std_logic_vector(1 downto 0);
-  signal l_wr_rdy     : std_logic_vector(1 downto 0);
-  signal p_rd_d_rdy_t : std_logic_vector(1 downto 0);
-  signal p_rd_d_rdy   : std_logic_vector(1 downto 0);
-  signal l2p_rdy_t    : std_logic;
-  signal l2p_rdy      : std_logic;
+  signal l_wr_rdy_t    : std_logic_vector(1 downto 0);
+  signal l_wr_rdy_t2   : std_logic_vector(1 downto 0);
+  signal l_wr_rdy      : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy_t  : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy_t2 : std_logic_vector(1 downto 0);
+  signal p_rd_d_rdy    : std_logic_vector(1 downto 0);
+  signal l2p_rdy_t     : std_logic;
+  signal l2p_rdy_t2    : std_logic;
+  signal l2p_rdy       : std_logic;
+  signal l2p_edb       : std_logic;
+  signal l2p_edb_t     : std_logic;
+  signal l2p_edb_t2    : std_logic;
 
   -------------------------------------------------------------
   -- CSR wishbone master to arbiter
@@ -283,40 +301,100 @@ architecture rtl of gn4124_core is
 --==============================================================================
 begin
 
+  -----------------------------------------------------------------------------
+  -- Unused entity port (kept for compatibility)
+  -----------------------------------------------------------------------------
+  debug_o        <= (others => '0');
+  p2l_pll_locked <= '0';
 
   -----------------------------------------------------------------------------
   -- The Internal Core Clock is Derived from the P2L_CLK
   -----------------------------------------------------------------------------
-  CLK_ibuf : IBUFGDS
-    port map(
-      I  => p2l_clk_p_i,
-      IB => p2l_clk_n_i,
-      O  => clk_p_buf);
+  gen_clk_s3 : if g_IS_SPARTAN6 = false generate
+    CLK_ibuf : IBUFGDS
+      port map(
+        I  => p2l_clk_p_i,
+        IB => p2l_clk_n_i,
+        O  => clk_p_buf);
 
-  CLK_bufg : BUFG
-    port map(
-      I => clk_p_buf,
-      O => clk_p);
+    CLK_bufg : BUFG
+      port map(
+        I => clk_p_buf,
+        O => clk_p_io);
 
-  CLKn_ibuf : IBUFGDS
-    port map(
-      I  => p2l_clk_n_i,
-      IB => p2l_clk_p_i,
-      O  => clk_n_buf);
+    CLKn_ibuf : IBUFGDS
+      port map(
+        I  => p2l_clk_n_i,
+        IB => p2l_clk_p_i,
+        O  => clk_n_buf);
 
-  CLKn_bufg : BUFG
-    port map(
-      I => clk_n_buf,
-      O => clk_n);
+    CLKn_bufg : BUFG
+      port map(
+        I => clk_n_buf,
+        O => clk_n_io);
+
+    clk_sys   <= clk_p_io;
+    clk_sys_n <= clk_n_io;
+  end generate gen_clk_s3;
+
+  gen_clk_s6 : if g_IS_SPARTAN6 = true generate
+    clk_p_ibuf : IBUFGDS
+      port map (
+        I  => p2l_clk_p_i,
+        IB => p2l_clk_n_i,
+        O  => clk_p_buf
+        );
+
+    clk_p_bufio2 : BUFIO2
+      generic map (
+        DIVIDE        => 2,
+        DIVIDE_BYPASS => true,          -- DIVCLK output sourced from Divider (FALSE) or from I input (TRUE).
+        I_INVERT      => false,
+        USE_DOUBLER   => true
+        )
+      port map (
+        DIVCLK       => clk_sys_buf,
+        IOCLK        => clk_p_io,
+        SERDESSTROBE => open,
+        I            => clk_p_buf
+        );
+
+    clk_n_bufio2 : BUFIO2
+      generic map (
+        DIVIDE        => 2,
+        DIVIDE_BYPASS => true,          -- DIVCLK output sourced from Divider (FALSE) or from I input (TRUE).
+        I_INVERT      => true,
+        USE_DOUBLER   => true
+        )
+      port map (
+        DIVCLK       => clk_sys_n_buf,
+        IOCLK        => clk_n_io,
+        SERDESSTROBE => open,
+        I            => clk_p_buf
+        );
+
+    clk_sys_buf : BUFG
+      port map (
+        O => clk_sys,
+        I => clk_sys_buf
+        );
+
+      clk_sys_n_buf : BUFG
+      port map (
+        O => clk_sys_n,
+        I => clk_sys_n_buf
+        );
+  end generate gen_clk_s6;
+
 
   ------------------------------------------------------------------------------
   -- Reset aligned to core clock
   ------------------------------------------------------------------------------
-  p_core_rst : process (clk_p, rst_n_a_i)
+  p_core_rst : process (clk_sys, rst_n_a_i)
   begin
     if rst_n_a_i = c_RST_ACTIVE then
       rst_reg <= c_RST_ACTIVE;
-    elsif rising_edge(clk_p) then
+    elsif rising_edge(clk_sys) then
       rst_reg <= not(c_RST_ACTIVE);
     end if;
   end process p_core_rst;
@@ -354,9 +432,11 @@ begin
     (
       ---------------------------------------------------------
       -- Raw unprocessed reset from the GN412x
-      rst_n_i => rst_n,
-      clk_p_i => clk_p,
-      clk_n_i => clk_n,
+      rst_n_i     => rst_n,
+      clk_sys_i   => clk_sys,
+      clk_sys_n_i => clk_sys_n,
+      clk_p_i     => clk_p_io,
+      clk_n_i     => clk_n_io,
 
       ---------------------------------------------------------
       -- P2L Clock Domain
@@ -389,7 +469,7 @@ begin
     (
       ---------------------------------------------------------
       -- Clock/Reset
-      clk_i   => clk_p,
+      clk_i   => clk_sys,
       rst_n_i => rst_n,
 
       ---------------------------------------------------------
@@ -442,7 +522,7 @@ begin
     (
       ---------------------------------------------------------
       -- Clock/Reset
-      clk_i   => clk_p,
+      clk_i   => clk_sys,
       rst_n_i => rst_n,
 
       ---------------------------------------------------------
@@ -507,7 +587,7 @@ begin
   cmp_dma_controller : dma_controller
     port map
     (
-      clk_i   => clk_p,
+      clk_i   => clk_sys,
       rst_n_i => rst_n,
 
       dma_ctrl_irq_o => dma_irq_o,
@@ -554,7 +634,7 @@ begin
   cmp_l2p_dma_master : l2p_dma_master
     port map
     (
-      clk_i   => clk_p,
+      clk_i   => clk_sys,
       rst_n_i => rst_n,
 
       dma_ctrl_target_addr_i => dma_ctrl_carrier_addr,
@@ -573,7 +653,7 @@ begin
       ldm_arb_req_o    => ldm_arb_req,
       arb_ldm_gnt_i    => arb_ldm_gnt,
 
-      l2p_edb_o  => l2p_edb_o,
+      l2p_edb_o  => l2p_edb,
       l_wr_rdy_i => l_wr_rdy,
       l2p_rdy_i  => l2p_rdy,
 
@@ -586,7 +666,8 @@ begin
       l2p_dma_stb_o   => l2p_dma_stb,
       l2p_dma_we_o    => l2p_dma_we,
       l2p_dma_ack_i   => l2p_dma_ack,
-      l2p_dma_stall_i => l2p_dma_stall
+      l2p_dma_stall_i => l2p_dma_stall,
+      p2l_dma_cyc_i   => p2l_dma_cyc
       );
 
   -----------------------------------------------------------------------------
@@ -595,7 +676,7 @@ begin
   cmp_p2l_dma_master : p2l_dma_master
     port map
     (
-      clk_i   => clk_p,
+      clk_i   => clk_sys,
       rst_n_i => rst_n,
 
       dma_ctrl_carrier_addr_i => dma_ctrl_carrier_addr,
@@ -639,6 +720,7 @@ begin
       p2l_dma_we_o    => p2l_dma_we,
       p2l_dma_ack_i   => p2l_dma_ack,
       p2l_dma_stall_i => p2l_dma_stall,
+      l2p_dma_cyc_i   => l2p_dma_cyc,
 
       next_item_carrier_addr_o => next_item_carrier_addr,
       next_item_host_addr_h_o  => next_item_host_addr_h,
@@ -669,12 +751,12 @@ begin
       dma_stb_o <= p2l_dma_stb;
       dma_we_o  <= p2l_dma_we;
     else
-      dma_adr_o <= (others => 'X');
-      dma_dat_o <= (others => 'X');
-      dma_sel_o <= (others => 'X');
+      dma_adr_o <= (others => '0');
+      dma_dat_o <= (others => '0');
+      dma_sel_o <= (others => '0');
       dma_cyc_o <= '0';
       dma_stb_o <= '0';
-      dma_we_o  <= 'X';
+      dma_we_o  <= '0';
     end if;
   end process p_dma_wb_mux;
 
@@ -693,29 +775,44 @@ begin
   -----------------------------------------------------------------------------
   -- Resync GN412x L2P status signals
   -----------------------------------------------------------------------------
-  p_l2p_status_sync : process (clk_p, rst_n)
+  p_l2p_status_sync : process (clk_sys, rst_n)
   begin
     if(rst_n = c_RST_ACTIVE) then
-      l_wr_rdy_t   <= "00";
-      l_wr_rdy     <= "00";
-      p_rd_d_rdy_t <= "00";
-      p_rd_d_rdy   <= "00";
-      l2p_rdy_t    <= '0';
-      l2p_rdy      <= '0';
-    elsif rising_edge(clk_p) then
+      l_wr_rdy_t    <= "00";
+      l_wr_rdy_t2   <= "00";
+      l_wr_rdy      <= "00";
+      p_rd_d_rdy_t  <= "00";
+      p_rd_d_rdy_t2 <= "00";
+      p_rd_d_rdy    <= "00";
+      l2p_rdy_t     <= '0';
+      l2p_rdy_t2    <= '0';
+      l2p_rdy       <= '0';
+      l2p_edb_o     <= '0';
+      l2p_edb_t     <= '0';
+      l2p_edb_t2    <= '0';
+    elsif rising_edge(clk_sys) then
       -- must be checked before l2p_dma_master issues a master write
-      l_wr_rdy_t <= l_wr_rdy_i;
-      l_wr_rdy   <= l_wr_rdy_t;
+      l_wr_rdy_t  <= l_wr_rdy_i;
+      l_wr_rdy_t2 <= l_wr_rdy_t;
+      l_wr_rdy    <= l_wr_rdy_t2;
 
       -- must be checked before wbmaster32 sends read completion with data
-      p_rd_d_rdy_t <= p_rd_d_rdy_i;
-      p_rd_d_rdy   <= p_rd_d_rdy_t;
+      p_rd_d_rdy_t  <= p_rd_d_rdy_i;
+      p_rd_d_rdy_t2 <= p_rd_d_rdy_t;
+      p_rd_d_rdy    <= p_rd_d_rdy_t2;
 
       -- when de-asserted, l2p_dma_master must stop sending data (de-assert l2p_valid) within 3 (or 7 ?) clock cycles
-      l2p_rdy_t <= l2p_rdy_i;
-      l2p_rdy   <= l2p_rdy_t;
+      l2p_rdy_t  <= l2p_rdy_i;
+      l2p_rdy_t2 <= l2p_rdy_t;
+      l2p_rdy    <= l2p_rdy_t2;
+
+      --assert when packet badly ends (e.g. dma abort)
+      l2p_edb_t  <= l2p_edb;
+      l2p_edb_t2 <= l2p_edb_t;
+      l2p_edb_o  <= l2p_edb_t2;
     end if;
   end process p_l2p_status_sync;
+
 
   -----------------------------------------------------------------------------
   -- L2P arbiter, arbitrates access to GN4124
@@ -725,7 +822,7 @@ begin
     (
       ---------------------------------------------------------
       -- Clock/Reset
-      clk_i   => clk_p,
+      clk_i   => clk_sys,
       rst_n_i => rst_n,
 
       ---------------------------------------------------------
@@ -772,9 +869,11 @@ begin
     (
       ---------------------------------------------------------
       -- clk_p Clock Domain Inputs
-      clk_p_i => clk_p,
-      clk_n_i => clk_n,
-      rst_n_i => rst_n,
+      clk_sys_i   => clk_sys,
+      clk_sys_n_i => clk_sys_n,
+      clk_p_i     => clk_p_io,
+      clk_n_i     => clk_n_io,
+      rst_n_i     => rst_n,
 
       ---------------------------------------------------------
       -- DeSerialized Output

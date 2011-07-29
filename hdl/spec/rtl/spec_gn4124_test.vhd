@@ -100,12 +100,12 @@ architecture rtl of spec_gn4124_test is
 
   component gn4124_core
     generic(
-      --g_IS_SPARTAN6       : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
-      g_BAR0_APERTURE     : integer := 20;     -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                               -- => number of bits to address periph on the board
-      g_CSR_WB_SLAVES_NB  : integer := 1;      -- Number of CSR wishbone slaves
-      g_DMA_WB_SLAVES_NB  : integer := 1;      -- Number of DMA wishbone slaves
-      g_DMA_WB_ADDR_WIDTH : integer := 26      -- DMA wishbone address bus width
+      g_IS_SPARTAN6       : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
+      g_BAR0_APERTURE     : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
+                                            -- => number of bits to address periph on the board
+      g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
+      g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
+      g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
       );
     port
       (
@@ -287,8 +287,11 @@ architecture rtl of spec_gn4124_test is
   signal clk_div     : std_logic;
 
   -- LED
-  signal led_cnt : unsigned(24 downto 0);
-  signal led_en  : std_logic;
+  signal led_cnt   : unsigned(24 downto 0);
+  signal led_en    : std_logic;
+  signal led_k2000 : unsigned(2 downto 0);
+  signal led_pps   : std_logic;
+  signal leds      : std_logic_vector(3 downto 0);
 
 
 begin
@@ -313,7 +316,7 @@ begin
   ------------------------------------------------------------------------------
   cmp_gn4124_core : gn4124_core
     generic map (
-      --g_IS_SPARTAN6       => true,
+      g_IS_SPARTAN6       => true,
       g_BAR0_APERTURE     => c_BAR0_APERTURE,
       g_CSR_WB_SLAVES_NB  => c_CSR_WB_SLAVES_NB,
       g_DMA_WB_SLAVES_NB  => c_DMA_WB_SLAVES_NB,
@@ -513,17 +516,43 @@ begin
   begin
     if L_RST_N = '0' then
       led_cnt <= (others => '1');
-      led_en   <= '1';
+      led_en  <= '1';
     elsif rising_edge(l_clk) then
       led_cnt <= led_cnt - 1;
-      led_en   <= led_cnt(24);
+      led_en  <= led_cnt(23);
     end if;
   end process p_led_cnt;
 
-  AUX_LEDS_O(0) <= led_en;
-  AUX_LEDS_O(1) <= not(led_en);
-  AUX_LEDS_O(2) <= '1';
-  AUX_LEDS_O(3) <= '0';
+  led_pps <= led_cnt(23) and not(led_en);
+
+
+  p_led_k2000 : process (l_clk, L_RST_N)
+  begin
+    if L_RST_N = '0' then
+      led_k2000 <= (others => '0');
+      leds      <= "0001";
+    elsif rising_edge(l_clk) then
+      if led_pps = '1' then
+        if led_k2000(2) = '0' then
+          if leds /= "1000" then
+            leds <= leds(2 downto 0) & '0';
+          end if;
+        else
+          if leds /= "0001" then
+            leds <= '0' & leds(3 downto 1);
+          end if;
+        end if;
+        led_k2000 <= led_k2000 + 1;
+      end if;
+    end if;
+  end process p_led_k2000;
+
+  AUX_LEDS_O <= not(leds);
+
+--AUX_LEDS_O(0) <= led_en;
+--AUX_LEDS_O(1) <= not(led_en);
+--AUX_LEDS_O(2) <= '1';
+--AUX_LEDS_O(3) <= '0';
 
 end rtl;
 

@@ -40,6 +40,7 @@ use UNISIM.vcomponents.all;
 --==============================================================================
 entity gn4124_core is
   generic(
+    g_IS_SPARTAN6       : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
     g_BAR0_APERTURE     : integer := 20;     -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
                                              -- => number of bits to address periph on the board
     g_CSR_WB_SLAVES_NB  : integer := 1;      -- Number of CSR wishbone slaves

@@ -40,9 +40,11 @@ entity l2p_ser is
     (
       ---------------------------------------------------------
       -- Reset and clock
-      clk_p_i : in std_logic;
-      clk_n_i : in std_logic;
-      rst_n_i : in std_logic;
+      clk_sys_i   : in std_logic;
+      clk_sys_n_i : in std_logic;
+      clk_p_i     : in std_logic;
+      clk_n_i     : in std_logic;
+      rst_n_i     : in std_logic;
 
       ---------------------------------------------------------
       -- Serializer inputs
@@ -72,10 +74,13 @@ architecture rtl of l2p_ser is
   signal ff_rst : std_logic;
 
   -- SDR to DDR signals
-  signal dframe_d    : std_logic;
-  signal valid_d     : std_logic;
-  signal data_d      : std_logic_vector(l2p_data_i'range);
-  signal l2p_clk_sdr : std_logic;
+  signal dframe_d       : std_logic;
+  signal valid_d        : std_logic;
+  signal data_d         : std_logic_vector(l2p_data_i'range);
+  signal l2p_dframe_buf : std_logic;
+  signal l2p_valid_buf  : std_logic;
+  signal l2p_data_buf   : std_logic_vector(l2p_data_i'range);
+  signal l2p_clk_sdr    : std_logic;
 
 
 begin
@@ -95,13 +100,13 @@ begin
   -----------------------------------------------------------------------------
   -- Re-allign data tightly for the positive clock edge
   -----------------------------------------------------------------------------
-  process (clk_p_i, rst_n_i)
+  process (clk_sys_i, rst_n_i)
   begin
     if(rst_n_i = c_RST_ACTIVE) then
       dframe_d <= '0';
       valid_d  <= '0';
       data_d   <= (others => '0');
-    elsif rising_edge(clk_p_i) then
+    elsif rising_edge(clk_sys_i) then
       dframe_d <= l2p_dframe_i;
       valid_d  <= l2p_valid_i;
       data_d   <= l2p_data_i;
@@ -111,26 +116,69 @@ begin
   ------------------------------------------------------------------------------
   -- Align control signals to the negative clock edge
   ------------------------------------------------------------------------------
-  process (clk_n_i, rst_n_i)
-  begin
-    if(rst_n_i = c_RST_ACTIVE) then
-      l2p_valid_o  <= '0';
-      l2p_dframe_o <= '0';
-    elsif rising_edge(clk_n_i) then
-      l2p_valid_o  <= valid_d;
-      l2p_dframe_o <= dframe_d;
-    end if;
-  end process;
+  -- Spartan3 control signal generation
+  gen_ctl_s3 : if g_IS_SPARTAN6 = false generate
+    process (clk_n_i, rst_n_i)
+    begin
+      if(rst_n_i = c_RST_ACTIVE) then
+        l2p_valid_o  <= '0';
+        l2p_dframe_o <= '0';
+      elsif rising_edge(clk_n_i) then
+        l2p_valid_o  <= valid_d;
+        l2p_dframe_o <= dframe_d;
+      end if;
+    end process;
+  end generate gen_ctl_s3;
+
+  -- Spartan6 control signal generation
+  gen_ctl_s6 : if g_IS_SPARTAN6 = true generate
+    cmp_ddr_ff_valid : ODDR2
+      port map
+      (
+        Q  => l2p_valid_buf,
+        C0 => clk_p_i,
+        C1 => clk_n_i,
+        CE => '1',
+        D0 => valid_d,
+        D1 => valid_d,
+        R  => ff_rst,
+        S  => '0'
+        );
+    cmp_buf_valid : OBUF
+      port map (
+        O => l2p_valid_o,
+        I => l2p_valid_buf
+        );
+
+    cmp_ddr_ff_dframe : ODDR2
+      port map
+      (
+        Q  => l2p_dframe_buf,
+        C0 => clk_p_i,
+        C1 => clk_n_i,
+        CE => '1',
+        D0 => dframe_d,
+        D1 => dframe_d,
+        R  => ff_rst,
+        S  => '0'
+        );
+    cmp_buf_dframe : OBUF
+      port map (
+        O => l2p_dframe_o,
+        I => l2p_dframe_buf
+        );
+
+  end generate gen_ctl_s6;
 
   ------------------------------------------------------------------------------
   -- DDR FF instanciation for data
   ------------------------------------------------------------------------------
 
   -- Spartan3 primitives instanciation
-  gen_out_ddr_ff : if g_IS_SPARTAN6 = false generate
+  gen_data_s3 : if g_IS_SPARTAN6 = false generate
     -- Data
-    DDROUT : for i in 0 to 15 generate
-      U : OFDDRRSE
+    gen_bits : for i in 0 to 15 generate
+      cmp_ddr_ff : OFDDRRSE
         port map
         (
           Q  => l2p_data_o(i),
@@ -142,27 +190,32 @@ begin
           R  => ff_rst,
           S  => '0'
           );
-    end generate;
-  end generate gen_out_ddr_ff;
+    end generate gen_bits;
+  end generate gen_data_s3;
 
   -- Spartan6 primitives instanciation
-  gen_out_ddr_ff_s6 : if g_IS_SPARTAN6 = true generate
+  gen_data_s6 : if g_IS_SPARTAN6 = true generate
     -- Data
-    DDROUT : for i in 0 to 15 generate
-      U : ODDR2
+    gen_bits : for i in 0 to 15 generate
+      cmp_ddr_ff : ODDR2
         port map
         (
-          Q  => l2p_data_o(i),
-          C0 => clk_n_i,
-          C1 => clk_p_i,
+          Q  => l2p_data_buf(i),
+          C0 => clk_p_i,
+          C1 => clk_n_i,
           CE => '1',
           D0 => data_d(i),
           D1 => data_d(i+16),
           R  => ff_rst,
           S  => '0'
           );
-    end generate;
-  end generate gen_out_ddr_ff_s6;
+      cmp_buf : OBUF
+        port map (
+          O => l2p_data_o(i),
+          I => l2p_data_buf(i)
+          );
+    end generate gen_bits;
+  end generate gen_data_s6;
 
   ------------------------------------------------------------------------------
   -- DDR source synchronous clock generation
@@ -174,9 +227,9 @@ begin
       I  => l2p_clk_sdr);
 
   -- Spartan3 primitives instanciation
-  gen_l2p_clk_ddr_ff : if g_IS_SPARTAN6 = false generate
+  gen_clk_s3 : if g_IS_SPARTAN6 = false generate
     -- L2P clock
-    L2P_CLK_int : FDDRRSE
+    cmp_ddr_ff : FDDRRSE
       port map(
         Q  => l2p_clk_sdr,
         C0 => clk_n_i,
@@ -186,22 +239,22 @@ begin
         D1 => '0',
         R  => '0',
         S  => '0');
-  end generate gen_l2p_clk_ddr_ff;
+  end generate gen_clk_s3;
 
   -- Spartan6 primitives instanciation
-  gen_l2p_clk_ddr_ff_s6 : if g_IS_SPARTAN6 = true generate
+  gen_clk_s6 : if g_IS_SPARTAN6 = true generate
     -- L2P clock
-    L2P_CLK_int : ODDR2
+    cmp_ddr_ff : ODDR2
       port map(
         Q  => l2p_clk_sdr,
-        C0 => clk_n_i,
-        C1 => clk_p_i,
+        C0 => clk_sys_i,
+        C1 => clk_sys_n_i,
         CE => '1',
         D0 => '1',
         D1 => '0',
         R  => '0',
         S  => '0');
-  end generate gen_l2p_clk_ddr_ff_s6;
+  end generate gen_clk_s6;
 
 end rtl;
 

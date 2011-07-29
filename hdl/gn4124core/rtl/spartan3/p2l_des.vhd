@@ -39,9 +39,11 @@ entity p2l_des is
     (
       ---------------------------------------------------------
       -- Reset and clock
-      rst_n_i : in std_logic;
-      clk_p_i : in std_logic;
-      clk_n_i : in std_logic;
+      rst_n_i     : in std_logic;
+      clk_sys_i   : in std_logic;
+      clk_sys_n_i : in std_logic;
+      clk_p_i     : in std_logic;
+      clk_n_i     : in std_logic;
 
       ---------------------------------------------------------
       -- P2L clock domain (DDR)
@@ -76,10 +78,13 @@ architecture rtl of p2l_des is
   -- SDR signals
   signal p2l_valid_p    : std_logic;
   signal p2l_valid_n    : std_logic;
+  signal p2l_valid_buf  : std_logic;
   signal p2l_dframe_p   : std_logic;
   signal p2l_dframe_n   : std_logic;
+  signal p2l_dframe_buf : std_logic;
   signal p2l_data_p     : std_logic_vector(p2l_data_i'range);
   signal p2l_data_n     : std_logic_vector(p2l_data_i'range);
+  signal p2l_data_buf   : std_logic_vector(p2l_data_i'range);
   signal p2l_data_sdr_l : std_logic_vector(p2l_data_i'range);
   signal p2l_data_sdr   : std_logic_vector(p2l_data_i'length*2-1 downto 0);
 
@@ -104,7 +109,7 @@ begin
   ------------------------------------------------------------------------------
 
   -- Spartan3 primitives instanciation
-  gen_in_ddr_ff : if g_IS_SPARTAN6 = false generate
+  gen_in_s3 : if g_IS_SPARTAN6 = false generate
     -- Data
     DDRFF_D : for i in p2l_data_i'range generate
       U : IFDDRRSE
@@ -148,22 +153,82 @@ begin
         R  => ff_rst,
         S  => '0'
         );
-  end generate gen_in_ddr_ff;
+  end generate gen_in_s3;
 
   -- Spartan6 primitives instanciation
-  gen_in_ddr_ff_s6 : if g_IS_SPARTAN6 = true generate
-    
-  end generate gen_in_ddr_ff_s6;
+  gen_in_s6 : if g_IS_SPARTAN6 = true generate
+    -- Data
+    gen_data : for i in p2l_data_i'range generate
+      cmp_buf : IBUF
+        port map (
+          O => p2l_data_buf(i),
+          I => p2l_data_i(i)
+          );
+
+      cmp_ddr_ff : IDDR2
+        port map
+        (
+          Q0 => p2l_data_n(i),
+          Q1 => p2l_data_p(i),
+          C0 => clk_n_i,
+          C1 => clk_p_i,
+          CE => '1',
+          D  => p2l_data_buf(i),
+          R  => ff_rst,
+          S  => '0'
+          );
+    end generate gen_data;
+
+    -- dframe
+    cmp_buf_dframe : IBUF
+      port map (
+        O => p2l_dframe_buf,
+        I => p2l_dframe_i
+        );
+
+    cmp_ddr_ff_dframe : IDDR2
+      port map
+      (
+        Q0 => p2l_dframe_n,
+        Q1 => p2l_dframe_p,
+        C0 => clk_n_i,
+        C1 => clk_p_i,
+        CE => '1',
+        D  => p2l_dframe_buf,
+        R  => ff_rst,
+        S  => '0'
+        );
+
+    -- valid
+    cmp_buf_valid : IBUF
+      port map (
+        O => p2l_valid_buf,
+        I => p2l_valid_i
+        );
+
+    cmp_ddr_ff_valid : IDDR2
+      port map
+      (
+        Q0 => p2l_valid_n,
+        Q1 => p2l_valid_p,
+        C0 => clk_n_i,
+        C1 => clk_p_i,
+        CE => '1',
+        D  => p2l_valid_buf,
+        R  => ff_rst,
+        S  => '0'
+        );
+  end generate gen_in_s6;
 
 
   -----------------------------------------------------------------------------
   -- Align positive edge data to negative edge clock
   -----------------------------------------------------------------------------
-  process (clk_n_i, rst_n_i)
+  process (clk_sys_n_i, rst_n_i)
   begin
     if(rst_n_i = c_RST_ACTIVE) then
       p2l_data_sdr_l <= (others => '0');
-    elsif rising_edge(clk_n_i) then
+    elsif rising_edge(clk_sys_n_i) then
       p2l_data_sdr_l <= p2l_data_p;
     end if;
   end process;
@@ -175,13 +240,13 @@ begin
   -----------------------------------------------------------------------------
   -- Final positive edge clock alignment
   -----------------------------------------------------------------------------
-  process (clk_p_i, rst_n_i)
+  process (clk_sys_i, rst_n_i)
   begin
     if(rst_n_i = c_RST_ACTIVE) then
       p2l_valid_o  <= '0';
       p2l_dframe_o <= '0';
       p2l_data_o   <= (others => '0');
-    elsif rising_edge(clk_p_i) then
+    elsif rising_edge(clk_sys_i) then
       p2l_valid_o  <= p2l_valid_p;
       p2l_dframe_o <= p2l_dframe_p;
       p2l_data_o   <= p2l_data_sdr;
