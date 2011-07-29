@@ -379,7 +379,7 @@ begin
         I => clk_sys_buf
         );
 
-      clk_sys_n_buf : BUFG
+    clk_sys_n_buf : BUFG
       port map (
         O => clk_sys_n,
         I => clk_sys_n_buf
