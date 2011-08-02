@@ -12,6 +12,7 @@ local:
 		echo "process run {Generate Programming File} -force rerun_all" >> run.tcl
 		xtclsh run.tcl
 
+
 #target for cleaing all intermediate stuff
 clean:
 		rm -f $(ISE_CRAP)
@@ -32,6 +33,7 @@ CWD := $(shell pwd)
 
 FILES := ../spec_gn4124_test.ucf \
 ../rtl/spec_gn4124_test.vhd \
+../rtl/wb_addr_decoder.vhd \
 ../../common/rtl/dummy_ctrl_regs.vhd \
 ../../common/rtl/dummy_stat_regs.vhd \
 ../../gn4124core/rtl/dma_controller.vhd \
@@ -209,7 +211,7 @@ __send:
 		rsync -Rav $(foreach file, $(FILES), $(shell readlink -f $(file))) $(USER)@$(SERVER):$(R_NAME)
 
 __do_synthesis:
-		ssh $(USER)@$(SERVER) 'cd $(R_NAME)$(CWD) && /opt/Xilinx/12.2/ISE_DS/ISE/bin/lin64/xtclsh run.tcl'
+		ssh $(USER)@$(SERVER) 'cd $(R_NAME)$(CWD) && xtclsh run.tcl'
 
 __send_back: 
 		cd .. && rsync -av $(USER)@$(SERVER):$(R_NAME)$(CWD) . && cd $(CWD)

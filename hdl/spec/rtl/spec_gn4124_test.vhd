@@ -100,12 +100,7 @@ architecture rtl of spec_gn4124_test is
 
   component gn4124_core
     generic(
-      g_IS_SPARTAN6       : boolean := false;  -- This generic is used to instanciate spartan6 specific primitives
-      g_BAR0_APERTURE     : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                            -- => number of bits to address periph on the board
-      g_CSR_WB_SLAVES_NB  : integer := 1;   -- Number of CSR wishbone slaves
-      g_DMA_WB_SLAVES_NB  : integer := 1;   -- Number of DMA wishbone slaves
-      g_DMA_WB_ADDR_WIDTH : integer := 26   -- DMA wishbone address bus width
+      g_IS_SPARTAN6 : boolean := false  -- This generic is used to instanciate spartan6 specific primitives
       );
     port
       (
@@ -158,31 +153,84 @@ architecture rtl of spec_gn4124_test is
         irq_p_o   : out std_logic;                     -- Interrupt request pulse to GN4124 GPIO
 
         ---------------------------------------------------------
-        -- Target interface (CSR wishbone master)
-        wb_clk_i : in  std_logic;
-        wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_CSR_WB_SLAVES_NB+1)-1 downto 0);
-        wb_dat_o : out std_logic_vector(31 downto 0);                         -- Data out
-        wb_sel_o : out std_logic_vector(3 downto 0);                          -- Byte select
-        wb_stb_o : out std_logic;
-        wb_we_o  : out std_logic;
-        wb_cyc_o : out std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
-        wb_dat_i : in  std_logic_vector((32*g_CSR_WB_SLAVES_NB)-1 downto 0);  -- Data in
-        wb_ack_i : in  std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
+        -- DMA registers wishbone interface (slave classic)
+        dma_reg_clk_i   : in  std_logic;
+        dma_reg_adr_i   : in  std_logic_vector(31 downto 0);
+        dma_reg_dat_i   : in  std_logic_vector(31 downto 0);
+        dma_reg_sel_i   : in  std_logic_vector(3 downto 0);
+        dma_reg_stb_i   : in  std_logic;
+        dma_reg_we_i    : in  std_logic;
+        dma_reg_cyc_i   : in  std_logic;
+        dma_reg_dat_o   : out std_logic_vector(31 downto 0);
+        dma_reg_ack_o   : out std_logic;
+        dma_reg_stall_o : out std_logic;
+
+        ---------------------------------------------------------
+        -- CSR wishbone interface (master pipelined)
+        csr_clk_i   : in  std_logic;
+        csr_adr_o   : out std_logic_vector(31 downto 0);
+        csr_dat_o   : out std_logic_vector(31 downto 0);
+        csr_sel_o   : out std_logic_vector(3 downto 0);
+        csr_stb_o   : out std_logic;
+        csr_we_o    : out std_logic;
+        csr_cyc_o   : out std_logic;
+        csr_dat_i   : in  std_logic_vector(31 downto 0);
+        csr_ack_i   : in  std_logic;
+        csr_stall_i : in  std_logic;
 
         ---------------------------------------------------------
         -- DMA interface (Pipelined wishbone master)
         dma_clk_i   : in  std_logic;
         dma_adr_o   : out std_logic_vector(31 downto 0);
-        dma_dat_o   : out std_logic_vector(31 downto 0);                         -- Data out
-        dma_sel_o   : out std_logic_vector(3 downto 0);                          -- Byte select
+        dma_dat_o   : out std_logic_vector(31 downto 0);
+        dma_sel_o   : out std_logic_vector(3 downto 0);
         dma_stb_o   : out std_logic;
         dma_we_o    : out std_logic;
-        dma_cyc_o   : out std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
-        dma_dat_i   : in  std_logic_vector((32*g_DMA_WB_SLAVES_NB)-1 downto 0);  -- Data in
-        dma_ack_i   : in  std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
-        dma_stall_i : in  std_logic--_vector(g_DMA_WB_SLAVES_NB-1 downto 0)        -- for pipelined Wishbone
+        dma_cyc_o   : out std_logic;
+        dma_dat_i   : in  std_logic_vector(31 downto 0);
+        dma_ack_i   : in  std_logic;
+        dma_stall_i : in  std_logic
         );
   end component;  --  gn4124_core
+
+  component wb_addr_decoder
+    generic
+      (
+        g_WINDOW_SIZE  : integer := 18;  -- Number of bits to address periph on the board (32-bit word address)
+        g_WB_SLAVES_NB : integer := 2
+        );
+    port
+      (
+        ---------------------------------------------------------
+        -- GN4124 core clock and reset
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
+
+        ---------------------------------------------------------
+        -- wishbone master interface
+        wbm_adr_i   : in  std_logic_vector(31 downto 0);  -- Address
+        wbm_dat_i   : in  std_logic_vector(31 downto 0);  -- Data out
+        wbm_sel_i   : in  std_logic_vector(3 downto 0);   -- Byte select
+        wbm_stb_i   : in  std_logic;                      -- Strobe
+        wbm_we_i    : in  std_logic;                      -- Write
+        wbm_cyc_i   : in  std_logic;                      -- Cycle
+        wbm_dat_o   : out std_logic_vector(31 downto 0);  -- Data in
+        wbm_ack_o   : out std_logic;                      -- Acknowledge
+        wbm_stall_o : out std_logic;                      -- Stall
+
+        ---------------------------------------------------------
+        -- wishbone slaves interface
+        wb_adr_o   : out std_logic_vector(31 downto 0);                     -- Address
+        wb_dat_o   : out std_logic_vector(31 downto 0);                     -- Data out
+        wb_sel_o   : out std_logic_vector(3 downto 0);                      -- Byte select
+        wb_stb_o   : out std_logic;                                         -- Strobe
+        wb_we_o    : out std_logic;                                         -- Write
+        wb_cyc_o   : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);       -- Cycle
+        wb_dat_i   : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);  -- Data in
+        wb_ack_i   : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0);       -- Acknowledge
+        wb_stall_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)        -- Stall
+        );
+  end component wb_addr_decoder;
 
   component dummy_stat_regs_wb_slave
     port (
@@ -226,10 +274,8 @@ architecture rtl of spec_gn4124_test is
   ------------------------------------------------------------------------------
   -- Constants declaration
   ------------------------------------------------------------------------------
-  constant c_BAR0_APERTURE     : integer := 20;
-  constant c_CSR_WB_SLAVES_NB  : integer := 2;
-  constant c_DMA_WB_SLAVES_NB  : integer := 1;
-  constant c_DMA_WB_ADDR_WIDTH : integer := 26;
+  constant c_BAR0_APERTURE    : integer := 18;  -- nb of bits for 32-bit word address
+  constant c_CSR_WB_SLAVES_NB : integer := 3;
 
   ------------------------------------------------------------------------------
   -- Signals declaration
@@ -244,8 +290,19 @@ architecture rtl of spec_gn4124_test is
   -- P2L colck PLL status
   signal p2l_pll_locked : std_logic;
 
-  -- CSR wishbone bus
-  signal wb_adr   : std_logic_vector(c_BAR0_APERTURE-log2_ceil(c_CSR_WB_SLAVES_NB+1)-1 downto 0);
+  -- CSR wishbone bus (master)
+  signal wbm_adr   : std_logic_vector(31 downto 0);
+  signal wbm_dat_i : std_logic_vector(31 downto 0);
+  signal wbm_dat_o : std_logic_vector(31 downto 0);
+  signal wbm_sel   : std_logic_vector(3 downto 0);
+  signal wbm_cyc   : std_logic;
+  signal wbm_stb   : std_logic;
+  signal wbm_we    : std_logic;
+  signal wbm_ack   : std_logic;
+  signal wbm_stall : std_logic;
+
+  -- CSR wishbone bus (slaves)
+  signal wb_adr   : std_logic_vector(31 downto 0);
   signal wb_dat_i : std_logic_vector((32*c_CSR_WB_SLAVES_NB)-1 downto 0);
   signal wb_dat_o : std_logic_vector(31 downto 0);
   signal wb_sel   : std_logic_vector(3 downto 0);
@@ -253,18 +310,19 @@ architecture rtl of spec_gn4124_test is
   signal wb_stb   : std_logic;
   signal wb_we    : std_logic;
   signal wb_ack   : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
+  signal wb_stall : std_logic_vector(c_CSR_WB_SLAVES_NB-1 downto 0);
 
   -- DMA wishbone bus
-  signal dma_adr_o   : std_logic_vector(31 downto 0);
-  signal dma_dat_i   : std_logic_vector((32*c_DMA_WB_SLAVES_NB)-1 downto 0);
-  signal dma_dat_o   : std_logic_vector(31 downto 0);
-  signal dma_sel_o   : std_logic_vector(3 downto 0);
-  signal dma_cyc_o   : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
-  signal dma_stb_o   : std_logic;
-  signal dma_we_o    : std_logic;
-  signal dma_ack_i   : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
-  signal dma_stall_i : std_logic;       --_vector(c_DMA_WB_SLAVES_NB-1 downto 0);
-  signal ram_we      : std_logic;
+  signal dma_adr   : std_logic_vector(31 downto 0);
+  signal dma_dat_i : std_logic_vector(31 downto 0);
+  signal dma_dat_o : std_logic_vector(31 downto 0);
+  signal dma_sel   : std_logic_vector(3 downto 0);
+  signal dma_cyc   : std_logic;
+  signal dma_stb   : std_logic;
+  signal dma_we    : std_logic;
+  signal dma_ack   : std_logic;
+  signal dma_stall : std_logic;
+  signal ram_we    : std_logic;
 
   -- Interrupts stuff
   signal irq_sources   : std_logic_vector(1 downto 0);
@@ -316,11 +374,7 @@ begin
   ------------------------------------------------------------------------------
   cmp_gn4124_core : gn4124_core
     generic map (
-      g_IS_SPARTAN6       => true,
-      g_BAR0_APERTURE     => c_BAR0_APERTURE,
-      g_CSR_WB_SLAVES_NB  => c_CSR_WB_SLAVES_NB,
-      g_DMA_WB_SLAVES_NB  => c_DMA_WB_SLAVES_NB,
-      g_DMA_WB_ADDR_WIDTH => c_DMA_WB_ADDR_WIDTH
+      g_IS_SPARTAN6 => true
       )
     port map
     (
@@ -375,31 +429,83 @@ begin
       irq_p_o   => GPIO(0),
 
       ---------------------------------------------------------
-      -- Target Interface (Wishbone master)
-      wb_clk_i => l_clk,
-      wb_adr_o => wb_adr,
-      wb_dat_o => wb_dat_o,
-      wb_sel_o => wb_sel,
-      wb_stb_o => wb_stb,
-      wb_we_o  => wb_we,
-      wb_cyc_o => wb_cyc,
-      wb_dat_i => wb_dat_i,
-      wb_ack_i => wb_ack,
+      -- DMA registers wishbone interface (slave classic)
+      dma_reg_clk_i   => l_clk,
+      dma_reg_adr_i   => wb_adr,
+      dma_reg_dat_i   => wb_dat_o,
+      dma_reg_sel_i   => wb_sel,
+      dma_reg_stb_i   => wb_stb,
+      dma_reg_we_i    => wb_we,
+      dma_reg_cyc_i   => wb_cyc(0),
+      dma_reg_dat_o   => wb_dat_i(31 downto 0),
+      dma_reg_ack_o   => wb_ack(0),
+      dma_reg_stall_o => wb_stall(0),
 
       ---------------------------------------------------------
-      -- L2P DMA Interface (Pipelined Wishbone master)
+      -- CSR wishbone interface (master pipelined)
+      csr_clk_i   => l_clk,
+      csr_adr_o   => wbm_adr,
+      csr_dat_o   => wbm_dat_o,
+      csr_sel_o   => wbm_sel,
+      csr_stb_o   => wbm_stb,
+      csr_we_o    => wbm_we,
+      csr_cyc_o   => wbm_cyc,
+      csr_dat_i   => wbm_dat_i,
+      csr_ack_i   => wbm_ack,
+      csr_stall_i => wbm_stall,
+
+      ---------------------------------------------------------
+      -- DMA wishbone interface (master pipelined)
       dma_clk_i   => l_clk,
-      dma_adr_o   => dma_adr_o,
+      dma_adr_o   => dma_adr,
       dma_dat_o   => dma_dat_o,
-      dma_sel_o   => dma_sel_o,
-      dma_stb_o   => dma_stb_o,
-      dma_we_o    => dma_we_o,
-      dma_cyc_o   => dma_cyc_o,
+      dma_sel_o   => dma_sel,
+      dma_stb_o   => dma_stb,
+      dma_we_o    => dma_we,
+      dma_cyc_o   => dma_cyc,
       dma_dat_i   => dma_dat_i,
-      dma_ack_i   => dma_ack_i,
-      dma_stall_i => dma_stall_i
+      dma_ack_i   => dma_ack,
+      dma_stall_i => dma_stall
       );
 
+  ------------------------------------------------------------------------------
+  -- CSR wishbone address decoder
+  ------------------------------------------------------------------------------
+  cmp_csr_wb_addr_decoder : wb_addr_decoder
+    generic map (
+      g_WINDOW_SIZE  => c_BAR0_APERTURE,
+      g_WB_SLAVES_NB => c_CSR_WB_SLAVES_NB
+      )
+    port map (
+      ---------------------------------------------------------
+      -- GN4124 core clock and reset
+      clk_i   => l_clk,
+      rst_n_i => L_RST_N,
+
+      ---------------------------------------------------------
+      -- wishbone master interface
+      wbm_adr_i   => wbm_adr,
+      wbm_dat_i   => wbm_dat_o,
+      wbm_sel_i   => wbm_sel,
+      wbm_stb_i   => wbm_stb,
+      wbm_we_i    => wbm_we,
+      wbm_cyc_i   => wbm_cyc,
+      wbm_dat_o   => wbm_dat_i,
+      wbm_ack_o   => wbm_ack,
+      wbm_stall_o => wbm_stall,
+
+      ---------------------------------------------------------
+      -- wishbone slaves interface
+      wb_adr_o   => wb_adr,
+      wb_dat_o   => wb_dat_o,
+      wb_sel_o   => wb_sel,
+      wb_stb_o   => wb_stb,
+      wb_we_o    => wb_we,
+      wb_cyc_o   => wb_cyc,
+      wb_dat_i   => wb_dat_i,
+      wb_ack_i   => wb_ack,
+      wb_stall_i => wb_stall
+      );
 
   ------------------------------------------------------------------------------
   -- CSR wishbone bus slaves
@@ -410,17 +516,19 @@ begin
       wb_clk_i                => l_clk,
       wb_addr_i               => wb_adr(1 downto 0),
       wb_data_i               => wb_dat_o,
-      wb_data_o               => wb_dat_i(31 downto 0),
-      wb_cyc_i                => wb_cyc(0),
+      wb_data_o               => wb_dat_i(63 downto 32),
+      wb_cyc_i                => wb_cyc(1),
       wb_sel_i                => wb_sel,
       wb_stb_i                => wb_stb,
       wb_we_i                 => wb_we,
-      wb_ack_o                => wb_ack(0),
+      wb_ack_o                => wb_ack(1),
       dummy_stat_reg_1_i      => dummy_stat_reg_1,
       dummy_stat_reg_2_i      => dummy_stat_reg_2,
       dummy_stat_reg_3_i      => dummy_stat_reg_3,
       dummy_stat_reg_switch_i => dummy_stat_reg_switch
       );
+
+  wb_stall(2 downto 1) <= "00";
 
   dummy_stat_reg_1      <= X"DEADBABE";
   dummy_stat_reg_2      <= X"BEEFFACE";
@@ -433,12 +541,12 @@ begin
       wb_clk_i        => l_clk,
       wb_addr_i       => wb_adr(1 downto 0),
       wb_data_i       => wb_dat_o,
-      wb_data_o       => wb_dat_i(63 downto 32),
-      wb_cyc_i        => wb_cyc(1),
+      wb_data_o       => wb_dat_i(95 downto 64),
+      wb_cyc_i        => wb_cyc(2),
       wb_sel_i        => wb_sel,
       wb_stb_i        => wb_stb,
       wb_we_i         => wb_we,
-      wb_ack_o        => wb_ack(1),
+      wb_ack_o        => wb_ack(2),
       dummy_reg_1_o   => dummy_ctrl_reg_1,
       dummy_reg_2_o   => dummy_ctrl_reg_2,
       dummy_reg_3_o   => dummy_ctrl_reg_3,
@@ -454,19 +562,19 @@ begin
   process (l_clk, L_RST_N)
   begin
     if (L_RST_N = '0') then
-      dma_ack_i <= '0';
+      dma_ack <= '0';
     elsif rising_edge(l_clk) then
-      if (dma_cyc_o = '1' and dma_stb_o = '1') then
-        dma_ack_i <= '1';
+      if (dma_cyc = '1' and dma_stb = '1') then
+        dma_ack <= '1';
       else
-        dma_ack_i <= '0';
+        dma_ack <= '0';
       end if;
     end if;
   end process;
 
-  dma_stall_i <= '0';
+  dma_stall <= '0';
 
-  ram_we <= dma_we_o and dma_cyc_o and dma_stb_o;
+  ram_we <= dma_we and dma_cyc and dma_stb;
 
   cmp_test_ram : generic_spram
     generic map(
@@ -480,7 +588,7 @@ begin
       clk_i   => l_clk,
       bwe_i   => "0000",
       we_i    => ram_we,
-      a_i     => dma_adr_o(10 downto 0),
+      a_i     => dma_adr(10 downto 0),
       d_i     => dma_dat_o,
       q_o     => dma_dat_i
       );

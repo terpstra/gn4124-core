@@ -40,12 +40,7 @@ use UNISIM.vcomponents.all;
 --==============================================================================
 entity gn4124_core is
   generic(
-    g_IS_SPARTAN6       : boolean := true;  -- This generic is used to instanciate spartan6 specific primitives
-    g_BAR0_APERTURE     : integer := 20;     -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                             -- => number of bits to address periph on the board
-    g_CSR_WB_SLAVES_NB  : integer := 1;      -- Number of CSR wishbone slaves
-    g_DMA_WB_SLAVES_NB  : integer := 1;      -- Number of DMA wishbone slaves
-    g_DMA_WB_ADDR_WIDTH : integer := 26      -- DMA wishbone address bus width
+    g_IS_SPARTAN6       : boolean := true  -- This generic is used to instanciate spartan6 specific primitives
     );
   port
     (
@@ -84,8 +79,8 @@ entity gn4124_core is
       l2p_data_o   : out std_logic_vector(15 downto 0);  -- Parallel transmit data
       l2p_dframe_o : out std_logic;                      -- Transmit Data Frame
       l2p_valid_o  : out std_logic;                      -- Transmit Data Valid
-      l2p_edb_o    : out std_logic;                      -- Packet termination and discard
       -- L2P Control
+      l2p_edb_o    : out std_logic;                      -- Packet termination and discard
       l2p_rdy_i    : in  std_logic;                      -- Tx Buffer Full Flag
       l_wr_rdy_i   : in  std_logic_vector(1 downto 0);   -- Local-to-PCIe Write
       p_rd_d_rdy_i : in  std_logic_vector(1 downto 0);   -- PCIe-to-Local Read Response Data Ready
@@ -98,29 +93,43 @@ entity gn4124_core is
       irq_p_o   : out std_logic;                     -- Interrupt request pulse to GN4124 GPIO
 
       ---------------------------------------------------------
-      -- Target interface (CSR wishbone master)
-      wb_clk_i : in  std_logic;
-      wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_CSR_WB_SLAVES_NB+1)-1 downto 0);
-      wb_dat_o : out std_logic_vector(31 downto 0);                         -- Data out
-      wb_sel_o : out std_logic_vector(3 downto 0);                          -- Byte select
-      wb_stb_o : out std_logic;
-      wb_we_o  : out std_logic;
-      wb_cyc_o : out std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
-      wb_dat_i : in  std_logic_vector((32*g_CSR_WB_SLAVES_NB)-1 downto 0);  -- Data in
-      wb_ack_i : in  std_logic_vector(g_CSR_WB_SLAVES_NB-1 downto 0);
+      -- DMA registers wishbone interface (slave classic)
+      dma_reg_clk_i   : in  std_logic;
+      dma_reg_adr_i   : in  std_logic_vector(31 downto 0);
+      dma_reg_dat_i   : in  std_logic_vector(31 downto 0);
+      dma_reg_sel_i   : in  std_logic_vector(3 downto 0);
+      dma_reg_stb_i   : in  std_logic;
+      dma_reg_we_i    : in  std_logic;
+      dma_reg_cyc_i   : in  std_logic;
+      dma_reg_dat_o   : out std_logic_vector(31 downto 0);
+      dma_reg_ack_o   : out std_logic;
+      dma_reg_stall_o : out std_logic;
 
       ---------------------------------------------------------
-      -- DMA interface (Pipelined wishbone master)
+      -- CSR wishbone interface (master pipelined)
+      csr_clk_i   : in  std_logic;
+      csr_adr_o   : out std_logic_vector(31 downto 0);
+      csr_dat_o   : out std_logic_vector(31 downto 0);
+      csr_sel_o   : out std_logic_vector(3 downto 0);
+      csr_stb_o   : out std_logic;
+      csr_we_o    : out std_logic;
+      csr_cyc_o   : out std_logic;
+      csr_dat_i   : in  std_logic_vector(31 downto 0);
+      csr_ack_i   : in  std_logic;
+      csr_stall_i : in  std_logic;
+
+      ---------------------------------------------------------
+      -- DMA wishbone interface (master pipelined)
       dma_clk_i   : in  std_logic;
       dma_adr_o   : out std_logic_vector(31 downto 0);
-      dma_dat_o   : out std_logic_vector(31 downto 0);                         -- Data out
-      dma_sel_o   : out std_logic_vector(3 downto 0);                          -- Byte select
+      dma_dat_o   : out std_logic_vector(31 downto 0);
+      dma_sel_o   : out std_logic_vector(3 downto 0);
       dma_stb_o   : out std_logic;
       dma_we_o    : out std_logic;
-      dma_cyc_o   : out std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
-      dma_dat_i   : in  std_logic_vector((32*g_DMA_WB_SLAVES_NB)-1 downto 0);  -- Data in
-      dma_ack_i   : in  std_logic;                                             --_vector(g_DMA_WB_SLAVES_NB-1 downto 0);
-      dma_stall_i : in  std_logic--_vector(g_DMA_WB_SLAVES_NB-1 downto 0)        -- for pipelined Wishbone
+      dma_cyc_o   : out std_logic;
+      dma_dat_i   : in  std_logic_vector(31 downto 0);
+      dma_ack_i   : in  std_logic;
+      dma_stall_i : in  std_logic
       );
 end gn4124_core;
 
@@ -284,16 +293,7 @@ architecture rtl of gn4124_core is
   ------------------------------------------------------------------------------
   -- CSR wishbone bus
   ------------------------------------------------------------------------------
-  signal wb_adr              : std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_CSR_WB_SLAVES_NB+1)-1 downto 0);
-  signal wb_dat_s2m          : std_logic_vector((32*(g_CSR_WB_SLAVES_NB+1))-1 downto 0);
-  signal wb_dat_m2s          : std_logic_vector(31 downto 0);
-  signal wb_sel              : std_logic_vector(3 downto 0);
-  signal wb_cyc              : std_logic_vector(g_CSR_WB_SLAVES_NB downto 0);
-  signal wb_stb              : std_logic;
-  signal wb_we               : std_logic;
-  signal wb_ack              : std_logic_vector(g_CSR_WB_SLAVES_NB downto 0);
-  signal wb_ack_dma_ctrl     : std_logic;
-  signal wb_dat_s2m_dma_ctrl : std_logic_vector(31 downto 0);
+  signal csr_adr : std_logic_vector(30 downto 0);
 
   ------------------------------------------------------------------------------
   -- DMA wishbone bus
@@ -469,11 +469,6 @@ begin
   -- Wishbone master
   -----------------------------------------------------------------------------
   cmp_wbmaster32 : wbmaster32
-    generic map
-    (
-      g_BAR0_APERTURE => g_BAR0_APERTURE,
-      g_WB_SLAVES_NB  => (g_CSR_WB_SLAVES_NB + 1)  -- +1 for the DMA controller (wb slave always present)
-      )
     port map
     (
       ---------------------------------------------------------
@@ -517,25 +512,20 @@ begin
 
       ---------------------------------------------------------
       -- Wishbone Interface
-      wb_clk_i => wb_clk_i,
-      wb_adr_o => wb_adr,
-      wb_dat_i => wb_dat_s2m,
-      wb_dat_o => wb_dat_m2s,
-      wb_sel_o => wb_sel,
-      wb_cyc_o => wb_cyc,
-      wb_stb_o => wb_stb,
-      wb_we_o  => wb_we,
-      wb_ack_i => wb_ack
+      wb_clk_i   => csr_clk_i,
+      wb_adr_o   => csr_adr,
+      wb_dat_i   => csr_dat_i,
+      wb_dat_o   => csr_dat_o,
+      wb_sel_o   => csr_sel_o,
+      wb_cyc_o   => csr_cyc_o,
+      wb_stb_o   => csr_stb_o,
+      wb_we_o    => csr_we_o,
+      wb_ack_i   => csr_ack_i,
+      wb_stall_i => csr_stall_i
       );
 
-  wb_adr_o   <= wb_adr;
-  wb_dat_s2m <= wb_dat_i & wb_dat_s2m_dma_ctrl;
-  wb_dat_o   <= wb_dat_m2s;
-  wb_sel_o   <= wb_sel;
-  wb_cyc_o   <= wb_cyc(g_CSR_WB_SLAVES_NB downto 1);  -- wb_cyc(0) is for DMA controller
-  wb_stb_o   <= wb_stb;
-  wb_we_o    <= wb_we;
-  wb_ack     <= wb_ack_i & wb_ack_dma_ctrl;
+  -- Adapt address bus width for top level
+  csr_adr_o <= '0' & csr_adr;
 
   -----------------------------------------------------------------------------
   -- DMA controller
@@ -569,16 +559,19 @@ begin
       next_item_attrib_i       => next_item_attrib,
       next_item_valid_i        => next_item_valid,
 
-      wb_clk_i => wb_clk_i,
-      wb_adr_i => wb_adr(3 downto 0),
-      wb_dat_o => wb_dat_s2m_dma_ctrl,
-      wb_dat_i => wb_dat_m2s,
-      wb_sel_i => wb_sel,
-      wb_cyc_i => wb_cyc(0),
-      wb_stb_i => wb_stb,
-      wb_we_i  => wb_we,
-      wb_ack_o => wb_ack_dma_ctrl
+      wb_clk_i => dma_reg_clk_i,
+      wb_adr_i => dma_reg_adr_i(3 downto 0),
+      wb_dat_o => dma_reg_dat_o,
+      wb_dat_i => dma_reg_dat_i,
+      wb_sel_i => dma_reg_sel_i,
+      wb_cyc_i => dma_reg_cyc_i,
+      wb_stb_i => dma_reg_stb_i,
+      wb_we_i  => dma_reg_we_i,
+      wb_ack_o => dma_reg_ack_o
       );
+
+  -- DMA registers is a classic wishbone slave supporting single pipelined cycles
+  dma_reg_stall_o <= '0';
 
   -- Status signals from DMA masters
   dma_ctrl_done  <= dma_ctrl_l2p_done or dma_ctrl_p2l_done;

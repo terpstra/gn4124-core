@@ -149,12 +149,6 @@ package gn4124_core_pkg is
 
 -----------------------------------------------------------------------------
   component wbmaster32
-    generic
-      (
-        g_BAR0_APERTURE : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                          -- => number of bits to address periph on the board
-        g_WB_SLAVES_NB  : integer := 2
-        );
     port
       (
         ---------------------------------------------------------
@@ -198,15 +192,16 @@ package gn4124_core_pkg is
 
         ---------------------------------------------------------
         -- CSR wishbone interface
-        wb_clk_i : in  std_logic;                                                               -- Wishbone bus clock
-        wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);  -- Address
-        wb_dat_o : out std_logic_vector(31 downto 0);                                           -- Data out
-        wb_sel_o : out std_logic_vector(3 downto 0);                                            -- Byte select
-        wb_stb_o : out std_logic;                                                               -- Strobe
-        wb_we_o  : out std_logic;                                                               -- Write
-        wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                             -- Cycle
-        wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);                        -- Data in
-        wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                              -- Acknowledge
+        wb_clk_i   : in  std_logic;                      -- Wishbone bus clock
+        wb_adr_o   : out std_logic_vector(30 downto 0);  -- Address
+        wb_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
+        wb_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
+        wb_stb_o   : out std_logic;                      -- Strobe
+        wb_we_o    : out std_logic;                      -- Write
+        wb_cyc_o   : out std_logic;                      -- Cycle
+        wb_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
+        wb_ack_i   : in  std_logic;                      -- Acknowledge
+        wb_stall_i : in  std_logic                       -- Stall
         );
   end component;  -- wbmaster32
 

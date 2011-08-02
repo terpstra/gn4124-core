@@ -36,12 +36,6 @@ use work.genram_pkg.all;
 
 
 entity wbmaster32 is
-  generic
-    (
-      g_BAR0_APERTURE : integer := 20;  -- BAR0 aperture, defined in GN4124 PCI_BAR_CONFIG register (0x80C)
-                                        -- => number of bits to address periph on the board
-      g_WB_SLAVES_NB  : integer := 2
-      );
   port
     (
       ---------------------------------------------------------
@@ -86,15 +80,16 @@ entity wbmaster32 is
 
       ---------------------------------------------------------
       -- CSR wishbone interface
-      wb_clk_i : in  std_logic;                                                               -- Wishbone bus clock
-      wb_adr_o : out std_logic_vector(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);  -- Address
-      wb_dat_o : out std_logic_vector(31 downto 0);                                           -- Data out
-      wb_sel_o : out std_logic_vector(3 downto 0);                                            -- Byte select
-      wb_stb_o : out std_logic;                                                               -- Strobe
-      wb_we_o  : out std_logic;                                                               -- Write
-      wb_cyc_o : out std_logic_vector(g_WB_SLAVES_NB-1 downto 0);                             -- Cycle
-      wb_dat_i : in  std_logic_vector((32*g_WB_SLAVES_NB)-1 downto 0);                        -- Data in
-      wb_ack_i : in  std_logic_vector(g_WB_SLAVES_NB-1 downto 0)                              -- Acknowledge
+      wb_clk_i   : in  std_logic;                      -- Wishbone bus clock
+      wb_adr_o   : out std_logic_vector(30 downto 0);  -- Address
+      wb_dat_o   : out std_logic_vector(31 downto 0);  -- Data out
+      wb_sel_o   : out std_logic_vector(3 downto 0);   -- Byte select
+      wb_stb_o   : out std_logic;                      -- Strobe
+      wb_we_o    : out std_logic;                      -- Write
+      wb_cyc_o   : out std_logic;                      -- Cycle
+      wb_dat_i   : in  std_logic_vector(31 downto 0);  -- Data in
+      wb_ack_i   : in  std_logic;                      -- Acknowledge
+      wb_stall_i : in  std_logic                       -- Stall
       );
 end wbmaster32;
 
@@ -136,22 +131,15 @@ architecture behaviour of wbmaster32 is
   type   wishbone_state_type is (WB_IDLE, WB_READ_FIFO, WB_CYCLE, WB_WAIT_ACK);
   signal wishbone_current_state : wishbone_state_type;
 
-  --signal s_wb_we : std_logic;
-
-  signal s_wb_periph_addr   : std_logic_vector(log2_ceil(g_WB_SLAVES_NB)-1 downto 0);
-  signal wb_periph_addr     : std_logic_vector(log2_ceil(g_WB_SLAVES_NB)-1 downto 0);
-  signal s_wb_periph_select : std_logic_vector((2**s_wb_periph_addr'length)-1 downto 0);
-  signal s_wb_ack_muxed     : std_logic;
-  signal wb_ack_t           : std_logic;
-  signal s_wb_dat_i_muxed   : std_logic_vector(31 downto 0);
-  signal wb_dat_i_t         : std_logic_vector(31 downto 0);
-  signal wb_cyc_t           : std_logic;
-  signal s_wb_cyc_demuxed   : std_logic_vector(g_WB_SLAVES_NB-1 downto 0);
-  signal wb_dat_o_t         : std_logic_vector(31 downto 0);
-  signal wb_stb_t           : std_logic;
-  signal wb_adr_t           : std_logic_vector(30 downto 0);
-  signal wb_we_t            : std_logic;
-  signal wb_sel_t           : std_logic_vector(3 downto 0);
+  signal wb_ack_t   : std_logic;
+  signal wb_dat_i_t : std_logic_vector(31 downto 0);
+  signal wb_cyc_t   : std_logic;
+  signal wb_dat_o_t : std_logic_vector(31 downto 0);
+  signal wb_stb_t   : std_logic;
+  signal wb_adr_t   : std_logic_vector(30 downto 0);
+  signal wb_we_t    : std_logic;
+  signal wb_sel_t   : std_logic_vector(3 downto 0);
+  signal wb_stall_t : std_logic;
 
   -- L2P packet generator
   type   l2p_read_cpl_state_type is (L2P_IDLE, L2P_HEADER, L2P_DATA);
@@ -460,81 +448,15 @@ begin
     end if;
   end process p_wb_fsm;
 
-  ------------------------------------------------------------------------------
-  -- Wishbone master address decoding
-  ------------------------------------------------------------------------------
-
-  -- Take the first N bits of the address to select the active wb peripheral
-  -- g_BAR0_APERTURE represents byte address window, has to be shifted right by 2 to match wishbone 32-bit word addresses
-  s_wb_periph_addr <= wb_adr_t(g_BAR0_APERTURE-3 downto g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-2);
-
-  -----------------------------------------------------------------------------
-  -- One-hot decode function,  s_wb_periph_select <= onehot_decode(s_wb_periph_addr);
-  -----------------------------------------------------------------------------
-  onehot_decode : process(s_wb_periph_addr)
-    variable v_onehot : std_logic_vector((2**s_wb_periph_addr'length)-1 downto 0);
-    variable v_index  : integer range 0 to (2**s_wb_periph_addr'length)-1;
-  begin
-    v_onehot := (others => '0');
-    v_index  := 0;
-    for i in s_wb_periph_addr'range loop
-      if (s_wb_periph_addr(i) = '1') then
-        v_index := 2*v_index+1;
-      else
-        v_index := 2*v_index;
-      end if;
-    end loop;
-    v_onehot(v_index)  := '1';
-    s_wb_periph_select <= v_onehot;
-  end process onehot_decode;
-
-  -- Register multiplexed ack and data + periph address
-  p_wb_in_regs : process (wb_clk_i, rst_n_i)
-  begin
-    if (rst_n_i = c_RST_ACTIVE) then
-      wb_periph_addr <= (others => '0');
-      wb_dat_i_t     <= (others => '0');
-      wb_ack_t       <= '0';
-    elsif rising_edge(wb_clk_i) then
-      wb_periph_addr <= s_wb_periph_addr;
-      wb_dat_i_t     <= s_wb_dat_i_muxed;
-      wb_ack_t       <= s_wb_ack_muxed;
-    end if;
-  end process p_wb_in_regs;
-
-  -- Select ack line of the active peripheral
-  p_ack_mux : process (wb_ack_i, wb_periph_addr)
-  begin
-    if (to_integer(unsigned(wb_periph_addr)) < g_WB_SLAVES_NB) then
-      s_wb_ack_muxed <= wb_ack_i(to_integer(unsigned(wb_periph_addr)));
-    else
-      s_wb_ack_muxed <= '0';
-    end if;
-  end process p_ack_mux;
-
-  -- Select input data of the active peripheral
-  p_din_mux : process (wb_dat_i, wb_periph_addr)
-  begin
-    if (to_integer(unsigned(wb_periph_addr)) < g_WB_SLAVES_NB) then
-      s_wb_dat_i_muxed <=
-        wb_dat_i(31+(32*to_integer(unsigned(wb_periph_addr))) downto 32*to_integer(unsigned(wb_periph_addr)));
-    else
-      s_wb_dat_i_muxed <= (others => 'X');
-    end if;
-  end process p_din_mux;
-
-  -- Assert the cyc line of the selected peripheral
-  gen_cyc_demux : for i in 0 to g_WB_SLAVES_NB-1 generate
-    s_wb_cyc_demuxed(i) <= wb_cyc_t and s_wb_periph_select(i) and not(wb_ack_t);
-  end generate gen_cyc_demux;
-
-  -- Wishbone bus outputs
-  wb_dat_o <= wb_dat_o_t;
-  wb_stb_o <= wb_stb_t;
-  wb_we_o  <= wb_we_t;
-  wb_adr_o <= wb_adr_t(g_BAR0_APERTURE-log2_ceil(g_WB_SLAVES_NB)-1 downto 0);
-  wb_sel_o <= wb_sel_t;
-  wb_cyc_o <= s_wb_cyc_demuxed;
+  wb_adr_o   <= wb_adr_t;
+  wb_cyc_o   <= wb_cyc_t;
+  wb_stb_o   <= wb_stb_t;
+  wb_we_o    <= wb_we_t;
+  wb_sel_o   <= wb_sel_t;
+  wb_dat_i_t <= wb_dat_i;
+  wb_dat_o   <= wb_dat_o_t;
+  wb_ack_t   <= wb_ack_i;
+  wb_stall_t <= wb_stall_i;
 
 end behaviour;
 
