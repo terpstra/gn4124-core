@@ -571,11 +571,11 @@ INST "cmp_gn4124_core/l_wr_rdy_t*" IOB=FALSE;
 # GN4124
 
 NET "L_CLKp" TNM_NET = "l_clkp_grp";
-TIMESPEC TS_l_clkp = PERIOD "l_clkp_grp" 6.25 ns HIGH 50%;
+TIMESPEC TS_l_clkp = PERIOD "l_clkp_grp" 5 ns HIGH 50%;
 NET "P2L_CLKp" TNM_NET = "p2l_clkp_grp";
-TIMESPEC TS_p2l_clkp = PERIOD "p2l_clkp_grp" 6.25 ns HIGH 50%;
+TIMESPEC TS_p2l_clkp = PERIOD "p2l_clkp_grp" 5 ns HIGH 50%;
 NET "P2L_CLKn" TNM_NET = "p2l_clkn_grp";
-TIMESPEC TS_p2l_clkn = PERIOD "p2l_clkn_grp" 6.25 ns HIGH 50%;
+TIMESPEC TS_p2l_clkn = PERIOD "p2l_clkn_grp" 5 ns HIGH 50%;
 
 # System clock
 
