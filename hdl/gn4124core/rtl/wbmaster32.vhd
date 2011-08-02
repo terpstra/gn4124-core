@@ -419,7 +419,9 @@ begin
           wishbone_current_state <= WB_WAIT_ACK;
 
         when WB_WAIT_ACK =>
-          wb_stb_t <= '0';
+          if wb_stall_t = '0' then
+            wb_stb_t <= '0';
+          end if;
           if (wb_ack_t = '1') then
             -- for read cycles write read data to fifo
             if (wb_we_t = '0') then

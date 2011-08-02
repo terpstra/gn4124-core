@@ -528,7 +528,8 @@ begin
       dummy_stat_reg_switch_i => dummy_stat_reg_switch
       );
 
-  wb_stall(2 downto 1) <= "00";
+  wb_stall(1) <= '0' when wb_cyc(1) = '0' else not(wb_ack(1));
+  wb_stall(2) <= '0' when wb_cyc(2) = '0' else not(wb_ack(2));
 
   dummy_stat_reg_1      <= X"DEADBABE";
   dummy_stat_reg_2      <= X"BEEFFACE";

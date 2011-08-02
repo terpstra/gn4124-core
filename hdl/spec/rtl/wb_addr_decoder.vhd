@@ -148,10 +148,10 @@ begin
   end process p_ack_mux;
 
   -- Select stall line of the active peripheral
-  p_stall_mux : process (wb_stall_i, wb_periph_addr)
+  p_stall_mux : process (wb_stall_i, s_wb_periph_addr)
   begin
-    if (to_integer(unsigned(wb_periph_addr)) < g_WB_SLAVES_NB) then
-      wbm_stall_o <= wb_stall_i(to_integer(unsigned(wb_periph_addr)));
+    if (to_integer(unsigned(s_wb_periph_addr)) < g_WB_SLAVES_NB) then
+      wbm_stall_o <= wb_stall_i(to_integer(unsigned(s_wb_periph_addr)));
     else
       wbm_stall_o <= '0';
     end if;
