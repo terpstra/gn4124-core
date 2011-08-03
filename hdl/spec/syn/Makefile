@@ -33,9 +33,9 @@ CWD := $(shell pwd)
 
 FILES := ../spec_gn4124_test.ucf \
 ../rtl/spec_gn4124_test.vhd \
-../rtl/wb_addr_decoder.vhd \
 ../../common/rtl/dummy_ctrl_regs.vhd \
 ../../common/rtl/dummy_stat_regs.vhd \
+../../common/rtl/wb_addr_decoder.vhd \
 ../../gn4124core/rtl/dma_controller.vhd \
 ../../gn4124core/rtl/dma_controller_wb_slave.vhd \
 ../../gn4124core/rtl/l2p_arbiter.vhd \
