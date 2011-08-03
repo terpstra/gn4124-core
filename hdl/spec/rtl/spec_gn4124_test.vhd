@@ -99,20 +99,12 @@ architecture rtl of spec_gn4124_test is
   ------------------------------------------------------------------------------
 
   component gn4124_core
-    generic(
-      g_IS_SPARTAN6 : boolean := false  -- This generic is used to instanciate spartan6 specific primitives
-      );
     port
       (
         ---------------------------------------------------------
         -- Control and status
-        --
-        -- Asynchronous reset from GN4124
-        rst_n_a_i      : in  std_logic;
-        -- P2L clock PLL locked
-        p2l_pll_locked : out std_logic;
-        -- Debug ouputs
-        debug_o        : out std_logic_vector(7 downto 0);
+        rst_n_a_i : in  std_logic;                      -- Asynchronous reset from GN4124
+        status_o  : out std_logic_vector(31 downto 0);  -- Core status output
 
         ---------------------------------------------------------
         -- P2L Direction
@@ -373,20 +365,14 @@ begin
   -- GN4124 interface
   ------------------------------------------------------------------------------
   cmp_gn4124_core : gn4124_core
-    generic map (
-      g_IS_SPARTAN6 => true
-      )
     port map
     (
       ---------------------------------------------------------
       -- Control and status
-      --
-      -- Asynchronous reset from GN4124
-      rst_n_a_i      => L_RST_N,
-      -- P2L clock PLL locked
-      p2l_pll_locked => p2l_pll_locked,
-      -- Debug outputs
-      debug_o        => debug,
+      rst_n_a_i             => L_RST_N,
+      status_o(0)           => p2l_pll_locked,
+      status_o(31 downto 1) => open,
+
 
       ---------------------------------------------------------
       -- P2L Direction

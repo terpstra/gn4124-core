@@ -39,20 +39,12 @@ use UNISIM.vcomponents.all;
 -- Entity declaration for GN4124 core (gn4124_core)
 --==============================================================================
 entity gn4124_core is
-  generic(
-    g_IS_SPARTAN6       : boolean := true  -- This generic is used to instanciate spartan6 specific primitives
-    );
   port
     (
       ---------------------------------------------------------
       -- Control and status
-      --
-      -- Asynchronous reset from GN4124
-      rst_n_a_i      : in  std_logic;
-      -- P2L clock PLL locked
-      p2l_pll_locked : out std_logic;
-      -- Debug ouputs
-      debug_o        : out std_logic_vector(7 downto 0);
+      rst_n_a_i : in  std_logic;                      -- Asynchronous reset from GN4124
+      status_o  : out std_logic_vector(31 downto 0);  -- Core status output
 
       ---------------------------------------------------------
       -- P2L Direction
@@ -172,10 +164,10 @@ architecture rtl of gn4124_core is
   ------------------------------------------------------------------------------
 
   -- Clock
-  signal sys_clk       : std_logic;
-  signal io_clk        : std_logic;
-  signal serdes_strobe : std_logic;
-  signal pll_locked    : std_logic;
+  signal sys_clk        : std_logic;
+  signal io_clk         : std_logic;
+  signal serdes_strobe  : std_logic;
+  signal p2l_pll_locked : std_logic;
 
   -- Reset for all clk_p logic
   signal rst_reg : std_logic;
@@ -326,11 +318,10 @@ begin
 
 
   ------------------------------------------------------------------------------
-  -- Debug outputs assignment
+  -- Status output assignment
   ------------------------------------------------------------------------------
-  --debug_o(0) <= io_clk;
-  --debug_o(1) <= serdes_strobe;
-  debug_o(7 downto 0) <= (others => '0');
+  status_o(0)           <= p2l_pll_locked;
+  status_o(31 downto 1) <= (others => '0');
 
   ------------------------------------------------------------------------------
   -- Clock Input. Generate ioclocks and system clock via BUFPLL
@@ -353,9 +344,7 @@ begin
       bitslip         => open,
       reset           => rst,
       datain          => open,
-      rx_bufpll_lckd  => pll_locked) ;
-
-  p2l_pll_locked <= pll_locked;
+      rx_bufpll_lckd  => p2l_pll_locked) ;
 
   ------------------------------------------------------------------------------
   -- Reset aligned to core clock
@@ -365,7 +354,7 @@ begin
     if rst_n_a_i = c_RST_ACTIVE then
       rst_reg <= c_RST_ACTIVE;
     elsif rising_edge(sys_clk) then
-      if pll_locked = '1' then
+      if p2l_pll_locked = '1' then
         rst_reg <= not(c_RST_ACTIVE);
       end if;
     end if;
