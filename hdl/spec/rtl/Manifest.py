@@ -1,5 +1,4 @@
-files = ["spec_gn4124_test.vhd",
-         "wb_addr_decoder.vhd"]
+files = ["spec_gn4124_test.vhd"]
 
 modules = {"local" : ["../../common/rtl",
                       "../../gn4124core/rtl",
