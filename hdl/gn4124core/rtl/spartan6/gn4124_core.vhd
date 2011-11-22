@@ -159,6 +159,16 @@ architecture rtl of gn4124_core is
       rx_bufpll_lckd  : out std_logic);                      -- BUFPLL locked
   end component serdes_1_to_n_clk_pll_s2_diff;
 
+  component pulse_synchronizer
+    port (
+      clk_in_i  : in  std_logic;        --! Input pulse clock domain
+      clk_out_i : in  std_logic;        --! Output pulse clock domain
+      pulse_i   : in  std_logic;        --! One clk_in_i tick input pulse
+      done_o    : out std_logic;        --! Input pulse is synchronized (1 clk_in_i tick)
+      pulse_o   : out std_logic         --! One clk_out_i tick output pulse
+      );
+  end component pulse_synchronizer;
+
   ------------------------------------------------------------------------------
   -- Signals declaration
   ------------------------------------------------------------------------------
@@ -281,6 +291,8 @@ architecture rtl of gn4124_core is
   signal next_item_next_h       : std_logic_vector(31 downto 0);
   signal next_item_attrib       : std_logic_vector(31 downto 0);
   signal next_item_valid        : std_logic;
+
+  signal dma_irq : std_logic_vector(1 downto 0);
 
   ------------------------------------------------------------------------------
   -- CSR wishbone bus
@@ -525,7 +537,7 @@ begin
       clk_i   => sys_clk,
       rst_n_i => rst_n,
 
-      dma_ctrl_irq_o => dma_irq_o,
+      dma_ctrl_irq_o => dma_irq,
 
       dma_ctrl_carrier_addr_o => dma_ctrl_carrier_addr,
       dma_ctrl_host_addr_h_o  => dma_ctrl_host_addr_h,
@@ -565,6 +577,18 @@ begin
   -- Status signals from DMA masters
   dma_ctrl_done  <= dma_ctrl_l2p_done or dma_ctrl_p2l_done;
   dma_ctrl_error <= dma_ctrl_l2p_error or dma_ctrl_p2l_error;
+
+  -- Synchronise DMA IRQ pulse to csr_clk_i clock domain
+  l_dma_irq_sync : for I in 0 to dma_irq'length-1 generate
+    cmp_dma_irq_sync : pulse_synchronizer
+      port map(
+        clk_in_i  => sys_clk,
+        clk_out_i => csr_clk_i,
+        pulse_i   => dma_irq(I),
+        done_o    => open,
+        pulse_o   => dma_irq_o(I)
+        );
+  end generate l_dma_irq_sync;
 
   -----------------------------------------------------------------------------
   -- L2P DMA master
