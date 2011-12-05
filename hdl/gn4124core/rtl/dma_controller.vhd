@@ -346,6 +346,7 @@ begin
 
           if(dma_ctrl_reg(0) = '1') then
             -- Starts a new transfer
+            dma_error_irq          <= '1';
             dma_ctrl_current_state <= DMA_START_TRANSFER;
           end if;
 
