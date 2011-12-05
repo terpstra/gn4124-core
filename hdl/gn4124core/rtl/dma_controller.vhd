@@ -346,7 +346,6 @@ begin
 
           if(dma_ctrl_reg(0) = '1') then
             -- Starts a new transfer
-            dma_error_irq          <= '1';
             dma_ctrl_current_state <= DMA_START_TRANSFER;
           end if;
 
@@ -356,6 +355,7 @@ begin
 
           if (unsigned(dma_len_reg(31 downto 2)) = 0) then
             -- Requesting a DMA of 0 word length gives a error
+            dma_error_irq          <= '1';
             dma_ctrl_current_state <= DMA_ERROR;
           else
             -- Start the DMA if the length is not 0
