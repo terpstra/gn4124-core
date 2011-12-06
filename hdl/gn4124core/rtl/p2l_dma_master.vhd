@@ -410,7 +410,8 @@ begin
           p2l_data_cnt <= '0' & l2p_len_header;
         end if;
       elsif (p2l_dma_current_state = P2L_WAIT_READ_COMPLETION
-             and pd_pdm_data_valid_i = '1') then
+             and pd_pdm_data_valid_i = '1'
+             and pd_pdm_master_cpld_i = '1') then
         -- decrement number of data to be received
         p2l_data_cnt <= p2l_data_cnt - 1;
       end if;
