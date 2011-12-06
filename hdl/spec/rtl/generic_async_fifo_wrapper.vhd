@@ -149,14 +149,14 @@ begin
         din                     => d_i,
         wr_en                   => we_i,
         rd_en                   => rd_i,
-        prog_full_thresh_assert => std_logic_vector(to_unsigned(g_almost_full_threshold, prog_full_thresh_assert'length)),
-        prog_full_thresh_negate => std_logic_vector(to_unsigned(g_almost_full_threshold, prog_full_thresh_negate'length)),
+        prog_full_thresh_assert => std_logic_vector(to_unsigned(g_almost_full_threshold, 9)),
+        prog_full_thresh_negate => std_logic_vector(to_unsigned(g_almost_full_threshold, 9)),
         dout                    => q_o,
         full                    => wr_full_o,
         empty                   => rd_empty_o,
         valid                   => open,
         prog_full               => wr_almost_full_o);
-  end generate g_fifo_32bit;
+  end generate gen_fifo_32bit;
 
   gen_fifo_64bit : if g_data_width = 64 generate
     cmp_fifo_64x512 : fifo_64x512
@@ -167,8 +167,8 @@ begin
         din                     => d_i,
         wr_en                   => we_i,
         rd_en                   => rd_i,
-        prog_full_thresh_assert => std_logic_vector(to_unsigned(g_almost_full_threshold, prog_full_thresh_assert'length)),
-        prog_full_thresh_negate => std_logic_vector(to_unsigned(g_almost_full_threshold, prog_full_thresh_negate'length)),
+        prog_full_thresh_assert => std_logic_vector(to_unsigned(g_almost_full_threshold, 9)),
+        prog_full_thresh_negate => std_logic_vector(to_unsigned(g_almost_full_threshold, 9)),
         dout                    => q_o,
         full                    => wr_full_o,
         empty                   => rd_empty_o,
