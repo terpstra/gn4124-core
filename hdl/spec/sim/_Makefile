@@ -1,0 +1,212 @@
+TESTBENCH  = testbench
+DDRMODEL   = sim_models/2048Mb_ddr3
+SPEC       = ../rtl
+GNCORE     = ../../../../GN4124_core/hdl/gn4124core/rtl
+GNCORE_IP  = ../../../../GN4124_core/hdl/spec/ip_cores
+DDRCORE    = ../../../../ddr3_ctrl_core/hdl/rtl
+DDRCORE_IP = ../../../../ddr3_ctrl_core/hdl/spec/ip_cores/ddr_ctrl_bank3/user_design/rtl
+
+
+# These are the technology specific files
+#GLBL      = unisims
+#FPGA      = unisims
+VHDL_LIB  = testbench
+MK        = mk
+
+# Change VCOM and VLOG for use with other simulation tools
+VCOM      = vcom
+VLOG      = vlog
+TOUCH     = echo "" > $@
+
+
+spec : $(MK)/tb_spec.mk
+
+bfm : $(MK)/tb_gn412x.mk
+
+clean :
+	rm -f $(MK)/*.mk
+	vdel -lib work -all
+	vlib work
+
+
+
+##################################################################################################
+# SPEC Test Bench Project
+##################################################################################################
+
+$(MK)/tb_spec.mk : $(TESTBENCH)/tb_spec.vhd $(MK)/spec_ddr_test.mk $(MK)/gn412x_bfm.mk $(MK)/cmd_router.mk \
+	          $(MK)/ddr3.mk
+	$(VCOM) $(TESTBENCH)/tb_spec.vhd
+	$(TOUCH)
+
+##################################################################################################
+# SPEC Project
+##################################################################################################
+
+$(MK)/spec_ddr_test.mk : $(SPEC)/spec_ddr_test.vhd $(MK)/gn4124_core.mk \
+		$(MK)/gpio_regs.mk $(MK)/ddr3_ctrl.mk
+	$(VCOM) $(SPEC)/spec_ddr_test.vhd
+	$(TOUCH)
+
+$(MK)/gpio_regs.mk : $(SPEC)/gpio_regs.vhd
+	$(VCOM) $(SPEC)/gpio_regs.vhd
+	$(TOUCH)
+
+# GN4124 core
+$(MK)/gn4124_core.mk : $(GNCORE)/spartan6/gn4124_core.vhd $(MK)/gn4124_core_pkg.mk $(MK)/p2l_des.mk \
+		$(MK)/p2l_decode32.mk $(MK)/wbmaster32.mk $(MK)/l2p_arbiter.mk $(MK)/l2p_ser.mk \
+		$(MK)/dma_controller.mk $(MK)/l2p_dma_master.mk $(MK)/p2l_dma_master.mk \
+		$(MK)/serdes_1_to_n_clk_pll_s2_diff.mk
+	$(VCOM) $(GNCORE)/spartan6/gn4124_core.vhd
+	$(TOUCH)
+
+$(MK)/gn4124_core_pkg.mk : $(GNCORE)/spartan6/gn4124_core_pkg.vhd
+	$(VCOM) $(GNCORE)/spartan6/gn4124_core_pkg.vhd
+	$(TOUCH)
+
+$(MK)/p2l_des.mk : $(GNCORE)/spartan6/p2l_des.vhd $(MK)/serdes_1_to_n_data_s2_se.mk
+	$(VCOM) $(GNCORE)/spartan6/p2l_des.vhd
+	$(TOUCH)
+
+$(MK)/p2l_decode32.mk : $(GNCORE)/p2l_decode32.vhd
+	$(VCOM) $(GNCORE)/p2l_decode32.vhd
+	$(TOUCH)
+
+$(MK)/wbmaster32.mk : $(GNCORE)/wbmaster32.vhd $(MK)/fifo_32x512.mk $(MK)/fifo_64x512.mk
+	$(VCOM) $(GNCORE)/wbmaster32.vhd
+	$(TOUCH)
+
+$(MK)/l2p_arbiter.mk : $(GNCORE)/l2p_arbiter.vhd
+	$(VCOM) $(GNCORE)/l2p_arbiter.vhd
+	$(TOUCH)
+
+$(MK)/dma_controller.mk : $(GNCORE)/dma_controller.vhd $(MK)/dma_controller_wb_slave.mk
+	$(VCOM) $(GNCORE)/dma_controller.vhd
+	$(TOUCH)
+
+$(MK)/l2p_dma_master.mk : $(GNCORE)/l2p_dma_master.vhd $(MK)/fifo_32x512.mk
+	$(VCOM) $(GNCORE)/l2p_dma_master.vhd
+	$(TOUCH)
+
+$(MK)/p2l_dma_master.mk : $(GNCORE)/p2l_dma_master.vhd $(MK)/fifo_64x512.mk
+	$(VCOM) $(GNCORE)/p2l_dma_master.vhd
+	$(TOUCH)
+
+$(MK)/dma_controller_wb_slave.mk : $(GNCORE)/dma_controller_wb_slave.vhd
+	$(VCOM) $(GNCORE)/dma_controller_wb_slave.vhd
+	$(TOUCH)
+
+$(MK)/l2p_ser.mk : $(GNCORE)/spartan6/l2p_ser.vhd $(MK)/serdes_n_to_1_s2_se.mk \
+		$(MK)/serdes_n_to_1_s2_diff.mk
+	$(VCOM) $(GNCORE)/spartan6/l2p_ser.vhd
+	$(TOUCH)
+
+$(MK)/serdes_1_to_n_clk_pll_s2_diff.mk : $(GNCORE)/spartan6/serdes_1_to_n_clk_pll_s2_diff.vhd
+	$(VCOM) $(GNCORE)/spartan6/serdes_1_to_n_clk_pll_s2_diff.vhd
+	$(TOUCH)
+
+$(MK)/serdes_1_to_n_data_s2_se.mk : $(GNCORE)/spartan6/serdes_1_to_n_data_s2_se.vhd
+	$(VCOM) $(GNCORE)/spartan6/serdes_1_to_n_data_s2_se.vhd
+	$(TOUCH)
+
+$(MK)/serdes_n_to_1_s2_se.mk : $(GNCORE)/spartan6/serdes_n_to_1_s2_se.vhd
+	$(VCOM) $(GNCORE)/spartan6/serdes_n_to_1_s2_se.vhd
+	$(TOUCH)
+
+$(MK)/serdes_n_to_1_s2_diff.mk : $(GNCORE)/spartan6/serdes_n_to_1_s2_diff.vhd
+	$(VCOM) $(GNCORE)/spartan6/serdes_n_to_1_s2_diff.vhd
+	$(TOUCH)
+
+$(MK)/fifo_32x512.mk : $(GNCORE_IP)/fifo_32x512.vhd
+	$(VCOM) $(GNCORE_IP)/fifo_32x512.vhd
+	$(TOUCH)
+
+$(MK)/fifo_64x512.mk : $(GNCORE_IP)/fifo_64x512.vhd
+	$(VCOM) $(GNCORE_IP)/fifo_64x512.vhd
+	$(TOUCH)
+
+# DDR3 core
+$(MK)/ddr3_ctrl.mk : $(DDRCORE)/ddr3_ctrl.vhd $(MK)/ddr3_ctrl_wb.mk $(MK)/ddr3_ctrl_wrapper.mk
+	$(VCOM) $(DDRCORE)/ddr3_ctrl.vhd
+	$(TOUCH)
+
+$(MK)/ddr3_ctrl_wb.mk : $(DDRCORE)/ddr3_ctrl_wb.vhd
+	$(VCOM) $(DDRCORE)/ddr3_ctrl_wb.vhd
+	$(TOUCH)
+
+$(MK)/ddr3_ctrl_wrapper.mk : $(DDRCORE)/../spec/rtl/ddr3_ctrl_wrapper.vhd $(MK)/ddr_ctrl_bank3.mk
+	$(VCOM) $(DDRCORE)/../spec/rtl/ddr3_ctrl_wrapper.vhd
+	$(TOUCH)
+
+$(MK)/ddr_ctrl_bank3.mk : $(DDRCORE_IP)/ddr_ctrl_bank3.vhd $(MK)/memc3_infrastructure.mk $(MK)/memc3_wrapper.mk
+	$(VCOM) $(DDRCORE_IP)/ddr_ctrl_bank3.vhd
+	$(TOUCH)
+
+$(MK)/memc3_infrastructure.mk : $(DDRCORE_IP)/memc3_infrastructure.vhd
+	$(VCOM) $(DDRCORE_IP)/memc3_infrastructure.vhd
+	$(TOUCH)
+
+$(MK)/memc3_wrapper.mk : $(DDRCORE_IP)/memc3_wrapper.vhd $(MK)/mcb_raw_wrapper.mk
+	$(VCOM) $(DDRCORE_IP)/memc3_wrapper.vhd
+	$(TOUCH)
+
+$(MK)/mcb_raw_wrapper.mk : $(DDRCORE_IP)/mcb_raw_wrapper.vhd $(MK)/mcb_soft_calibration_top.mk
+	$(VCOM) $(DDRCORE_IP)/mcb_raw_wrapper.vhd
+	$(TOUCH)
+
+$(MK)/mcb_soft_calibration_top.mk : $(DDRCORE_IP)/mcb_soft_calibration_top.vhd $(MK)/mcb_soft_calibration.mk
+	$(VCOM) $(DDRCORE_IP)/mcb_soft_calibration_top.vhd
+	$(TOUCH)
+
+$(MK)/mcb_soft_calibration.mk : $(DDRCORE_IP)/mcb_soft_calibration.vhd $(MK)/iodrp_controller.mk \
+		 $(MK)/iodrp_mcb_controller.mk
+	$(VCOM) $(DDRCORE_IP)/mcb_soft_calibration.vhd
+	$(TOUCH)
+
+$(MK)/iodrp_controller.mk : $(DDRCORE_IP)/iodrp_controller.vhd
+	$(VCOM) $(DDRCORE_IP)/iodrp_controller.vhd
+	$(TOUCH)
+
+$(MK)/iodrp_mcb_controller.mk : $(DDRCORE_IP)/iodrp_mcb_controller.vhd
+	$(VCOM) $(DDRCORE_IP)/iodrp_mcb_controller.vhd
+	$(TOUCH)
+
+
+##################################################################################################
+# Test Bench Project
+##################################################################################################
+
+$(MK)/tb_gn412x.mk : $(TESTBENCH)/tb_gn412x.vhd $(MK)/gn412x_bfm.mk $(MK)/cmd_router.mk
+	$(VCOM) $(TESTBENCH)/tb_gn412x.vhd
+	$(TOUCH)
+
+
+$(MK)/gn412x_bfm.mk : $(TESTBENCH)/gn412x_bfm.vhd $(MK)/textutil.mk $(MK)/mem_model.mk
+	$(VCOM) $(TESTBENCH)/gn412x_bfm.vhd
+	$(TOUCH)
+
+
+$(MK)/mem_model.mk : $(VHDL_LIB)/mem_model.vhd
+	$(VCOM) -87 $(VHDL_LIB)/mem_model.vhd
+	$(TOUCH)
+
+$(MK)/textutil.mk : $(VHDL_LIB)/textutil.vhd $(MK)/util.mk
+	$(VCOM) $(VHDL_LIB)/textutil.vhd
+	$(TOUCH)
+
+$(MK)/util.mk : $(VHDL_LIB)/util.vhd
+	$(VCOM) $(VHDL_LIB)/util.vhd
+	$(TOUCH)
+
+$(MK)/cmd_router.mk : $(TESTBENCH)/cmd_router.vhd $(MK)/cmd_router1.mk $(MK)/textutil.mk
+	$(VCOM) $(TESTBENCH)/cmd_router.vhd
+	$(TOUCH)
+
+$(MK)/cmd_router1.mk : $(TESTBENCH)/cmd_router1.vhd $(MK)/textutil.mk
+	$(VCOM) $(TESTBENCH)/cmd_router1.vhd
+	$(TOUCH)
+
+# DDR3 model
+$(MK)/ddr3.mk : $(DDRMODEL)/ddr3.v
+	$(VLOG) +incdir+$(DDRMODEL) +define+sg15E +define+x16 $(DDRMODEL)/ddr3.v
+	$(TOUCH)
